@@ -21,6 +21,7 @@ function dateText(day,short=false){const date=new Date(START_DATE+Math.floor(day
 function coordinates(p){return `${Math.abs(p.lat).toFixed(1)}° ${p.lat>=0?'N':'S'}  /  ${Math.abs(p.lon).toFixed(1)}° ${p.lon>=0?'E':'W'}`;}
 
 function renderHUD(){
+  $('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
   $('#money').innerHTML=`${fmt(state.money)} <em>D</em>`;
   $('#cargo-stat').innerHTML=`${usedCargo(state)} <em>/ ${capacity(state)}</em>`;
   $('#food-stat').innerHTML=`${Math.floor(state.food)} <em>일분</em>`;
@@ -240,5 +241,5 @@ try{
   const responses=await Promise.all(['assets/world-land.geojson','assets/world-countries.geojson','assets/navigation.json'].map(url=>fetch(url).then(r=>{if(!r.ok)throw Error('지도 데이터 오류');return r.json();})));
   nav=new Navigator(responses[2]);setupMap(responses[0],responses[1]);if(state.voyage)centerShip();requestAnimationFrame(tick);
   // Keep the first view playable; help is available through the ? button.
-  if(!storage.getItem('windward-intro-seen')){toast('⚓ 환영합니다! 와인을 싣고 지도에서 다음 항구를 골라보세요.');storage.setItem('windward-intro-seen','1');}
+  try{if(!storage.getItem('windward-intro-seen')){toast('⚓ 환영합니다! 와인을 싣고 지도에서 다음 항구를 골라보세요.');storage.setItem('windward-intro-seen','1');}}catch{/* Sailing still works when browser storage is unavailable. */}
 }catch(error){$('#map-loading').innerHTML='<p>지도를 불러오지 못했어요.</p><button class="primary-button" style="width:180px" onclick="location.reload()">다시 불러오기</button>';console.error(error);}
