@@ -11,7 +11,7 @@ export const distance = (a,b)=>{
 };
 export function initialState(){return {
   version:1,money:2400,food:100,day:0,cargo:{},visited:['lisbon'],port:'lisbon',
-  position:[-9.14,38.72],voyage:null,profit:0,trades:0,soldAway:false,level:0,speed:1,
+  position:[-9.14,38.72],voyage:null,controlMode:'auto',profit:0,trades:0,soldAway:false,level:0,speed:1,
   missions:[],quiz:[],boughtLisbonWine:false,log:[{day:0,text:'리스본에서 첫 항해를 준비합니다. 바람이 당신 편이기를!',type:'discovery'}],
 };}
 export function loadState(storage){
@@ -21,7 +21,7 @@ export function loadState(storage){
     if(s.port!==null && !PORT_BY_ID[s.port])return initialState();
     // A voyage is saved as a complete route so a refresh can resume at sea.
     if(s.voyage && (!Array.isArray(s.voyage.path) || s.voyage.path.length<2 || s.voyage.path.some(p=>!Array.isArray(p)||p.length!==2||p.some(n=>!Number.isFinite(n))) || !Array.isArray(s.voyage.lengths) || s.voyage.lengths.length!==s.voyage.path.length-1 || s.voyage.lengths.some(n=>!Number.isFinite(n)||n<0) || (s.voyage.target!==null&&!PORT_BY_ID[s.voyage.target]) || !Number.isFinite(s.voyage.travelled) || s.voyage.travelled<0 || !Number.isFinite(s.voyage.total) || s.voyage.total<=0 || !Number.isFinite(s.voyage.foodRemaining)))return initialState();
-    return {...initialState(),...s, speed:[1,2,4].includes(s.speed)?s.speed:1,missions:Array.isArray(s.missions)?s.missions:[],quiz:Array.isArray(s.quiz)?s.quiz:[],log:Array.isArray(s.log)?s.log.slice(0,50):[]};
+    return {...initialState(),...s,controlMode:s.voyage?'auto':s.controlMode==='manual'?'manual':'auto',speed:[1,2,4].includes(s.speed)?s.speed:1,missions:Array.isArray(s.missions)?s.missions:[],quiz:Array.isArray(s.quiz)?s.quiz:[],log:Array.isArray(s.log)?s.log.slice(0,50):[]};
   } catch{return initialState();}
 }
 export function capacity(s){return [40,65,100][s.level];}
@@ -124,3 +124,19 @@ export function positionAlong(v,d){
   return v.path.at(-1);
 }
 export function voyageEstimate(s,route){const days=Math.max(0.25,route.total/dailySpeed(s));return {days,food:Math.max(1,Math.ceil(days*.9))};}
+
+// One direct helm step in nautical miles. Diagonals retain the same speed.
+export function helmStep(from,east,north,miles){
+  if(!Number.isFinite(miles)||miles<=0||(!east&&!north))return [...from];
+  const rad=Math.PI/180,bearing=Math.atan2(east,north),angular=miles/3440.065;
+  const lat=from[1]*rad,lon=from[0]*rad;
+  const nextLat=Math.asin(Math.sin(lat)*Math.cos(angular)+Math.cos(lat)*Math.sin(angular)*Math.cos(bearing));
+  const nextLon=lon+Math.atan2(Math.sin(bearing)*Math.sin(angular)*Math.cos(lat),Math.cos(angular)-Math.sin(lat)*Math.sin(nextLat));
+  return [((nextLon/rad+540)%360)-180,nextLat/rad];
+}
+export function helmToward(from,target,miles){
+  const remaining=distance(from,target);if(remaining<=miles)return [...target];
+  const rad=Math.PI/180,lat=from[1]*rad,toLat=target[1]*rad,delta=(target[0]-from[0])*rad;
+  const east=Math.sin(delta)*Math.cos(toLat),north=Math.cos(lat)*Math.sin(toLat)-Math.sin(lat)*Math.cos(toLat)*Math.cos(delta);
+  return helmStep(from,east,north,miles);
+}

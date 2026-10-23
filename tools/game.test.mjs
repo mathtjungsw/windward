@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PORTS,PORT_BY_ID} from '../dist/data.js';
-import {initialState,buy,sell,usedCargo,capacity,loadState,SAVE_KEY,Navigator,distance,positionAlong,voyageEstimate} from '../dist/engine.js';
+import {initialState,buy,sell,usedCargo,capacity,loadState,SAVE_KEY,Navigator,distance,positionAlong,voyageEstimate,helmStep,helmToward} from '../dist/engine.js';
 const grid=JSON.parse(readFileSync(new URL('../dist/assets/navigation.json',import.meta.url),'utf8'));
 const nav=new Navigator(grid);
 const point=id=>[PORT_BY_ID[id].lon,PORT_BY_ID[id].lat];
@@ -35,4 +35,25 @@ test('Europe to India goes around Africa, never through the continent',()=>{
 });
 test('Pacific routes cross the date line without crossing the whole map',()=>{
   const route=nav.route([175,0],[-175,0]);assert.ok(route);assert.ok(route.total<700);const half=positionAlong(route,route.total/2);assert.ok(Math.abs(half[0])>178);assert.ok(distance([175,0],[-175,0])<610);
+});
+
+test('direct helm moves in the requested compass direction at equal diagonal speed',()=>{
+  const from=[-25,30],north=helmStep(from,0,1,60),west=helmStep(from,-1,0,60),diagonal=helmStep(from,1,1,60);
+  assert.ok(north[1]>from[1]);assert.ok(west[0]<from[0]);assert.ok(diagonal[0]>from[0]&&diagonal[1]>from[1]);
+  for(const next of [north,west,diagonal])assert.ok(Math.abs(distance(from,next)-60)<.00001);
+  assert.deepEqual(helmStep(from,0,0,60),from);
+});
+test('mouse steering stops at its waypoint and takes the short route over the date line',()=>{
+  assert.deepEqual(helmToward([-25,30],[-25.1,30],100),[-25.1,30]);
+  const from=[179.8,0],target=[-179,0],next=helmToward(from,target,30);
+  assert.ok(distance(next,target)<distance(from,target));assert.ok(Math.abs(distance(from,next)-30)<.00001);
+});
+test('direct steering has water approaches to every port and cannot cross the Portuguese coast',()=>{
+  for(const p of PORTS){const ocean=nav.nearest([p.lon,p.lat]);assert.ok(ocean>=0);assert.equal(nav.isLand(nav.coord(ocean)),false);}
+  assert.equal(nav.clear([-11,38.5],[-8,38.5]),false);
+  assert.equal(nav.clear([-11,38.5],[-13,38.5]),true);
+});
+test('old saves default to automatic navigation and direct mode survives a reload',()=>{
+  const saved=initialState();delete saved.controlMode;assert.equal(loadState({getItem:()=>JSON.stringify(saved)}).controlMode,'auto');
+  saved.controlMode='manual';assert.equal(loadState({getItem:()=>JSON.stringify(saved)}).controlMode,'manual');
 });

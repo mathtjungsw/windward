@@ -1,12 +1,12 @@
 export const GOODS = {
-  wine: { name: '와인', icon: '◈', base: 48, color: '#c896a9' },
-  wool: { name: '모직물', icon: '▧', base: 62, color: '#c9c3a6' },
-  glass: { name: '유리공예', icon: '◇', base: 90, color: '#8fc2c7' },
-  spice: { name: '향신료', icon: '✤', base: 110, color: '#dea26c' },
-  coffee: { name: '커피', icon: '❖', base: 72, color: '#bda17c' },
-  silk: { name: '비단', icon: '≋', base: 128, color: '#d7b888' },
-  tea: { name: '차', icon: '❧', base: 76, color: '#a7ba89' },
-  sugar: { name: '설탕', icon: '✧', base: 52, color: '#d9d6c3' }
+  wine: { name: '와인', icon: '◈', base: 48, color: '#9a4c70' },
+  wool: { name: '모직물', icon: '▧', base: 62, color: '#6e6c4d' },
+  glass: { name: '유리공예', icon: '◇', base: 90, color: '#367f8e' },
+  spice: { name: '향신료', icon: '✤', base: 110, color: '#a6612e' },
+  coffee: { name: '커피', icon: '❖', base: 72, color: '#85613c' },
+  silk: { name: '비단', icon: '≋', base: 128, color: '#96742e' },
+  tea: { name: '차', icon: '❧', base: 76, color: '#4f7a39' },
+  sugar: { name: '설탕', icon: '✧', base: 52, color: '#7f7d5b' }
 };
 
 // Modern country names help connect the sailing atlas to present-day geography.

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#13242c">
+  <meta name="theme-color" content="#f7f3e8">
   <meta name="description" content="세계지도를 항해하고, 항구를 발견하고, 특산물을 거래하세요. 당신만의 항해가 시작됩니다.">
   <title>바람의 항로 — A Trader's Atlas</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2313242c'/%3E%3Cpath d='M32 6 39 25 58 32 39 39 32 58 25 39 6 32 25 25Z' fill='%23d9ba78'/%3E%3C/svg%3E">
@@ -39,19 +39,26 @@
       <div id="map-loading"><svg><use href="#i-compass"/></svg><p>해도를 펼치고 있습니다…</p></div>
       <svg id="world-map" viewBox="0 0 1600 800" role="group" aria-label="항구를 선택하거나 바다를 눌러 항해하는 세계지도">
         <defs>
-          <radialGradient id="ocean"><stop stop-color="#254752"/><stop offset="1" stop-color="#142c38"/></radialGradient>
-          <linearGradient id="land-color" x2="0.3" y2="1"><stop stop-color="#c2b48c"/><stop offset="1" stop-color="#a69e7c"/></linearGradient>
+          <radialGradient id="ocean"><stop stop-color="#d5ecec"/><stop offset="1" stop-color="#b3d6dc"/></radialGradient>
+          <linearGradient id="land-color" x2="0.3" y2="1"><stop stop-color="#f1e3b8"/><stop offset="1" stop-color="#ddcb96"/></linearGradient>
           <filter id="paper"><feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
           <filter id="port-glow"><feGaussianBlur stdDeviation="4"/></filter>
         </defs>
-        <g id="map-camera"><rect x="-1600" y="-800" width="4800" height="2400" fill="url(#ocean)"/><g id="graticule"></g><g id="coast-shadow"></g><g id="land"></g><g id="borders"></g><g id="map-labels"></g><rect x="0" y="0" width="1600" height="800" filter="url(#paper)" opacity=".045" pointer-events="none"/><g id="routes"></g><g id="port-markers"></g><g id="ship-marker" pointer-events="none"><ellipse cy="18" rx="14" ry="4" fill="#071a24" opacity=".35"/><path class="ship-wake" d="M-6 23-2 33M6 23 2 36" stroke="#d4ded8" opacity=".5"/><g class="ship-drawing"><path d="M-15 10 15 10 9 18H-8Z" fill="#dcb976" stroke="#493d28"/><path d="M0-23V12" stroke="#f2dfb3" stroke-width="2"/><path d="M-2-21-15 4H-2Z" fill="#f4e9ca"/><path d="M3-15V4H16Z" fill="#e4cfa0"/></g></g></g>
+        <g id="map-camera"><rect x="-1600" y="-800" width="4800" height="2400" fill="url(#ocean)"/><g id="graticule"></g><g id="coast-shadow"></g><g id="land"></g><g id="borders"></g><g id="map-labels"></g><rect x="0" y="0" width="1600" height="800" filter="url(#paper)" opacity=".045" pointer-events="none"/><g id="routes"></g><g id="port-markers"></g><g id="ship-marker" pointer-events="none"><ellipse cy="18" rx="14" ry="4" fill="#071a24" opacity=".35"/><path class="ship-wake" d="M-6 23-2 33M6 23 2 36" stroke="#d4ded8" opacity=".5"/><g class="ship-drawing"><path d="M-15 10 15 10 9 18H-8Z" fill="#8c622f" stroke="#493d28"/><path d="M0-23V12" stroke="#66502c" stroke-width="2"/><path d="M-2-21-15 4H-2Z" fill="#fffdf2" stroke="#8c825e" stroke-width=".7"/><path d="M3-15V4H16Z" fill="#f7ecc8" stroke="#8c825e" stroke-width=".7"/></g></g></g>
       </svg>
+
+      <div class="navigation-mode" aria-label="조종 모드">
+        <div class="mode-buttons"><button id="auto-mode" aria-pressed="true">자동 항해 <span>AUTO</span></button><button id="manual-mode" aria-pressed="false">직접 조종 <span>↑ ↓ ← →</span></button></div>
+        <p id="mode-hint">항구 선택 → 출항 · 배가 바다 항로를 따라 이동해요.</p>
+      </div>
+      <div class="minimap-card"><div class="minimap-heading"><span>세계지도 <small>WORLD ATLAS</small></span><button id="minimap-home" aria-label="미니맵에서 내 배 따라가기">내 배 ↗</button></div><svg id="minimap" viewBox="0 0 1600 800" role="button" tabindex="0" aria-label="세계 미니맵. 클릭한 지역을 확대 화면에 표시합니다."><rect width="1600" height="800" fill="#c7e2e4"/><use href="#land"/><path id="minimap-route" fill="none" stroke="#bb6d34" stroke-width="8"/><rect id="minimap-viewport" fill="#ffffff33" stroke="#a4522e" stroke-width="11"/><circle id="minimap-ship" r="21" fill="#19596c" stroke="#ffffff" stroke-width="10"/></svg><div class="minimap-caption"><span><i></i>현재 화면</span><span>지도를 눌러 둘러보기</span></div></div>
+      <div class="manual-pad" id="manual-pad" aria-label="직접 조종 방향 버튼"><button data-direction="ArrowUp" aria-label="북쪽으로 이동">↑</button><div><button data-direction="ArrowLeft" aria-label="서쪽으로 이동">←</button><button id="manual-stop" aria-label="직접 조종 정지">■</button><button data-direction="ArrowRight" aria-label="동쪽으로 이동">→</button></div><button data-direction="ArrowDown" aria-label="남쪽으로 이동">↓</button></div>
 
       <aside class="captain-card overlay-card"><div class="eyebrow">YOUR VOYAGE BEGINS</div><div class="captain-row"><div class="captain-avatar"><svg><use href="#i-ship"/></svg></div><div><h2>수평선의 개척자</h2><p>선장, 오늘은 어디로 떠날까요?</p></div></div><div class="captain-stats"><span><b id="visited-stat">1</b> 발견한 항구</span><span><b id="profit-stat">0</b> 무역 이익</span></div></aside>
 
       <aside class="mission-card overlay-card"><div class="card-label"><span><i class="gold-dot"></i> 항해사의 의뢰</span><span id="mission-index">01 / 04</span></div><h2 id="mission-title">첫 거래의 설렘</h2><p id="mission-desc">리스본에서 와인을 사고,<br>다른 항구에서 판매하세요.</p><div class="mission-steps" id="mission-steps"></div><div class="mission-footer"><span>달성 보상</span><strong id="mission-reward">+400 D</strong></div></aside>
 
-      <div class="map-caption"><span class="caption-line"></span>세상은 넓고, 항로는 당신의 것.<small>항구를 누르면 무역과 항해를 시작할 수 있어요.</small></div>
+      <div class="map-caption"><span class="caption-line"></span>세상은 넓고, 항로는 당신의 것.<small>배 주변은 크게, 세계의 항로는 미니맵에서.</small></div>
       <div class="compass-rose" aria-hidden="true"><span>N</span><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="36"/><circle cx="50" cy="50" r="28"/><path d="m50 4 7 39 39 7-39 7-7 39-7-39-39-7 39-7Z"/><path d="m50 20 5 25 25 5-25 5-5 25-5-25-25-5 25-5Z" class="compass-fill"/></svg><div>W <span>E</span></div><small>S</small></div>
       <div class="map-controls"><button id="zoom-in" aria-label="지도 확대">+</button><button id="zoom-out" aria-label="지도 축소">−</button><span></span><button id="home-map" aria-label="내 배 위치로 이동"><svg><use href="#i-compass"/></svg></button><button id="world-view" aria-label="세계지도 전체 보기">◎</button></div>
       <button class="mobile-port-button" id="mobile-port-btn"><svg><use href="#i-anchor"/></svg><span>리스본 교역소 열기</span><b>↓</b></button>
@@ -60,7 +67,7 @@
     </section>
 
     <aside class="port-panel" id="port-panel" aria-label="항구와 무역">
-      <div class="port-illustration"><div class="scene-stars">✦ <span>✧</span> ·</div><svg viewBox="0 0 360 140" aria-hidden="true"><circle cx="280" cy="35" r="22" fill="#d5b879" opacity=".65"/><path d="M0 100 35 80 60 90 95 65 135 82 170 50 220 80 280 65 330 85 360 70V140H0Z" fill="#2c484b"/><path d="M0 110h360v30H0Z" fill="#1f373f"/><g fill="#b9a47a"><path d="M30 106V77h24v29M26 77l16-14 16 14ZM62 106V68h18v38M59 68l12-22 12 22ZM91 106V82h32v24M87 82l20-13 20 13ZM132 106V60h20v46M128 60l14-16 14 16ZM164 106V78h37v28M160 78l22-16 23 16ZM214 106V72h24v34M210 72l16-13 16 13Z"/><path d="M257 104V51h9v53M251 51h21l-10-14ZM288 107V85h34v22M285 85l20-14 20 14Z"/></g><g fill="#263b3e"><path d="M39 97v-9h6v9M68 90V76h5v14M102 100V88h7v12M139 85V70h5v15M177 100V86h8v14M222 92V80h6v12M299 101v-9h8v9"/></g><path d="M0 115h360M15 125h50m20 8h57m70-9h78m16 9h36" stroke="#6c8378" opacity=".4"/><path d="m237 121 21 0-6 5h-10ZM248 106v15m-2-14-7 12h7Z" fill="#dfc68f"/></svg><span class="port-scene-label" id="scene-label">PORT OF LISBON</span></div>
+      <div class="port-illustration"><div class="scene-stars">✦ <span>✧</span> ·</div><svg viewBox="0 0 360 140" aria-hidden="true"><circle cx="280" cy="35" r="22" fill="#d5b879" opacity=".65"/><path d="M0 100 35 80 60 90 95 65 135 82 170 50 220 80 280 65 330 85 360 70V140H0Z" fill="#99b7a3"/><path d="M0 110h360v30H0Z" fill="#83b8c1"/><g fill="#e3c38b"><path d="M30 106V77h24v29M26 77l16-14 16 14ZM62 106V68h18v38M59 68l12-22 12 22ZM91 106V82h32v24M87 82l20-13 20 13ZM132 106V60h20v46M128 60l14-16 14 16ZM164 106V78h37v28M160 78l22-16 23 16ZM214 106V72h24v34M210 72l16-13 16 13Z"/><path d="M257 104V51h9v53M251 51h21l-10-14ZM288 107V85h34v22M285 85l20-14 20 14Z"/></g><g fill="#727e59"><path d="M39 97v-9h6v9M68 90V76h5v14M102 100V88h7v12M139 85V70h5v15M177 100V86h8v14M222 92V80h6v12M299 101v-9h8v9"/></g><path d="M0 115h360M15 125h50m20 8h57m70-9h78m16 9h36" stroke="#6c8378" opacity=".4"/><path d="m237 121 21 0-6 5h-10ZM248 106v15m-2-14-7 12h7Z" fill="#dfc68f"/></svg><span class="port-scene-label" id="scene-label">PORT OF LISBON</span></div>
       <div class="panel-content"><div class="port-kicker"><span id="port-region">유럽 · 포르투갈</span><span class="port-badge" id="port-badge">정박 중</span></div><h1 id="port-name">리스본 <em>Lisbon</em></h1><p class="port-description" id="port-description"></p><div class="port-coordinates" id="port-coordinates"></div>
       <div id="route-box" class="route-box hidden"></div>
       <div class="panel-tabs"><button class="active" id="trade-tab">교역소</button><button id="ship-tab">선박 · 보급</button></div>
