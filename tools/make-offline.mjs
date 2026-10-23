@@ -7,7 +7,7 @@ const output=process.argv[2];
 if(!output||!path.isAbsolute(output))throw Error('Provide an absolute output HTML path.');
 const read=name=>readFile(path.join(root,name),'utf8');
 let html=await read('index.html');
-const css=(await read('style.css')).replace(/^@import[^;]*;\s*/,'');
+const css=(await read('style.css')).replace(/^@import[^\r\n]*\r?\n/,'');
 const strip=code=>code.replace(/^import .*;\r?\n/gm,'').replace(/^export /gm,'');
 const data=strip(await read('data.js')),engine=strip(await read('engine.js'));
 let app=strip(await read('app.js'));
@@ -16,6 +16,6 @@ if(!app.includes(fetchStatement))throw Error('Map loading code changed. Update t
 app=app.replace(fetchStatement,'const responses=BUNDLED_MAP;');
 const maps=await Promise.all(['world-land.geojson','world-countries.geojson','navigation.json'].map(name=>read('assets/'+name).then(JSON.parse)));
 const bundled='const BUNDLED_MAP='+JSON.stringify(maps).replace(/<\/script/gi,'<\\/script')+';\n'+data+'\n'+engine+'\n'+app;
-html=html.replace('<link rel="stylesheet" href="style.css">',()=>'<style>'+css+'</style>').replace('<script type="module" src="app.js"></script>',()=>'<script type="module">\n'+bundled+'\n</script>');
+html=html.replace('<link rel="stylesheet" href="style.css">',()=>'<style>'+css+'</style>').replace('<script type="module" src="app.js"></script>',()=>'<script type="module">\n'+bundled+'\n</script>').replace('href="./"','href="#"');
 await writeFile(output,html,'utf8');
 console.log('Standalone game: '+output+' ('+(Buffer.byteLength(html)/1024/1024).toFixed(2)+' MB)');
