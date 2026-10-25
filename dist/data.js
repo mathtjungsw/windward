@@ -1,3 +1,5 @@
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js';
+
 export const GOODS = {
   wine: { name: '와인', icon: '◈', base: 48, color: '#9a4c70' },
   wool: { name: '모직물', icon: '▧', base: 62, color: '#6e6c4d' },
@@ -10,7 +12,7 @@ export const GOODS = {
 };
 
 // Modern country names help connect the sailing atlas to present-day geography.
-export const PORTS = [
+const ORIGINAL_PORTS = [
   { id:'lisbon', name:'리스본', en:'Lisbon', country:'포르투갈', region:'유럽', lon:-9.14, lat:38.72, specialty:'wine', market:['wine','wool','sugar'], fact:'이베리아반도 서쪽, 테주강 하구에 자리한 대서양의 항구.', sea:'북대서양' },
   { id:'seville', name:'세비야', en:'Seville', country:'스페인', region:'유럽', lon:-6.1, lat:36.8, specialty:'glass', market:['wine','glass','spice'], fact:'과달키비르강을 통해 대서양과 이어지는 스페인 남부의 도시. 게임의 선착장은 강 하구에 있어요.', sea:'북대서양' },
   { id:'london', name:'런던', en:'London', country:'영국', region:'유럽', lon:0.5, lat:51.5, specialty:'wool', market:['wool','glass','tea'], fact:'템스강 하구에서 북해로 이어지는 항구. 영국은 유럽 대륙 북서쪽의 섬나라예요.', sea:'북해' },
@@ -33,6 +35,7 @@ export const PORTS = [
   { id:'buenos', name:'부에노스아이레스', en:'Buenos Aires', country:'아르헨티나', region:'아메리카', lon:-58.38, lat:-34.6, specialty:'wool', market:['wool','wine','sugar'], fact:'남아메리카 남동쪽, 라플라타강 하구를 따라 자리한 항구.', sea:'남대서양' },
   { id:'sydney', name:'시드니', en:'Sydney', country:'오스트레일리아', region:'오세아니아', lon:151.2, lat:-33.85, specialty:'wool', market:['wool','wine','tea'], fact:'오스트레일리아 대륙 남동쪽, 태평양을 향한 항구.', sea:'태즈먼해' }
 ];
+export const PORTS = [...ORIGINAL_PORTS.map(p=>({...p,...UPDATED_PORTS[p.id]})),...EXTRA_PORTS];
 export const PORT_BY_ID = Object.fromEntries(PORTS.map(p=>[p.id,p]));
 export const MISSIONS = [
   { id:'trader', name:'첫 거래의 설렘', desc:'리스본에서 와인을 사고, 다른 항구에서 판매하세요.', reward:400 },

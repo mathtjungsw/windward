@@ -28,7 +28,9 @@ for feature in geo['features']:
                 for x in range(max(0,math.ceil((a+180)/step)),min(width-1,math.floor((b+180)/step))+1):
                     mask[y*width+x]=1
 # Navigation-only openings in narrow real-world straits at this coarse resolution.
-for lon,lat in [(-5.5,36),(-5,36),(103.5,1),(104,1),(103,1.5),(102.5,2),(9,56),(10,56),(11,56)]:
+for lon,lat in [(-5.5,36),(-5,36),(103.5,1),(104,1),(103,1.5),(102.5,2),(9,56),(10,56),(11,56),
+                (26,40),(26.5,40),(26.5,40.5),(27,40.5),(27.5,40.5),(28,40.5),(28.5,40.5),(29,40.5),(29,41),(29,41.5),
+                (43,12.5),(43.5,12.5),(43.5,13),(43,13)]:
     x=round((lon+180)/step)%width;y=round((top-lat)/step)
     mask[y*width+x]=0
 (root/'navigation.json').write_text(json.dumps({'width':width,'height':height,'step':step,'top':top,'land':base64.b64encode(mask).decode()}),encoding='utf-8')

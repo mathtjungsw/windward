@@ -3,8 +3,10 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PORTS,PORT_BY_ID} from '../dist/data.js';
 import {initialState,buy,sell,usedCargo,capacity,loadState,SAVE_KEY,Navigator,distance,positionAlong,voyageEstimate,helmStep,helmToward} from '../dist/engine.js';
+import {globeProject,globeUnproject} from '../dist/globe.js';
 const grid=JSON.parse(readFileSync(new URL('../dist/assets/navigation.json',import.meta.url),'utf8'));
-const nav=new Navigator(grid);
+const waterways=JSON.parse(readFileSync(new URL('../dist/assets/rivers.json',import.meta.url),'utf8'));
+const nav=new Navigator(grid,waterways);
 const point=id=>[PORT_BY_ID[id].lon,PORT_BY_ID[id].lat];
 
 test('first voyage: buy wine in Lisbon, sail to Seville, sell for profit',()=>{
@@ -49,11 +51,41 @@ test('mouse steering stops at its waypoint and takes the short route over the da
   assert.ok(distance(next,target)<distance(from,target));assert.ok(Math.abs(distance(from,next)-30)<.00001);
 });
 test('direct steering has water approaches to every port and cannot cross the Portuguese coast',()=>{
-  for(const p of PORTS){const ocean=nav.nearest([p.lon,p.lat]);assert.ok(ocean>=0);assert.equal(nav.isLand(nav.coord(ocean)),false);}
+  for(const p of PORTS){const approach=nav.approach(p);assert.ok(approach.every(Number.isFinite));assert.equal(nav.isLand(approach),false,p.id);}
   assert.equal(nav.clear([-11,38.5],[-8,38.5]),false);
   assert.equal(nav.clear([-11,38.5],[-13,38.5]),true);
 });
 test('old saves default to automatic navigation and direct mode survives a reload',()=>{
   const saved=initialState();delete saved.controlMode;assert.equal(loadState({getItem:()=>JSON.stringify(saved)}).controlMode,'auto');
   saved.controlMode='manual';assert.equal(loadState({getItem:()=>JSON.stringify(saved)}).controlMode,'manual');
+});
+
+test('the expanded atlas has 64 unique ports, 9 rivers, and connected inland round trips',()=>{
+  assert.equal(PORTS.length,64);assert.equal(new Set(PORTS.map(p=>p.id)).size,64);assert.equal(waterways.length,9);
+  for(const p of PORTS.filter(p=>p.river)){
+    const river=nav.rivers.find(r=>r.id===p.river);assert.ok(river,p.id);
+    const approach=nav.approach(p);assert.equal(nav.isLand(approach),false,p.id+' berth');
+    for(const [from,to]of [[point('lisbon'),point(p.id)],[point(p.id),point('lisbon')]]){
+      const route=nav.route(from,to);assert.ok(route,p.id+' round trip');assert.ok(route.waterways.includes(p.river),p.id+' must follow its river');
+    }
+  }
+});
+test('inland voyages follow river bends and do not turn the surrounding land into water',()=>{
+  for(const [a,b,id]of [['cairo','luxor','nile'],['shanghai','wuhan','yangtze'],['macapa','manaus','amazon'],['neworleans','memphis','mississippi'],['rotterdam','cologne','rhine']]){
+    const route=nav.route(point(a),point(b));assert.deepEqual(route.waterways,[id]);assert.ok(route.path.length>8);
+    for(let i=0;i<route.path.length-1;i++)assert.ok(nav.clear(route.path[i],route.path[i+1]),a+' → '+b+' bank crossing '+i);
+  }
+  assert.equal(nav.isLand([33.7,25.7]),true,'Eastern Desert remains land');
+  const redSea=nav.route(point('lisbon'),point('jeddah'));assert.ok(Math.min(...redSea.path.map(p=>p[1]))<-34,'No invented Suez passage');
+});
+test('river port updates preserve an old saved game and align only its docked position',()=>{
+  const saved={...initialState(),money:3210,port:'seville',position:[-6.1,36.8],visited:['lisbon','seville'],cargo:{wine:{qty:10,cost:310}}};
+  const loaded=loadState({getItem:()=>JSON.stringify(saved)});assert.equal(loaded.money,3210);assert.deepEqual(loaded.cargo,saved.cargo);assert.deepEqual(loaded.visited,saved.visited);assert.deepEqual(loaded.position,point('seville'));
+  saved.port=null;saved.position=[-8.2,36.8];assert.deepEqual(loadState({getItem:()=>JSON.stringify(saved)}).position,saved.position);
+});
+test('globe projection round trips visible locations, handles the date line and hides the far side',()=>{
+  for(const [p,c]of [[[31,30],[0,20]],[[-179,20],[179,0]],[[120,-20],[100,-15]]]){
+    const v=globeProject(p,c);assert.ok(v.z>0);const back=globeUnproject(v.x,v.y,c);assert.ok(distance(p,back)<.00001);
+  }
+  assert.ok(globeProject([180,0],[0,0]).z<0);assert.equal(globeUnproject(1,1,[0,0]),null);
 });
