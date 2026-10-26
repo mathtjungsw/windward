@@ -44,13 +44,16 @@ export class GlobeAtlas{
     if(!this.state)return;const now=performance.now();if(!force&&now-this.lastDraw<90)return;this.lastDraw=now;
     const angle=this.center[1]*GLOBE_RAD,co=Math.cos(angle),si=Math.sin(angle),data=this.image.data,tex=this.texture;
     for(const p of this.pixels){const lat=Math.asin(Math.max(-1,Math.min(1,p.y*co+p.z*si))),lon=globeLongitude(this.center[0]+Math.atan2(p.x,p.z*co-p.y*si)/GLOBE_RAD),x=Math.max(0,Math.min(1599,Math.floor((lon+180)/360*1600))),y=Math.max(0,Math.min(799,Math.floor((90-lat/GLOBE_RAD)/180*800))),i=(y*1600+x)*4,shade=.78+.19*p.z+.05*(p.y-p.x);
-      data[p.offset]=Math.min(255,tex[i]*shade);data[p.offset+1]=Math.min(255,tex[i+1]*shade);data[p.offset+2]=Math.min(255,tex[i+2]*shade);data[p.offset+3]=255;
+      const visibility=this.exploration?.visibility([lon,lat/GLOBE_RAD],this.state.position)??2;
+      if(visibility===0){data[p.offset]=43*shade;data[p.offset+1]=69*shade;data[p.offset+2]=83*shade;}
+      else if(visibility===1){const gray=(tex[i]+tex[i+1]+tex[i+2])/3;data[p.offset]=(gray*.45+110)*shade;data[p.offset+1]=(gray*.45+117)*shade;data[p.offset+2]=(gray*.45+120)*shade;}
+      else{data[p.offset]=Math.min(255,tex[i]*shade);data[p.offset+1]=Math.min(255,tex[i+1]*shade);data[p.offset+2]=Math.min(255,tex[i+2]*shade);}data[p.offset+3]=255;
     }
     const ctx=this.ctx;ctx.clearRect(0,0,240,240);ctx.putImageData(this.image,0,0);
     ctx.save();ctx.beginPath();ctx.arc(120,120,this.radius,0,Math.PI*2);ctx.clip();
     this.line(this.route||[],'#8b5929',1.1);
     this.line(this.viewport||[],'#ae5a31',1.5);
-    const visited=new Set(this.state.visited);for(const p of this.ports){const v=globeProject([p.lon,p.lat],this.center);if(v.z<.05)continue;ctx.fillStyle=visited.has(p.id)?'#26704e':'#827038';ctx.beginPath();ctx.arc(120+v.x*this.radius,120-v.y*this.radius,visited.has(p.id)?1.7:1.2,0,Math.PI*2);ctx.fill();}
+    const visited=new Set(this.state.visited);for(const p of this.ports){if(!this.state.knownPorts?.includes(p.id))continue;const v=globeProject([p.lon,p.lat],this.center);if(v.z<.05)continue;ctx.fillStyle=visited.has(p.id)?'#26704e':'#827038';ctx.beginPath();ctx.arc(120+v.x*this.radius,120-v.y*this.radius,visited.has(p.id)?1.7:1.2,0,Math.PI*2);ctx.fill();}
     for(const peer of this.peers||[]){const v=globeProject([peer.lon,peer.lat],this.center);if(v.z<0)continue;ctx.beginPath();ctx.arc(120+v.x*this.radius,120-v.y*this.radius,3.2,0,Math.PI*2);ctx.fillStyle=peer.fill;ctx.fill();ctx.strokeStyle='#fffcef';ctx.lineWidth=1;ctx.stroke();}
     const ship=globeProject(this.state.position,this.center);if(ship.z>=0){const x=120+ship.x*this.radius,y=120-ship.y*this.radius;ctx.beginPath();ctx.arc(x,y,4.2,0,Math.PI*2);ctx.fillStyle='#1b5a74';ctx.fill();ctx.strokeStyle='#fffef3';ctx.lineWidth=2;ctx.stroke();}
     const glow=ctx.createRadialGradient(78,67,0,92,88,135);glow.addColorStop(0,'#ffffff28');glow.addColorStop(.6,'#ffffff00');glow.addColorStop(1,'#174c6515');ctx.fillStyle=glow;ctx.fillRect(0,0,240,240);ctx.restore();

@@ -10,7 +10,7 @@ export const distance = (a,b)=>{
   return 3440.065*2*Math.atan2(Math.sqrt(h),Math.sqrt(Math.max(0,1-h)));
 };
 export function initialState(){return {
-  version:1,money:2400,food:100,day:0,cargo:{},visited:['lisbon'],port:'lisbon',
+  version:1,world:'peace',knownPorts:['lisbon','porto','sanlucar','seville'],explored:'',money:2400,food:100,day:0,cargo:{},visited:['lisbon'],port:'lisbon',
   position:[-9.14,38.72],voyage:null,controlMode:'auto',profit:0,trades:0,soldAway:false,level:0,speed:1,
   missions:[],quiz:[],boughtLisbonWine:false,log:[{day:0,text:'리스본에서 첫 항해를 준비합니다. 바람이 당신 편이기를!',type:'discovery'}],
 };}
@@ -23,7 +23,8 @@ export function loadState(storage){
     if(s.voyage && (!Array.isArray(s.voyage.path) || s.voyage.path.length<2 || s.voyage.path.some(p=>!Array.isArray(p)||p.length!==2||p.some(n=>!Number.isFinite(n))) || !Array.isArray(s.voyage.lengths) || s.voyage.lengths.length!==s.voyage.path.length-1 || s.voyage.lengths.some(n=>!Number.isFinite(n)||n<0) || (s.voyage.target!==null&&!PORT_BY_ID[s.voyage.target]) || !Number.isFinite(s.voyage.travelled) || s.voyage.travelled<0 || !Number.isFinite(s.voyage.total) || s.voyage.total<=0 || !Number.isFinite(s.voyage.foodRemaining)))return initialState();
     // Existing docked saves move to the updated berth of the same port.
     const position=s.port&&!s.voyage?[PORT_BY_ID[s.port].lon,PORT_BY_ID[s.port].lat]:s.position;
-    return {...initialState(),...s,position,controlMode:s.voyage?'auto':s.controlMode==='manual'?'manual':'auto',speed:[1,2,4].includes(s.speed)?s.speed:1,missions:Array.isArray(s.missions)?s.missions:[],quiz:Array.isArray(s.quiz)?s.quiz:[],log:Array.isArray(s.log)?s.log.slice(0,50):[]};
+    const knownPorts=[...new Set([...(Array.isArray(s.knownPorts)?s.knownPorts:['lisbon','porto','sanlucar','seville']),...s.visited,s.port,s.voyage?.target].filter(id=>PORT_BY_ID[id]))];
+    return {...initialState(),...s,position,knownPorts,explored:typeof s.explored==='string'&&s.explored.length<40000?s.explored:'',world:s.world==='real'?'real':'peace',controlMode:s.voyage?'auto':s.controlMode==='manual'?'manual':'auto',speed:s.world==='real'?1:[1,2,4].includes(s.speed)?s.speed:1,missions:Array.isArray(s.missions)?s.missions:[],quiz:Array.isArray(s.quiz)?s.quiz:[],log:Array.isArray(s.log)?s.log.slice(0,50):[]};
   } catch{return initialState();}
 }
 export function capacity(s){return [40,65,100][s.level];}

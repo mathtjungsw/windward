@@ -15,3 +15,10 @@ export function interpolateShip(from,to,fraction){
   const short=(n)=>((n+540)%360)-180;
   return {...to,lon:short(from.lon+short(to.lon-from.lon)*t),lat:from.lat+(to.lat-from.lat)*t,angle:from.angle+short(to.angle-from.angle)*t};
 }
+// Ten-degree sea sectors keep distant movement out of the live subscription.
+export function seaSector([lon,lat]){return `${((Math.floor((lon+180)/10)%36)+36)%36}_${Math.max(0,Math.min(15,Math.floor((lat+80)/10)))}`;}
+export function nearbySectors([lon,lat],radius=180){
+  const latRange=radius/60+.3,lonRange=Math.min(180,latRange/Math.max(.1,Math.cos((Math.abs(lat)+latRange)*Math.PI/180))),result=new Set();
+  for(let y=Math.floor((lat-latRange+80)/10);y<=Math.floor((lat+latRange+80)/10);y++)for(let x=Math.floor((lon-lonRange+180)/10);x<=Math.floor((lon+lonRange+180)/10);x++)if(y>=0&&y<16)result.add(`${((x%36)+36)%36}_${y}`);
+  return [...result];
+}

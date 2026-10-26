@@ -38,7 +38,7 @@ test('same-port buy/sell cannot create money, partial sales keep correct cost ba
 });
 test('save/load preserves voyages and cargo; corrupt saves recover safely',()=>{
   const s=initialState();buy(s,'wine',3);const route=nav.route(point('lisbon'),point('havana'));s.port=null;s.voyage={...route,target:'havana',travelled:100,foodRemaining:12};s.position=positionAlong(s.voyage,100);
-  const storage={getItem:key=>key===SAVE_KEY?JSON.stringify(s):null};assert.deepEqual(loadState(storage),s);
+  const storage={getItem:key=>key===SAVE_KEY?JSON.stringify(s):null};assert.deepEqual(loadState(storage),{...s,knownPorts:[...s.knownPorts,'havana']});
   for(const invalid of ['{broken','null',JSON.stringify({...s,money:-100}),JSON.stringify({...s,level:99}),JSON.stringify({...s,cargo:{wine:{qty:-5,cost:100}}})])assert.deepEqual(loadState({getItem:()=>invalid}),initialState());
 });
 test('every port connects to the world ocean',()=>{
