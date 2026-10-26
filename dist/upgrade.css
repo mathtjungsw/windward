@@ -1,6 +1,7 @@
 /* Explorer update: readable panels outside the playable chart. */
 [hidden]{display:none!important}
 #graticule text{font-size:.75px;stroke:none}
+#fleet-live-list{max-height:min(280px,25dvh);overflow-y:auto;overscroll-behavior:contain;border-block:1px solid #d4c9af;padding:6px 0;margin:12px 0 18px}#fleet-online-count{font-size:12px;color:#456c70;line-height:1.7}#fleet-live-list .fleet-row{min-height:40px;gap:10px}#fleet-live-list .fleet-row strong{min-width:0;overflow-wrap:anywhere}#fleet-live-list .fleet-row>span{white-space:nowrap}
 body{background:#f6f1e5;color:#254c58}
 button,input,textarea,select{font-family:var(--sans)}
 .topbar{gap:18px;padding-inline:20px}.main-nav{gap:18px;margin-left:0}.header-end{gap:10px}.edition{display:none}

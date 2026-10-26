@@ -1,7 +1,8 @@
 import {FIREBASE_CONFIG} from './firebase-config.js';
 import {captainName,validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js';
+import {CaptainRoster} from './captains.js';
 
-// Only fictional boat presence is shared. Money, cargo, missions and saves stay local.
+// Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{
   constructor({readShip,onChange,onStatus,storage}){
     Object.assign(this,{readShip,onChange,onStatus,storage});this.peers=new Map();this.active=false;this.connected=false;this.generation=0;this.lastSent=0;this.lastSignature='';
@@ -23,7 +24,7 @@ export class FleetPresence{
       else{this.auth??=authSdk.initializeAuth(this.app,{persistence:authSdk.inMemoryPersistence});this.db??=dbSdk.getDatabase(this.app);user=this.account?this.auth.currentUser:this.auth.currentUser||(await authSdk.signInAnonymously(this.auth)).user;if(!user)throw Error('account-required');}
       if(generation!==this.generation)return;
       this.uid=user.uid;this.root=this.account?`worlds/${this.world}`:null;this.selfRef=dbSdk.ref(this.db,this.root?`${this.root}/sectors/${seaSector(this.readShip().position)}/${this.shipKey}`:`fleet/v1/${this.uid}`);this.sector=seaSector(this.readShip().position);
-    if(this.root)this.watchSectors();else{
+    if(this.root){this.watchSectors();this.roster??=new CaptainRoster(this);this.roster.connect();}else{
     const q=dbSdk.query(dbSdk.ref(this.db,this.root?`${this.root}/presence`:'fleet/v1'),dbSdk.orderByChild('updatedAt'),dbSdk.startAt(Date.now()-90000),dbSdk.limitToLast(100));
       this.unsubscribe=dbSdk.onValue(q,snapshot=>{
         const now=Date.now(),seen=new Set();
@@ -34,7 +35,7 @@ export class FleetPresence{
       this.connectionOff=dbSdk.onValue(dbSdk.ref(this.db,'.info/connected'),async snapshot=>{
         if(generation!==this.generation)return;
         if(!snapshot.val()){this.connected=false;this.onStatus('reconnecting');return;}
-        try{await dbSdk.onDisconnect(this.selfRef).remove();if(generation!==this.generation)return;this.connected=true;this.lastSignature='';await this.send(true);if(this.connected)this.onStatus('online');}
+        try{await dbSdk.onDisconnect(this.selfRef).remove();if(this.root)await this.roster.prepareDisconnect();if(generation!==this.generation)return;this.connected=true;this.lastSignature='';await this.send(true);if(this.connected)this.onStatus('online');}
         catch{this.fail('permission');}
       });
       this.timer=setInterval(()=>{this.send();this.onChange();},1500);
@@ -57,20 +58,25 @@ export class FleetPresence{
   }
   at(peer,now){return interpolateShip(peer.from,peer.to,(now-peer.received)/1500);}
   captains(now=Date.now()){return [...this.peers.entries()].filter(([,p])=>validShip(p.to,now)).map(([id,p])=>({id,...this.at(p,now)}));}
+  onlineCaptains(now=Date.now()){
+    const players=this.root?this.roster?.list(now)||[]:this.captains(now).map(p=>({...p,uid:p.id}));
+    const others=players.filter(p=>p.uid!==this.uid);return [{uid:this.uid,name:this.name,color:this.color,status:this.readShip().status},...others];
+  }
   ships(now=Date.now()){return this.captains(now).slice(0,29);}
   async send(force=false){
     if(!this.active||!this.connected||this.sending)return;
     const ship=this.readShip(),signature=JSON.stringify([this.name,...ship.position.map(n=>Number(n.toFixed(4))),Math.round(ship.angle),ship.status,ship.money,ship.profit,ship.visited]);
     if(!force&&signature===this.lastSignature&&Date.now()-this.lastSent<30000)return;
     this.sending=true;
-    try{if(this.root){const sector=seaSector(ship.position);if(sector!==this.sector){await this.sdk.onDisconnect(this.selfRef).cancel();await this.sdk.remove(this.selfRef);this.sector=sector;this.selfRef=this.sdk.ref(this.db,`${this.root}/sectors/${sector}/${this.shipKey}`);await this.sdk.onDisconnect(this.selfRef).remove();}this.watchSectors();}const stats={name:this.name,money:Math.round(ship.money),profit:Math.round(ship.profit),visited:ship.visited,updatedAt:this.sdk.serverTimestamp()};await this.sdk.set(this.selfRef,{...stats,...(this.root?{uid:this.uid}:{}),lon:Number(ship.position[0].toFixed(5)),lat:Number(ship.position[1].toFixed(5)),angle:Math.round(ship.angle)%360,color:this.color,status:ship.status});if(this.root&&(force||JSON.stringify(stats).replace(/updatedAt.*$/,'')!==this.lastRank||Date.now()-(this.lastRankAt||0)>30000)){await this.sdk.set(this.sdk.ref(this.db,`${this.root}/rankings/${this.uid}`),stats);this.lastRank=JSON.stringify(stats).replace(/updatedAt.*$/,'');this.lastRankAt=Date.now();}this.lastSent=Date.now();this.lastSignature=signature;}
+    try{if(this.root){const sector=seaSector(ship.position);if(sector!==this.sector){await this.sdk.onDisconnect(this.selfRef).cancel();await this.sdk.remove(this.selfRef);this.sector=sector;this.selfRef=this.sdk.ref(this.db,`${this.root}/sectors/${sector}/${this.shipKey}`);await this.sdk.onDisconnect(this.selfRef).remove();}this.watchSectors();}const stats={name:this.name,money:Math.round(ship.money),profit:Math.round(ship.profit),visited:ship.visited,updatedAt:this.sdk.serverTimestamp()};await this.sdk.set(this.selfRef,{...stats,...(this.root?{uid:this.uid}:{}),lon:Number(ship.position[0].toFixed(5)),lat:Number(ship.position[1].toFixed(5)),angle:Math.round(ship.angle)%360,color:this.color,status:ship.status});if(this.root&&(force||JSON.stringify(stats).replace(/updatedAt.*$/,'')!==this.lastRank||Date.now()-(this.lastRankAt||0)>30000)){await this.sdk.set(this.sdk.ref(this.db,`${this.root}/rankings/${this.uid}`),stats);this.lastRank=JSON.stringify(stats).replace(/updatedAt.*$/,'');this.lastRankAt=Date.now();}if(this.root)await this.roster.publish(ship,force);this.lastSent=Date.now();this.lastSignature=signature;}
     catch{this.fail('error');}finally{this.sending=false;}
   }
   setName(value){this.name=captainName(value);try{this.storage.setItem('windward-captain-name',this.name);}catch{}this.send(true);}
   fail(reason){this.connected=false;this.onStatus(reason);}
   async stop(){
+    this.active=false;this.connected=false;++this.generation;clearInterval(this.timer);
     if(this.sectorWatches){for(const w of this.sectorWatches.values())w.stop();this.sectorWatches.clear();}try{if(this.selfRef)await this.sdk.onDisconnect(this.selfRef).cancel();}catch{}
-    this.active=false;this.connected=false;++this.generation;clearInterval(this.timer);this.unsubscribe?.();this.connectionOff?.();this.unsubscribe=null;this.connectionOff=null;this.peers.clear();this.onChange();this.onStatus('offline');
+    this.unsubscribe?.();this.connectionOff?.();this.unsubscribe=null;this.connectionOff=null;await this.roster?.stop();this.peers.clear();this.onChange();this.onStatus('offline');
     if(this.selfRef)try{await this.sdk.remove(this.selfRef);}catch{}
   }
 }

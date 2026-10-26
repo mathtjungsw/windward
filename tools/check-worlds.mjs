@@ -35,6 +35,18 @@ for(const world of ['peace','real']){
  assert.equal((await req(`worlds/${world}/sectors/17_11`,{uid,query:{orderBy:'updatedAt',limitToLast:100}})).status,200);
  assert.equal((await req(`worlds/${world}/sectors/17_11`,{uid})).status,401,'unbounded sector read denied');
  assert.equal((await req(sector,{uid,method:'DELETE'})).status,200,'own presence cleanup');
+ const directory=`worlds/${world}/captains`,session=`${directory}/${uid}_session-a`,member={uid,name:'검증 선장',color:1,status:'항해',updatedAt:timestamp};
+ assert.equal((await req(session,{uid,method:'DELETE'})).status,200,'reserve own captain cleanup before first write');
+ assert.equal((await req(session,{uid,method:'PUT',body:member})).status,200,'world-wide name registration');
+ assert.equal((await req(directory,{uid:other,query:{orderBy:'updatedAt',limitToLast:100}})).value[uid+'_session-a'].name,'검증 선장','faraway captains can read names without location subscription');
+ assert.equal((await req(directory,{uid:other})).status,401,'unbounded directory denied');
+ assert.equal((await req(directory,{query:{orderBy:'updatedAt',limitToLast:100}})).status,401,'unauthenticated directory denied');
+ assert.equal((await req(session,{uid,method:'PUT',body:{...member,lon:140,lat:35}})).status,401,'coordinates must not enter global names');
+ assert.equal((await req(session,{uid,method:'PUT',body:{...member,money:2400}})).status,401,'scores must not enter global names');
+ assert.equal((await req(session,{uid:other,method:'PUT',body:{...member,uid:other}})).status,401,'cannot replace another captain name');
+ assert.equal((await req(session,{uid:other,method:'DELETE'})).status,401,'cannot remove another session');
+ const otherWorld=world==='peace'?'real':'peace';assert.equal((await req(`worlds/${otherWorld}/captains`,{uid,query:{orderBy:'updatedAt',limitToLast:100}})).value?.[uid+'_session-a'],undefined,'world membership separate');
+ assert.equal((await req(session,{uid,method:'DELETE'})).status,200,'leave removes directory record');
  assert.ok((await req(`worlds/${world}/rankings`,{uid,query:{orderBy:'money',limitToLast:5}})).value[uid],'rank persists without presence');
 }
 assert.equal((await req(`accounts/${uid}`,{uid,method:'PUT',body:{name:'검증 선장',seenVersion:'test-v1',updatedAt:timestamp}})).status,200);

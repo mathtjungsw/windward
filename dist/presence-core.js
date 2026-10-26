@@ -1,4 +1,4 @@
-import {wrapLatitude,wrapNumber} from './world-wrap.js';
+import {wrapLatitude,wrapNumber,mapDistance} from './world-wrap.js';
 
 export const PRESENCE_TTL=90000;
 export const PRESENCE_COLORS=['#267b93','#b36435','#6d65a0','#37816c','#a14868','#8a742c'];
@@ -6,6 +6,7 @@ export function captainName(value,fallback='바다의 선장'){
   const clean=String(value||'').normalize('NFKC').replace(/[<>\u0000-\u001f\u007f]/g,'').trim().slice(0,16);
   return clean||fallback;
 }
+export function shipsInSight(ships,position,radius=180,limit=29){return ships.filter(ship=>mapDistance(position,[ship.lon,ship.lat])<=radius).slice(0,limit);}
 export function validShip(value,now=Date.now()){
   return !!value&&typeof value.name==='string'&&value.name.length>0&&value.name.length<=16&&
     Number.isFinite(value.lon)&&value.lon>=-180&&value.lon<=180&&Number.isFinite(value.lat)&&value.lat>=-80&&value.lat<=80&&

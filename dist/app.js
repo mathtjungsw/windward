@@ -2,7 +2,7 @@ import {GOODS,PORTS,PORT_BY_ID,MISSIONS} from './data.js';
 import {SAVE_KEY,START_DATE,initialState,loadState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward} from './engine.js';
 import {GlobeAtlas} from './globe.js';
 import {FleetPresence} from './multiplayer.js';
-import {PRESENCE_COLORS} from './presence-core.js';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js';
 import {CaptainChat} from './chat.js';
 import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js';
 import {Exploration,SIGHT_NM,DISCOVERY_NM,INFO_PRICE,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,worldSpeed} from './voyage-core.js';
@@ -34,9 +34,9 @@ const ownRank=()=>({id:fleet.uid||'self',name:fleet.name,money:Math.round(state.
 const fleet=new FleetPresence({storage,readShip:()=>({position:[...state.position],angle:ownShipAngle,money:state.money,profit:state.profit,visited:state.visited.length,status:state.port?'정박':paused||modal.open||document.hidden||(!state.voyage&&!manualActive)?'멈춤':'항해'}),onChange:()=>{renderFleetStatus();renderRanks();renderPeers();renderMinimap();},onStatus:status=>{fleetStatus=status;if(status==='online'){chat.connect();rankings.connect();}else if(status==='offline'){chat.disconnect();}renderFleetStatus();renderRanks();renderChatConnection();}});
 const chat=new CaptainChat({fleet,onChange:messages=>renderChat(messages),onStatus:text=>{$('#chat-status').textContent=text;renderChatConnection();}});
 const rankings=new CaptainRankings(fleet,()=>renderRanks());
-const visibleShips=()=>fleet.captains().filter(p=>mapDistance(state.position,[p.lon,p.lat])<=SIGHT_NM).slice(0,29);
+const visibleShips=()=>shipsInSight(fleet.captains(),state.position,SIGHT_NM);
 
-const RELEASE='2026.10.26-map-wrap';
+const RELEASE='2026.10.26-online-captains';
 function setupInterface(){
   const worldBadge=document.createElement('button');worldBadge.id='world-badge';worldBadge.className='world-badge';worldBadge.onclick=showAccount;$('.header-end').prepend(worldBadge);
   const tavernTab=document.createElement('button');tavernTab.id='tavern-tab';tavernTab.textContent='주점';tavernTab.onclick=()=>setTab('tavern');$('.panel-tabs').append(tavernTab);
@@ -73,7 +73,7 @@ function showAccount(){
 function showPatchNotes(){
   const seen=account.uid?account.seenVersion:storage.getItem('windward-patch-legacy');if(seen===RELEASE)return;
   showModal('새로운 항해가 시작됩니다','업데이트 · 2026.10.26',`<div class="patch-list"><h3>두 개의 바다</h3><p>평화서버는 1·2·4배속, 현실서버는 1배속으로 항해해요. 기록과 대화는 세계별로 나뉘어요.</p><h3>탐험하며 여는 항구</h3><p>처음에는 리스본과 인근 3개 항구만 알아요. 40해리 이내로 접근하거나 주점에서 100 D에 정보를 얻으면 새 목적지가 열려요.</p><h3>시야와 탐험 지도</h3><p>현재 시야는 180해리예요. 지나온 곳은 회색으로 기억하고, 시야 안의 다른 배만 보여요.</p><h3>선장 기록과 편한 화면</h3><p>이름과 숫자 6자리로 이어하기. 접속을 종료해도 세 가지 랭킹에 기록이 남아요. 모든 정보창은 열린 상태로 시작하고 제목줄에서 접을 수 있어요.</p></div><p class="modal-meta">확인한 업데이트는 다시 표시하지 않아요. 채팅은 펼치면 최근 50개, 접으면 최근 5개를 미리 보여줘요.</p><button class="primary-button" id="patch-confirm">확인하고 항해하기</button><button class="service-button" id="patch-later">나중에</button>`);
-  $('#modal-content').insertAdjacentHTML('afterbegin','<div class="patch-list"><h3>지도의 북쪽과 남쪽이 이어져요</h3><p>직접 조종으로 북쪽 끝을 넘으면 남쪽 끝에서 나옵니다. 반대 방향과 지도 드래그도 이어져요. 경계 이동 때문에 식량·항해 시간이 갑자기 늘어나지 않아요.</p></div>');
+  $('#modal-content').insertAdjacentHTML('afterbegin','<div class="patch-list"><h3>접속한 모든 선장의 이름을 확인하세요</h3><p>위쪽 ‘접속 선장’에서 같은 서버에 접속한 선장 이름을 모두 볼 수 있어요. 지도와 지구본에는 내 시야 180해리 안의 배만 표시합니다.</p><h3>지도의 북쪽과 남쪽이 이어져요</h3><p>직접 조종으로 북쪽 끝을 넘으면 남쪽 끝에서 나옵니다. 반대 방향과 지도 드래그도 이어져요. 경계 이동 때문에 식량·항해 시간이 갑자기 늘어나지 않아요.</p></div>');
   $('#patch-later').onclick=()=>modal.close();$('#patch-confirm').onclick=async()=>{const button=$('#patch-confirm');button.disabled=true;try{if(account.uid)await account.acknowledge(RELEASE);else storage.setItem('windward-patch-legacy',RELEASE);modal.close();}catch{button.disabled=false;toast('확인 기록을 저장하지 못했어요. 다시 눌러주세요.','error');}};
 }
 function beginPlaying(game){
@@ -95,7 +95,8 @@ function showEntry(){
 }
 
 function renderFleetStatus(){
-  const labels={offline:'혼자 항해',connecting:'연결 중…',reconnecting:'재연결 중…',online:`주변 항해 · ${visibleShips().length+1}명`,permission:'접속 확인 필요',error:'연결 다시 시도',unconfigured:'연결 준비 중'};
+  const memberStatus=fleet.roster?.error?'접속 명단 확인 필요':fleet.roster&&!fleet.roster.ready?'접속 선장 · 확인 중…':`접속 선장 · ${fleet.onlineCaptains().length}명`;
+  const labels={offline:'혼자 항해',connecting:'연결 중…',reconnecting:'재연결 중…',online:memberStatus,permission:'접속 확인 필요',error:'연결 다시 시도',unconfigured:'연결 준비 중'};
   $('#fleet-btn').textContent=labels[fleetStatus]||'함께 항해';$('#fleet-btn').classList.toggle('online',fleetStatus==='online');
   if($('#fleet-live-list'))renderFleetList();
 }
@@ -131,11 +132,13 @@ function toggleChat(open=!chatOpen){
   else $('#chat-toggle').focus();
 }
 function renderFleetList(){
-  const root=$('#fleet-live-list');if(!root)return;root.replaceChildren();
-  for(const ship of [{name:fleet.name,status:'내 배',color:fleet.color},...fleet.ships()]){const row=document.createElement('div');row.className='fleet-row';const dot=document.createElement('i');dot.style.background=PRESENCE_COLORS[ship.color];const name=document.createElement('strong');name.textContent=ship.name;const status=document.createElement('span');status.textContent=ship.status;row.append(dot,name,status);root.append(row);}
+  const root=$('#fleet-live-list');if(!root)return;root.tabIndex=0;root.replaceChildren();
+  const players=fleet.onlineCaptains();
+  if($('#fleet-online-count'))$('#fleet-online-count').textContent=!fleet.connected?'함께 항해에 연결하면 전체 접속 명단을 볼 수 있어요.':fleet.roster?.error?'명단을 불러오지 못했어요. 함께 항해를 다시 연결해 주세요.':fleet.roster&&!fleet.roster.ready?'접속 중인 선장들을 확인하고 있어요…':`나 포함 ${players.length}명 접속 중 · 내 시야의 다른 배 ${visibleShips().length}척`;
+  for(const ship of players){const row=document.createElement('div');row.className='fleet-row';row.setAttribute('role','listitem');const dot=document.createElement('i');dot.style.background=PRESENCE_COLORS[ship.color];const name=document.createElement('strong');name.textContent=ship.name+(ship.uid===fleet.uid?' (나)':'');const status=document.createElement('span');status.textContent=ship.uid===fleet.uid?'내 배':ship.status;row.append(dot,name,status);root.append(row);}
 }
 function showFleet(){
-  showModal('같은 바다를 항해하는 선장들','SAIL TOGETHER',`<p>접속한 선장의 배와 이름이 해도와 지구본에 표시돼요.</p><label class="fleet-name-label" for="captain-name">내 선장 이름</label><div class="fleet-name-input"><input id="captain-name" maxlength="16" autocomplete="off"><button id="captain-name-save" class="service-button">이름 저장</button></div><div id="fleet-live-list"></div><button class="primary-button" id="fleet-toggle">${fleet.active&&fleet.connected?'혼자 항해하기':'함께 항해 연결하기'}</button><p class="modal-meta">이름·게임 속 배 위치·항해 상태와 순위용 금액·항구 수를 공유합니다. 화물과 상세 진행은 선장 본인만 볼 수 있는 기록에 저장돼요. 다른 배와의 충돌·교환·경쟁은 없어요. 위치는 약 1.5초 간격으로 전달하며 최대 30척을 표시합니다.</p>`);
+  showModal('접속 중인 모든 선장','SAIL TOGETHER',`<p>같은 ${state.world==='real'?'현실서버':'평화서버'}에서 함께 항해 중인 선장 이름을 모두 보여줘요.<br>지도와 지구본의 배는 내 시야 180해리 안에서만 보여요.</p><label class="fleet-name-label" for="captain-name">내 선장 이름</label><div class="fleet-name-input"><input id="captain-name" maxlength="16" autocomplete="off"><button id="captain-name-save" class="service-button">이름 저장</button></div><p id="fleet-online-count" role="status"></p><div id="fleet-live-list" role="list" aria-label="전체 접속 선장"></div><button class="primary-button" id="fleet-toggle">${fleet.active&&fleet.connected?'혼자 항해하기':'함께 항해 연결하기'}</button><p class="modal-meta">위치와 별도로 이름·항해 상태를 공유해 멀리 있는 선장도 명단에 표시합니다. 화물과 상세 진행은 본인만 볼 수 있어요. 이전 버전의 창은 새로고침하면 명단에 참여합니다.</p>`);
   $('#captain-name').value=fleet.name;renderFleetList();
   if(account.uid){$('#captain-name').readOnly=true;$('#captain-name-save').disabled=true;$('#captain-name-save').textContent='계정 이름';}
   $('#captain-name-save').onclick=()=>{fleet.setName($('#captain-name').value);$('#captain-name').value=fleet.name;renderFleetList();toast('선장 이름을 저장했어요.');};
