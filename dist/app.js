@@ -5,7 +5,7 @@ import {FleetPresence} from './multiplayer.js';
 import {PRESENCE_COLORS,shipsInSight} from './presence-core.js';
 import {CaptainChat} from './chat.js';
 import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,INFO_PRICE,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,worldSpeed} from './voyage-core.js';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,INFO_PRICE,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,worldSpeed} from './voyage-core.js';
 import {CaptainAccount,authMessage,localSaveKey,parseGame} from './account.js';
 import {CaptainRankings} from './rankings.js';
 import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js';
@@ -36,7 +36,7 @@ const chat=new CaptainChat({fleet,onChange:messages=>renderChat(messages),onStat
 const rankings=new CaptainRankings(fleet,()=>renderRanks());
 const visibleShips=()=>shipsInSight(fleet.captains(),state.position,SIGHT_NM);
 
-const RELEASE='2026.10.26-online-captains';
+const RELEASE='2026.10.27-manual-harbor';
 function setupInterface(){
   const worldBadge=document.createElement('button');worldBadge.id='world-badge';worldBadge.className='world-badge';worldBadge.onclick=showAccount;$('.header-end').prepend(worldBadge);
   const tavernTab=document.createElement('button');tavernTab.id='tavern-tab';tavernTab.textContent='주점';tavernTab.onclick=()=>setTab('tavern');$('.panel-tabs').append(tavernTab);
@@ -72,8 +72,8 @@ function showAccount(){
 }
 function showPatchNotes(){
   const seen=account.uid?account.seenVersion:storage.getItem('windward-patch-legacy');if(seen===RELEASE)return;
-  showModal('새로운 항해가 시작됩니다','업데이트 · 2026.10.26',`<div class="patch-list"><h3>두 개의 바다</h3><p>평화서버는 1·2·4배속, 현실서버는 1배속으로 항해해요. 기록과 대화는 세계별로 나뉘어요.</p><h3>탐험하며 여는 항구</h3><p>처음에는 리스본과 인근 3개 항구만 알아요. 40해리 이내로 접근하거나 주점에서 100 D에 정보를 얻으면 새 목적지가 열려요.</p><h3>시야와 탐험 지도</h3><p>현재 시야는 180해리예요. 지나온 곳은 회색으로 기억하고, 시야 안의 다른 배만 보여요.</p><h3>선장 기록과 편한 화면</h3><p>이름과 숫자 6자리로 이어하기. 접속을 종료해도 세 가지 랭킹에 기록이 남아요. 모든 정보창은 열린 상태로 시작하고 제목줄에서 접을 수 있어요.</p></div><p class="modal-meta">확인한 업데이트는 다시 표시하지 않아요. 채팅은 펼치면 최근 50개, 접으면 최근 5개를 미리 보여줘요.</p><button class="primary-button" id="patch-confirm">확인하고 항해하기</button><button class="service-button" id="patch-later">나중에</button>`);
-  $('#modal-content').insertAdjacentHTML('afterbegin','<div class="patch-list"><h3>접속한 모든 선장의 이름을 확인하세요</h3><p>위쪽 ‘접속 선장’에서 같은 서버에 접속한 선장 이름을 모두 볼 수 있어요. 지도와 지구본에는 내 시야 180해리 안의 배만 표시합니다.</p><h3>지도의 북쪽과 남쪽이 이어져요</h3><p>직접 조종으로 북쪽 끝을 넘으면 남쪽 끝에서 나옵니다. 반대 방향과 지도 드래그도 이어져요. 경계 이동 때문에 식량·항해 시간이 갑자기 늘어나지 않아요.</p></div>');
+  showModal('새로운 항해가 시작됩니다','업데이트 · 2026.10.27',`<div class="patch-list"><h3>두 개의 바다</h3><p>평화서버는 1·2·4배속, 현실서버는 1배속으로 항해해요. 기록과 대화는 세계별로 나뉘어요.</p><h3>탐험하며 여는 항구</h3><p>처음에는 리스본과 인근 3개 항구만 알아요. 40해리 이내로 접근하거나 주점에서 100 D에 정보를 얻으면 새 목적지가 열려요.</p><h3>시야와 탐험 지도</h3><p>현재 시야는 180해리예요. 지나온 곳은 회색으로 기억하고, 시야 안의 다른 배만 보여요.</p><h3>선장 기록과 편한 화면</h3><p>이름과 숫자 6자리로 이어하기. 접속을 종료해도 세 가지 랭킹에 기록이 남아요. 모든 정보창은 열린 상태로 시작하고 제목줄에서 접을 수 있어요.</p></div><p class="modal-meta">확인한 업데이트는 다시 표시하지 않아요. 채팅은 펼치면 최근 50개, 접으면 최근 5개를 미리 보여줘요.</p><button class="primary-button" id="patch-confirm">확인하고 항해하기</button><button class="service-button" id="patch-later">나중에</button>`);
+  $('#modal-content').insertAdjacentHTML('afterbegin','<div class="patch-list"><h3>직접 조종 화면과 항구 입항을 개선했어요</h3><p>배 위를 가리던 직접 조종 상태창을 숨겼어요. 항구 근처의 바다나 같은 강에 접근하면 더 넓은 범위에서 입항합니다.</p><h3>접속한 모든 선장의 이름을 확인하세요</h3><p>위쪽 ‘접속 선장’에서 같은 서버에 접속한 선장 이름을 모두 볼 수 있어요. 지도와 지구본에는 내 시야 180해리 안의 배만 표시합니다.</p><h3>지도의 북쪽과 남쪽이 이어져요</h3><p>직접 조종으로 북쪽 끝을 넘으면 남쪽 끝에서 나옵니다. 반대 방향과 지도 드래그도 이어져요. 경계 이동 때문에 식량·항해 시간이 갑자기 늘어나지 않아요.</p></div>');
   $('#patch-later').onclick=()=>modal.close();$('#patch-confirm').onclick=async()=>{const button=$('#patch-confirm');button.disabled=true;try{if(account.uid)await account.acknowledge(RELEASE);else storage.setItem('windward-patch-legacy',RELEASE);modal.close();}catch{button.disabled=false;toast('확인 기록을 저장하지 못했어요. 다시 눌러주세요.','error');}};
 }
 function beginPlaying(game){
@@ -191,7 +191,7 @@ function renderHUD(){
   $('#manual-pad').classList.toggle('visible',state.controlMode==='manual');
   $('#mode-hint').textContent=state.controlMode==='manual'?'바다 클릭 / 방향키로 이동 · 항구 가까이 가면 입항해요.':'항구 선택 → 출항 · 배가 바다 항로를 따라 이동해요.';
   $('#current-location').textContent=state.voyage?`${toward(state.voyage.target?PORT_BY_ID[state.voyage.target].name:'선택한 해역')} 항해 중`:state.port?`${PORT_BY_ID[state.port].name}에 정박 중`:'바다 위 · 다음 항로를 정하세요';
-  $('#sailing-banner').classList.toggle('hidden',!state.voyage&&!manualActive);
+  $('#sailing-banner').classList.toggle('hidden',!state.voyage);
   $('.voyage-progress').classList.toggle('hidden',!state.voyage);
   if(state.voyage){const v=state.voyage,percent=Math.min(100,v.travelled/v.total*100),days=(v.total-v.travelled)/dailySpeed(state),name=v.target?PORT_BY_ID[v.target].name:'새로운 해역';$('#sail-title').textContent=paused?`${name} · 일시 정지`:`${toward(name)} 항해 중`;$('#sail-percent').textContent=Math.floor(percent)+'%';$('#voyage-bar').style.width=percent+'%';$('#sail-remaining').textContent=`${fmt(v.total-v.travelled)} 해리 · 약 ${days.toFixed(1)}일 남음`;$('#pause-btn').textContent=paused?'▶':'Ⅱ';$('#pause-btn').setAttribute('aria-label',paused?'항해 재개':'항해 일시 정지');}
   else if(manualActive){$('#sail-title').textContent=paused?'직접 조종 · 일시 정지':'직접 조종 중';$('#sail-percent').textContent='HELM';$('#sail-remaining').textContent=manualTarget?`클릭한 지점까지 ${fmt(mapDistance(state.position,manualTarget))}해리`:'방향키를 놓으면 멈춰요 · 스페이스: 정지';$('#pause-btn').textContent=paused?'▶':'Ⅱ';$('#pause-btn').setAttribute('aria-label',paused?'항해 재개':'항해 일시 정지');$('#current-location').textContent='직접 조종 · '+coordinates({lon:state.position[0],lat:state.position[1]});}
@@ -428,6 +428,7 @@ function startManual(point){
   if(innerWidth<=850)$('.chart').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function stepManual(delta){
+  if(!state.port){const nearby=dockAlong(nav,state.position,state.position,portApproaches,departedPort);if(nearby){arrive(nearby.id);return;}}
   const east=Number(heldKeys.has('ArrowRight'))-Number(heldKeys.has('ArrowLeft')),north=Number(heldKeys.has('ArrowUp'))-Number(heldKeys.has('ArrowDown'));
   if(!east&&!north&&!manualTarget){if(manualActive){manualActive=false;renderHUD();save();}return;}
   if(state.food<=0){stopManual();toast('식량이 떨어져 배가 멈췄어요. 구조선을 호출할 수 있어요.','error');renderPanel();return;}
@@ -445,7 +446,7 @@ function stepManual(delta){
   if(motion.wrapped)toast(rawNext[1]>80?'북쪽 끝을 지나 남쪽 바다로 이어졌어요.':'남쪽 끝을 지나 북쪽 바다로 이어졌어요.');
   if(followShip){followPosition();applyCamera();}else renderShip();
   const dock=motion.legs.map(([from,to])=>dockAlong(nav,from,to,portApproaches,departedPort)).find(Boolean);
-  if(departedPort&&distance(next,portApproaches.get(departedPort))>(PORT_BY_ID[departedPort].river?5:10))departedPort=null;
+  if(departedPort&&leftHarbor(departedPort,next,portApproaches))departedPort=null;
   if(dock){arrive(dock.id);return;}
   if(manualTarget&&mapDistance(next,manualTarget)<.1){const berth=dockAlong(nav,next,next,portApproaches,departedPort);if(berth){arrive(berth.id);return;}stopManual();}
   renderRoutes();

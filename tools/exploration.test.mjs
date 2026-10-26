@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {initialState,loadState,Navigator,distance,helmStep} from '../dist/engine.js';
 import {PORT_BY_ID,PORTS} from '../dist/data.js';
-import {Exploration,SIGHT_NM,discoverPorts,buyInformation,informationCandidate,dockAlong,knowsPort,worldSpeed} from '../dist/voyage-core.js';
+import {Exploration,SIGHT_NM,discoverPorts,buyInformation,informationCandidate,dockAlong,dockingRadius,leftHarbor,knowsPort,worldSpeed} from '../dist/voyage-core.js';
 import {accountName,validPin,captainAddress,localSaveKey,parseGame} from '../dist/account.js';
 import {seaSector,nearbySectors} from '../dist/presence-core.js';
 const nav=new Navigator(JSON.parse(readFileSync(new URL('../dist/assets/navigation.json',import.meta.url))),JSON.parse(readFileSync(new URL('../dist/assets/rivers.json',import.meta.url))));
@@ -31,6 +31,26 @@ test('river and ocean docking catches a crossed berth and skips the port just de
   assert.equal(dockAlong(nav,a,b,approaches,null)?.id,id,id);assert.notEqual(dockAlong(nav,a,b,approaches,id)?.id,id);
  }
 });
+test('manual docking accepts nearby ocean and river water without needing an exact berth hit',()=>{
+ for(const [id,east,north,miles] of [['porto',-1,0,24],['lisbon',-1,0,24],['seville',0,-1,10],['london',1,0,10]]){
+  const berth=approaches.get(id),near=helmStep(berth,east,north,miles);
+  assert.ok(nav.clear(near,berth),id);assert.equal(dockAlong(nav,near,near,approaches,null)?.id,id);
+  const outside=helmStep(berth,east,north,dockingRadius(PORT_BY_ID[id],berth)+3);
+  assert.notEqual(dockAlong(nav,outside,outside,approaches,null)?.id,id);
+ }
+ const p=PORT_BY_ID.manila;assert.ok(dockingRadius(p,approaches.get(p.id))>distance([p.lon,p.lat],approaches.get(p.id)),'offshore grid offset is covered');
+});
+
+test('nearby docking still rejects land shortcuts, another river and premature return after departure',()=>{
+ const berth=approaches.get('lisbon'),acrossShore=helmStep(berth,1,-1,24);
+ assert.equal(nav.isLand(acrossShore),false);assert.equal(nav.clear(acrossShore,berth),false);assert.notEqual(dockAlong(nav,acrossShore,acrossShore,approaches,null)?.id,'lisbon');
+ const riverBerth=approaches.get('london'),wrongRiver={clear:()=>true,riverAt:()=>({river:{id:'wrong-river'}})};
+ assert.notEqual(dockAlong(wrongRiver,riverBerth,riverBerth,approaches,null)?.id,'london');
+ const near=helmStep(berth,-1,0,20),far=helmStep(berth,-1,0,dockingRadius(PORT_BY_ID.lisbon,berth)+9);
+ assert.equal(leftHarbor('lisbon',near,approaches),false);assert.notEqual(dockAlong(nav,near,near,approaches,'lisbon')?.id,'lisbon');
+ assert.equal(leftHarbor('lisbon',far,approaches),true);assert.equal(dockAlong(nav,near,near,approaches,null)?.id,'lisbon');
+});
+
 test('real-world speed normalizes buttons, motion and reloaded saves while legacy voyage and progress remain',()=>{
  const s=initialState();s.speed=4;s.world='real';assert.equal(worldSpeed(s),1);const old={...s,money:6789,visited:['lisbon','london'],knownPorts:undefined};const loaded=loadState({getItem:()=>JSON.stringify(old)});assert.equal(loaded.speed,1);assert.equal(loaded.money,6789);assert.equal(knowsPort(loaded,'london'),true);assert.equal(localSaveKey('uid','peace')===localSaveKey('uid','real'),false);
 });

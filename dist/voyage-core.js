@@ -29,8 +29,11 @@ export function segmentDistance(a,b,p){
   const point=[p[0]+(ax+dx*t)/c,p[1]+ay+dy*t];
   return {distance:distance(point,p),point,t};
 }
+// Coarse ocean navigation cells can place a berth offshore from its visible marker.
+export const dockingRadius=(port,berth)=>port.river?12:Math.max(30,distance([port.lon,port.lat],berth)+12);
+export const leftHarbor=(id,position,approaches)=>distance(position,approaches.get(id))>dockingRadius(PORT_BY_ID[id],approaches.get(id))+8;
 export function dockAlong(nav,from,to,approaches,departed){
-  return PORTS.filter(p=>p.id!==departed).map(p=>({p,berth:approaches.get(p.id),hit:segmentDistance(from,to,approaches.get(p.id))})).filter(({p,berth,hit})=>hit.distance<=(p.river?3:6)&&(!p.river||nav.riverAt(hit.point)?.river.id===p.river)&&nav.clear(hit.point,berth)).sort((a,b)=>a.hit.t-b.hit.t||a.hit.distance-b.hit.distance)[0]?.p||null;
+  return PORTS.filter(p=>p.id!==departed).map(p=>({p,berth:approaches.get(p.id),hit:segmentDistance(from,to,approaches.get(p.id))})).filter(({p,berth,hit})=>hit.distance<=dockingRadius(p,berth)&&(!p.river||nav.riverAt(hit.point)?.river.id===p.river)&&nav.clear(from,hit.point)&&nav.clear(hit.point,berth)).sort((a,b)=>a.hit.t-b.hit.t||a.hit.distance-b.hit.distance)[0]?.p||null;
 }
 
 const EXP_W=720,EXP_H=280,EXP_BYTES=Math.ceil(EXP_W*EXP_H/8);
