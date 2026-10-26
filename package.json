@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "node tools/serve.mjs",
-    "test": "node --test tools/game.test.mjs",
-    "test:firebase": "node tools/check-firebase.mjs"
+    "test": "node --test tools/game.test.mjs tools/social.test.mjs",
+    "test:firebase": "node tools/check-firebase.mjs",
+    "test:rules": "node tools/check-social.mjs"
   }
 }

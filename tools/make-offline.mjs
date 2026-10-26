@@ -10,7 +10,7 @@ let html=await read('index.html');
 const css=(await read('style.css')).replace(/^@import[^\r\n]*\r?\n/,'');
 const strip=code=>code.replace(/^import .*;\r?\n/gm,'').replace(/^export /gm,'');
 const harbors=strip(await read('harbors.js')),data=strip(await read('data.js')),engine=strip(await read('engine.js')),globe=strip(await read('globe.js'));
-const presence=strip(await read('presence-core.js'))+'\n'+strip(await read('firebase-config.js'))+'\n'+strip(await read('multiplayer.js'));
+const presence=strip(await read('presence-core.js'))+'\n'+strip(await read('social-core.js'))+'\n'+strip(await read('firebase-config.js'))+'\n'+strip(await read('multiplayer.js'))+'\n'+strip(await read('chat.js'));
 let app=strip(await read('app.js'));
 const fetchStatement="const responses=await Promise.all(['assets/world-land.geojson','assets/world-countries.geojson','assets/navigation.json','assets/rivers.json'].map(url=>fetch(url).then(r=>{if(!r.ok)throw Error('지도 데이터 오류');return r.json();})));";
 if(!app.includes(fetchStatement))throw Error('Map loading code changed. Update the standalone builder.');

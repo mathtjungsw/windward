@@ -55,9 +55,13 @@
       <div class="minimap-card"><div class="minimap-heading"><span>세계 지구본 <small>GLOBE ATLAS</small></span><button id="minimap-home" aria-label="지구본과 해도를 내 배 위치로 돌리기">내 배 ↗</button></div><canvas id="minimap" width="240" height="240" role="application" tabindex="0" aria-label="회전하는 지구본 미니맵. 드래그 또는 방향키로 회전하고, 클릭하면 해당 지역의 평면 해도를 봅니다."></canvas><div class="globe-coordinates" id="globe-coordinates"></div><div class="minimap-caption"><span><i></i>현재 해도</span><span>드래그: 회전 · 클릭: 이동</span></div></div>
       <div class="manual-pad" id="manual-pad" aria-label="직접 조종 방향 버튼"><button data-direction="ArrowUp" aria-label="북쪽으로 이동">↑</button><div><button data-direction="ArrowLeft" aria-label="서쪽으로 이동">←</button><button id="manual-stop" aria-label="직접 조종 정지">■</button><button data-direction="ArrowRight" aria-label="동쪽으로 이동">→</button></div><button data-direction="ArrowDown" aria-label="남쪽으로 이동">↓</button></div>
 
+      <div class="voyage-sidebar" aria-label="내 항해와 현재 순위">
       <aside class="captain-card overlay-card"><div class="eyebrow">YOUR VOYAGE BEGINS</div><div class="captain-row"><div class="captain-avatar"><svg><use href="#i-ship"/></svg></div><div><h2>수평선의 개척자</h2><p>선장, 오늘은 어디로 떠날까요?</p></div></div><div class="captain-stats"><span><b id="visited-stat">1</b> 발견한 항구</span><span><b id="profit-stat">0</b> 무역 이익</span></div></aside>
 
+      <aside class="rank-card overlay-card" aria-label="현재 접속자 순위"><div class="rank-heading"><strong>선장 랭킹</strong><span>TOP 5</span></div><div class="rank-tabs" aria-label="순위 기준"><button data-rank="profit" aria-pressed="true">무역 이익</button><button data-rank="money" aria-pressed="false">지금 가진 돈</button><button data-rank="visited" aria-pressed="false">발견 항구</button></div><ol id="rank-list"></ol><p id="my-rank">선장들의 기록을 기다리고 있어요.</p></aside>
+
       <aside class="mission-card overlay-card"><div class="card-label"><span><i class="gold-dot"></i> 항해사의 의뢰</span><span id="mission-index">01 / 04</span></div><h2 id="mission-title">첫 거래의 설렘</h2><p id="mission-desc">리스본에서 와인을 사고,<br>다른 항구에서 판매하세요.</p><div class="mission-steps" id="mission-steps"></div><div class="mission-footer"><span>달성 보상</span><strong id="mission-reward">+400 D</strong></div></aside>
+      </div>
 
       <div class="map-caption"><span class="caption-line"></span>바다를 건너, 강을 거슬러.<small>평면 해도 · 세계 지구본 · 64개의 항구</small></div>
       <div class="compass-rose" aria-hidden="true"><span>N</span><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="36"/><circle cx="50" cy="50" r="28"/><path d="m50 4 7 39 39 7-39 7-7 39-7-39-39-7 39-7Z"/><path d="m50 20 5 25 25 5-25 5-5 25-5-25-25-5 25-5Z" class="compass-fill"/></svg><div>W <span>E</span></div><small>S</small></div>
@@ -79,7 +83,8 @@
     </aside>
   </main>
 
-  <footer class="bottom-bar"><div class="current-location"><svg><use href="#i-anchor"/></svg><span id="current-location">리스본에 정박 중</span></div><span class="latest-log" id="latest-log">새로운 항해가 시작됩니다.</span><button id="sound-btn" aria-label="항구 종소리 켜기">♬ <span>소리 끔</span></button></footer>
+  <footer class="bottom-bar"><div class="current-location"><svg><use href="#i-anchor"/></svg><span id="current-location">리스본에 정박 중</span></div><span class="latest-log" id="latest-log">새로운 항해가 시작됩니다.</span><button id="chat-toggle" aria-controls="chat-panel" aria-expanded="false">선장 채팅 <b id="chat-unread" hidden>0</b></button><button id="sound-btn" aria-label="항구 종소리 켜기">♬ <span>소리 끔</span></button></footer>
+  <section id="chat-panel" class="chat-panel" aria-label="선장 채팅" hidden><div class="chat-heading"><div><strong>선장들의 항해 채팅</strong><small>최근 대화 50개만 남아요</small></div><button id="chat-close" aria-label="채팅창 닫기">×</button></div><div id="chat-messages" class="chat-messages" aria-label="최근 채팅 메시지"></div><button id="chat-connection">함께 항해 연결하기</button><form id="chat-form"><label for="chat-input" class="chat-input-label">메시지</label><div class="chat-compose"><textarea id="chat-input" maxlength="200" rows="2" placeholder="선장들에게 인사해 보세요" disabled></textarea><button id="chat-send" type="submit" disabled>보내기</button></div><div class="chat-meta"><span id="chat-status" role="status">함께 항해에 연결하면 대화할 수 있어요.</span><span id="chat-count">0/200</span></div></form></section>
   <div id="toast-container" aria-live="polite"></div>
   <dialog id="modal"><div class="modal-top"><span id="modal-eyebrow">SHIP'S JOURNAL</span><button id="close-modal" class="icon-btn" aria-label="창 닫기">×</button></div><h2 id="modal-title"></h2><div id="modal-content"></div></dialog>
   <script type="module" src="app.js"></script>

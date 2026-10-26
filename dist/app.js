@@ -3,6 +3,8 @@ import {SAVE_KEY,START_DATE,initialState,loadState,capacity,usedCargo,dailySpeed
 import {GlobeAtlas} from './globe.js';
 import {FleetPresence} from './multiplayer.js';
 import {PRESENCE_COLORS} from './presence-core.js';
+import {CaptainChat} from './chat.js';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -15,20 +17,52 @@ let camera={x:project(state.position)[0],y:project(state.position)[1]},screen={w
 const heldKeys=new Set(),portApproaches=new Map();
 let manualTarget=null,manualActive=false,departedPort=null,manualAngle=0,manualChannel=null,lastPanelPort=null;
 const modal=$('#modal');
-let fleetStatus='offline',peerDrawTime=0,ownShipAngle=0;
-const fleet=new FleetPresence({storage,readShip:()=>({position:[...state.position],angle:ownShipAngle,status:state.port?'정박':paused||modal.open||document.hidden||(!state.voyage&&!manualActive)?'멈춤':'항해'}),onChange:()=>{renderFleetStatus();renderPeers();renderMinimap();},onStatus:status=>{fleetStatus=status;renderFleetStatus();}});
+let fleetStatus='offline',peerDrawTime=0,ownShipAngle=0,rankMetric='profit',chatOpen=false,chatUnread=0,chatSeen=0,chatLoading=true;
+const ownRank=()=>({id:fleet.uid||'self',name:fleet.name,money:Math.round(state.money),profit:Math.round(state.profit),visited:state.visited.length});
+const fleet=new FleetPresence({storage,readShip:()=>({position:[...state.position],angle:ownShipAngle,money:state.money,profit:state.profit,visited:state.visited.length,status:state.port?'정박':paused||modal.open||document.hidden||(!state.voyage&&!manualActive)?'멈춤':'항해'}),onChange:()=>{renderFleetStatus();renderRanks();renderPeers();renderMinimap();},onStatus:status=>{fleetStatus=status;if(status==='online'){chat.connect();}else if(status==='offline'){chat.disconnect();}renderFleetStatus();renderRanks();renderChatConnection();}});
+const chat=new CaptainChat({fleet,onChange:messages=>renderChat(messages),onStatus:text=>{$('#chat-status').textContent=text;renderChatConnection();}});
 
 function renderFleetStatus(){
-  const labels={offline:'혼자 항해',connecting:'연결 중…',reconnecting:'재연결 중…',online:`함께 항해 · ${fleet.ships().length+1}척`,permission:'접속 확인 필요',error:'연결 다시 시도',unconfigured:'연결 준비 중'};
+  const labels={offline:'혼자 항해',connecting:'연결 중…',reconnecting:'재연결 중…',online:`함께 항해 · ${fleet.captains().length+1}명`,permission:'접속 확인 필요',error:'연결 다시 시도',unconfigured:'연결 준비 중'};
   $('#fleet-btn').textContent=labels[fleetStatus]||'함께 항해';$('#fleet-btn').classList.toggle('online',fleetStatus==='online');
   if($('#fleet-live-list'))renderFleetList();
+}
+function renderRanks(){
+  const players=fleet.connected?[ownRank(),...fleet.captains()]:[ownRank()];
+  const ranks=rankFleet(players,rankMetric),top=ranks.slice(0,5),root=$('#rank-list');root.replaceChildren();
+  for(const player of top){const row=document.createElement('li');row.className=player.id===ownRank().id?'my-rank':'';const number=document.createElement('b');number.textContent=player.rank;const name=document.createElement('span');name.textContent=player.name+(player.id===ownRank().id?' (나)':'');const score=document.createElement('strong');score.textContent=fmt(player[rankMetric])+(rankMetric==='visited'?'곳':' D');row.append(number,name,score);root.append(row);}
+  if(!top.length){const empty=document.createElement('li');empty.textContent='선장들의 기록을 기다리는 중…';root.append(empty);}
+  const me=ranks.find(p=>p.id===ownRank().id);$('#my-rank').textContent=fleet.connected?`내 순위 ${me?.rank||'—'}위 · 현재 접속 ${players.length}명`:'혼자 항해 중 · 연결하면 순위를 비교해요';
+  $$('[data-rank]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.rank===rankMetric)));
+}
+function renderChatConnection(){
+  const enabled=fleet.connected&&chat?.ready;
+  $('#chat-send').disabled=!enabled||chat.sending;$('#chat-input').disabled=!enabled||chat.sending;
+  $('#chat-connection').hidden=!!enabled;$('#chat-connection').textContent=fleet.active?'연결을 기다리는 중…':'함께 항해 연결하기';
+  if(!fleet.connected)$('#chat-status').textContent='함께 항해에 연결하면 대화할 수 있어요.';
+}
+function renderChat(messages){
+  const root=$('#chat-messages'),nearBottom=root.scrollHeight-root.scrollTop-root.clientHeight<60;
+  const highest=messages.at(-1)?.seq||0;
+  if(!chatLoading&&!chatOpen)chatUnread+=messages.filter(m=>m.seq>chatSeen&&m.uid!==fleet.uid).length;
+  chatSeen=Math.max(chatSeen,highest);if(chat?.ready)chatLoading=false;
+  root.replaceChildren();
+  if(!messages.length){const empty=document.createElement('p');empty.className='chat-empty';empty.textContent='바다 위 선장들에게 인사를 건네 보세요.';root.append(empty);}
+  for(const message of messages){const item=document.createElement('article');item.className='chat-message'+(message.uid===fleet.uid?' mine':'');item.dataset.sequence=message.seq;const header=document.createElement('div');const name=document.createElement('strong');name.textContent=message.name;const time=document.createElement('time');time.textContent=new Date(message.at).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',hour12:false});const body=document.createElement('p');body.textContent=message.text;header.append(name,time);item.append(header,body);root.append(item);}
+  if(nearBottom||messages.at(-1)?.uid===fleet.uid)root.scrollTop=root.scrollHeight;
+  $('#chat-unread').textContent=chatUnread>99?'99+':String(chatUnread);$('#chat-unread').hidden=!chatUnread;
+}
+function toggleChat(open=!chatOpen){
+  chatOpen=open;$('#chat-panel').hidden=!open;$('#chat-toggle').setAttribute('aria-expanded',String(open));
+  if(open){chatUnread=0;$('#chat-unread').hidden=true;$('#chat-messages').scrollTop=$('#chat-messages').scrollHeight;if(!$('#chat-input').disabled)$('#chat-input').focus();}
+  else $('#chat-toggle').focus();
 }
 function renderFleetList(){
   const root=$('#fleet-live-list');if(!root)return;root.replaceChildren();
   for(const ship of [{name:fleet.name,status:'내 배',color:fleet.color},...fleet.ships()]){const row=document.createElement('div');row.className='fleet-row';const dot=document.createElement('i');dot.style.background=PRESENCE_COLORS[ship.color];const name=document.createElement('strong');name.textContent=ship.name;const status=document.createElement('span');status.textContent=ship.status;row.append(dot,name,status);root.append(row);}
 }
 function showFleet(){
-  showModal('같은 바다를 항해하는 선장들','SAIL TOGETHER',`<p>접속한 선장의 배와 이름이 해도와 지구본에 표시돼요.</p><label class="fleet-name-label" for="captain-name">내 선장 이름</label><div class="fleet-name-input"><input id="captain-name" maxlength="16" autocomplete="off"><button id="captain-name-save" class="service-button">이름 저장</button></div><div id="fleet-live-list"></div><button class="primary-button" id="fleet-toggle">${fleet.active&&fleet.connected?'혼자 항해하기':'함께 항해 연결하기'}</button><p class="modal-meta">이름·게임 속 배 위치·항해 상태만 공유합니다. 돈·화물·발견 기록은 각자의 브라우저에 저장돼요. 다른 배와의 충돌·교환·경쟁은 없어요. 위치는 약 1.5초 간격으로 전달하며 최대 30척을 표시합니다.</p>`);
+  showModal('같은 바다를 항해하는 선장들','SAIL TOGETHER',`<p>접속한 선장의 배와 이름이 해도와 지구본에 표시돼요.</p><label class="fleet-name-label" for="captain-name">내 선장 이름</label><div class="fleet-name-input"><input id="captain-name" maxlength="16" autocomplete="off"><button id="captain-name-save" class="service-button">이름 저장</button></div><div id="fleet-live-list"></div><button class="primary-button" id="fleet-toggle">${fleet.active&&fleet.connected?'혼자 항해하기':'함께 항해 연결하기'}</button><p class="modal-meta">이름·게임 속 배 위치·항해 상태와 순위용 금액·항구 수를 공유합니다. 화물과 상세 진행 기록은 각자의 브라우저에 저장돼요. 다른 배와의 충돌·교환·경쟁은 없어요. 위치는 약 1.5초 간격으로 전달하며 최대 30척을 표시합니다.</p>`);
   $('#captain-name').value=fleet.name;renderFleetList();
   $('#captain-name-save').onclick=()=>{fleet.setName($('#captain-name').value);$('#captain-name').value=fleet.name;renderFleetList();toast('선장 이름을 저장했어요.');};
   $('#fleet-toggle').onclick=async()=>{const leave=fleet.active&&fleet.connected;await fleet.stop();try{storage.setItem('windward-fleet-enabled',leave?'0':'1');}catch{}if(!leave)fleet.start();modal.close();};
@@ -63,6 +97,7 @@ function renderHUD(){
   $('#visited-stat').textContent=state.visited.length;
   $('#atlas-count').textContent=state.visited.length;
   $('#profit-stat').textContent=fmt(state.profit);
+  renderRanks();
   $('#cargo-count').textContent=`${usedCargo(state)} / ${capacity(state)}`;
   const currentRiver=nav?.riverAt(state.position)?.river;
   $('#waterway-status').textContent=currentRiver?`${currentRiver.name} · 내륙 항해`:'고정 배율 평면 해도 · 외해';
@@ -328,7 +363,7 @@ $('#pause-btn').onclick=()=>{paused=!paused;renderHUD();};
 $$('[data-speed]').forEach(b=>b.onclick=()=>{state.speed=Number(b.dataset.speed);renderHUD();save();});
 $('#sound-btn').onclick=()=>{sound=!sound;$('#sound-btn').innerHTML=`♬ <span>소리 ${sound?'켬':'끔'}</span>`;$('#sound-btn').setAttribute('aria-label',`항구 종소리 ${sound?'끄기':'켜기'}`);if(sound)bell();};
 document.addEventListener('keydown',e=>{
-  if(e.defaultPrevented||modal.open||['INPUT','TEXTAREA'].includes(document.activeElement?.tagName))return;
+  if(e.defaultPrevented||modal.open||['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)||document.activeElement?.closest('.rank-card,.chat-panel'))return;
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();if(!nav||(e.repeat&&!heldKeys.has(e.key)))return;setControlMode('manual');manualTarget=null;if(beginManual()){heldKeys.add(e.key);renderHUD();}return;}
   if(e.code==='Space'&&(state.voyage||manualActive)){e.preventDefault();if(e.repeat)return;if(state.controlMode==='manual')stopManual();else{paused=!paused;renderHUD();}}
   if(['1','2','4'].includes(e.key)){state.speed=Number(e.key);renderHUD();save();}
@@ -354,6 +389,14 @@ function tick(now){
 
 renderHUD();renderMission();renderPanel();$('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
 $('#fleet-btn').onclick=showFleet;
+$$('[data-rank]').forEach(button=>button.onclick=()=>{rankMetric=button.dataset.rank;renderRanks();});
+$('#chat-toggle').onclick=()=>toggleChat();$('#chat-close').onclick=()=>toggleChat(false);
+$('#chat-connection').onclick=async()=>{if(fleet.active&&!fleet.connected)await fleet.stop();fleet.start();try{storage.setItem('windward-fleet-enabled','1');}catch{}};
+$('#chat-input').oninput=()=>$('#chat-count').textContent=`${$('#chat-input').value.length}/${CHAT_MAX_LENGTH}`;
+$('#chat-input').onfocus=()=>heldKeys.clear();
+$('#chat-panel').addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){e.preventDefault();toggleChat(false);}else if(e.target.id==='chat-input'&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('#chat-form').requestSubmit();}});
+$('#chat-form').onsubmit=async e=>{e.preventDefault();const input=$('#chat-input'),draft=input.value,text=chatText(draft);$('#chat-send').disabled=true;input.disabled=true;$('#chat-status').textContent='전송 중…';const result=await chat.send(text);if(result.ok){if(input.value===draft){input.value='';$('#chat-count').textContent='0/200';}$('#chat-status').textContent='전송했어요 · 다음 메시지는 3초 뒤에';}else $('#chat-status').textContent=result.error;renderChatConnection();if(chatOpen&&!input.disabled)input.focus();};
+renderRanks();renderChatConnection();
 try{
   const responses=await Promise.all(['assets/world-land.geojson','assets/world-countries.geojson','assets/navigation.json','assets/rivers.json'].map(url=>fetch(url).then(r=>{if(!r.ok)throw Error('지도 데이터 오류');return r.json();})));
   nav=new Navigator(responses[2],responses[3]);PORTS.forEach(p=>portApproaches.set(p.id,nav.approach(p)));setupMap(responses[0],responses[1]);centerShip();requestAnimationFrame(tick);

@@ -24,6 +24,10 @@ try{
   assert.equal((await request('fleet/v1',{guest:a,query:{orderBy:'updatedAt'}})).status,401,'unbounded read blocked');
   const response=await request('fleet/v1',{guest:b,query:bounded});assert.equal(response.status,200,'limited fleet read');
   assert.equal((await response.json())[a.localId].name,boat.name,'second guest sees boat');
+  const chatQuery={orderBy:'seq',limitToLast:50};
+  assert.equal((await request('chat/v1/messages',{guest:a,query:chatQuery})).status,200,'bounded chat read');
+  assert.equal((await request('chat/v1/messages',{guest:a,query:{orderBy:'seq',limitToLast:51}})).status,401,'chat history over 50 denied');
+  assert.equal((await request('chat/v1/messages',{query:chatQuery})).status,401,'unauthenticated chat read denied');
   console.log('Firebase live checks passed: own write, peer read, ownership, coordinate validation, anonymous denial, bounded queries.');
 }finally{
   for(const guest of guests){
