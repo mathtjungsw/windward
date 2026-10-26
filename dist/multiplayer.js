@@ -28,7 +28,7 @@ export class FleetPresence{
       this.connectionOff=dbSdk.onValue(dbSdk.ref(this.db,'.info/connected'),async snapshot=>{
         if(generation!==this.generation)return;
         if(!snapshot.val()){this.connected=false;this.onStatus('reconnecting');return;}
-        try{await dbSdk.onDisconnect(this.selfRef).remove();if(generation!==this.generation)return;this.connected=true;this.lastSignature='';await this.send(true);this.onStatus('online');}
+        try{await dbSdk.onDisconnect(this.selfRef).remove();if(generation!==this.generation)return;this.connected=true;this.lastSignature='';await this.send(true);if(this.connected)this.onStatus('online');}
         catch{this.fail('permission');}
       });
       this.timer=setInterval(()=>{this.send();this.onChange();},1500);

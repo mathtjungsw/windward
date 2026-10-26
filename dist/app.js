@@ -16,7 +16,7 @@ const heldKeys=new Set(),portApproaches=new Map();
 let manualTarget=null,manualActive=false,departedPort=null,manualAngle=0,manualChannel=null,lastPanelPort=null;
 const modal=$('#modal');
 let fleetStatus='offline',peerDrawTime=0,ownShipAngle=0;
-const fleet=new FleetPresence({storage,readShip:()=>({position:[...state.position],angle:ownShipAngle,status:state.port?'정박':paused||modal.open||document.hidden?'멈춤':'항해'}),onChange:()=>{renderFleetStatus();renderPeers();renderMinimap();},onStatus:status=>{fleetStatus=status;renderFleetStatus();}});
+const fleet=new FleetPresence({storage,readShip:()=>({position:[...state.position],angle:ownShipAngle,status:state.port?'정박':paused||modal.open||document.hidden||(!state.voyage&&!manualActive)?'멈춤':'항해'}),onChange:()=>{renderFleetStatus();renderPeers();renderMinimap();},onStatus:status=>{fleetStatus=status;renderFleetStatus();}});
 
 function renderFleetStatus(){
   const labels={offline:'혼자 항해',connecting:'연결 중…',reconnecting:'재연결 중…',online:`함께 항해 · ${fleet.ships().length+1}척`,permission:'접속 확인 필요',error:'연결 다시 시도',unconfigured:'연결 준비 중'};
