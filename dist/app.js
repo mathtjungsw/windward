@@ -1,6 +1,8 @@
 import {GOODS,PORTS,PORT_BY_ID,MISSIONS} from './data.js';
 import {SAVE_KEY,START_DATE,initialState,loadState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward} from './engine.js';
 import {GlobeAtlas} from './globe.js';
+import {FleetPresence} from './multiplayer.js';
+import {PRESENCE_COLORS} from './presence-core.js';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -13,6 +15,32 @@ let camera={x:project(state.position)[0],y:project(state.position)[1]},screen={w
 const heldKeys=new Set(),portApproaches=new Map();
 let manualTarget=null,manualActive=false,departedPort=null,manualAngle=0,manualChannel=null,lastPanelPort=null;
 const modal=$('#modal');
+let fleetStatus='offline',peerDrawTime=0,ownShipAngle=0;
+const fleet=new FleetPresence({storage,readShip:()=>({position:[...state.position],angle:ownShipAngle,status:state.port?'정박':paused||modal.open||document.hidden?'멈춤':'항해'}),onChange:()=>{renderFleetStatus();renderPeers();renderMinimap();},onStatus:status=>{fleetStatus=status;renderFleetStatus();}});
+
+function renderFleetStatus(){
+  const labels={offline:'혼자 항해',connecting:'연결 중…',reconnecting:'재연결 중…',online:`함께 항해 · ${fleet.ships().length+1}척`,permission:'접속 확인 필요',error:'연결 다시 시도',unconfigured:'연결 준비 중'};
+  $('#fleet-btn').textContent=labels[fleetStatus]||'함께 항해';$('#fleet-btn').classList.toggle('online',fleetStatus==='online');
+  if($('#fleet-live-list'))renderFleetList();
+}
+function renderFleetList(){
+  const root=$('#fleet-live-list');if(!root)return;root.replaceChildren();
+  for(const ship of [{name:fleet.name,status:'내 배',color:fleet.color},...fleet.ships()]){const row=document.createElement('div');row.className='fleet-row';const dot=document.createElement('i');dot.style.background=PRESENCE_COLORS[ship.color];const name=document.createElement('strong');name.textContent=ship.name;const status=document.createElement('span');status.textContent=ship.status;row.append(dot,name,status);root.append(row);}
+}
+function showFleet(){
+  showModal('같은 바다를 항해하는 선장들','SAIL TOGETHER',`<p>접속한 선장의 배와 이름이 해도와 지구본에 표시돼요.</p><label class="fleet-name-label" for="captain-name">내 선장 이름</label><div class="fleet-name-input"><input id="captain-name" maxlength="16" autocomplete="off"><button id="captain-name-save" class="service-button">이름 저장</button></div><div id="fleet-live-list"></div><button class="primary-button" id="fleet-toggle">${fleet.active&&fleet.connected?'혼자 항해하기':'함께 항해 연결하기'}</button><p class="modal-meta">이름·게임 속 배 위치·항해 상태만 공유합니다. 돈·화물·발견 기록은 각자의 브라우저에 저장돼요. 다른 배와의 충돌·교환·경쟁은 없어요. 위치는 약 1.5초 간격으로 전달하며 최대 30척을 표시합니다.</p>`);
+  $('#captain-name').value=fleet.name;renderFleetList();
+  $('#captain-name-save').onclick=()=>{fleet.setName($('#captain-name').value);$('#captain-name').value=fleet.name;renderFleetList();toast('선장 이름을 저장했어요.');};
+  $('#fleet-toggle').onclick=async()=>{const leave=fleet.active&&fleet.connected;await fleet.stop();try{storage.setItem('windward-fleet-enabled',leave?'0':'1');}catch{}if(!leave)fleet.start();modal.close();};
+}
+function renderPeers(){
+  if(!mapReady)return;const root=$('#fleet-markers');root.replaceChildren();
+  fleet.ships().forEach((ship,i)=>{let [x,y]=project([ship.lon,ship.lat]);if(ship.status==='정박'){x+=(-35+(i%3)*25)/screen.k;y+=(-34-Math.floor(i/3)*20)/screen.k;}
+    const g=svgEl('g',{class:'fleet-ship',transform:`translate(${x},${y}) scale(${1/screen.k})`,'data-peer':ship.id});
+    const hull=svgEl('path',{d:'M-10 4H10L6 10H-5ZM0-15V4M-2-13-10 1H-2ZM3-10V1H12Z',fill:PRESENCE_COLORS[ship.color],stroke:'#fffcef','stroke-width':1.1,transform:`rotate(${ship.angle})`});
+    const text=svgEl('text',{x:0,y:-23,'text-anchor':'middle'});text.textContent=ship.name;const title=svgEl('title');title.textContent=`${ship.name} · ${ship.status}`;g.append(hull,text,title);root.append(g);
+  });
+}
 
 function save(){
   try{storage.setItem(SAVE_KEY,JSON.stringify(state));}catch{$('#save-status').innerHTML='<i></i>저장 공간 부족';}
@@ -148,7 +176,7 @@ function applyCamera(){
   const oldScale=screen.k;
   screen.k=FIXED_MAP_SCALE;
   $('#map-camera').setAttribute('transform',`translate(${screen.w/2},${screen.h/2}) scale(${screen.k}) translate(${-camera.x},${-camera.y})`);
-  if(Math.abs(oldScale-screen.k)>.00001||!$('#port-markers').children.length)renderPorts();renderShip();renderMinimap();
+  if(Math.abs(oldScale-screen.k)>.00001||!$('#port-markers').children.length)renderPorts();renderShip();renderPeers();renderMinimap();
 }
 const labelOffsets={lisbon:[-13,-12,'end'],seville:[10,23,'start'],london:[-12,-15,'end'],amsterdam:[12,-6,'start'],venice:[10,19,'start'],alexandria:[12,5,'start'],accra:[-11,3,'end'],cape:[-11,3,'end'],zanzibar:[12,3,'start'],muscat:[10,-9,'start'],goa:[10,1,'start'],malacca:[-12,2,'end'],batavia:[12,18,'start'],macau:[-12,-8,'end'],nagasaki:[13,13,'start'],busan:[-12,-11,'end'],havana:[-11,-10,'end'],cartagena:[-12,4,'end'],recife:[12,4,'start'],buenos:[-12,4,'end'],sydney:[12,4,'start']};
 function renderPorts(){
@@ -176,12 +204,14 @@ function renderRoutes(){
 function renderMinimap(){
   if(!mapReady||!globe)return;
   const w=screen.w/screen.k/2,h=screen.h/screen.k/2,viewport=[[-w,-h],[w,-h],[w,h],[-w,h],[-w,-h]].map(([x,y])=>unproject([camera.x+x,camera.y+y]));
+  globe.peers=fleet.ships().map(p=>({...p,fill:PRESENCE_COLORS[p.color]}));
   globe.update(state,viewport,state.voyage?.path||planned?.route.path||manualChannel?.path||[]);
 }
 function renderShip(){
   if(!mapReady)return;let [x,y]=project(state.position);let angle=0;
   if(state.voyage){const next=positionAlong(state.voyage,Math.min(state.voyage.total,state.voyage.travelled+12)),p=project(next);if(Math.abs(p[0]-x)<800)angle=Math.atan2(p[1]-y,p[0]-x)*180/Math.PI+90;}
   if(state.controlMode==='manual'&&!state.port)angle=manualAngle;
+  ownShipAngle=angle;
   if(state.port){x-=15/screen.k;y+=9/screen.k;}
   // The map uses screen-sized icons, so the ship stays readable while zooming.
   $('#ship-marker').setAttribute('transform',`translate(${x},${y}) scale(${.78/screen.k}) rotate(${angle})`);
@@ -318,13 +348,16 @@ function tick(now){
     if(now-lastHud>150){renderHUD();lastHud=now;}if(now-lastSave>1800){save();lastSave=now;}
   }
   if(state.controlMode==='manual'&&!paused&&!modal.open&&!document.hidden){stepManual(delta);if(now-lastHud>150){renderHUD();lastHud=now;}if(manualActive&&now-lastSave>1500){save();lastSave=now;}}
+  if(now-peerDrawTime>80&&fleet.peers.size){renderPeers();renderMinimap();peerDrawTime=now;}
   frame=requestAnimationFrame(tick);
 }
 
 renderHUD();renderMission();renderPanel();$('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
+$('#fleet-btn').onclick=showFleet;
 try{
   const responses=await Promise.all(['assets/world-land.geojson','assets/world-countries.geojson','assets/navigation.json','assets/rivers.json'].map(url=>fetch(url).then(r=>{if(!r.ok)throw Error('지도 데이터 오류');return r.json();})));
   nav=new Navigator(responses[2],responses[3]);PORTS.forEach(p=>portApproaches.set(p.id,nav.approach(p)));setupMap(responses[0],responses[1]);centerShip();requestAnimationFrame(tick);
+  if(location.protocol!=='file:'&&storage.getItem('windward-fleet-enabled')!=='0')fleet.start();else renderFleetStatus();
   // Keep the first view playable; help is available through the ? button.
   try{if(!storage.getItem('windward-intro-seen')){toast('⚓ 환영합니다! 와인을 싣고 지도에서 다음 항구를 골라보세요.');storage.setItem('windward-intro-seen','1');}}catch{/* Sailing still works when browser storage is unavailable. */}
 }catch(error){$('#map-loading').innerHTML='<p>지도를 불러오지 못했어요.</p><button class="primary-button" style="width:180px" onclick="location.reload()">다시 불러오기</button>';console.error(error);}

@@ -4,10 +4,23 @@ import {readFileSync} from 'node:fs';
 import {PORTS,PORT_BY_ID} from '../dist/data.js';
 import {initialState,buy,sell,usedCargo,capacity,loadState,SAVE_KEY,Navigator,distance,positionAlong,voyageEstimate,helmStep,helmToward} from '../dist/engine.js';
 import {globeProject,globeUnproject} from '../dist/globe.js';
+import {captainName,validShip,interpolateShip} from '../dist/presence-core.js';
 const grid=JSON.parse(readFileSync(new URL('../dist/assets/navigation.json',import.meta.url),'utf8'));
 const waterways=JSON.parse(readFileSync(new URL('../dist/assets/rivers.json',import.meta.url),'utf8'));
 const nav=new Navigator(grid,waterways);
 const point=id=>[PORT_BY_ID[id].lon,PORT_BY_ID[id].lat];
+
+test('shared sailing rejects stale, malformed and out-of-world boat positions',()=>{
+  const now=1000000,ship={name:'선장',lon:179,lat:38,angle:0,color:2,status:'항해',updatedAt:now};
+  assert.equal(validShip(ship,now),true);
+  for(const bad of [{lon:NaN},{lon:181},{lat:90},{name:'x'.repeat(17)},{updatedAt:now-91000},{updatedAt:now+31000},{color:1.5},{status:'<script>'}])assert.equal(validShip({...ship,...bad},now),false);
+  assert.equal(captainName(' <선장>\n '),'선장');assert.equal(captainName(''), '바다의 선장');
+});
+test('shared boat animation takes the short route across the date line',()=>{
+  const a={lon:179,lat:20,angle:350},b={lon:-179,lat:24,angle:10};
+  const half=interpolateShip(a,b,.5);assert.equal(half.lon,-180);assert.equal(half.lat,22);assert.equal(half.angle,360);
+  assert.equal(interpolateShip(a,b,9).lon,-179);assert.equal(interpolateShip(a,b,-1).lon,179);
+});
 
 test('first voyage: buy wine in Lisbon, sail to Seville, sell for profit',()=>{
   const s=initialState(),before=s.money;

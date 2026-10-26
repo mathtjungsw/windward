@@ -23,7 +23,7 @@
   <header class="topbar">
     <a class="brand" href="./" aria-label="바람의 항로"><svg><use href="#i-compass"/></svg><span><strong>바람의 항로<span class="edition">VOL. 01</span></strong><small>W I N D W A R D · A T R A D E R ' S A T L A S</small></span></a>
     <nav class="main-nav" aria-label="메뉴"><button class="nav-item active" id="map-tab"><svg><use href="#i-compass"/></svg>세계지도</button><button class="nav-item" id="journal-btn"><svg><use href="#i-book"/></svg>항해일지</button><button class="nav-item" id="atlas-btn"><svg><use href="#i-pin"/></svg>발견 도감 <span id="atlas-count">1</span></button></nav>
-    <div class="header-end"><span class="save-status" id="save-status"><i></i>자동 저장</span><button class="icon-btn" id="help-btn" aria-label="게임 방법">?</button></div>
+    <div class="header-end"><button id="fleet-btn" class="fleet-button">함께 항해</button><span class="save-status" id="save-status"><i></i>자동 저장</span><button class="icon-btn" id="help-btn" aria-label="게임 방법">?</button></div>
   </header>
 
   <div class="statusbar">
@@ -44,7 +44,7 @@
           <filter id="paper"><feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
           <filter id="port-glow"><feGaussianBlur stdDeviation="4"/></filter>
         </defs>
-        <g id="map-camera"><rect x="-1600" y="-800" width="4800" height="2400" fill="url(#ocean)"/><g id="graticule"></g><g id="coast-shadow"></g><g id="land"></g><g id="borders"></g><g id="waterways"></g><g id="map-labels"></g><rect x="0" y="0" width="1600" height="800" filter="url(#paper)" opacity=".045" pointer-events="none"/><g id="routes"></g><g id="port-markers"></g><g id="ship-marker" pointer-events="none"><ellipse cy="18" rx="14" ry="4" fill="#071a24" opacity=".35"/><path class="ship-wake" d="M-6 23-2 33M6 23 2 36" stroke="#d4ded8" opacity=".5"/><g class="ship-drawing"><path d="M-15 10 15 10 9 18H-8Z" fill="#8c622f" stroke="#493d28"/><path d="M0-23V12" stroke="#66502c" stroke-width="2"/><path d="M-2-21-15 4H-2Z" fill="#fffdf2" stroke="#8c825e" stroke-width=".7"/><path d="M3-15V4H16Z" fill="#f7ecc8" stroke="#8c825e" stroke-width=".7"/></g></g></g>
+        <g id="map-camera"><rect x="-1600" y="-800" width="4800" height="2400" fill="url(#ocean)"/><g id="graticule"></g><g id="coast-shadow"></g><g id="land"></g><g id="borders"></g><g id="waterways"></g><g id="map-labels"></g><rect x="0" y="0" width="1600" height="800" filter="url(#paper)" opacity=".045" pointer-events="none"/><g id="routes"></g><g id="port-markers"></g><g id="fleet-markers" pointer-events="none"></g><g id="ship-marker" pointer-events="none"><ellipse cy="18" rx="14" ry="4" fill="#071a24" opacity=".35"/><path class="ship-wake" d="M-6 23-2 33M6 23 2 36" stroke="#d4ded8" opacity=".5"/><g class="ship-drawing"><path d="M-15 10 15 10 9 18H-8Z" fill="#8c622f" stroke="#493d28"/><path d="M0-23V12" stroke="#66502c" stroke-width="2"/><path d="M-2-21-15 4H-2Z" fill="#fffdf2" stroke="#8c825e" stroke-width=".7"/><path d="M3-15V4H16Z" fill="#f7ecc8" stroke="#8c825e" stroke-width=".7"/></g></g></g>
       </svg>
 
       <div class="navigation-mode" aria-label="조종 모드">
@@ -85,3 +85,4 @@
   <script type="module" src="app.js"></script>
 </body>
 </html>
+

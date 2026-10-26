@@ -51,6 +51,7 @@ export class GlobeAtlas{
     this.line(this.route||[],'#8b5929',1.1);
     this.line(this.viewport||[],'#ae5a31',1.5);
     const visited=new Set(this.state.visited);for(const p of this.ports){const v=globeProject([p.lon,p.lat],this.center);if(v.z<.05)continue;ctx.fillStyle=visited.has(p.id)?'#26704e':'#827038';ctx.beginPath();ctx.arc(120+v.x*this.radius,120-v.y*this.radius,visited.has(p.id)?1.7:1.2,0,Math.PI*2);ctx.fill();}
+    for(const peer of this.peers||[]){const v=globeProject([peer.lon,peer.lat],this.center);if(v.z<0)continue;ctx.beginPath();ctx.arc(120+v.x*this.radius,120-v.y*this.radius,3.2,0,Math.PI*2);ctx.fillStyle=peer.fill;ctx.fill();ctx.strokeStyle='#fffcef';ctx.lineWidth=1;ctx.stroke();}
     const ship=globeProject(this.state.position,this.center);if(ship.z>=0){const x=120+ship.x*this.radius,y=120-ship.y*this.radius;ctx.beginPath();ctx.arc(x,y,4.2,0,Math.PI*2);ctx.fillStyle='#1b5a74';ctx.fill();ctx.strokeStyle='#fffef3';ctx.lineWidth=2;ctx.stroke();}
     const glow=ctx.createRadialGradient(78,67,0,92,88,135);glow.addColorStop(0,'#ffffff28');glow.addColorStop(.6,'#ffffff00');glow.addColorStop(1,'#174c6515');ctx.fillStyle=glow;ctx.fillRect(0,0,240,240);ctx.restore();
     ctx.beginPath();ctx.arc(120,120,this.radius+.7,0,Math.PI*2);ctx.strokeStyle='#6a99ab';ctx.lineWidth=1.5;ctx.stroke();

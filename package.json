@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node tools/serve.mjs",
-    "test": "node --test tools/game.test.mjs"
+    "test": "node --test tools/game.test.mjs",
+    "test:firebase": "node tools/check-firebase.mjs"
   }
 }

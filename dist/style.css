@@ -37,3 +37,8 @@
 @media(max-width:540px){.mission-card{top:151px;padding:10px 12px}.mission-card h2{font-size:13px;margin:8px 0 0}.mission-card p,.mission-card .mission-steps,.mission-card .mission-footer{display:none}}
 
 @media(max-width:540px){.navigation-mode,.minimap-card,.map-controls{right:20px}.topbar{padding-right:24px}}
+
+/* Shared sailing: readable names, with personal progress kept in the browser. */
+.fleet-button{border:1px solid #b7c5b7;border-radius:4px;padding:8px 11px;background:#fffdf0;color:#45675f;font:10px var(--sans);cursor:pointer;white-space:nowrap}.fleet-button.online{background:#e3f2ea;border-color:#83ae9c;color:#24664c}.fleet-ship text{font:10px var(--sans);fill:#254e59;paint-order:stroke;stroke:#fffdf1;stroke-width:3px;stroke-linejoin:round}.fleet-name-label{display:block;margin-top:20px;font-size:11px;color:#4b6d61}.fleet-name-input{display:flex;gap:10px;margin:8px 0 18px}.fleet-name-input input{min-width:0;flex:1;border:1px solid #aabcae;border-radius:4px;background:#fffdf4;color:#305b54;padding:12px;font:13px var(--sans)}.fleet-name-input button{width:auto;margin:0;padding:8px 16px;white-space:nowrap}.fleet-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #b5c4b04d;font-size:12px}.fleet-row i{width:10px;height:10px;border-radius:50%}.fleet-row strong{flex:1}.fleet-row span{font-size:10px;color:#6d8173}#fleet-live-list{max-height:230px;overflow:auto;margin-bottom:17px}
+@media(max-width:1180px){.save-status{display:none}.header-end{gap:8px}.fleet-button{font-size:9px;padding:7px 9px}}
+@media(max-width:540px){.fleet-button{font-size:8px;max-width:110px;padding:7px}.header-end{gap:6px}.brand strong{font-size:17px}.fleet-name-input{gap:6px}.fleet-name-input button{padding:8px}}
