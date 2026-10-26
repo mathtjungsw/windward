@@ -1,3 +1,5 @@
+import {wrapLatitude,wrapNumber} from './world-wrap.js';
+
 export const PRESENCE_TTL=90000;
 export const PRESENCE_COLORS=['#267b93','#b36435','#6d65a0','#37816c','#a14868','#8a742c'];
 export function captainName(value,fallback='바다의 선장'){
@@ -13,12 +15,13 @@ export function validShip(value,now=Date.now()){
 export function interpolateShip(from,to,fraction){
   const t=Math.max(0,Math.min(1,fraction));
   const short=(n)=>((n+540)%360)-180;
-  return {...to,lon:short(from.lon+short(to.lon-from.lon)*t),lat:from.lat+(to.lat-from.lat)*t,angle:from.angle+short(to.angle-from.angle)*t};
+  let dy=to.lat-from.lat;const seam=from.lat>65&&to.lat<-45||to.lat>65&&from.lat<-45;if(seam&&dy>70)dy-=140;if(seam&&dy<-70)dy+=140;
+  return {...to,lon:short(from.lon+short(to.lon-from.lon)*t),lat:wrapLatitude(from.lat+dy*t),angle:from.angle+short(to.angle-from.angle)*t};
 }
 // Ten-degree sea sectors keep distant movement out of the live subscription.
 export function seaSector([lon,lat]){return `${((Math.floor((lon+180)/10)%36)+36)%36}_${Math.max(0,Math.min(15,Math.floor((lat+80)/10)))}`;}
 export function nearbySectors([lon,lat],radius=180){
-  const latRange=radius/60+.3,lonRange=Math.min(180,latRange/Math.max(.1,Math.cos((Math.abs(lat)+latRange)*Math.PI/180))),result=new Set();
-  for(let y=Math.floor((lat-latRange+80)/10);y<=Math.floor((lat+latRange+80)/10);y++)for(let x=Math.floor((lon-lonRange+180)/10);x<=Math.floor((lon+lonRange+180)/10);x++)if(y>=0&&y<16)result.add(`${((x%36)+36)%36}_${y}`);
+  const latRange=radius/60+.3,nearEdge=lat+latRange>80||lat-latRange<-60,c=Math.cos((Math.abs(lat)+latRange)*Math.PI/180),lonRange=Math.min(180,latRange/Math.max(.1,nearEdge?Math.min(c,Math.cos(80*Math.PI/180)):c)),result=new Set();
+  for(let y=Math.floor((lat-latRange+80)/10);y<=Math.floor((lat+latRange+80)/10);y++)for(let x=Math.floor((lon-lonRange+180)/10);x<=Math.floor((lon+lonRange+180)/10);x++){const wrappedY=Math.floor((wrapLatitude(y*10-75)+80)/10);result.add(`${wrapNumber(x,36)}_${Math.min(15,wrappedY)}`);}
   return [...result];
 }

@@ -1,5 +1,6 @@
 /* Explorer update: readable panels outside the playable chart. */
 [hidden]{display:none!important}
+#graticule text{font-size:.75px;stroke:none}
 body{background:#f6f1e5;color:#254c58}
 button,input,textarea,select{font-family:var(--sans)}
 .topbar{gap:18px;padding-inline:20px}.main-nav{gap:18px;margin-left:0}.header-end{gap:10px}.edition{display:none}

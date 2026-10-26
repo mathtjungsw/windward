@@ -5,7 +5,7 @@ root=Path(__file__).resolve().parent.parent/'dist'/'assets'
 geo=json.loads((root/'world-land.geojson').read_text(encoding='utf-8'))
 step=.5
 width=720
-height=277
+height=281
 top=80
 mask=bytearray(width*height)
 # Scanline filling of polygon rings; holes use the even/odd rule.
