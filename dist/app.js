@@ -1,5 +1,5 @@
 import {GOODS,PORTS,PORT_BY_ID,MISSIONS} from './data.js';
-import {SAVE_KEY,START_DATE,initialState,loadState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward} from './engine.js';
+import {SAVE_KEY,START_DATE,initialState,loadState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js';
 import {GlobeAtlas} from './globe.js';
 import {FleetPresence} from './multiplayer.js';
 import {PRESENCE_COLORS,shipsInSight} from './presence-core.js';
@@ -36,7 +36,7 @@ const chat=new CaptainChat({fleet,onChange:messages=>renderChat(messages),onStat
 const rankings=new CaptainRankings(fleet,()=>renderRanks());
 const visibleShips=()=>shipsInSight(fleet.captains(),state.position,SIGHT_NM);
 
-const RELEASE='2026.10.27-manual-harbor';
+const RELEASE='2026.10.27-harbor-trade';
 function setupInterface(){
   const worldBadge=document.createElement('button');worldBadge.id='world-badge';worldBadge.className='world-badge';worldBadge.onclick=showAccount;$('.header-end').prepend(worldBadge);
   const tavernTab=document.createElement('button');tavernTab.id='tavern-tab';tavernTab.textContent='주점';tavernTab.onclick=()=>setTab('tavern');$('.panel-tabs').append(tavernTab);
@@ -73,7 +73,7 @@ function showAccount(){
 function showPatchNotes(){
   const seen=account.uid?account.seenVersion:storage.getItem('windward-patch-legacy');if(seen===RELEASE)return;
   showModal('새로운 항해가 시작됩니다','업데이트 · 2026.10.27',`<div class="patch-list"><h3>두 개의 바다</h3><p>평화서버는 1·2·4배속, 현실서버는 1배속으로 항해해요. 기록과 대화는 세계별로 나뉘어요.</p><h3>탐험하며 여는 항구</h3><p>처음에는 리스본과 인근 3개 항구만 알아요. 40해리 이내로 접근하거나 주점에서 100 D에 정보를 얻으면 새 목적지가 열려요.</p><h3>시야와 탐험 지도</h3><p>현재 시야는 180해리예요. 지나온 곳은 회색으로 기억하고, 시야 안의 다른 배만 보여요.</p><h3>선장 기록과 편한 화면</h3><p>이름과 숫자 6자리로 이어하기. 접속을 종료해도 세 가지 랭킹에 기록이 남아요. 모든 정보창은 열린 상태로 시작하고 제목줄에서 접을 수 있어요.</p></div><p class="modal-meta">확인한 업데이트는 다시 표시하지 않아요. 채팅은 펼치면 최근 50개, 접으면 최근 5개를 미리 보여줘요.</p><button class="primary-button" id="patch-confirm">확인하고 항해하기</button><button class="service-button" id="patch-later">나중에</button>`);
-  $('#modal-content').insertAdjacentHTML('afterbegin','<div class="patch-list"><h3>직접 조종 화면과 항구 입항을 개선했어요</h3><p>배 위를 가리던 직접 조종 상태창을 숨겼어요. 항구 근처의 바다나 같은 강에 접근하면 더 넓은 범위에서 입항합니다.</p><h3>접속한 모든 선장의 이름을 확인하세요</h3><p>위쪽 ‘접속 선장’에서 같은 서버에 접속한 선장 이름을 모두 볼 수 있어요. 지도와 지구본에는 내 시야 180해리 안의 배만 표시합니다.</p><h3>지도의 북쪽과 남쪽이 이어져요</h3><p>직접 조종으로 북쪽 끝을 넘으면 남쪽 끝에서 나옵니다. 반대 방향과 지도 드래그도 이어져요. 경계 이동 때문에 식량·항해 시간이 갑자기 늘어나지 않아요.</p></div>');
+  $('#modal-content').insertAdjacentHTML('afterbegin','<div class="patch-list"><h3>입항 후 화물 판매를 개선했어요</h3><p>다른 항구 정보를 보고 있어도 현재 정박한 항구의 가격으로 판매할 수 있어요. 화물창에 입항 완료 여부와 판매 항구를 표시합니다.</p><h3>직접 조종 화면과 항구 입항을 개선했어요</h3><p>배 위를 가리던 직접 조종 상태창을 숨겼어요. 항구 근처의 바다나 같은 강에 접근하면 더 넓은 범위에서 입항합니다.</p><h3>접속한 모든 선장의 이름을 확인하세요</h3><p>위쪽 ‘접속 선장’에서 같은 서버에 접속한 선장 이름을 모두 볼 수 있어요. 지도와 지구본에는 내 시야 180해리 안의 배만 표시합니다.</p><h3>지도의 북쪽과 남쪽이 이어져요</h3><p>직접 조종으로 북쪽 끝을 넘으면 남쪽 끝에서 나옵니다. 반대 방향과 지도 드래그도 이어져요. 경계 이동 때문에 식량·항해 시간이 갑자기 늘어나지 않아요.</p></div>');
   $('#patch-later').onclick=()=>modal.close();$('#patch-confirm').onclick=async()=>{const button=$('#patch-confirm');button.disabled=true;try{if(account.uid)await account.acknowledge(RELEASE);else storage.setItem('windward-patch-legacy',RELEASE);modal.close();}catch{button.disabled=false;toast('확인 기록을 저장하지 못했어요. 다시 눌러주세요.','error');}};
 }
 function beginPlaying(game){
@@ -232,9 +232,14 @@ function renderPanel(){
     const g=GOODS[id],unit=price(p.id,id,state.day);
     return `<div class="market-row"><span class="good-icon" style="color:${g.color}">${g.icon}</span><div class="good-name"><strong>${g.name}</strong><small class="${p.specialty===id?'specialty':''}">${p.specialty===id?'✦ 이 항구의 특산물':'교역품'}</small></div><div class="good-price">${unit}<small>D / 상자</small></div><button class="trade-btn" data-buy="${id}" ${atPort?'':'disabled'}>구매</button></div>`;
   }).join(''):'<div class="empty-cargo">가까운 항구에 들어가면<br>교역소를 이용할 수 있어요.</div>';
+  const salePort=tradingPort(state);
+  $('#cargo-trade-context').textContent=salePort?`${salePort.name} 입항 완료 · 이 항구의 가격으로 판매할 수 있어요.`:'항해 중 · 항구에 입항하면 화물을 판매할 수 있어요.';
+  $('#cargo-port-btn').hidden=!salePort||salePort.id===selected;
+  $('#cargo-port-btn').textContent=salePort?`${salePort.name} 교역소 열기`:'';
+  $('#cargo-port-btn').onclick=()=>{if(salePort)selectPort(salePort.id);};
   $('#cargo-list').innerHTML=Object.entries(state.cargo).filter(([,c])=>c.qty>0).map(([id,c])=>{
-    const g=GOODS[id],unit=p?sellPrice(p.id,id,state.day):0,margin=unit-c.cost/c.qty;
-    return `<div class="cargo-row"><span class="good-icon" style="color:${g.color}">${g.icon}</span><div class="good-name"><strong>${g.name} · ${c.qty}상자</strong><small>매입 평균 ${fmt(c.cost/c.qty)} D${p?` · ${margin>=0?'+':''}${fmt(margin)} D / 상자`:''}</small></div><div class="good-price">${p?unit:'—'}<small>판매가</small></div><button class="trade-btn" data-sell="${id}" ${atPort?'':'disabled'}>판매</button></div>`;
+    const g=GOODS[id],unit=salePort?sellPrice(salePort.id,id,state.day):0,margin=unit-c.cost/c.qty;
+    return `<div class="cargo-row"><span class="good-icon" style="color:${g.color}">${g.icon}</span><div class="good-name"><strong>${g.name} · ${c.qty}상자</strong><small>매입 평균 ${fmt(c.cost/c.qty)} D${salePort?` · ${margin>=0?'+':''}${fmt(margin)} D / 상자`:''}</small></div><div class="good-price">${salePort?unit:'—'}<small>판매가</small></div><button class="trade-btn" data-sell="${id}" ${salePort?'':'disabled'}>판매</button></div>`;
   }).join('')||'<div class="empty-cargo">화물창이 비어 있어요.<small>특산물을 싣고 새로운 바다로 떠나세요.</small></div>';
   $$('[data-buy]').forEach(b=>b.onclick=()=>tradeDialog('buy',b.dataset.buy));
   $$('[data-sell]').forEach(b=>b.onclick=()=>tradeDialog('sell',b.dataset.sell));
@@ -265,11 +270,11 @@ function renderSailButton(){
 function changed(){checkMissions();renderHUD();renderPanel();renderPorts();renderShip();save();}
 
 function tradeDialog(mode,id){
-  if(state.port!==selected||state.voyage)return;
-  const g=GOODS[id],unit=mode==='buy'?price(selected,id,state.day):sellPrice(selected,id,state.day);
+  const port=tradingPort(state);if(!port||mode==='buy'&&port.id!==selected)return;
+  const g=GOODS[id],unit=mode==='buy'?price(port.id,id,state.day):sellPrice(port.id,id,state.day);
   const max=mode==='buy'?Math.min(capacity(state)-usedCargo(state),Math.floor(state.money/unit)):state.cargo[id]?.qty||0;
   if(max<=0){toast(mode==='buy'?(usedCargo(state)>=capacity(state)?'화물칸이 가득 찼어요. 먼저 화물을 판매하세요.':'두카트가 부족해요.'):'판매할 화물이 없어요.','error');return;}
-  showModal(`${g.name} ${mode==='buy'?'구매':'판매'}`,'MERCHANT’S EXCHANGE',`<p>${PORT_BY_ID[selected].name} 교역소 · 상자당 ${unit} D<br>${mode==='buy'?`구매 가능 ${max}상자 · 남은 화물칸 ${capacity(state)-usedCargo(state)}`:`보유 ${max}상자 · 매입 평균 ${fmt(state.cargo[id].cost/state.cargo[id].qty)} D`}</p><div class="qty-picker"><button id="qty-minus" aria-label="수량 줄이기">−</button><input id="trade-qty" aria-label="거래 수량" type="number" min="1" max="${max}" value="${Math.min(10,max)}"><button id="qty-plus" aria-label="수량 늘리기">+</button><button id="qty-max" style="font:11px var(--sans);width:48px">최대</button></div><div class="trade-total"><span>총 ${mode==='buy'?'구매':'판매'} 금액</span><strong id="trade-total"></strong></div><p class="trade-note">${mode==='buy'?'지역 특산물은 저렴하게 구입할 수 있어요. 다른 지역의 항구에서는 더 높은 값에 팔 수 있습니다.':'다른 항구에서 온 교역품은 여행한 거리만큼 새로운 가치를 얻어요.'}</p><button class="primary-button" id="confirm-trade">${mode==='buy'?'구매 확정':'판매 확정'}</button>`);
+  showModal(`${g.name} ${mode==='buy'?'구매':'판매'}`,'MERCHANT’S EXCHANGE',`<p>${port.name} 교역소 · 상자당 ${unit} D<br>${mode==='buy'?`구매 가능 ${max}상자 · 남은 화물칸 ${capacity(state)-usedCargo(state)}`:`보유 ${max}상자 · 매입 평균 ${fmt(state.cargo[id].cost/state.cargo[id].qty)} D`}</p><div class="qty-picker"><button id="qty-minus" aria-label="수량 줄이기">−</button><input id="trade-qty" aria-label="거래 수량" type="number" min="1" max="${max}" value="${Math.min(10,max)}"><button id="qty-plus" aria-label="수량 늘리기">+</button><button id="qty-max" style="font:11px var(--sans);width:48px">최대</button></div><div class="trade-total"><span>총 ${mode==='buy'?'구매':'판매'} 금액</span><strong id="trade-total"></strong></div><p class="trade-note">${mode==='buy'?'지역 특산물은 저렴하게 구입할 수 있어요. 다른 지역의 항구에서는 더 높은 값에 팔 수 있습니다.':'다른 항구에서 온 교역품은 여행한 거리만큼 새로운 가치를 얻어요.'}</p><button class="primary-button" id="confirm-trade">${mode==='buy'?'구매 확정':'판매 확정'}</button>`);
   const input=$('#trade-qty');const update=()=>{let qty=Number(input.value);if(!Number.isFinite(qty))qty=1;qty=Math.max(1,Math.min(max,Math.floor(qty)));input.value=qty;$('#trade-total').textContent=fmt(qty*unit)+' D';};
   input.oninput=()=>{$('#trade-total').textContent=fmt(Math.max(0,Math.min(max,Number(input.value)||0))*unit)+' D';};input.onchange=update;
   $('#qty-minus').onclick=()=>{input.value=Number(input.value)-1;update();};$('#qty-plus').onclick=()=>{input.value=Number(input.value)+1;update();};$('#qty-max').onclick=()=>{input.value=max;update();};update();
@@ -470,7 +475,7 @@ $('#pause-btn').onclick=()=>{paused=!paused;renderHUD();};
 $$('[data-speed]').forEach(b=>b.onclick=()=>{state.speed=state.world==='real'?1:Number(b.dataset.speed);renderHUD();save();});
 $('#sound-btn').onclick=()=>{sound=!sound;$('#sound-btn').innerHTML=`♬ <span>소리 ${sound?'켬':'끔'}</span>`;$('#sound-btn').setAttribute('aria-label',`항구 종소리 ${sound?'끄기':'켜기'}`);if(sound)bell();};
 document.addEventListener('keydown',e=>{
-  if(!playing||sessionBlocked||e.defaultPrevented||modal.open||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)||document.activeElement?.closest('.rank-card,.chat-panel,#entry-screen'))return;
+  if(!playing||sessionBlocked||e.defaultPrevented||modal.open||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)||document.activeElement?.closest('.rank-card,.chat-panel,#entry-screen,#port-panel'))return;
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();if(!nav||(e.repeat&&!heldKeys.has(e.key)))return;setControlMode('manual');manualTarget=null;if(beginManual()){heldKeys.add(e.key);renderHUD();}return;}
   if(e.code==='Space'&&(state.voyage||manualActive)){e.preventDefault();if(e.repeat)return;if(state.controlMode==='manual')stopManual();else{paused=!paused;renderHUD();}}
   if(['1','2','4'].includes(e.key)){state.speed=state.world==='real'?1:Number(e.key);renderHUD();save();}

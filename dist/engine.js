@@ -38,9 +38,10 @@ export function price(portId,goodId,day=0){
   return Math.round(g.base*(p.specialty===goodId?0.65:1.08+Math.min(nearest/3800,1.25))*variation);
 }
 export function sellPrice(portId,goodId,day){return Math.floor(price(portId,goodId,day)*0.88);}
+export const tradingPort=s=>s.voyage?null:PORT_BY_ID[s.port]||null;
 export function buy(s,goodId,qty){
   qty=Math.floor(qty);
-  if(!s.port || !PORT_BY_ID[s.port].market.includes(goodId) || !Number.isFinite(qty)||qty<=0)return {ok:false,error:'구매할 수량을 확인하세요.'};
+  if(!tradingPort(s)?.market.includes(goodId) || !Number.isFinite(qty)||qty<=0)return {ok:false,error:'구매할 수량을 확인하세요.'};
   const unit=price(s.port,goodId,s.day),total=unit*qty;
   if(usedCargo(s)+qty>capacity(s))return {ok:false,error:'화물칸이 부족해요.'};
   if(total>s.money)return {ok:false,error:'두카트가 부족해요.'};
@@ -51,7 +52,8 @@ export function buy(s,goodId,qty){
 }
 export function sell(s,goodId,qty){
   qty=Math.floor(qty);const c=s.cargo[goodId];
-  if(!s.port || !c || !Number.isFinite(qty)||qty<=0||qty>c.qty)return {ok:false,error:'판매할 화물이 없어요.'};
+  if(!tradingPort(s))return {ok:false,error:'항구에 입항하면 화물을 판매할 수 있어요.'};
+  if(!c || !Number.isFinite(qty)||qty<=0||qty>c.qty)return {ok:false,error:'판매할 화물이 없어요.'};
   const unit=sellPrice(s.port,goodId,s.day),total=unit*qty,cost=c.cost*qty/c.qty;
   c.qty-=qty;c.cost-=cost;s.money+=total;s.profit+=total-cost;s.trades++;
   if(!c.qty)delete s.cargo[goodId];

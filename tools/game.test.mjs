@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PORTS,PORT_BY_ID} from '../dist/data.js';
-import {initialState,buy,sell,usedCargo,capacity,loadState,SAVE_KEY,Navigator,distance,positionAlong,voyageEstimate,helmStep,helmToward} from '../dist/engine.js';
+import {initialState,buy,sell,tradingPort,sellPrice,usedCargo,capacity,loadState,SAVE_KEY,Navigator,distance,positionAlong,voyageEstimate,helmStep,helmToward} from '../dist/engine.js';
 import {globeProject,globeUnproject} from '../dist/globe.js';
 import {captainName,validShip,interpolateShip} from '../dist/presence-core.js';
 const grid=JSON.parse(readFileSync(new URL('../dist/assets/navigation.json',import.meta.url),'utf8'));
@@ -33,6 +33,15 @@ test('first voyage: buy wine in Lisbon, sail to Seville, sell for profit',()=>{
 test('economy rejects overbuying, negative quantities, selling unowned cargo and trading at sea',()=>{
   const s=initialState();assert.equal(buy(s,'wine',capacity(s)+1).ok,false);assert.equal(buy(s,'wine',-1).ok,false);assert.equal(buy(s,'wine',NaN).ok,false);assert.equal(buy(s,'silk',1).ok,false);assert.equal(sell(s,'wine',1).ok,false);s.port=null;assert.equal(buy(s,'wine',1).ok,false);assert.equal(sell(s,'wine',1).ok,false);assert.equal(s.money,2400);
 });
+test('sales use the actual docked port and cannot run in an active voyage',()=>{
+ const s=initialState();buy(s,'wine',10);s.port='porto';s.visited.push('porto');
+ assert.equal(tradingPort(s).id,'porto');const expected=sellPrice('porto','wine',s.day)*4,before=s.money;
+ assert.equal(sell(s,'wine',4).total,expected);assert.equal(s.money,before+expected);assert.equal(s.cargo.wine.qty,6);
+ const unchanged=JSON.stringify(s);s.voyage={target:'lisbon'};assert.equal(tradingPort(s),null);
+ assert.equal(sell(s,'wine',1).ok,false);assert.equal(buy(s,'wine',1).ok,false);s.voyage=null;assert.equal(JSON.stringify(s),unchanged);
+ s.port=null;assert.equal(tradingPort(s),null);assert.equal(sell(s,'wine',1).ok,false);
+});
+
 test('same-port buy/sell cannot create money, partial sales keep correct cost basis',()=>{
   const s=initialState();buy(s,'wine',10);const cost=s.cargo.wine.cost;const sale=sell(s,'wine',4);assert.equal(sale.ok,true);assert.equal(s.cargo.wine.qty,6);assert.equal(s.cargo.wine.cost,cost*.6);assert.ok(sale.profit<0);sell(s,'wine',6);assert.ok(s.money<2400);
 });

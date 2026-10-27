@@ -49,3 +49,5 @@ button,input,textarea,select{font-family:var(--sans)}
  #entry-screen{display:block;padding:22px 14px;background-image:radial-gradient(ellipse at top,#b5dde1,transparent 55%)}.entry-art{padding:0 12px 14px}.entry-art h1{font-size:28px;margin:16px 0}.entry-art p,.entry-art>small,.entry-ship{display:none}.entry-kicker{font-size:9px}.entry-card{max-width:520px;margin:auto;padding:24px 20px}.entry-card h2{font-size:25px}.entry-tabs{margin:16px 0}.world-options label{padding:12px 7px}.entry-note{font-size:11px!important}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+.cargo-trade-context{font-size:11px;line-height:1.7;color:#345f62;margin:8px 0;word-break:keep-all}.cargo-port-button{font-size:11px;color:#346c73;text-decoration:underline;margin-bottom:10px}.cargo-port-button[hidden]{display:none}
