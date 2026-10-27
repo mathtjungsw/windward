@@ -5,8 +5,11 @@
 ## 실행과 배포
 
 - `npm run dev` → http://127.0.0.1:4173 . 별도 npm 패키지 설치가 필요하지 않습니다.
-- 공개 주소: https://windward-traders-atlas-kr.jsw890122.chatgpt.site
-- 원본 소스는 `dist/`입니다. Sites의 기존 프로젝트와 공개 대상을 유지합니다.
+- 공개 주소: https://mathtjungsw.github.io/windward/
+- 저장소: https://github.com/mathtjungsw/windward
+- 원본 소스는 이 저장소의 `dist/`입니다. `main`에 변경을 push하면 `.github/workflows/pages.yml`이 `npm test`를 통과한 후 `dist/`만 GitHub Pages에 자동 배포합니다. GitHub 저장소 Settings → Pages의 Source는 **GitHub Actions**입니다. Node 24를 사용하며 별도 패키지 설치나 빌드가 필요하지 않습니다.
+- 기존 GPT 사이트는 이전 중 기록 확인을 위한 보조 주소로 남깁니다: https://windward-traders-atlas-kr.jsw890122.chatgpt.site . 이후 업데이트는 GitHub Pages를 기준으로 합니다. 기존 `.openai/` 설정은 로컬에 보존하되 GitHub의 배포 설정으로 사용하지 않습니다.
+- Firebase 프로젝트 `windward-voyage`와 인증·데이터베이스·보안 규칙은 그대로 사용합니다. 새 주소에서 **이어하기 → 기존 이름과 숫자 6자리 → 원래 플레이하던 서버 선택**으로 서버 기록을 불러옵니다. 주소가 달라 브라우저에만 저장된 혼자 항해 기록은 자동으로 옮겨지지 않습니다. 기존 주소에서 계정의 평화서버 기록으로 가져온 뒤 새 주소에서 이어갈 수 있습니다.
 - 단일 HTML: `node tools/make-offline.mjs <출력 HTML 절대경로>`. 지도·프로그램·스타일이 포함되어 파일로 열어 개인 항해를 할 수 있습니다. 이름+숫자 계정의 서버 저장과 함께 항해·채팅은 인터넷이 필요합니다.
 
 ## 시작과 저장

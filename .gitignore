@@ -3,3 +3,6 @@ node_modules/
 *.png
 .openai/local/
 tools/source-data/
+
+# Legacy Sites metadata is local; GitHub Pages is the primary host.
+.openai/
