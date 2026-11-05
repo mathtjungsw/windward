@@ -1,7 +1,7 @@
 # 바람의 항로 개발계획 · 전체 초기화와 Google 로그인
 
 - 작성일 2026-11-05
-- 상태 · 업데이트 실행 대기
+- 상태 · 구현·GitHub Pages 배포 완료. 운영 Google 로그인 확인과 기존 기록 삭제 대기
 - 대상 · [바람의 항로 GitHub Pages](https://mathtjungsw.github.io/windward/)와 Firebase 프로젝트 `windward-voyage`
 - 요청 원본 · [개선 목록](IMPROVEMENTS.md)
 
