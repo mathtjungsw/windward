@@ -1,5 +1,6 @@
 import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js';
-import {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js';
+import {ship,shipTier,fleetCount,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js';
+import {parseState} from './save-game.js';
 export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js';
 
 export const SAVE_KEY='windward-save-v1';
@@ -11,32 +12,17 @@ export const distance = (a,b)=>{
   const h=Math.sin(dp/2)**2+Math.cos(a[1]*r)*Math.cos(b[1]*r)*Math.sin(dl/2)**2;
   return 3440.065*2*Math.atan2(Math.sqrt(h),Math.sqrt(Math.max(0,1-h)));
 };
-export const INITIAL_PORTS=['lisbon','porto','sanlucar','seville','setubal','sines','lagos'];
+export const INITIAL_PORTS=['lisbon','porto','seville'];
 export function initialState(){return {
-  version:2,world:'real',knownPorts:[...INITIAL_PORTS],explored:'',money:2400,food:ship({level:0}).supply,supplyCreditDays:0,day:0,cargo:{},visited:['lisbon'],port:'lisbon',
+  version:3,legacyHarbor:false,shipTier:0,fleetCount:1,discoveries:{},rumors:[],supplyCreditValue:0,worldCatalogVersion:'2026.11.06',explorationMaskVersion:1,world:'real',knownPorts:[...INITIAL_PORTS],explored:'',money:2400,food:10,day:0,cargo:{},visited:['lisbon'],port:'lisbon',
   position:[-9.14,38.72],voyage:null,controlMode:'auto',profit:0,trades:0,soldAway:false,level:0,speed:1,
   favorites:[],recentPorts:['lisbon'],recentRoutes:[],missions:[],quiz:[],boughtLisbonWine:false,
-  log:[{day:0,text:'리스본에서 연안 교역을 시작합니다. 보급과 화물 공간을 함께 확인하세요.',type:'discovery'}]
+  log:[{day:0,text:'리스본에서 뗏목 항해를 시작합니다. 보급과 화물 공간을 함께 확인하세요.',type:'discovery'}]
 };}
-const finite=n=>typeof n==='number'&&Number.isFinite(n);
-const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
-export function parseSavedGame(raw){
-  const s=typeof raw==='string'?JSON.parse(raw):structuredClone(raw);
-  if(!s||![1,2].includes(s.version)||!finite(s.money)||s.money<0||!finite(s.day)||s.day<0||!finite(s.food)||s.food<0||s.food>160||!Number.isInteger(s.level)||s.level<0||s.level>2||!point(s.position)||!Array.isArray(s.visited)||s.visited.some(id=>!PORT_BY_ID[id])||!s.cargo||typeof s.cargo!=='object'||Array.isArray(s.cargo)||Object.entries(s.cargo).some(([id,c])=>!GOODS[id]||!Number.isInteger(c?.qty)||c.qty<0||!finite(c.cost)||c.cost<0))throw Error('항해 기록 형식을 확인할 수 없어요. 원본 기록은 유지됩니다.');
-  if(s.port!==null&&!PORT_BY_ID[s.port])throw Error('저장된 항구를 확인할 수 없어요.');
-  const v=s.voyage;
-  if(v&&(!Array.isArray(v.path)||v.path.length<2||v.path.some(p=>!point(p))||!Array.isArray(v.lengths)||v.lengths.length!==v.path.length-1||v.lengths.some(n=>!finite(n)||n<0)||(v.target!==null&&!PORT_BY_ID[v.target])||!finite(v.total)||v.total<=0||!finite(v.travelled)||v.travelled<0||v.travelled>v.total+.1||!finite(v.foodRemaining)))throw Error('진행 중 항로를 확인할 수 없어요.');
-  const ids=(value,max)=>[...new Set((Array.isArray(value)?value:[]).filter(id=>PORT_BY_ID[id]))].slice(0,max);
-  const known=Array.isArray(s.knownPorts)?s.knownPorts:INITIAL_PORTS;
-  const game={...initialState(),...s,version:2,world:'real',speed:1,visited:ids(s.visited,88),knownPorts:ids([...known,...s.visited,s.port,v?.kind?null:v?.target],88),controlMode:v?'auto':s.controlMode==='manual'?'manual':'auto',
-    explored:typeof s.explored==='string'&&s.explored.length<40000?s.explored:'',missions:Array.isArray(s.missions)?s.missions:[],quiz:ids(s.quiz,88),log:Array.isArray(s.log)?s.log.slice(0,50):[],favorites:ids(s.favorites,20),recentPorts:ids(s.recentPorts||[s.port],8),recentRoutes:(Array.isArray(s.recentRoutes)?s.recentRoutes:[]).filter(r=>PORT_BY_ID[r.from]&&PORT_BY_ID[r.to]&&finite(r.nm)&&r.nm>0).slice(0,5),supplyCreditDays:finite(s.supplyCreditDays)&&s.supplyCreditDays>=0?s.supplyCreditDays:0};
-  if(s.version===1){if(v)game.voyage={...v,legacy:true};else if(!s.port)game.transitionPending=true;else settleSupply(game);}
-  if(game.port&&!game.voyage)game.position=[PORT_BY_ID[game.port].lon,PORT_BY_ID[game.port].lat];
-  return game;
-}
+export const parseSavedGame=raw=>parseState(raw,initialState);
 export function loadState(storage){try{return parseSavedGame(storage.getItem(SAVE_KEY));}catch{return initialState();}}
-export function settleSupply(s){const extra=Math.max(0,s.food-ship(s).supply);s.food-=extra;s.supplyCreditDays=(s.supplyCreditDays||0)+extra;delete s.transitionPending;}
-export const capacity=s=>ship(s).capacity;
+export function settleSupply(s){const extra=Math.max(0,s.food-ship(s).supply);s.food-=extra;s.supplyCreditValue=(s.supplyCreditValue||0)+extra*fleetCount(s)*ship(s).supplyPrice;delete s.transitionPending;}
+export const capacity=fleetCapacity;
 export const usedCargo=s=>Object.values(s.cargo).reduce((n,c)=>n+c.qty,0);
 export const usedSpace=s=>usedCargo(s)+supplySpace(s);
 export const dailySpeed=s=>ship(s).speed;
@@ -49,22 +35,23 @@ export function price(portId,goodId,day=0){
     return Math.round(110*factor*(1+.045*Math.sin(Math.floor(day/7)*1.7+Math.max(0,LEGACY_PORTS.indexOf(old))*2+3)));
   }
   const role=p.economy.stock[goodId],factor=role?{producer:.72,local:.9,import:1.12}[role]:p.economy.demand.includes(goodId)?1.35:.9;
-  return Math.round(g.base*factor*(1+.045*Math.sin(Math.floor(day/7)*1.7+PORTS.indexOf(p)*2+Object.keys(GOODS).indexOf(goodId))));
+  return Math.round(g.base*factor*(1+.045*Math.sin(Math.floor(day/7)*1.7+(p.pricePhase??PORTS.indexOf(p))*2+Object.keys(GOODS).indexOf(goodId))));
 }
-export function supplyCost(s,amount){return Math.max(0,Math.ceil((amount-(s.supplyCreditDays||0))*ship(s).supplyPrice-1e-9));}
+export function supplyCost(s,amount){return Math.max(0,Math.ceil(amount*fleetCount(s)*ship(s).supplyPrice-(s.supplyCreditValue||0)-1e-9));}
 export function resupply(s,requested){
-  if(!tradingPort(s))return {ok:false,error:'항구에서 보급할 수 있어요.'};
-  const amount=Math.max(0,Math.min(Number(requested)||0,ship(s).supply-s.food,2*(capacity(s)-usedCargo(s))-s.food));
-  const cost=supplyCost(s,amount);if(amount<1e-8)return {ok:false,error:'보급 한도 또는 적재 공간을 확인하세요.'};if(cost>s.money)return {ok:false,error:'보급할 두카트가 부족해요.'};
-  const credit=Math.min(amount,s.supplyCreditDays||0);s.supplyCreditDays=Math.max(0,(s.supplyCreditDays||0)-credit);s.food+=amount;s.money-=cost;return {ok:true,amount,cost};
+ if(!tradingPort(s))return {ok:false,error:'항구에서 보급할 수 있어요.'};
+ const amount=Math.max(0,Math.min(Number(requested)||0,ship(s).supply-s.food,2*(capacity(s)-usedCargo(s))/fleetCount(s)-s.food));
+ const cost=supplyCost(s,amount);if(amount<1e-8)return {ok:false,error:'보급 한도 또는 적재 공간을 확인하세요.'};if(cost>s.money)return {ok:false,error:'보급할 두카트가 부족해요.'};
+ const credit=Math.min(amount*fleetCount(s)*ship(s).supplyPrice,s.supplyCreditValue||0);s.supplyCreditValue=Math.max(0,(s.supplyCreditValue||0)-credit);s.food+=amount;s.money-=cost;return {ok:true,amount,cost};
 }
-export function unloadSupply(s,amount){if(!tradingPort(s))return false;amount=Math.min(Math.max(0,Number(amount)||0),s.food);s.food-=amount;s.supplyCreditDays=(s.supplyCreditDays||0)+amount;return amount>0;}
+export function unloadSupply(s,amount){if(!tradingPort(s))return false;amount=Math.min(Math.max(0,Number(amount)||0),s.food);s.food-=amount;s.supplyCreditValue=(s.supplyCreditValue||0)+amount*fleetCount(s)*ship(s).supplyPrice;return amount>0;}
 export function maxBuyQuantity(s,id,targetFood=s.food){
-  if(!tradingPort(s)?.market.includes(id)||GOODS[id]?.legacy)return 0;
-  const food=Math.max(s.food,Math.min(ship(s).supply,targetFood)),room=capacity(s)-usedCargo(s)-Math.ceil(Math.max(0,food-1e-9)/2),cash=s.money-supplyCost(s,Math.max(0,food-s.food));
-  return Math.max(0,Math.min(room,Math.floor(cash/price(s.port,id,s.day))));
+ if(!tradingPort(s)?.market.includes(id)||GOODS[id]?.legacy)return 0;
+ const food=Math.max(s.food,Math.min(ship(s).supply,targetFood)),room=capacity(s)-usedCargo(s)-supplySpace({...s,food}),cash=s.money-supplyCost(s,Math.max(0,food-s.food));
+ return Math.max(0,Math.min(room,Math.floor(cash/price(s.port,id,s.day))));
 }
-export function upgradeShip(s){const cost=ship(s).upgrade;if(!tradingPort(s)||cost===null||s.money<cost)return {ok:false,error:cost===null?'최대 개량 상태예요.':'개량할 항구와 두카트를 확인하세요.'};s.money-=cost;s.level++;return {ok:true,cost};}
+export function upgradeShip(s){const cost=upgradeCost(s);if(!tradingPort(s)||cost===null||s.money<cost)return {ok:false,error:cost===null?'최대 개량 상태예요.':'개량할 항구와 두카트를 확인하세요.'};s.money-=cost;s.shipTier=shipTier(s)+1;return {ok:true,cost};}
+export function addShip(s){const cost=additionalShipCost(s);if(!tradingPort(s)||cost===null||s.money<cost)return {ok:false,error:cost===null?'선단 단계가 오르면 배를 더 늘릴 수 있어요.':'선박을 추가할 항구와 두카트를 확인하세요.'};const n=fleetCount(s);s.money-=cost;s.food=s.food*n/(n+1);s.fleetCount=n+1;return {ok:true,cost};}
 export function sellPrice(portId,goodId,day){return Math.floor(price(portId,goodId,day)*0.88);}
 export const tradingPort=s=>s.voyage?null:PORT_BY_ID[s.port]||null;
 export function buy(s,goodId,qty){
@@ -98,7 +85,7 @@ class Heap{
 
 export class Navigator{
   constructor(grid,rivers=[]){
-    this.w=grid.width;this.h=grid.height;this.step=grid.step;this.top=grid.top;this.mask=Uint8Array.from(atob(grid.land),c=>c.charCodeAt(0));this.coast=grid.coast?Uint8Array.from(atob(grid.coast),c=>c.charCodeAt(0)):null;
+    this.w=grid.width;this.h=grid.height;this.step=grid.step;this.top=grid.top;this.mask=Uint8Array.from(atob(grid.land),c=>c.charCodeAt(0));const coastBytes=grid.coast16?atob(grid.coast16):null;this.coast=coastBytes?Uint16Array.from({length:coastBytes.length/2},(_,i)=>coastBytes.charCodeAt(i*2)|(coastBytes.charCodeAt(i*2+1)<<8)):grid.coast?Uint8Array.from(atob(grid.coast),c=>c.charCodeAt(0)):null;
     this.rivers=rivers.map(r=>{const route=makeRoute(r.path),xs=r.path.map(p=>p[0]),ys=r.path.map(p=>p[1]);let d=0;return {...r,...route,bounds:[Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)],segments:r.path.slice(1).map((b,i)=>{const a=r.path[i],offset=d;d+=route.lengths[i];return {a,b,offset,length:route.lengths[i]};})};});
   }
   coord(i){return [i%this.w*this.step-180,this.top-Math.floor(i/this.w)*this.step];}
@@ -210,7 +197,7 @@ export function routeSections(nav,route){
 }
 export function voyageEstimate(s,route,travelled=0){
   const v=ship(s),sections=route.sections||[{start:0,end:route.total,river:false}];
-  const days=route.legacy?Math.max(0,route.total-travelled)/[360,440,520][s.level]:sections.reduce((sum,r)=>sum+Math.max(0,r.end-Math.max(travelled,r.start))/(r.river?v.riverSpeed:v.speed),0)*(route.kind==='rescue'||route.kind==='transition'?2:1);
+  const days=route.legacy?Math.max(0,route.total-travelled)/[360,440,520][route.legacyShipLevel??Math.min(2,s.level||0)]:sections.reduce((sum,r)=>sum+Math.max(0,r.end-Math.max(travelled,r.start))/(r.river?v.riverSpeed:v.speed),0)*(route.kind==='rescue'||route.kind==='transition'?2:1);
   return {days,food:days*(route.legacy?.9:1),seconds:days*ACTIVE_SECONDS_PER_DAY};
 }
 export function canDepart(s,route){
@@ -226,15 +213,15 @@ export function advanceVoyage(s,nav,seconds){
   let budget=Math.max(0,seconds)/ACTIVE_SECONDS_PER_DAY,miles=0,days=0;const rescue=['rescue','transition'].includes(v.kind),rate=v.legacy?.9:1;
   while(budget>1e-10&&v.travelled<v.total-1e-8&&(rescue||s.food>1e-10)){
     const section=v.sections.find(r=>r.end>v.travelled+1e-8)||{end:v.total,river:false};
-    const speed=(v.legacy?[360,440,520][s.level]:section.river?ship(s).riverSpeed:ship(s).speed)/(rescue?2:1);
+    const speed=(v.legacy?[360,440,520][v.legacyShipLevel??Math.min(2,s.level||0)]:section.river?ship(s).riverSpeed:ship(s).speed)/(rescue?2:1);
     const limit=(section.end-v.travelled)/speed,step=Math.min(budget,limit,rescue?Infinity:s.food/rate);
     if(step<=1e-12)break;const moved=step*speed;v.travelled=Math.min(v.total,v.travelled+moved);s.day+=step;days+=step;miles+=moved;budget-=step;
     if(!rescue){s.food=Math.max(0,s.food-step*rate);v.foodRemaining=Math.max(0,(v.foodRemaining||0)-step*rate);}
   }
-  s.position=positionAlong(v,v.travelled);return {miles,days,arrived:v.travelled>=v.total-1e-7,depleted:!rescue&&s.food<=1e-8};
+  if(!rescue&&miles>0)s.explorationLockedUntilSailing=false;s.position=positionAlong(v,v.travelled);return {miles,days,arrived:v.travelled>=v.total-1e-7,depleted:!rescue&&s.food<=1e-8};
 }
 export function advanceManualMotion(s,nav,motion,seconds){
-  for(const [a,b]of motion.legs){if(!nav.clear(a,b))return {miles:0,days:0,error:'해안에 닿았어요. 바다 쪽으로 조종하세요.'};if(!nav.withinCoast(a,b,ship(s).offshore))return {miles:0,days:0,error:'이 배는 해안에서 80해리 이내로 항해할 수 있어요.'};}
+  for(const [a,b]of motion.legs){if(!nav.clear(a,b))return {miles:0,days:0,error:'해안에 닿았어요. 바다 쪽으로 조종하세요.'};if(!nav.withinCoast(a,b,ship(s).offshore))return {miles:0,days:0,error:`이 배는 해안에서 ${ship(s).offshore}해리 이내로 항해할 수 있어요.`};}
   let budget=seconds,miles=0,days=0,finished=true;const legs=[];
   for(const [a,b]of motion.legs){
     if(budget<=1e-10){finished=false;break;}
@@ -243,24 +230,28 @@ export function advanceManualMotion(s,nav,motion,seconds){
     const result=advanceVoyage(temp,nav,budget);s.food=temp.food;s.day=temp.day;s.position=temp.position;if(result.miles>0)legs.push([[...a],[...temp.position]]);miles+=result.miles;days+=result.days;budget-=result.days*ACTIVE_SECONDS_PER_DAY;
     if(!result.arrived){finished=false;break;}
   }
-  if(finished)s.position=[...motion.position];return {miles,days,legs,depleted:s.food<=1e-8,finished};
+  if(miles>0)s.explorationLockedUntilSailing=false;if(finished)s.position=[...motion.position];return {miles,days,legs,depleted:s.food<=1e-8,finished};
 }
 export function nearestHarbor(s,nav,onlyVisited=false){
   let best=null;const candidates=PORTS.filter(p=>!onlyVisited||s.visited.includes(p.id)).map(p=>({p,min:distance(s.position,[p.lon,p.lat])})).sort((a,b)=>a.min-b.min);
   for(const {p,min}of candidates){if(best&&min>best.route.total)break;const route=nav.route(s.position,[p.lon,p.lat]);if(route&&(!best||route.total<best.route.total))best={port:p,route};}return best;
 }
 export function beginRescue(s,nav,transition=false){
-  if(s.port||s.voyage?.kind==='rescue'||s.voyage?.kind==='transition')return {ok:false,error:'항구 또는 구조 중이에요.'};
-  if(!transition&&s.food>1e-8)return {ok:false,error:'보급 소진 시 자동 구조합니다.'};
-  const found=nearestHarbor(s,nav);if(!found)return {ok:false,error:'구조 항로를 다시 찾고 있어요. 재산과 위치는 유지됩니다.'};
-  const cost=transition?0:Math.min(s.money,Math.min(1000,Math.max(150,Math.ceil(found.route.total*.5))));
-  s.money-=cost;s.port=null;s.controlMode='auto';s.voyage={...found.route,target:found.port.id,travelled:0,foodRemaining:0,kind:transition?'transition':'rescue',paidCost:cost};delete s.transitionPending;return {ok:true,cost,port:found.port,arrived:found.route.total<=1e-8};
+ const previous=s.voyage,replanning=!!s.rescueReplanPending&&['rescue','transition'].includes(previous?.kind);
+ if(s.port||previous?.kind&&!replanning)return {ok:false,error:'항구 또는 구조 중이에요.'};
+ if(!transition&&!replanning&&s.food>1e-8)return {ok:false,error:'보급 소진 시 자동 구조합니다.'};
+ let found=nearestHarbor(s,nav,true),emergency=false;
+ if(!found){const p=PORTS.find(p=>s.visited.includes(p.id));if(!p)return {ok:false,error:'방문한 보급항을 확인하고 있어요. 기록은 유지됩니다.'};const d=distance(s.position,[p.lon,p.lat]);found={port:p,route:{path:[[...s.position],[p.lon,p.lat]],lengths:[d],total:d,travelled:d}};emergency=true;}
+ const cost=replanning?(previous.paidCost||0):transition?0:Math.min(s.money,Math.min(1000,Math.max(150,Math.ceil(found.route.total*.5))));
+ if(!replanning)s.money-=cost;s.port=null;s.controlMode='auto';s.explorationLockedUntilSailing=true;
+ s.voyage={...found.route,target:found.port.id,travelled:emergency?found.route.total:0,foodRemaining:0,kind:transition||previous?.kind==='transition'?'transition':'rescue',paidCost:cost,rescueId:previous?.rescueId||globalThis.crypto?.randomUUID?.()||'rescue-'+Date.now(),emergency};
+ delete s.transitionPending;delete s.rescueReplanPending;return {ok:true,cost,port:found.port,emergency,arrived:emergency||found.route.total<=1e-8};
 }
 export function recordArrival(s,id,voyage){
   const p=PORT_BY_ID[id];if(!p)return;
   if(voyage?.origin&&PORT_BY_ID[voyage.origin]&&voyage.origin!==id&&!voyage.kind)s.recentRoutes=[{from:voyage.origin,to:id,nm:voyage.total},...(s.recentRoutes||[])].slice(0,5);
   s.recentPorts=[id,...(s.recentPorts||[]).filter(p=>p!==id)].slice(0,8);settleSupply(s);
-  if(['rescue','transition'].includes(voyage?.kind))s.food=Math.max(2,s.food);
+  if(['rescue','transition'].includes(voyage?.kind)){s.food=Math.max(2,s.food);s.explorationLockedUntilSailing=true;}
 }
 
 

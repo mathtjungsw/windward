@@ -1,0 +1,43 @@
+/* Bright chart, collection journal and content-sized dialogs. */
+@media(max-width:850px){.main-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;width:100%;min-width:0}.main-nav .nav-item{min-width:0;padding-inline:2px;justify-content:center;gap:3px;font-size:10px}.main-nav .nav-item svg{width:14px;flex-shrink:0}}
+dialog#modal{box-sizing:border-box;width:fit-content;min-width:0;max-width:min(640px,calc(100vw - 32px));height:fit-content;min-height:0;max-height:calc(100dvh - 32px);padding:20px;overflow:hidden;display:none;flex-direction:column;gap:12px}
+dialog#modal[open]{display:flex}
+dialog#modal[data-size=small]{max-width:min(420px,calc(100vw - 32px))}
+dialog#modal[data-size=wide]{width:min(960px,calc(100vw - 32px));max-width:calc(100vw - 32px)}
+#modal .modal-top,#modal>h2{flex:none;margin:0}
+#modal .modal-top{position:relative;top:auto;align-items:center;gap:12px}
+#modal #close-modal{min-width:44px;min-height:44px;font-size:28px;position:static}
+#modal-content{overflow:auto;min-height:0;max-width:100%;padding-right:3px;overscroll-behavior:contain;overflow-wrap:anywhere}
+#modal-content p{margin:10px 0;line-height:1.8}
+#modal-content img{max-width:100%}
+#modal-content button{min-height:40px;white-space:normal}
+.dialog-actions{position:sticky;bottom:0;display:flex;gap:8px;flex-wrap:wrap;background:#fffdf4;padding:10px 0 3px;margin-top:12px}
+.dialog-actions>*{flex:1;min-width:110px}
+.expansion-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.expansion-tabs button{border:1px solid #b5c8b8;border-radius:6px;background:#f3f3e5;color:#315a61;padding:9px 16px;font:inherit}
+.expansion-tabs button[aria-pressed=true]{background:#286777;color:#fffdf4;border-color:#286777}
+.ship-overview{display:flex;gap:6px;align-items:center;border-top:1px solid #c5cdbc;padding-top:9px;margin-top:9px}
+.ship-overview>img{width:95px;height:72px;object-fit:contain;border-radius:7px}
+.ship-overview>div{min-width:0;flex:1;display:flex;flex-direction:column;gap:6px}
+.ship-overview strong{font-size:13px;color:#245866}.ship-overview span{font-size:11px;color:#536e68}.ship-overview button{margin:0;padding:7px 8px!important;font-size:12px!important}
+#exploration-overview{font-size:11px;line-height:1.7;color:#426d66;padding-top:9px}
+.nearby-discovery{margin-top:12px;font-size:12px;color:#305c62}.nearby-discovery[hidden]{display:none}
+.discovery-cue,.discovery-result{padding:10px;background:#e6f0df;border:1px solid #adbea3;border-radius:7px;margin-bottom:6px}
+.discovery-cue>div{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.nearby-discovery button{padding:7px;border:1px solid #8ca99b;border-radius:5px;background:#fffdf3;color:#315e66;font:inherit;min-height:38px}
+.discovery-result{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.discovery-result strong{width:100%}
+.vessel-detail{display:grid;grid-template-columns:minmax(160px,1fr) minmax(180px,1fr);gap:16px;align-items:center}
+.vessel-detail>svg{width:100%;height:auto;max-height:230px;border-radius:10px}
+.vessel-stats{display:grid;grid-template-columns:1fr 1.3fr;gap:8px 12px;font-size:14px;padding:12px 0;margin:0}.vessel-stats dt{color:#597369}.vessel-stats dd{margin:0;color:#265864;font-weight:600}
+.fleet-miniatures{display:flex;flex-wrap:wrap;gap:6px}.fleet-miniatures figure{margin:0;text-align:center;font-size:12px;flex:1;min-width:65px}.fleet-miniatures img{width:100px;max-width:100%;height:75px;object-fit:contain}
+.ship-growth-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.growth-step{min-width:0;padding:8px;border:1px solid #becdb4;border-radius:8px;background:#f5f6e9;display:flex;flex-direction:column;gap:5px;font-size:12px}
+.growth-step img{width:100%;height:auto}.growth-step.current{border:2px solid #286777;background:#e4f0e7}.growth-step b{color:#2c7068}
+.collection-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.collection-card{display:flex;flex-direction:column;gap:7px;min-width:0;background:#f8f4e6;border:1px solid #bfc7ae;border-radius:9px;padding:9px;color:#2e585d;text-align:left;font:inherit}
+.collection-card img{width:100%;height:auto;aspect-ratio:4/3;border-radius:5px;object-fit:contain}.collection-card strong{font-size:14px}.collection-card span{font-size:12px}.collection-card.uncollected{opacity:1;color:#747b65;border-style:dashed}.collection-card:disabled{cursor:default}
+.discovery-hero{display:block;width:400px;height:auto;max-height:32dvh;object-fit:contain;margin:auto;border-radius:10px}.album-filter{display:flex;gap:8px;align-items:center;margin-bottom:12px;font-size:14px}.album-filter select{font:inherit;padding:8px;border:1px solid #a8bda9;border-radius:6px;background:#fffcf1;color:#315c60}
+.captain-directory-row{width:100%;display:grid;grid-template-columns:1fr auto;gap:7px;text-align:left;border:0;border-bottom:1px solid #d4d8c5;background:transparent;padding:14px 8px;color:#2c565f;font:inherit}.captain-directory-row small{grid-column:1/-1;color:#5b7468}.captain-directory-row:hover{background:#eff4e4}.captain-directory-row span{font-size:12px}.captain-ship{width:200px;height:150px;object-fit:contain;margin:auto;display:block}
+.rumor-panel{margin-top:20px;border-top:1px solid #c4ccb5;padding-top:14px}.rumor-panel h3{font-size:15px;color:#315c62}.rumor-panel>button{margin-top:8px}.port-ship-image{width:100%;max-height:145px;object-fit:contain;border-radius:8px;margin:8px 0}.rank-tabs{flex-wrap:wrap!important}.rank-tabs button{white-space:normal!important}
+#action-strip{flex-wrap:wrap}#action-status{flex:1;min-width:160px}#ship-view-btn{min-height:40px}.navigation-mode .fold-body{overflow-wrap:anywhere}
+#quick-sheet{height:fit-content!important;min-height:0!important;max-height:calc(100dvh - 20px - env(safe-area-inset-bottom));max-width:calc(100vw - 16px);overflow:hidden}#quick-sheet[open]{display:flex;flex-direction:column}#quick-sheet>header{flex:none;position:relative}#quick-content{min-height:0;overflow:auto;overscroll-behavior:contain}#quick-sheet.expanded{height:fit-content!important}
+@media(max-width:850px){dialog#modal{padding:14px;max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px - env(safe-area-inset-bottom))}dialog#modal[data-size=small],dialog#modal[data-size=wide]{max-width:calc(100vw - 16px)}dialog#modal[data-size=wide]{width:calc(100vw - 16px)}#modal>h2{font-size:23px}#modal-content button{min-height:44px}.ship-growth-grid,.collection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.vessel-detail{grid-template-columns:1fr}.vessel-detail>svg{max-height:190px}.vessel-stats{font-size:14px}.discovery-hero{max-height:27dvh}.collection-card strong{font-size:13px}.collection-card span{font-size:12px}.album-filter select{font-size:16px}.ship-overview>img{width:110px;height:80px}.ship-overview strong{font-size:15px}.ship-overview span,#exploration-overview{font-size:12px}.main-nav #collection-btn>span{font-size:11px;display:block}.dialog-actions{flex-direction:column}.captain-directory-row{font-size:15px}#action-strip{gap:6px;padding:9px 12px}#action-status{flex-basis:100%;font-size:12px}.port-ship-image{max-height:140px}}
+@media(max-height:460px){dialog#modal{padding:9px;gap:5px}.vessel-detail{grid-template-columns:120px 1fr}.vessel-detail>svg{max-height:120px}.discovery-hero{max-height:100px}#modal>h2{font-size:19px}.dialog-actions{position:static;flex-direction:row}.fleet-miniatures{display:none}}

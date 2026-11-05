@@ -25,7 +25,7 @@
       "privateSaves": {
         "$uid": {
           ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid",
-          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && newData.child('schemaVersion').val() == 2",
+          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && (newData.child('schemaVersion').val() == 2 || newData.child('schemaVersion').val() == 3) && (!data.exists() || data.child('schemaVersion').val() != 3 || newData.child('schemaVersion').val() == 3)",
           ".validate": "newData.hasChildren(['revision','data','session','leaseUntil','updatedAt']) && newData.child('revision').val() == (data.child('revision').exists() ? data.child('revision').val() : 0) + 1",
           "revision": {
             ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() % 1 == 0"
@@ -46,21 +46,23 @@
             ".validate": false
           },
           "schemaVersion": {
-            ".validate": "newData.isNumber() && newData.val() == 2"
+            ".validate": "newData.val() == 2 || newData.val() == 3"
           }
         }
       },
       "real": {
         "rankings": {
-          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && (query.orderByChild == 'money' || query.orderByChild == 'profit' || query.orderByChild == 'visited') && query.limitToLast != null && (query.limitToLast <= 5 || (query.limitToLast <= 1000 && query.startAt != null))",
+          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && (((query.orderByChild == 'money' || query.orderByChild == 'profit' || query.orderByChild == 'visited' || query.orderByChild == 'explorationScore' || query.orderByChild == 'fame') && query.limitToLast != null && (query.limitToLast <= 5 || (query.limitToLast <= 1000 && query.startAt != null))) || (query.orderByKey == true && query.limitToFirst != null && query.limitToFirst <= 20))",
           ".indexOn": [
             "money",
             "profit",
-            "visited"
+            "visited",
+            "explorationScore",
+            "fame"
           ],
           "$uid": {
-            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid",
-            ".validate": "newData.hasChildren(['name','money','profit','visited','updatedAt'])",
+            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists()",
+            ".validate": "newData.hasChildren(['name','money','profit','visited','updatedAt']) && (!data.child('statsVersion').exists() || data.child('statsVersion').val() != 3 || newData.child('statsVersion').val() == 3) && (!newData.child('statsVersion').exists() || (newData.hasChildren(['explorationScore','explorationArea','explorationPercent','foundCount','fame','shipTier','fleetCount','saveRevision']) && (!data.child('saveRevision').exists() || newData.child('saveRevision').val() >= data.child('saveRevision').val())))",
             "name": {
               ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 16"
             },
@@ -71,13 +73,41 @@
               ".validate": "newData.isNumber() && newData.val() >= -1000000000000 && newData.val() <= 1000000000000 && newData.val() % 1 == 0"
             },
             "visited": {
-              ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 88 && newData.val() % 1 == 0"
+              ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 104 && newData.val() % 1 == 0"
             },
             "updatedAt": {
               ".validate": "newData.isNumber() && newData.val() == now"
             },
             "$other": {
               ".validate": false
+            },
+            ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
+            "explorationScore": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000 && newData.val() % 1 == 0"
+            },
+            "explorationArea": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000 && newData.val() % 1 == 0"
+            },
+            "explorationPercent": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+            },
+            "foundCount": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 32 && newData.val() % 1 == 0"
+            },
+            "fame": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 12800 && newData.val() % 1 == 0"
+            },
+            "shipTier": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 19 && newData.val() % 1 == 0"
+            },
+            "fleetCount": {
+              ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5 && newData.val() % 1 == 0"
+            },
+            "statsVersion": {
+              ".validate": "newData.isNumber() && newData.val() >= 3 && newData.val() <= 3 && newData.val() % 1 == 0"
+            },
+            "saveRevision": {
+              ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 9007199254740991 && newData.val() % 1 == 0"
             }
           }
         },
@@ -120,13 +150,13 @@
               "ref": {
                 ".validate": "(newData.parent().child('kind').val() == 'port' && newData.hasChild('portId')) || (newData.parent().child('kind').val() == 'route' && newData.hasChildren(['fromPortId','toPortId','observedNm']) && newData.child('fromPortId').val() != newData.child('toPortId').val()) || (newData.parent().child('kind').val() == 'signal' && newData.hasChildren(['code','targetUid','targetName']))",
                 "portId": {
-                  ".validate": "newData.parent().parent().child('kind').val() == 'port' && newData.isString() && newData.val().matches(/^(lisbon|seville|london|amsterdam|venice|alexandria|accra|cape|zanzibar|muscat|goa|malacca|batavia|macau|nagasaki|busan|havana|cartagena|recife|buenos|sydney|porto|bordeaux|marseille|barcelona|genoa|naples|athens|istanbul|rotterdam|cologne|ruse|belgrade|sanlucar|dublin|tangier|tunis|dakar|luanda|maputo|mombasa|cairo|luxor|mogadishu|aden|jeddah|kochi|colombo|chennai|singapore|manila|shanghai|nanjing|wuhan|neworleans|memphis|macapa|santarem|manaus|rio|salvador|callao|perth|auckland|setubal|sines|lagos|faro|cadiz|vigo|acoruna|bilbao|plymouth|southampton|larochelle|funchal|laspalmas|angra|ribeiragrande|safi|algiers|dubrovnik|hormuz|calicut|mocha|ternate|bandaneira|quanzhou)$/)"
+                  ".validate": "newData.parent().parent().child('kind').val() == 'port' && newData.isString() && newData.val().matches(/^(lisbon|seville|london|amsterdam|venice|alexandria|accra|cape|zanzibar|muscat|goa|malacca|batavia|macau|nagasaki|busan|havana|cartagena|recife|buenos|sydney|porto|bordeaux|marseille|barcelona|genoa|naples|athens|istanbul|rotterdam|cologne|ruse|belgrade|sanlucar|dublin|tangier|tunis|dakar|luanda|maputo|mombasa|cairo|luxor|mogadishu|aden|jeddah|kochi|colombo|chennai|singapore|manila|shanghai|nanjing|wuhan|neworleans|memphis|macapa|santarem|manaus|rio|salvador|callao|perth|auckland|setubal|sines|lagos|faro|cadiz|vigo|acoruna|bilbao|plymouth|southampton|larochelle|funchal|laspalmas|angra|ribeiragrande|safi|algiers|dubrovnik|hormuz|calicut|mocha|ternate|bandaneira|quanzhou|portlouis|toamasina|boston|halifax|veracruz|acapulco|sanfrancisco|valparaiso|ushuaia|honolulu|suva|papeete|hangaroa|portmoresby|hobart|apia)$/)"
                 },
                 "fromPortId": {
-                  ".validate": "newData.parent().parent().child('kind').val() == 'route' && newData.isString() && newData.val().matches(/^(lisbon|seville|london|amsterdam|venice|alexandria|accra|cape|zanzibar|muscat|goa|malacca|batavia|macau|nagasaki|busan|havana|cartagena|recife|buenos|sydney|porto|bordeaux|marseille|barcelona|genoa|naples|athens|istanbul|rotterdam|cologne|ruse|belgrade|sanlucar|dublin|tangier|tunis|dakar|luanda|maputo|mombasa|cairo|luxor|mogadishu|aden|jeddah|kochi|colombo|chennai|singapore|manila|shanghai|nanjing|wuhan|neworleans|memphis|macapa|santarem|manaus|rio|salvador|callao|perth|auckland|setubal|sines|lagos|faro|cadiz|vigo|acoruna|bilbao|plymouth|southampton|larochelle|funchal|laspalmas|angra|ribeiragrande|safi|algiers|dubrovnik|hormuz|calicut|mocha|ternate|bandaneira|quanzhou)$/)"
+                  ".validate": "newData.parent().parent().child('kind').val() == 'route' && newData.isString() && newData.val().matches(/^(lisbon|seville|london|amsterdam|venice|alexandria|accra|cape|zanzibar|muscat|goa|malacca|batavia|macau|nagasaki|busan|havana|cartagena|recife|buenos|sydney|porto|bordeaux|marseille|barcelona|genoa|naples|athens|istanbul|rotterdam|cologne|ruse|belgrade|sanlucar|dublin|tangier|tunis|dakar|luanda|maputo|mombasa|cairo|luxor|mogadishu|aden|jeddah|kochi|colombo|chennai|singapore|manila|shanghai|nanjing|wuhan|neworleans|memphis|macapa|santarem|manaus|rio|salvador|callao|perth|auckland|setubal|sines|lagos|faro|cadiz|vigo|acoruna|bilbao|plymouth|southampton|larochelle|funchal|laspalmas|angra|ribeiragrande|safi|algiers|dubrovnik|hormuz|calicut|mocha|ternate|bandaneira|quanzhou|portlouis|toamasina|boston|halifax|veracruz|acapulco|sanfrancisco|valparaiso|ushuaia|honolulu|suva|papeete|hangaroa|portmoresby|hobart|apia)$/)"
                 },
                 "toPortId": {
-                  ".validate": "newData.parent().parent().child('kind').val() == 'route' && newData.isString() && newData.val().matches(/^(lisbon|seville|london|amsterdam|venice|alexandria|accra|cape|zanzibar|muscat|goa|malacca|batavia|macau|nagasaki|busan|havana|cartagena|recife|buenos|sydney|porto|bordeaux|marseille|barcelona|genoa|naples|athens|istanbul|rotterdam|cologne|ruse|belgrade|sanlucar|dublin|tangier|tunis|dakar|luanda|maputo|mombasa|cairo|luxor|mogadishu|aden|jeddah|kochi|colombo|chennai|singapore|manila|shanghai|nanjing|wuhan|neworleans|memphis|macapa|santarem|manaus|rio|salvador|callao|perth|auckland|setubal|sines|lagos|faro|cadiz|vigo|acoruna|bilbao|plymouth|southampton|larochelle|funchal|laspalmas|angra|ribeiragrande|safi|algiers|dubrovnik|hormuz|calicut|mocha|ternate|bandaneira|quanzhou)$/)"
+                  ".validate": "newData.parent().parent().child('kind').val() == 'route' && newData.isString() && newData.val().matches(/^(lisbon|seville|london|amsterdam|venice|alexandria|accra|cape|zanzibar|muscat|goa|malacca|batavia|macau|nagasaki|busan|havana|cartagena|recife|buenos|sydney|porto|bordeaux|marseille|barcelona|genoa|naples|athens|istanbul|rotterdam|cologne|ruse|belgrade|sanlucar|dublin|tangier|tunis|dakar|luanda|maputo|mombasa|cairo|luxor|mogadishu|aden|jeddah|kochi|colombo|chennai|singapore|manila|shanghai|nanjing|wuhan|neworleans|memphis|macapa|santarem|manaus|rio|salvador|callao|perth|auckland|setubal|sines|lagos|faro|cadiz|vigo|acoruna|bilbao|plymouth|southampton|larochelle|funchal|laspalmas|angra|ribeiragrande|safi|algiers|dubrovnik|hormuz|calicut|mocha|ternate|bandaneira|quanzhou|portlouis|toamasina|boston|halifax|veracruz|acapulco|sanfrancisco|valparaiso|ushuaia|honolulu|suva|papeete|hangaroa|portmoresby|hobart|apia)$/)"
                 },
                 "observedNm": {
                   ".validate": "newData.parent().parent().child('kind').val() == 'route' && newData.isNumber() && newData.val() > 0 && newData.val() <= 100000"
@@ -204,6 +234,12 @@
               },
               "uid": {
                 ".validate": "newData.isString() && newData.val() == auth.uid"
+              },
+              "shipTier": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 19 && newData.val() % 1 == 0"
+              },
+              "fleetCount": {
+                ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5 && newData.val() % 1 == 0"
               }
             }
           }

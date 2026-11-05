@@ -12,7 +12,7 @@ test('chat keeps the last 50 messages in sequence order and rejects malformed co
 test('each ranking uses its own metric and shows shared ranks for ties',()=>{
   const players=[{id:'a',name:'가',money:4000,profit:100,visited:3},{id:'b',name:'나',money:2000,profit:800,visited:8},{id:'c',name:'다',money:3000,profit:800,visited:4}];
   assert.deepEqual(rankFleet(players,'money').map(p=>p.id),['a','c','b']);
-  assert.deepEqual(rankFleet(players,'profit').map(p=>[p.id,p.rank]),[['b',1],['c',1],['a',3]]);
+  assert.deepEqual(rankFleet(players,'profit').map(p=>[p.id,p.rank]),[['c',1],['b',1],['a',3]]);
   assert.deepEqual(rankFleet(players,'visited').map(p=>p.id),['b','c','a']);
   assert.equal(rankFleet([...players,{id:'old',name:'이전 버전'}],'money').length,3);
   assert.equal(rankStats({...players[0],money:Infinity}),false);assert.equal(rankStats({...players[0],profit:-10}),true);

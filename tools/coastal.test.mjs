@@ -1,3 +1,4 @@
+import {NEW_PORT_HISTORY} from '../dist/world-catalog.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -15,36 +16,36 @@ const route=(a,b,coastal=false)=>nav.route(point(a),point(b),{maxOffshore:coasta
 
 test('coastal trade works while the starter cannot depart for Madeira or Havana',()=>{
   const s=initialState();
-  const local=route('lisbon','setubal',true);assert.ok(canDepart(s,local).ok);
+  const local=route('lisbon','porto',true);assert.ok(canDepart(s,local).ok);
   const porto=route('lisbon','porto',true);assert.ok(voyageEstimate(s,porto).food*2+.5<s.food);
   for(const id of ['funchal','havana'])assert.equal(canDepart(s,route('lisbon',id,true)).ok,false);
-  assert.equal(upgradeShip(s).ok,false);assert.equal(s.money,2400);
+  const upgraded={...s};assert.equal(upgradeShip(upgraded).ok,true);assert.equal(upgraded.money,1800);assert.equal(upgraded.shipTier,1);
   const goods=Object.entries(GOODS);assert.equal(goods.filter(([,g])=>!g.legacy).length,23);
-  for(const p of PORTS){assert.ok(PORT_HISTORY[p.id]?.text,p.id);assert.ok(!p.market.includes('spice'));for(const [id]of goods)assert.ok(sellPrice(p.id,id,0)>0);}
-  const net=(sellPrice('setubal','wine',0)-price('lisbon','wine',0)+sellPrice('lisbon','salt',0)-price('setubal','salt',0))*maxBuyQuantity(s,'wine')-6;
-  assert.ok(net>100,`starter round trip net ${net}`);
+  for(const p of PORTS){assert.ok((NEW_PORT_HISTORY[p.id]||PORT_HISTORY[p.id])?.text,p.id);assert.ok(!p.market.includes('spice'));for(const [id]of goods)assert.ok(sellPrice(p.id,id,0)>0);}
+  const net=(sellPrice('porto','wine',0)-price('lisbon','wine',0)+sellPrice('lisbon','driedfish',0)-price('porto','driedfish',0))*maxBuyQuantity(s,'wine')-6;
+  assert.ok(net>0,`starter round trip net ${net}`);
 });
 
 test('ten days of starter supply uses five cargo spaces and can be restocked with credit',()=>{
-  const s=initialState();assert.equal(s.food,10);assert.equal(usedSpace(s),5);assert.equal(maxBuyQuantity(s,'wine'),35);
-  assert.equal(unloadSupply(s,2),true);assert.equal(s.food,8);assert.equal(s.supplyCreditDays,2);
-  assert.equal(maxBuyQuantity(s,'wine'),36);assert.equal(maxBuyQuantity(s,'wine',10),35);
-  assert.deepEqual(resupply(s,Infinity),{ok:true,amount:2,cost:0});assert.equal(s.money,2400);assert.equal(s.supplyCreditDays,0);
+  const s=initialState();assert.equal(s.food,10);assert.equal(usedSpace(s),5);assert.equal(maxBuyQuantity(s,'wine'),15);
+  assert.equal(unloadSupply(s,2),true);assert.equal(s.food,8);assert.equal(s.supplyCreditValue,6);
+  assert.equal(maxBuyQuantity(s,'wine'),16);assert.equal(maxBuyQuantity(s,'wine',10),15);
+  assert.deepEqual(resupply(s,Infinity),{ok:true,amount:2,cost:0});assert.equal(s.money,2400);assert.equal(s.supplyCreditValue,0);
   assert.equal(s.food,10);
   const existing=parseSavedGame(JSON.stringify({...s,food:6}));
   assert.equal(existing.food,6);
   assert.deepEqual(resupply(existing,Infinity),{ok:true,amount:4,cost:12});
 });
 
-test('the selected starter pace reaches Setubal in about two seconds without changing route consumption',()=>{
-  const s=initialState(),local=route('lisbon','setubal',true);
+test('the selected starter pace reaches Porto in about five seconds without changing route consumption',()=>{
+  const s=initialState(),local=route('lisbon','porto',true);
   const estimate=voyageEstimate(s,local);
-  assert.ok(estimate.seconds>1.8&&estimate.seconds<2);
+  assert.ok(estimate.seconds>4.8&&estimate.seconds<5.1);
   assert.ok(Math.abs(estimate.food-local.total/80)<1e-8);
-  assert.ok(voyageEstimate({...s,level:1},local).seconds<estimate.seconds);
-  s.port=null;s.voyage={...local,target:'setubal',travelled:0,foodRemaining:estimate.food};
-  assert.equal(advanceVoyage(s,nav,1).arrived,false);
-  assert.equal(advanceVoyage(s,nav,1).arrived,true);
+  assert.ok(voyageEstimate({...s,shipTier:9},local).seconds<estimate.seconds);
+  s.port=null;s.voyage={...local,target:'porto',travelled:0,foodRemaining:estimate.food};
+  assert.equal(advanceVoyage(s,nav,2.4).arrived,false);
+  assert.equal(advanceVoyage(s,nav,3).arrived,true);
   assert.ok(Math.abs(s.food-(10-estimate.food))<1e-8);
 });
 
@@ -55,9 +56,9 @@ test('auto and direct motion spend identical food and game time, including river
     const expected=voyageEstimate(auto,r);const result=advanceVoyage(auto,nav,expected.seconds);
     assert.ok(result.arrived);assert.ok(Math.abs(auto.day-expected.days)<1e-8);assert.ok(Math.abs(auto.food-(10-expected.food))<1e-8);
   }
-  const a=[-12,40],b=helmStep(a,1,0,.4),s={...initialState(),port:null,position:a,level:1};
-  const moved=advanceManualMotion(s,nav,wrappedMotion(a,b),.4/120*ACTIVE_SECONDS_PER_DAY);
-  assert.ok(moved.finished);assert.ok(Math.abs(s.day-.4/120)<1e-8);
+  const a=[-12,40],b=helmStep(a,1,0,.4),s={...initialState(),port:null,position:a,shipTier:9};
+  const moved=advanceManualMotion(s,nav,wrappedMotion(a,b),.4/124*ACTIVE_SECONDS_PER_DAY);
+  assert.ok(moved.finished);assert.ok(Math.abs(s.day-.4/124)<1e-8);
 });
 
 test('depletion stops a voyage exactly and rescue persists without a second charge',()=>{
@@ -73,8 +74,8 @@ test('depletion stops a voyage exactly and rescue persists without a second char
 
 test('version one keeps cash, cargo, levels and active routes, with a single supply conversion',()=>{
   const s={...initialState(),version:1,money:8750,food:100,level:1,cargo:{spice:{qty:7,cost:300}},knownPorts:['lisbon','porto']};
-  const docked=parseSavedGame(s);assert.equal(docked.version,2);assert.equal(docked.money,8750);assert.equal(docked.food,20);assert.equal(docked.supplyCreditDays,80);assert.deepEqual(docked.cargo,s.cargo);
-  assert.equal(parseSavedGame(docked).supplyCreditDays,80);
+  const docked=parseSavedGame(s);assert.equal(docked.version,3);assert.equal(docked.money,8750);assert.equal(docked.food,30);assert.equal(docked.supplyCreditValue,420);assert.deepEqual(docked.cargo,s.cargo);
+  assert.equal(parseSavedGame(docked).supplyCreditValue,420);
   const r=route('lisbon','porto');const sailing=parseSavedGame({...s,port:null,voyage:{...r,target:'porto',travelled:10,foodRemaining:2}});
   assert.equal(sailing.food,100);assert.equal(sailing.voyage.legacy,true);assert.equal(sailing.voyage.travelled,10);
   assert.throws(()=>parseSavedGame({...s,cargo:{spice:{qty:-1,cost:300}}}));

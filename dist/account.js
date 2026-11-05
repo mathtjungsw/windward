@@ -53,6 +53,7 @@ export class CaptainAccount {
     this.lost = false;
     this.onStatus = () => {};
     this.onConflict = () => {};
+    this.onCommitted = () => {};
     this.readGame = () => null;
   }
 
@@ -106,6 +107,9 @@ export class CaptainAccount {
       }
     } catch(error) { throw Error('기기 저장을 읽지 못했어요. 원본은 유지됩니다.'); }
     const observed = (await this.sdk.get(ref)).val();
+    if(observed?.schemaVersion>3)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
+    if(observed&&observed.schemaVersion<3){const backup='windward-before-world-v3:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('이관 전 기기 백업을 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
+    if(cached?.data?.version<3){const backup=key+':before-world-v3';if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(cached));}
     let block, recovered;
     const result = await this.sdk.runTransaction(ref, current => {
       current ??= observed;
@@ -124,7 +128,7 @@ export class CaptainAccount {
       game.world = 'real';
       game.speed = 1;
       return {
-        schemaVersion: 2,
+        schemaVersion: 3,
         revision: (current?.revision || 0) + 1,
         data: JSON.stringify(game),
         session: this.session,
@@ -152,6 +156,7 @@ export class CaptainAccount {
       revision: record.revision, ready: true, lost: false, dirty: false
     });
     this.cache(game, false);
+    this.onCommitted(game,this.revision);
     this.onStatus(recovered ? '이 기기의 기록을 복원했어요.' : '클라우드 저장 연결됨');
     this.stopWatch?.();
     this.stopWatch = this.sdk.onValue(this.sdk.ref(this.db, GAME_ROOT + '/privateSaves/' + uid + '/session'), snapshot => {
@@ -201,7 +206,7 @@ export class CaptainAccount {
       const result = await this.sdk.runTransaction(this.ref, current => {
         current ??= this.record;
         if (current?.session !== this.session || current.revision !== expected) return;
-        return {...current, data, revision: expected + 1, leaseUntil: Date.now() + 90000,
+        return {...current, schemaVersion:3, data, revision: expected + 1, leaseUntil: Date.now() + 90000,
           updatedAt: this.sdk.serverTimestamp()};
       }, {applyLocally: false});
       if (!result.committed) {
@@ -219,6 +224,7 @@ export class CaptainAccount {
       this.dirty = JSON.stringify(current) !== data;
       this.cache(current, this.dirty);
       this.onStatus('클라우드 저장 완료');
+      this.onCommitted(JSON.parse(data),this.revision);
     } catch {
       this.onStatus('이 기기에 저장 · 서버 연결 확인 필요');
     }

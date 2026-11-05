@@ -46,6 +46,7 @@ for(const [uid,card,expected] of [
   ['valid-port',{kind:'port',ref:{portId:'setubal'}},200],
   ['valid-route',{kind:'route',ref:{fromPortId:'lisbon',toPortId:'setubal',observedNm:74}},200],
   ['valid-signal',{kind:'signal',ref:{code:'hello',targetUid:'valid-port',targetName:'선장'}},200],
+  ['valid-new-port',{kind:'port',ref:{portId:'honolulu'}},200],
   ['bad-port',{kind:'port',ref:{portId:'notaport'}},401],
   ['bad-coordinate',{kind:'port',ref:{portId:'setubal',lon:-9}},401],
   ['bad-signal',{kind:'signal',ref:{code:'hello',targetUid:'bad-signal',targetName:'선장'}},401],

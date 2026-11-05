@@ -3,6 +3,8 @@ import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {initialState} from '../dist/engine.js';
+import {DISCOVERIES} from '../dist/discoveries-catalog.js';
+import {PORTS} from '../dist/data.js';
 import {previewPrefix,previewHeader,previewStyles,previewEntry,previewShipRules} from './speed-preview.mjs';
 
 const root=fileURLToPath(new URL('../dist/',import.meta.url));
@@ -25,9 +27,24 @@ const crewFixture=`
 async function fixturePage(game,crew=false){
   const app=(await read('app.js')).replaceAll("from './","from '/")
     .replace('clearLegacyStorage(storage);','')
-    .replace('run(prepare);',`account.seenVersion=RELEASE;beginPlaying(${JSON.stringify(game)});${crew?crewFixture:''}`);
+    .replace('renderFleetStatus();showEntry();',()=>`account.seenVersion=RELEASE;beginPlaying(${JSON.stringify(game)});${crew?crewFixture:''}`);
   return (await read('index.html')).replace('<head>','<head><base href="/">')
     .replace('<script type="module" src="app.js"></script>',()=>'<script type="module">'+app.replace(/<\/script/gi,'<\\/script')+'</script>');
+}
+
+async function expeditionPage(mode){
+ const game=initialState();
+ if(mode==='ship'){Object.assign(game,{shipTier:9,fleetCount:2,money:150000,food:20});}
+ if(mode==='album'){game.day=30;game.shipTier=9;game.food=20;for(const d of DISCOVERIES.slice(0,6))game.discoveries[d.id]={foundDay:1,foundAt:1000,catalogVersion:'2026.11.06'};}
+ if(mode==='discovery'){const d=DISCOVERIES.find(d=>d.id==='relic-compass');game.port=null;game.position=[...d.point];}
+ if(mode==='rescue'){game.port=null;game.position=[-12,39];game.food=0;}
+ const fixture=`
+ const mock=Array.from({length:26},(_,i)=>({id:'qa-'+String(i).padStart(2,'0'),uid:'qa-'+String(i).padStart(2,'0'),name:i?'검증 선장 '+i:'나',money:10000-i*100,profit:500-i*10,visited:i+1,explorationScore:500000-i*1000,explorationPercent:50-i*.1,explorationArea:1000000,foundCount:3,fame:500-i*10,shipTier:9,fleetCount:2,statsVersion:3,status:i%2?'항해':'정박',color:i%6,updatedAt:Date.now()}));
+ fleet.uid='qa-00';fleet.name='나';fleet.connected=true;fleet.active=false;fleetStatus='online';fleet.roster={ready:true,error:false,list:()=>mock.slice(0,3),stop:async()=>{}};
+ rankings.path='qa';for(const metric of ['money','profit','visited','explorationScore','fame'])rankings.rows[metric]=rankFleet(mock,metric).slice(0,5);rankings.select=()=>{};rankings.page=async after=>mock.filter(p=>!after||p.id>after).slice(0,20);rankings.captain=async uid=>mock.find(p=>p.id===uid);rankings.myRank=async()=>1;
+ renderHUD();renderFleetStatus();
+ `;
+ return (await fixturePage(game)).replace('account.seenVersion=RELEASE;beginPlaying('+JSON.stringify(game)+');',()=>`account.seenVersion=RELEASE;beginPlaying(${JSON.stringify(game)});${fixture}`);
 }
 
 async function speedPreviewPage(){
@@ -55,7 +72,7 @@ async function emulatorAccount(){
     `);
   if(fixtureLogin){
     const token=Buffer.from(JSON.stringify({alg:'none',typ:'JWT'})).toString('base64url')+'.'+
-      Buffer.from(JSON.stringify({sub:'windward-qa',email:'windward-qa@example.test',email_verified:true,
+      Buffer.from(JSON.stringify({sub:'windward-worldfleet-qa',email:'windward-worldfleet-qa@example.test',email_verified:true,
         name:'QA account',iss:'https://accounts.google.com',aud:'demo-windward-chat'})).toString('base64url')+'.';
     account=account.replace('return (await this.authSdk.signInWithPopup(this.auth, provider)).user;',
       `return (await this.authSdk.signInWithCredential(this.auth,
@@ -79,6 +96,7 @@ const server=createServer(async(req,res)=>{
     if(url.pathname===previewPrefix+'ship-rules.js')return reply(res,'.js',previewShipRules(await read('ship-rules.js')));
     if(useEmulators&&url.pathname==='/account.js')return reply(res,'.js',await emulatorAccount());
     const manual={...initialState(),port:null,controlMode:'manual'};
+    if(url.pathname==='/__qa/expedition')return reply(res,'.html',await expeditionPage(url.searchParams.get('mode')));
     if(url.pathname==='/__qa/harbor')return reply(res,'.html',await fixturePage({...manual,position:[url.searchParams.has('near')?-9.44:-10.1,41]}));
     if(url.pathname==='/__qa/trade')return reply(res,'.html',await fixturePage({...manual,position:[-9.44,41],cargo:{wine:{qty:10,cost:310}},boughtLisbonWine:true,money:2090}));
     if(url.pathname==='/__qa/wrap')return reply(res,'.html',await fixturePage({...manual,position:[0,url.searchParams.get('edge')==='south'?-59.8:79.8]}));

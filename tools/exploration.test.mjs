@@ -9,10 +9,10 @@ import {seaSector,nearbySectors} from '../dist/presence-core.js';
 const nav=new Navigator(JSON.parse(readFileSync(new URL('../dist/assets/navigation.json',import.meta.url))),JSON.parse(readFileSync(new URL('../dist/assets/rivers.json',import.meta.url))));
 const approaches=new Map(PORTS.map(p=>[p.id,nav.approach(p)]));
 
-test('initial seven ports, discovery is separate from visits and tavern grants exactly one new destination',()=>{
- const s=initialState();assert.equal(s.knownPorts.length,7);assert.ok(s.knownPorts.every(id=>PORT_BY_ID[id]));assert.deepEqual(s.visited,['lisbon']);
+test('initial three ports, discovery is separate from visits and tavern grants exactly one new destination',()=>{
+ const s=initialState();assert.equal(s.knownPorts.length,3);assert.ok(s.knownPorts.every(id=>PORT_BY_ID[id]));assert.deepEqual(s.visited,['lisbon']);
  const candidate=informationCandidate(s),before=s.money;assert.ok(candidate);assert.equal(knowsPort(s,candidate.id),false);
- const r=buyInformation(s);assert.equal(r.ok,true);assert.equal(s.money,before-100);assert.equal(s.knownPorts.length,8);assert.equal(knowsPort(s,candidate.id),true);assert.deepEqual(s.visited,['lisbon']);
+ const r=buyInformation(s);assert.equal(r.ok,true);assert.equal(s.money,before-100);assert.equal(s.knownPorts.length,4);assert.equal(knowsPort(s,candidate.id),true);assert.deepEqual(s.visited,['lisbon']);
  s.money=0;const n=s.knownPorts.length;assert.equal(buyInformation(s).ok,false);assert.equal(s.knownPorts.length,n);assert.equal(s.money,0);
  s.money=1000;s.knownPorts=PORTS.map(p=>p.id);assert.equal(buyInformation(s).ok,false);assert.equal(s.money,1000);
 });

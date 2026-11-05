@@ -4,8 +4,8 @@ import {CaptainRoster} from './captains.js';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{
-  constructor({readShip,onChange,onStatus}){
-    Object.assign(this,{readShip,onChange,onStatus});
+  constructor({readShip,readStats,onChange,onStatus}){
+    Object.assign(this,{readShip,readStats,onChange,onStatus});
     this.peers=new Map();
     this.sectorWatches=new Map();
     this.active=false;
@@ -58,6 +58,15 @@ export class FleetPresence{
     });
     this.timer=setInterval(()=>{this.send();this.onChange();},1500);
   }
+  async publishSummary(){
+    if(!this.connected||!this.active||!this.readStats)return;
+    if(this.summaryPromise){await this.summaryPromise;if(this.connected&&this.active)return this.publishSummary();return;}
+    const stats=this.readStats();if(!stats)return;
+    const signature=JSON.stringify({...stats,saveRevision:0});if(signature===this.lastRank)return;
+    const sdk=this.sdk,ref=sdk.ref(this.db,`${this.root}/rankings/${this.uid}`);
+    this.summaryPromise=sdk.runTransaction(ref,current=>{if(current?.statsVersion===3&&(current.saveRevision||0)>stats.saveRevision)return;return {...stats,name:this.name,updatedAt:sdk.serverTimestamp()};},{applyLocally:false}).then(result=>{if(result.committed)this.lastRank=signature;}).catch(()=>{}).finally(()=>this.summaryPromise=null);
+    return this.summaryPromise;
+  }
   watchSectors(){
     const s=this.sdk,wanted=new Set(nearbySectors(this.readShip().position));
     for(const [key,watch] of this.sectorWatches)if(!wanted.has(key)){watch.stop();this.sectorWatches.delete(key);}
@@ -84,7 +93,7 @@ export class FleetPresence{
     if(!this.active||!this.connected||this.sendPromise)return;
     const ship=this.readShip();
     const signature=JSON.stringify([this.name,...ship.position.map(n=>Number(n.toFixed(4))),
-      Math.round(ship.angle),ship.status,ship.money,ship.profit,ship.visited]);
+      Math.round(ship.angle),ship.status,ship.shipTier,ship.fleetCount]);
     if(!force&&signature===this.lastSignature&&Date.now()-this.lastSent<30000)return;
     this.sendPromise=this.publish(ship,signature,force).finally(()=>{this.sendPromise=null;});
     return this.sendPromise;
@@ -103,17 +112,12 @@ export class FleetPresence{
         if(!this.active)return;
         this.watchSectors();
       }
-      const stats={name:this.name,money:Math.round(ship.money),profit:Math.round(ship.profit),visited:ship.visited};
       const updatedAt=sdk.serverTimestamp();
-      await sdk.set(this.selfRef,{...stats,uid:this.uid,updatedAt,
+      await sdk.set(this.selfRef,{name:this.name,uid:this.uid,updatedAt,
         lon:Number(ship.position[0].toFixed(5)),lat:Number(ship.position[1].toFixed(5)),
-        angle:Math.round(ship.angle)%360,color:this.color,status:ship.status});
+        angle:Math.round(ship.angle)%360,color:this.color,status:ship.status,shipTier:ship.shipTier??0,fleetCount:ship.fleetCount??1});
       if(!this.active)return;
-      const rank=JSON.stringify(stats);
-      if(force||rank!==this.lastRank){
-        await sdk.set(sdk.ref(this.db,`${this.root}/rankings/${this.uid}`),{...stats,updatedAt});
-        this.lastRank=rank;
-      }
+      await this.publishSummary();
       await this.roster.publish(ship,force);
       this.lastSent=Date.now();
       this.lastSignature=signature;

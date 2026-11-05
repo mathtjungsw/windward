@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="upgrade.css">
   <link rel="stylesheet" href="ux.css">
+<link rel="stylesheet" href="expedition.css">
 </head>
 <body>
   <svg class="icon-defs" aria-hidden="true"><defs>
@@ -31,7 +32,7 @@
   <div class="statusbar">
     <div class="date"><span class="tiny-label">항해력</span><span id="game-date">1522년 4월 6일</span></div>
     <div class="status-item"><span class="coin">D</span><span><small>보유 두카트</small><strong id="money">2,400 <em>D</em></strong></span></div>
-    <div class="status-item"><svg><use href="#i-box"/></svg><span><small>화물 적재량</small><strong id="cargo-stat">0 <em>/ 40</em></strong></span><div class="mini-meter"><i id="cargo-bar"></i></div></div>
+    <div class="status-item"><svg><use href="#i-box"/></svg><span><small>화물 적재량</small><strong id="cargo-stat">5 <em>/ 20</em></strong></span><div class="mini-meter"><i id="cargo-bar"></i></div></div>
     <div class="status-item food-stat"><span class="food-icon">♧</span><span><small>식량 · 항해 보급</small><strong id="food-stat">10.0 <em>/ 10일분</em></strong></span><div class="mini-meter"><i id="food-bar"></i></div></div>
     <div class="weather"><svg><use href="#i-wind"/></svg><span>순풍<small>항해하기 좋은 날</small></span></div>
   </div>
@@ -60,7 +61,7 @@
       <div class="voyage-sidebar" aria-label="내 항해와 현재 순위">
       <aside class="captain-card overlay-card"><div class="eyebrow">YOUR VOYAGE BEGINS</div><div class="captain-row"><div class="captain-avatar"><svg><use href="#i-ship"/></svg></div><div><h2>수평선의 개척자</h2><p>선장, 오늘은 어디로 떠날까요?</p></div></div><div class="captain-stats"><span><b id="visited-stat">1</b> 발견한 항구</span><span><b id="profit-stat">0</b> 무역 이익</span></div></aside>
 
-      <aside class="rank-card overlay-card" aria-label="현재 접속자 순위"><div class="rank-heading"><strong>선장 랭킹</strong><span>TOP 5</span></div><div class="rank-tabs" aria-label="순위 기준"><button data-rank="profit" aria-pressed="true">무역 이익</button><button data-rank="money" aria-pressed="false">지금 가진 돈</button><button data-rank="visited" aria-pressed="false">발견 항구</button></div><ol id="rank-list"></ol><p id="my-rank">선장들의 기록을 기다리고 있어요.</p></aside>
+      <aside class="rank-card overlay-card" aria-label="현재 접속자 순위"><div class="rank-heading"><strong>선장 랭킹</strong><span>TOP 5</span></div><div class="rank-tabs" aria-label="순위 기준"><button data-rank="profit" aria-pressed="true">무역 이익</button><button data-rank="money" aria-pressed="false">지금 가진 돈</button><button data-rank="visited" aria-pressed="false">방문 도시</button><button type="button" data-rank="explorationScore">지도 탐험</button><button type="button" data-rank="fame">발견 명성</button></div><ol id="rank-list"></ol><p id="my-rank">선장들의 기록을 기다리고 있어요.</p></aside>
 
       <aside class="mission-card overlay-card"><div class="card-label"><span><i class="gold-dot"></i> 항해사의 의뢰</span><span id="mission-index">01 / 04</span></div><h2 id="mission-title">첫 거래의 설렘</h2><p id="mission-desc">리스본에서 와인을 사고,<br>다른 항구에서 판매하세요.</p><div class="mission-steps" id="mission-steps"></div><div class="mission-footer"><span>달성 보상</span><strong id="mission-reward">+400 D</strong></div></aside>
       </div>

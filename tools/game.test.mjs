@@ -48,7 +48,7 @@ test('same-port buy/sell cannot create money, partial sales keep correct cost ba
 test('save/load preserves voyages and cargo; corrupt saves recover safely',()=>{
   const s=initialState();buy(s,'wine',3);const route=nav.route(point('lisbon'),point('havana'));s.port=null;s.voyage={...route,target:'havana',travelled:100,foodRemaining:12};s.position=positionAlong(s.voyage,100);
   const storage={getItem:key=>key===SAVE_KEY?JSON.stringify(s):null};assert.deepEqual(loadState(storage),{...s,knownPorts:[...s.knownPorts,'havana']});
-  for(const invalid of ['{broken','null',JSON.stringify({...s,money:-100}),JSON.stringify({...s,level:99}),JSON.stringify({...s,cargo:{wine:{qty:-5,cost:100}}})])assert.deepEqual(loadState({getItem:()=>invalid}),initialState());
+  for(const invalid of ['{broken','null',JSON.stringify({...s,money:-100}),JSON.stringify({...s,shipTier:99}),JSON.stringify({...s,cargo:{wine:{qty:-5,cost:100}}})])assert.deepEqual(loadState({getItem:()=>invalid}),initialState());
 });
 test('every port connects to the world ocean',()=>{
   for(const p of PORTS){const route=nav.route(point('lisbon'),[p.lon,p.lat]);assert.ok(route,`No sea route to ${p.id}`);assert.ok(Number.isFinite(route.total));assert.ok(route.path.length>=2);}
@@ -82,8 +82,8 @@ test('old saves default to automatic navigation and direct mode survives a reloa
   saved.controlMode='manual';assert.equal(loadState({getItem:()=>JSON.stringify(saved)}).controlMode,'manual');
 });
 
-test('the expanded atlas has 88 unique ports, 9 rivers, and connected inland round trips',()=>{
-  assert.equal(PORTS.length,88);assert.equal(new Set(PORTS.map(p=>p.id)).size,88);assert.equal(waterways.length,9);
+test('the expanded atlas has 70 unique ports, 9 rivers, and connected inland round trips',()=>{
+  assert.equal(PORTS.length,70);assert.equal(new Set(PORTS.map(p=>p.id)).size,70);assert.equal(waterways.length,9);
   for(const p of PORTS.filter(p=>p.river)){
     const river=nav.rivers.find(r=>r.id===p.river);assert.ok(river,p.id);
     const approach=nav.approach(p);assert.equal(nav.isLand(approach),false,p.id+' berth');

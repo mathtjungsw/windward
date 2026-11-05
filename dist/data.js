@@ -1,3 +1,4 @@
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js';
 import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js';
 import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js';
 
@@ -28,11 +29,15 @@ const ORIGINAL_PORTS = [
   { id:'sydney', name:'시드니', en:'Sydney', country:'오스트레일리아', region:'오세아니아', lon:151.2, lat:-33.85, specialty:'wool', market:['wool','wine','tea'], fact:'오스트레일리아 대륙 남동쪽, 태평양을 향한 항구.', sea:'태즈먼해' }
 ];
 export const LEGACY_PORTS = [...ORIGINAL_PORTS.map(p=>({...p,...UPDATED_PORTS[p.id]})),...EXTRA_PORTS.filter(p=>!NEW_PORT_IDS.includes(p.id))];
-export const PORTS = [...ORIGINAL_PORTS.map(p=>({...p,...UPDATED_PORTS[p.id]})),...EXTRA_PORTS].map(p=>{
-  const economy=PORT_ECONOMY[p.id];
-  return {...p,economy,specialty:Object.keys(economy.stock).find(g=>economy.stock[g]==='producer')||Object.keys(economy.stock)[0],market:Object.keys(economy.stock)};
+const OLD_PORTS = [...ORIGINAL_PORTS.map(p=>({...p,...UPDATED_PORTS[p.id]})),...EXTRA_PORTS].map(p=>{
+  const economy=ECONOMY_OVERRIDES[p.id]||PORT_ECONOMY[p.id];
+  return {...p,pricePhase:[...ORIGINAL_PORTS,...EXTRA_PORTS].findIndex(q=>q.id===p.id),region:regionForPort(p.id,p.region),economy,specialty:Object.keys(economy.stock).find(g=>economy.stock[g]==='producer')||Object.keys(economy.stock)[0],market:Object.keys(economy.stock)};
 });
-export const PORT_BY_ID = Object.fromEntries(PORTS.map(p=>[p.id,p]));
+const activeIds=new Set(ACTIVE_PORT_IDS);
+export const ALL_PORTS=[...OLD_PORTS,...NEW_PORTS.map((p,i)=>{const economy=NEW_PORT_ECONOMY[p.id];return {...p,pricePhase:88+i,economy,specialty:Object.keys(economy.stock).find(g=>economy.stock[g]==='producer')||Object.keys(economy.stock)[0],market:Object.keys(economy.stock)};})].map(p=>({...p,active:activeIds.has(p.id)}));
+export const PORTS=ALL_PORTS.filter(p=>p.active);
+export const PORT_BY_ID = Object.fromEntries(ALL_PORTS.map(p=>[p.id,p]));
+export const ACTIVE_PORT_BY_ID=Object.fromEntries(PORTS.map(p=>[p.id,p]));
 export const MISSIONS = [
   { id:'trader', name:'첫 거래의 설렘', desc:'리스본에서 와인을 사고, 다른 항구에서 판매하세요.', reward:400 },
   { id:'explorer', name:'수평선 너머로', desc:'서로 다른 항구 5곳에 기항하세요.', reward:650 },

@@ -10,3 +10,6 @@ tools/source-data/
 # Firebase CLI and emulator logs
 firebase-debug.log*
 database-debug.log*
+.qa/
+player-guide/
+design-previews/
