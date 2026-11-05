@@ -29,6 +29,8 @@ jobs:
           node-version: '24'
       - name: Check game rules
         run: npm test
+      - name: Check generated release notes and catalog
+        run: npm run notes:check
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload game files only

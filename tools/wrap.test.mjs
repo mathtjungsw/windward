@@ -15,7 +15,7 @@ test('north and south chart edges wrap in both directions without clamping camer
 test('a northbound ocean step emerges in southern water and charges only actual miles',()=>{
  const from=[0,79.8],raw=helmStep(from,0,1,60),step=wrappedMotion(from,raw);assert.equal(step.wrapped,true);assert.ok(step.position[1]<-59&&step.position[1]>-60);assert.ok(Math.abs(step.miles-60)<.00001);assert.ok(distance(from,step.position)>8000);
  assert.equal(step.legs[0][1][1],80);assert.equal(step.legs[1][0][1],-60);assert.ok(step.legs.every(([a,b])=>nav.clear(a,b)),'both real water segments are navigable');
- const s=initialState();for(const [a,b]of step.legs)discoverPorts(s,a,b);assert.equal(s.knownPorts.length,4,'no phantom discovery across Europe/Africa');assert.ok(step.miles/360*.9<1,'less than one ration, never a world crossing charge');
+ const s=initialState();for(const [a,b]of step.legs)discoverPorts(s,a,b);assert.equal(s.knownPorts.length,7,'no phantom discovery across Europe/Africa');assert.ok(step.miles/360*.9<1,'less than one ration, never a world crossing charge');
 });
 test('a southbound step and a clicked point across the seam preserve direction and stop at target',()=>{
  const step=wrappedMotion([0,-59.8],helmStep([0,-59.8],0,-1,60));assert.equal(step.wrapped,true);assert.ok(step.position[1]>79&&step.position[1]<80);

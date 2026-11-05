@@ -42,3 +42,16 @@ await request('gameV2/real/chat/lastSent/expired',{admin:true,method:'PUT',body:
 const prune=await changes('prune');prune['lastSent/expired']=null;assert.equal((await post('prune',prune)).status,200,'expired throttle metadata can be pruned during a valid post');
 const wrongPrune=await changes('bad-prune');wrongPrune['lastSent/prune']=null;assert.equal((await post('bad-prune',wrongPrune)).status,401,'recent cooldown cannot be pruned');
 console.log('Social rules passed: 50 stored messages, 200-character limit, server cooldown, sender identity, bounded reads, collision/retry, expired metadata cleanup.');
+for(const [uid,card,expected] of [
+  ['valid-port',{kind:'port',ref:{portId:'setubal'}},200],
+  ['valid-route',{kind:'route',ref:{fromPortId:'lisbon',toPortId:'setubal',observedNm:74}},200],
+  ['valid-signal',{kind:'signal',ref:{code:'hello',targetUid:'valid-port',targetName:'선장'}},200],
+  ['bad-port',{kind:'port',ref:{portId:'notaport'}},401],
+  ['bad-coordinate',{kind:'port',ref:{portId:'setubal',lon:-9}},401],
+  ['bad-signal',{kind:'signal',ref:{code:'hello',targetUid:'bad-signal',targetName:'선장'}},401],
+  ['bad-ref',{ref:{portId:'lisbon'}},401],
+]){
+  const body=await changes(uid);Object.assign(body[`messages/${body.sequence%50}`],card);
+  assert.equal((await post(uid,body)).status,expected,uid);
+}
+console.log('Share cards and signals passed catalog, shape, and sender checks.');

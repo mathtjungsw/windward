@@ -10,7 +10,7 @@ assert.equal((await req('.settings/rules',{admin:true,method:'PUT',body:JSON.par
 const uid='world-test-a',other='world-test-b';
 {
  const world='real';
- const path=`gameV2/privateSaves/${uid}`,data={...initialState(),world,speed:world==='real'?1:4},record={revision:1,session:'session-1',leaseUntil:Date.now()+60000,updatedAt:timestamp,data:JSON.stringify(data)};
+ const path=`gameV2/privateSaves/${uid}`,data={...initialState(),world,speed:world==='real'?1:4},record={schemaVersion:2,revision:1,session:'session-1',leaseUntil:Date.now()+60000,updatedAt:timestamp,data:JSON.stringify(data)};
  await req(path,{admin:true,method:'DELETE'});
  assert.equal((await req(path,{uid,method:'PUT',body:record})).status,200,'own save');
  assert.equal((await req(path,{uid:other})).status,401,'another captain cannot read private cargo/exploration');
@@ -18,9 +18,13 @@ const uid='world-test-a',other='world-test-b';
  assert.equal((await req(path,{uid:other,method:'PUT',body:{...record,revision:2}})).status,401,'another captain cannot overwrite');
  assert.equal((await req(path,{uid,method:'PUT',body:record})).status,401,'stale revision rejected');
  assert.equal((await req(path,{uid,method:'PUT',body:{...record,revision:2}})).status,200,'next revision');
+ const {schemaVersion,...oldRecord}=record;
+ assert.equal((await req(path,{uid,method:'PUT',body:{...oldRecord,revision:3}})).status,401,'old save envelope cannot overwrite current record');
  const saved=JSON.parse((await req(path,{uid})).value.data);assert.deepEqual(saved.cargo,{});assert.equal(saved.world,world);
  const rank={name:'검증 선장',money:2400,profit:100,visited:3,updatedAt:timestamp};
  assert.equal((await req(`gameV2/real/rankings/${uid}`,{uid,method:'PUT',body:rank})).status,200);
+ assert.equal((await req(`gameV2/real/rankings/${uid}`,{uid,method:'PUT',body:{...rank,visited:88}})).status,200,'all expanded ports are rankable');
+ assert.equal((await req(`gameV2/real/rankings/${uid}`,{uid,method:'PUT',body:{...rank,visited:89}})).status,401,'impossible atlas count');
  assert.equal((await req(`gameV2/real/rankings/${uid}`,{uid:other,method:'PUT',body:rank})).status,401);
  assert.equal((await req(`gameV2/real/rankings`,{uid,query:{orderBy:'money',limitToLast:5}})).status,200);
  assert.equal((await req(`gameV2/real/rankings`,{uid})).status,401,'unbounded ranking denied');

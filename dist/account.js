@@ -1,9 +1,9 @@
 import {FIREBASE_CONFIG} from './firebase-config.js';
-import {initialState,loadState} from './engine.js';
+import {initialState,parseSavedGame} from './engine.js';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
-export const localSaveKey = uid => 'windward-account-v3:' + uid;
+export const localSaveKey = uid => 'windward-account-v4:' + uid;
 
 export function accountName(value) {
   const name = String(value || '').normalize('NFKC').trim();
@@ -25,14 +25,7 @@ export function clearLegacyStorage(storage) {
 }
 
 export function parseGame(value) {
-  if (typeof value === 'string') value = JSON.parse(value);
-  if (!value || typeof value !== 'object') throw Error('저장 형식을 확인할 수 없어요.');
-  const game = loadState({getItem: () => JSON.stringify(value)});
-  const fields = ['money', 'day', 'port', 'food', 'level', 'cargo', 'visited'];
-  if (value.version !== 1 || fields.some(key => JSON.stringify(game[key]) !== JSON.stringify(value[key]))) {
-    throw Error('항해 기록을 확인하지 못했어요. 연결 상태를 확인한 뒤 다시 시도해 주세요.');
-  }
-  return game;
+  return parseSavedGame(value);
 }
 
 export function authMessage(error) {
@@ -105,7 +98,13 @@ export class CaptainAccount {
     const ref = this.sdk.ref(this.db, GAME_ROOT + '/privateSaves/' + uid);
     const key = localSaveKey(uid);
     let cached;
-    try { cached = JSON.parse(this.storage.getItem(key)); } catch {}
+    try {
+      cached = JSON.parse(this.storage.getItem(key));
+      if(!cached){
+        const previous=this.storage.getItem('windward-account-v3:'+uid);
+        if(previous){cached=JSON.parse(previous);this.storage.setItem('windward-account-v3:'+uid+':before-upgrade',previous);}
+      }
+    } catch(error) { throw Error('기기 저장을 읽지 못했어요. 원본은 유지됩니다.'); }
     const observed = (await this.sdk.get(ref)).val();
     let block, recovered;
     const result = await this.sdk.runTransaction(ref, current => {
@@ -125,6 +124,7 @@ export class CaptainAccount {
       game.world = 'real';
       game.speed = 1;
       return {
+        schemaVersion: 2,
         revision: (current?.revision || 0) + 1,
         data: JSON.stringify(game),
         session: this.session,

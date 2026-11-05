@@ -3,7 +3,7 @@ import {distance,helmStep} from './engine.js';
 import {wrapPosition,mapDistance} from './world-wrap.js';
 
 export const SIGHT_NM=180,DISCOVERY_NM=40,INFO_PRICE=100,INFO_RANGE=600;
-export const START_PORTS=['lisbon','porto','sanlucar','seville'];
+export const START_PORTS=['lisbon','porto','sanlucar','seville','setubal','sines','lagos'];
 export const worldId=value=>value==='real'?'real':'peace';
 export const worldSpeed=s=>worldId(s.world)==='real'?1:[1,2,4].includes(s.speed)?s.speed:1;
 export const knowsPort=(s,id)=>!!id&&s.knownPorts.includes(id);
@@ -33,7 +33,7 @@ export function segmentDistance(a,b,p){
 export const dockingRadius=(port,berth)=>port.river?12:Math.max(30,distance([port.lon,port.lat],berth)+12);
 export const leftHarbor=(id,position,approaches)=>distance(position,approaches.get(id))>dockingRadius(PORT_BY_ID[id],approaches.get(id))+8;
 export function dockAlong(nav,from,to,approaches,departed){
-  return PORTS.filter(p=>p.id!==departed).map(p=>({p,berth:approaches.get(p.id),hit:segmentDistance(from,to,approaches.get(p.id))})).filter(({p,berth,hit})=>hit.distance<=dockingRadius(p,berth)&&(!p.river||nav.riverAt(hit.point)?.river.id===p.river)&&nav.clear(from,hit.point)&&nav.clear(hit.point,berth)).sort((a,b)=>a.hit.t-b.hit.t||a.hit.distance-b.hit.distance)[0]?.p||null;
+  return PORTS.filter(p=>p.id!==departed).map(p=>({p,berth:approaches.get(p.id),hit:segmentDistance(from,to,approaches.get(p.id))})).filter(({p,berth,hit})=>hit.distance<=dockingRadius(p,berth)&&!PORTS.some(q=>q.id!==p.id&&distance(hit.point,approaches.get(q.id))+.05<hit.distance)&&(!p.river||nav.riverAt(hit.point)?.river.id===p.river)&&nav.clear(from,hit.point)&&nav.clear(hit.point,berth)).sort((a,b)=>a.hit.t-b.hit.t||a.hit.distance-b.hit.distance)[0]?.p||null;
 }
 
 const EXP_W=720,EXP_H=280,EXP_BYTES=Math.ceil(EXP_W*EXP_H/8);

@@ -1,15 +1,7 @@
 import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js';
 
-export const GOODS = {
-  wine: { name: '와인', icon: '◈', base: 48, color: '#9a4c70' },
-  wool: { name: '모직물', icon: '▧', base: 62, color: '#6e6c4d' },
-  glass: { name: '유리공예', icon: '◇', base: 90, color: '#367f8e' },
-  spice: { name: '향신료', icon: '✤', base: 110, color: '#a6612e' },
-  coffee: { name: '커피', icon: '❖', base: 72, color: '#85613c' },
-  silk: { name: '비단', icon: '≋', base: 128, color: '#96742e' },
-  tea: { name: '차', icon: '❧', base: 76, color: '#4f7a39' },
-  sugar: { name: '설탕', icon: '✧', base: 52, color: '#7f7d5b' }
-};
+export {GOODS};
 
 // Modern country names help connect the sailing atlas to present-day geography.
 const ORIGINAL_PORTS = [
@@ -35,7 +27,11 @@ const ORIGINAL_PORTS = [
   { id:'buenos', name:'부에노스아이레스', en:'Buenos Aires', country:'아르헨티나', region:'아메리카', lon:-58.38, lat:-34.6, specialty:'wool', market:['wool','wine','sugar'], fact:'남아메리카 남동쪽, 라플라타강 하구를 따라 자리한 항구.', sea:'남대서양' },
   { id:'sydney', name:'시드니', en:'Sydney', country:'오스트레일리아', region:'오세아니아', lon:151.2, lat:-33.85, specialty:'wool', market:['wool','wine','tea'], fact:'오스트레일리아 대륙 남동쪽, 태평양을 향한 항구.', sea:'태즈먼해' }
 ];
-export const PORTS = [...ORIGINAL_PORTS.map(p=>({...p,...UPDATED_PORTS[p.id]})),...EXTRA_PORTS];
+export const LEGACY_PORTS = [...ORIGINAL_PORTS.map(p=>({...p,...UPDATED_PORTS[p.id]})),...EXTRA_PORTS.filter(p=>!NEW_PORT_IDS.includes(p.id))];
+export const PORTS = [...ORIGINAL_PORTS.map(p=>({...p,...UPDATED_PORTS[p.id]})),...EXTRA_PORTS].map(p=>{
+  const economy=PORT_ECONOMY[p.id];
+  return {...p,economy,specialty:Object.keys(economy.stock).find(g=>economy.stock[g]==='producer')||Object.keys(economy.stock)[0],market:Object.keys(economy.stock)};
+});
 export const PORT_BY_ID = Object.fromEntries(PORTS.map(p=>[p.id,p]));
 export const MISSIONS = [
   { id:'trader', name:'첫 거래의 설렘', desc:'리스본에서 와인을 사고, 다른 항구에서 판매하세요.', reward:400 },

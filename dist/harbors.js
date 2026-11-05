@@ -918,6 +918,533 @@ export const EXTRA_PORTS = [
     ],
     "fact": "뉴질랜드 북섬 북쪽, 태평양으로 이어지는 항구.",
     "sea": "남태평양"
+  },
+  {
+    "id": "setubal",
+    "name": "세투발",
+    "en": "Setubal",
+    "country": "포르투갈",
+    "region": "유럽",
+    "lon": -9.04,
+    "lat": 38.24,
+    "city": [
+      -8.89,
+      38.52
+    ],
+    "sea": "북대서양",
+    "fact": "포르투갈의 북대서양와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wool",
+    "market": [
+      "wool",
+      "wine",
+      "driedfish",
+      "salt"
+    ]
+  },
+  {
+    "id": "sines",
+    "name": "시네스",
+    "en": "Sines",
+    "country": "포르투갈",
+    "region": "유럽",
+    "lon": -9.03,
+    "lat": 37.94,
+    "city": [
+      -8.87,
+      37.95
+    ],
+    "sea": "북대서양",
+    "fact": "포르투갈의 북대서양와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wine",
+    "market": [
+      "wine",
+      "wool",
+      "salt",
+      "driedfish"
+    ]
+  },
+  {
+    "id": "lagos",
+    "name": "라구스",
+    "en": "Lagos",
+    "country": "포르투갈",
+    "region": "유럽",
+    "lon": -8.8,
+    "lat": 37.0,
+    "city": [
+      -8.67,
+      37.1
+    ],
+    "sea": "북대서양",
+    "fact": "포르투갈의 북대서양와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wine",
+    "market": [
+      "wine",
+      "wool",
+      "grain",
+      "driedfish"
+    ]
+  },
+  {
+    "id": "faro",
+    "name": "파루",
+    "en": "Faro",
+    "country": "포르투갈",
+    "region": "유럽",
+    "lon": -7.6,
+    "lat": 36.95,
+    "city": [
+      -7.93,
+      37.02
+    ],
+    "sea": "북대서양",
+    "fact": "포르투갈의 북대서양와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wine",
+    "market": [
+      "wine",
+      "wool",
+      "salt",
+      "oliveoil"
+    ]
+  },
+  {
+    "id": "cadiz",
+    "name": "카디스",
+    "en": "Cadiz",
+    "country": "스페인",
+    "region": "유럽",
+    "lon": -6.4,
+    "lat": 36.5,
+    "city": [
+      -6.29,
+      36.53
+    ],
+    "sea": "북대서양",
+    "fact": "스페인의 북대서양와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wine",
+    "market": [
+      "wine",
+      "wool",
+      "driedfish",
+      "salt"
+    ]
+  },
+  {
+    "id": "vigo",
+    "name": "비고",
+    "en": "Vigo",
+    "country": "스페인",
+    "region": "유럽",
+    "lon": -8.84,
+    "lat": 42.3,
+    "city": [
+      -8.74,
+      42.24
+    ],
+    "sea": "북대서양",
+    "fact": "스페인의 북대서양와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wine",
+    "market": [
+      "wine",
+      "wool",
+      "salt",
+      "driedfish"
+    ]
+  },
+  {
+    "id": "acoruna",
+    "name": "아코루냐",
+    "en": "A Coruna",
+    "country": "스페인",
+    "region": "유럽",
+    "lon": -8.45,
+    "lat": 43.5,
+    "city": [
+      -8.4,
+      43.37
+    ],
+    "sea": "북대서양",
+    "fact": "스페인의 북대서양와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wine",
+    "market": [
+      "wine",
+      "wool",
+      "timber",
+      "driedfish"
+    ]
+  },
+  {
+    "id": "bilbao",
+    "name": "빌바오",
+    "en": "Bilbao",
+    "country": "스페인",
+    "region": "유럽",
+    "lon": -3.02,
+    "lat": 43.5,
+    "city": [
+      -3.02,
+      43.34
+    ],
+    "sea": "비스케이만",
+    "fact": "스페인의 비스케이만와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wine",
+    "market": [
+      "wine",
+      "salt",
+      "wool",
+      "timber"
+    ]
+  },
+  {
+    "id": "plymouth",
+    "name": "플리머스",
+    "en": "Plymouth",
+    "country": "영국",
+    "region": "유럽",
+    "lon": -4.14,
+    "lat": 50.1,
+    "city": [
+      -4.14,
+      50.37
+    ],
+    "sea": "영국해협",
+    "fact": "영국의 영국해협와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wine",
+    "market": [
+      "wine",
+      "salt",
+      "driedfish",
+      "wool"
+    ]
+  },
+  {
+    "id": "southampton",
+    "name": "사우샘프턴",
+    "en": "Southampton",
+    "country": "영국",
+    "region": "유럽",
+    "lon": -1.4,
+    "lat": 50.6,
+    "city": [
+      -1.4,
+      50.9
+    ],
+    "sea": "영국해협",
+    "fact": "영국의 영국해협와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wine",
+    "market": [
+      "wine",
+      "salt",
+      "timber",
+      "wool"
+    ]
+  },
+  {
+    "id": "larochelle",
+    "name": "라로셸",
+    "en": "La Rochelle",
+    "country": "프랑스",
+    "region": "유럽",
+    "lon": -1.45,
+    "lat": 46.16,
+    "city": [
+      -1.15,
+      46.16
+    ],
+    "sea": "비스케이만",
+    "fact": "프랑스의 비스케이만와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wool",
+    "market": [
+      "wool",
+      "timber",
+      "salt",
+      "wine"
+    ]
+  },
+  {
+    "id": "funchal",
+    "name": "푼샬",
+    "en": "Funchal",
+    "country": "포르투갈",
+    "region": "유럽",
+    "lon": -16.91,
+    "lat": 32.5,
+    "city": [
+      -16.91,
+      32.65
+    ],
+    "sea": "북대서양",
+    "fact": "포르투갈의 북대서양와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wool",
+    "market": [
+      "wool",
+      "timber",
+      "wine",
+      "sugar"
+    ]
+  },
+  {
+    "id": "laspalmas",
+    "name": "라스팔마스",
+    "en": "Las Palmas",
+    "country": "스페인",
+    "region": "유럽",
+    "lon": -15.42,
+    "lat": 28.13,
+    "city": [
+      -15.42,
+      28.13
+    ],
+    "sea": "북대서양",
+    "fact": "스페인의 북대서양와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wine",
+    "market": [
+      "wine",
+      "wool",
+      "grain",
+      "sugar"
+    ]
+  },
+  {
+    "id": "angra",
+    "name": "앙그라",
+    "en": "Angra",
+    "country": "포르투갈",
+    "region": "유럽",
+    "lon": -27.22,
+    "lat": 38.65,
+    "city": [
+      -27.22,
+      38.65
+    ],
+    "sea": "북대서양",
+    "fact": "포르투갈의 북대서양와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wine",
+    "market": [
+      "wine",
+      "wool",
+      "timber",
+      "grain"
+    ]
+  },
+  {
+    "id": "ribeiragrande",
+    "name": "히베이라그란드",
+    "en": "Ribeira Grande",
+    "country": "카보베르데",
+    "region": "아프리카",
+    "lon": -23.61,
+    "lat": 14.92,
+    "city": [
+      -23.61,
+      14.92
+    ],
+    "sea": "북대서양",
+    "fact": "카보베르데의 북대서양와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "grain",
+    "market": [
+      "grain",
+      "wool",
+      "salt",
+      "driedfish"
+    ]
+  },
+  {
+    "id": "safi",
+    "name": "사피",
+    "en": "Safi",
+    "country": "모로코",
+    "region": "아프리카",
+    "lon": -9.32,
+    "lat": 32.4,
+    "city": [
+      -9.25,
+      32.3
+    ],
+    "sea": "북대서양",
+    "fact": "모로코의 북대서양와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wool",
+    "market": [
+      "wool",
+      "timber",
+      "grain",
+      "leather"
+    ]
+  },
+  {
+    "id": "algiers",
+    "name": "알제",
+    "en": "Algiers",
+    "country": "알제리",
+    "region": "아프리카",
+    "lon": 3.06,
+    "lat": 36.9,
+    "city": [
+      3.06,
+      36.78
+    ],
+    "sea": "지중해",
+    "fact": "알제리의 지중해와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wool",
+    "market": [
+      "wool",
+      "glass",
+      "oliveoil",
+      "grain"
+    ]
+  },
+  {
+    "id": "dubrovnik",
+    "name": "두브로브니크",
+    "en": "Dubrovnik",
+    "country": "크로아티아",
+    "region": "유럽",
+    "lon": 18.05,
+    "lat": 42.5,
+    "city": [
+      18.11,
+      42.64
+    ],
+    "sea": "아드리아해",
+    "fact": "크로아티아의 아드리아해와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "wine",
+    "market": [
+      "wine",
+      "wool",
+      "timber",
+      "salt"
+    ]
+  },
+  {
+    "id": "hormuz",
+    "name": "호르무즈",
+    "en": "Hormuz",
+    "country": "이란",
+    "region": "아시아",
+    "lon": 56.45,
+    "lat": 27.06,
+    "city": [
+      56.45,
+      27.06
+    ],
+    "sea": "페르시아만",
+    "fact": "이란의 페르시아만와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "dates",
+    "market": [
+      "dates",
+      "silk",
+      "cotton"
+    ]
+  },
+  {
+    "id": "calicut",
+    "name": "캘리컷",
+    "en": "Calicut",
+    "country": "인도",
+    "region": "아시아",
+    "lon": 75.6,
+    "lat": 11.25,
+    "city": [
+      75.77,
+      11.25
+    ],
+    "sea": "아라비아해",
+    "fact": "인도의 아라비아해와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "silk",
+    "market": [
+      "silk",
+      "porcelain",
+      "cotton",
+      "pepper"
+    ]
+  },
+  {
+    "id": "mocha",
+    "name": "모카",
+    "en": "Mocha",
+    "country": "예멘",
+    "region": "아시아",
+    "lon": 43.05,
+    "lat": 13.32,
+    "city": [
+      43.25,
+      13.32
+    ],
+    "sea": "홍해",
+    "fact": "예멘의 홍해와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "cotton",
+    "market": [
+      "cotton",
+      "cinnamon",
+      "dates",
+      "coffee"
+    ]
+  },
+  {
+    "id": "ternate",
+    "name": "테르나테",
+    "en": "Ternate",
+    "country": "인도네시아",
+    "region": "아시아",
+    "lon": 127.39,
+    "lat": 0.79,
+    "city": [
+      127.39,
+      0.79
+    ],
+    "sea": "말루쿠해",
+    "fact": "인도네시아의 말루쿠해와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "cotton",
+    "market": [
+      "cotton",
+      "porcelain",
+      "driedfish",
+      "cloves"
+    ]
+  },
+  {
+    "id": "bandaneira",
+    "name": "반다네이라",
+    "en": "Banda Neira",
+    "country": "인도네시아",
+    "region": "아시아",
+    "lon": 129.9,
+    "lat": -4.52,
+    "city": [
+      129.9,
+      -4.52
+    ],
+    "sea": "반다해",
+    "fact": "인도네시아의 반다해와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "cotton",
+    "market": [
+      "cotton",
+      "porcelain",
+      "driedfish",
+      "nutmeg"
+    ]
+  },
+  {
+    "id": "quanzhou",
+    "name": "취안저우",
+    "en": "Quanzhou",
+    "country": "중국",
+    "region": "아시아",
+    "lon": 118.9,
+    "lat": 24.7,
+    "city": [
+      118.68,
+      24.9
+    ],
+    "sea": "타이완해협",
+    "fact": "중국의 타이완해협와 연결된 항구. 도시 좌표와 게임용 선착장은 구분됩니다.",
+    "specialty": "pepper",
+    "market": [
+      "pepper",
+      "cloves",
+      "silk",
+      "porcelain"
+    ]
   }
 ];
 export const UPDATED_PORTS = {

@@ -1,0 +1,57 @@
+:root{--user-port-width:315px;--ui-teal:#286572;--ui-surface:#fffdf4;--ui-border:#b3c3b6}
+#action-strip{grid-column:2;grid-row:1;align-self:start;z-index:8;display:flex;gap:8px;align-items:center;justify-content:space-between;margin:10px;padding:6px 8px;background:#fffdf4f5;border:1px solid var(--ui-border);border-radius:8px;color:#254e5d;pointer-events:none}
+#action-status{flex:1;min-width:0;font-size:12px;line-height:1.5}
+#action-strip button,#quick-bar button,#quick-sheet button:not(.trade-btn),.settings-row button,.quick-qty button,.trade-draft-head button,#port-story button{min-height:44px}
+#action-strip button{pointer-events:auto;white-space:nowrap;border:1px solid var(--ui-border);border-radius:5px;padding:0 9px;background:#eef5ee;color:#255260}
+#quick-bar,#quick-sheet{display:none}
+#update-notes{min-height:36px;white-space:nowrap}
+#update-notes small{background:#936717;color:white;border-radius:5px;padding:2px 4px}
+.release-card{margin:8px 0 12px;padding:10px 12px;background:#f4f7ed;border:1px solid var(--ui-border);border-radius:8px}
+.release-card summary{cursor:pointer;min-height:44px;line-height:1.6;color:#244f58}
+.release-card summary small{font-size:11px;color:#526a64}.release-card summary strong{display:block;font-size:16px}
+.release-card h3{font-size:14px;margin:12px 0 3px}.release-card ul{padding-left:19px;margin:4px 0 8px;font-size:13px;line-height:1.65}
+#port-story{margin:8px 0;border-block:1px solid #d9dfd3;padding:7px 0;color:#315760}
+#port-story summary{font-size:13px;font-weight:700;cursor:pointer;padding:7px 0}
+#port-story-content{font-size:12px;line-height:1.7}#port-story-content ul{padding-left:18px}#port-story-content a{color:#245e69}
+#port-story button,.chat-card-link,.settings-row button,.quick-links button{background:#edf4e9;color:#28535a;border:1px solid var(--ui-border);border-radius:5px;padding:7px 9px}
+.chat-card-link{font-size:12px;margin-top:4px;min-height:36px}
+.manual-pad button{position:relative}.manual-pad button small{font:700 10px var(--sans);position:absolute;right:4px;bottom:2px}
+.manual-pad p{margin:4px 0 0;font-size:9px;line-height:1.45;color:#244d54;background:#fffdf4e8;border-radius:4px;padding:2px 4px}
+.settings-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0;color:#31575c;font-size:13px}
+.settings-row [aria-pressed=true]{background:var(--ui-teal);color:white}
+#trade-draft{margin:10px 0 3px;padding:10px;border:1px solid #9ab8a8;border-radius:8px;background:#eff5ea;color:#294d50}
+#trade-draft p{margin:5px 0 7px;font-size:12px;line-height:1.6}.trade-draft-head{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.trade-draft-head button,.quick-qty button{padding:0 5px;color:#2b5359;background:#fffdf4;border:1px solid var(--ui-border);border-radius:4px}
+.quick-qty{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:7px 0}
+.quick-qty input{width:100%;min-width:0;min-height:44px;padding:4px;border:1px solid var(--ui-border);border-radius:4px;background:#fffdf4;text-align:center;font-size:16px}
+#inline-total{font-weight:700}#inline-result:empty{display:none}
+.quick-cargo-only .port-illustration,.quick-cargo-only .port-kicker,.quick-cargo-only #port-name,.quick-cargo-only #port-description,.quick-cargo-only #port-story,.quick-cargo-only #port-coordinates,.quick-cargo-only #route-box,.quick-cargo-only .panel-tabs,.quick-cargo-only .trade-heading,.quick-cargo-only #market,.quick-cargo-only .panel-bottom{display:none!important}
+@media(min-width:1200px){.game-layout{grid-template-columns:220px minmax(480px,1fr) min(var(--user-port-width),calc(100vw - 700px))}}
+@media(min-width:851px) and (max-width:1199px){.game-layout{grid-template-columns:minmax(480px,1fr) min(var(--user-port-width),calc(100vw - 480px));grid-template-rows:minmax(0,1fr) auto;height:auto;min-height:calc(100dvh - 201px)}.game-layout>.chart{grid-column:1;height:calc(100dvh - 201px);min-height:360px}#desktop-panels{grid-column:2;max-height:calc(100dvh - 201px)}.game-layout>.voyage-sidebar{grid-column:1/-1;grid-row:2;flex-direction:row;flex-wrap:wrap}.game-layout>.voyage-sidebar>*{width:min(220px,100%)}#action-strip{grid-column:1}}
+@media(max-width:850px){
+  body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+  #action-strip{position:relative;margin:0;padding:5px 10px;z-index:auto;border-radius:0;border-width:0 0 1px}
+  #action-status{font-size:12px}#action-strip button{padding-inline:7px}
+  .statusbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));height:auto;gap:0;overflow:visible;padding:4px 7px}.statusbar .date,.statusbar .status-item{min-width:0;gap:2px;padding:4px 5px;display:flex;flex-direction:column;align-items:flex-start}.statusbar .status-item>svg,.statusbar .coin,.statusbar .food-icon,.statusbar .mini-meter,.statusbar .weather{display:none}.statusbar .status-item strong{font-size:14px;white-space:nowrap}.statusbar .status-item small,.statusbar .date .tiny-label{font-size:9px}.statusbar #game-date{font-size:10px;white-space:nowrap}
+  .game-layout>.chart{height:52dvh;min-height:260px}
+  #quick-bar{position:fixed;z-index:16;inset:auto 0 0;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:7px 8px calc(7px + env(safe-area-inset-bottom,0px));background:#f9f6e9;border-top:1px solid #9aafa3;box-shadow:0 -3px 15px #18394220}
+  #quick-bar button{min-height:48px;background:#e6efe5;border-radius:6px;color:#245462;font-size:13px;font-weight:700}#quick-bar button:active{background:var(--ui-teal);color:white}
+  #quick-sheet[open]{display:flex;flex-direction:column;position:fixed;inset:auto 0 0;margin:0;width:100%;max-width:none;height:55dvh;max-height:85dvh;padding:0 0 env(safe-area-inset-bottom,0px);border:1px solid #8fa99d;border-radius:15px 15px 0 0}
+  #quick-sheet.expanded[open]{height:85dvh}#quick-sheet header{display:flex;align-items:center;gap:8px;padding:5px 10px;background:#eef4e9;border-bottom:1px solid var(--ui-border)}
+  #quick-sheet header strong{flex:1;color:#244f59}#quick-sheet header button{min-width:44px;border:1px solid var(--ui-border);border-radius:5px;padding-inline:8px;background:#fffdf4;color:#254e59}
+  #quick-content{overflow:auto;overscroll-behavior:contain;min-height:0;padding:8px 10px 14px}
+  #quick-content #port-panel{display:block;position:static;width:100%;min-width:0;max-height:none;overflow:visible;border:0;background:#fffdf4}
+  #quick-content .port-illustration{display:none}#quick-content .panel-content{padding:8px}#quick-content .panel-bottom{position:sticky;bottom:0;padding:8px;background:#fffdf4}
+  #quick-content .trade-btn,#mobile-panels .trade-btn{min-height:44px;min-width:44px}
+  .quick-links{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #manual-pad.visible{display:grid;grid-template-columns:52px auto 52px;grid-template-rows:auto auto auto;align-items:center;justify-content:end;gap:2px;position:relative;left:auto;bottom:auto;background:#eef3e8;padding:6px 12px 5px;margin:0;width:100%}
+  #manual-pad>button:first-child{grid-column:2;grid-row:1;justify-self:center}#manual-pad>div{grid-column:1/-1;grid-row:2;display:flex;justify-content:center}#manual-pad>button:nth-of-type(2){grid-column:2;grid-row:3;justify-self:center}
+  #manual-pad button{width:52px;height:52px;margin:1px}#manual-pad p{display:none}
+  html[data-helm-hand=left] #manual-pad.visible{justify-content:start}
+  #mobile-panels>.navigation-mode{order:0}#mobile-panels>#port-panel{order:1}#mobile-panels>.voyage-sidebar{order:2}#mobile-panels>.minimap-card{order:3}#mobile-panels>.chat-panel{order:4}
+  .topbar .header-end{gap:5px}.topbar #update-notes{font-size:11px;padding:5px 6px;min-height:44px}
+  .bottom-bar #chat-toggle{position:static;box-shadow:none}
+  #modal{max-height:85dvh;max-width:calc(100vw - 24px)}
+  #toast-container{bottom:calc(70px + env(safe-area-inset-bottom,0px))}
+}
+@media(max-width:850px) and (orientation:landscape){.game-layout>.chart{height:56dvh;min-height:170px}#manual-pad.visible{grid-template-rows:auto}#manual-pad>button:first-child,#manual-pad>div,#manual-pad>button:nth-of-type(2){grid-row:1;grid-column:auto}#manual-pad.visible{grid-template-columns:52px auto 52px}}

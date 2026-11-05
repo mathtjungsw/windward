@@ -35,3 +35,5 @@ for lon,lat in [(-5.5,36),(-5,36),(103.5,1),(104,1),(103,1.5),(102.5,2),(9,56),(
     mask[y*width+x]=0
 (root/'navigation.json').write_text(json.dumps({'width':width,'height':height,'step':step,'top':top,'land':base64.b64encode(mask).decode()}),encoding='utf-8')
 print(f'Navigation grid: {width} x {height}, {sum(mask)} land cells')
+import runpy
+runpy.run_path(str(root.parents[1]/'tools'/'build-coast.py'))

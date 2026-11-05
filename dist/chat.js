@@ -1,4 +1,4 @@
-import {CHAT_LIMIT,CHAT_MAX_LENGTH,CHAT_INTERVAL,chatText,recentChat,validChat} from './social-core.js';
+import {CHAT_LIMIT,CHAT_MAX_LENGTH,CHAT_INTERVAL,chatText,recentChat,validChat,validCard} from './social-core.js';
 
 // Fifty reusable slots overwrite old text in the database, not merely on screen.
 export class CaptainChat{
@@ -17,8 +17,9 @@ export class CaptainChat{
     s.get(old).then(snapshot=>{if(generation!==this.generation)return;this.expired=[];snapshot.forEach(child=>this.expired.push(child.key));}).catch(()=>{});
   }
   list(){return recentChat(this.messages.values());}
-  async send(value){
+  async send(value,card){
     const text=chatText(value),s=this.fleet.sdk;
+    if(card&&!validCard(card))return {ok:false,error:'공유 정보를 확인해 주세요.'};
     if(!text)return {ok:false,error:'메시지를 입력해 주세요.'};
     if(text.length>CHAT_MAX_LENGTH)return {ok:false,error:'200자까지 보낼 수 있어요.'};
     if(!this.connected||!this.ready||!this.fleet.connected)return {ok:false,error:'함께 항해에 연결한 뒤 보낼 수 있어요.'};
@@ -31,7 +32,7 @@ export class CaptainChat{
         if(generation!==this.generation||!this.fleet.connected)return {ok:false,error:'연결이 바뀌었어요. 다시 보내 주세요.'};
         const sequence=Number((await s.get(s.ref(this.fleet.db,this.path+'/sequence'))).val()||0)+1;
         if(generation!==this.generation)return {ok:false,error:'연결이 바뀌었어요. 다시 보내 주세요.'};
-        const changes={sequence,[`messages/${sequence%CHAT_LIMIT}`]:{seq:sequence,uid:this.uid,name:this.fleet.name,text,at:s.serverTimestamp()},[`lastSent/${this.uid}`]:s.serverTimestamp()};
+        const changes={sequence,[`messages/${sequence%CHAT_LIMIT}`]:{seq:sequence,uid:this.uid,name:this.fleet.name,text,at:s.serverTimestamp(),...(card?{kind:card.kind,ref:card.ref}:{})},[`lastSent/${this.uid}`]:s.serverTimestamp()};
         for(const id of this.expired)if(id!==this.uid)changes[`lastSent/${id}`]=null;
         try{await s.update(this.room,changes);this.expired=[];this.lastAt=Date.now();return {ok:true};}
         catch(error){

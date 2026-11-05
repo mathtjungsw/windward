@@ -137,6 +137,8 @@ for rid,ko,en,country,display,region,good,river,fact,sea in ROWS:
     if river:dock=snap(dock,next(r['path'] for r in RIVERS if r['id']==river))
     market=[good]+[g for g in {'wine':['wool','glass'],'wool':['wine','tea'],'glass':['wine','spice'],'silk':['tea','glass'],'coffee':['sugar','wool'],'spice':['silk','tea'],'tea':['silk','wool'],'sugar':['coffee','glass']}[good] if g!=good]
     extra.append({'id':rid,'name':ko,'en':en,'country':display,'region':region,'lon':dock[0],'lat':dock[1],'city':city,'specialty':good,'market':market,'fact':fact,'sea':sea,**({'river':river} if river else {})})
+# Reviewed additions use explicit city / gameplay berth separation.
+extra.extend(json.loads((ROOT/'tools'/'port-catalog.json').read_text(encoding='utf-8'))['ports'])
 updates={}
 for rid,en,country,river in [('seville','Seville','Spain','guadalquivir'),('london','London','United Kingdom','thames')]:
     city=place(en,country);dock=snap(city,next(r['path'] for r in RIVERS if r['id']==river))

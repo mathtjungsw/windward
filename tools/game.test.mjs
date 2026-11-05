@@ -82,8 +82,8 @@ test('old saves default to automatic navigation and direct mode survives a reloa
   saved.controlMode='manual';assert.equal(loadState({getItem:()=>JSON.stringify(saved)}).controlMode,'manual');
 });
 
-test('the expanded atlas has 64 unique ports, 9 rivers, and connected inland round trips',()=>{
-  assert.equal(PORTS.length,64);assert.equal(new Set(PORTS.map(p=>p.id)).size,64);assert.equal(waterways.length,9);
+test('the expanded atlas has 88 unique ports, 9 rivers, and connected inland round trips',()=>{
+  assert.equal(PORTS.length,88);assert.equal(new Set(PORTS.map(p=>p.id)).size,88);assert.equal(waterways.length,9);
   for(const p of PORTS.filter(p=>p.river)){
     const river=nav.rivers.find(r=>r.id===p.river);assert.ok(river,p.id);
     const approach=nav.approach(p);assert.equal(nav.isLand(approach),false,p.id+' berth');
