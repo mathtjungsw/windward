@@ -5,7 +5,7 @@ import {GOODS,PORTS,PORT_BY_ID} from '../dist/data.js';
 import {PORT_HISTORY} from '../dist/port-history.js';
 import {directionForKey} from '../dist/controls.js';
 import {validCard} from '../dist/social-core.js';
-import {Navigator,initialState,canDepart,advanceVoyage,advanceManualMotion,beginRescue,parseSavedGame,recordArrival,resupply,unloadSupply,maxBuyQuantity,usedSpace,upgradeShip,voyageEstimate,price,sellPrice,helmStep} from '../dist/engine.js';
+import {ACTIVE_SECONDS_PER_DAY,Navigator,initialState,canDepart,advanceVoyage,advanceManualMotion,beginRescue,parseSavedGame,recordArrival,resupply,unloadSupply,maxBuyQuantity,usedSpace,upgradeShip,voyageEstimate,price,sellPrice,helmStep} from '../dist/engine.js';
 import {wrappedMotion} from '../dist/world-wrap.js';
 
 const json=name=>JSON.parse(readFileSync(new URL(`../dist/assets/${name}.json`,import.meta.url),'utf8'));
@@ -16,31 +16,47 @@ const route=(a,b,coastal=false)=>nav.route(point(a),point(b),{maxOffshore:coasta
 test('coastal trade works while the starter cannot depart for Madeira or Havana',()=>{
   const s=initialState();
   const local=route('lisbon','setubal',true);assert.ok(canDepart(s,local).ok);
-  const porto=route('lisbon','porto',true);assert.ok(voyageEstimate(s,porto).food*2+.5<6);
+  const porto=route('lisbon','porto',true);assert.ok(voyageEstimate(s,porto).food*2+.5<s.food);
   for(const id of ['funchal','havana'])assert.equal(canDepart(s,route('lisbon',id,true)).ok,false);
   assert.equal(upgradeShip(s).ok,false);assert.equal(s.money,2400);
   const goods=Object.entries(GOODS);assert.equal(goods.filter(([,g])=>!g.legacy).length,23);
   for(const p of PORTS){assert.ok(PORT_HISTORY[p.id]?.text,p.id);assert.ok(!p.market.includes('spice'));for(const [id]of goods)assert.ok(sellPrice(p.id,id,0)>0);}
-  const net=(sellPrice('setubal','wine',0)-price('lisbon','wine',0)+sellPrice('lisbon','salt',0)-price('setubal','salt',0))*37-6;
+  const net=(sellPrice('setubal','wine',0)-price('lisbon','wine',0)+sellPrice('lisbon','salt',0)-price('setubal','salt',0))*maxBuyQuantity(s,'wine')-6;
   assert.ok(net>100,`starter round trip net ${net}`);
 });
 
-test('supply consumes cargo space and credit restores supplies without creating money',()=>{
-  const s=initialState();assert.equal(usedSpace(s),3);assert.equal(maxBuyQuantity(s,'wine'),37);
-  assert.equal(unloadSupply(s,2),true);assert.equal(s.food,4);assert.equal(s.supplyCreditDays,2);
-  assert.equal(maxBuyQuantity(s,'wine'),38);assert.equal(maxBuyQuantity(s,'wine',6),37);
+test('ten days of starter supply uses five cargo spaces and can be restocked with credit',()=>{
+  const s=initialState();assert.equal(s.food,10);assert.equal(usedSpace(s),5);assert.equal(maxBuyQuantity(s,'wine'),35);
+  assert.equal(unloadSupply(s,2),true);assert.equal(s.food,8);assert.equal(s.supplyCreditDays,2);
+  assert.equal(maxBuyQuantity(s,'wine'),36);assert.equal(maxBuyQuantity(s,'wine',10),35);
   assert.deepEqual(resupply(s,Infinity),{ok:true,amount:2,cost:0});assert.equal(s.money,2400);assert.equal(s.supplyCreditDays,0);
+  assert.equal(s.food,10);
+  const existing=parseSavedGame(JSON.stringify({...s,food:6}));
+  assert.equal(existing.food,6);
+  assert.deepEqual(resupply(existing,Infinity),{ok:true,amount:4,cost:12});
+});
+
+test('the selected starter pace reaches Setubal in about two seconds without changing route consumption',()=>{
+  const s=initialState(),local=route('lisbon','setubal',true);
+  const estimate=voyageEstimate(s,local);
+  assert.ok(estimate.seconds>1.8&&estimate.seconds<2);
+  assert.ok(Math.abs(estimate.food-local.total/80)<1e-8);
+  assert.ok(voyageEstimate({...s,level:1},local).seconds<estimate.seconds);
+  s.port=null;s.voyage={...local,target:'setubal',travelled:0,foodRemaining:estimate.food};
+  assert.equal(advanceVoyage(s,nav,1).arrived,false);
+  assert.equal(advanceVoyage(s,nav,1).arrived,true);
+  assert.ok(Math.abs(s.food-(10-estimate.food))<1e-8);
 });
 
 test('auto and direct motion spend identical food and game time, including river travel',()=>{
   for(const [a,b] of [[[-12,40],helmStep([-12,40],1,0,.4)],[[ -6.003,37.398261],nav.rivers.find(r=>r.id==='guadalquivir').path.at(-1)]]){
     const r=nav.route(a,b);assert.ok(r);if(r.total<.00001)continue;
-    const auto={...initialState(),port:null,position:a,voyage:{...r,travelled:0,foodRemaining:6}};
+    const auto={...initialState(),port:null,position:a,voyage:{...r,travelled:0,foodRemaining:10}};
     const expected=voyageEstimate(auto,r);const result=advanceVoyage(auto,nav,expected.seconds);
-    assert.ok(result.arrived);assert.ok(Math.abs(auto.day-expected.days)<1e-8);assert.ok(Math.abs(auto.food-(6-expected.food))<1e-8);
+    assert.ok(result.arrived);assert.ok(Math.abs(auto.day-expected.days)<1e-8);assert.ok(Math.abs(auto.food-(10-expected.food))<1e-8);
   }
   const a=[-12,40],b=helmStep(a,1,0,.4),s={...initialState(),port:null,position:a,level:1};
-  const moved=advanceManualMotion(s,nav,wrappedMotion(a,b),.4/120*12);
+  const moved=advanceManualMotion(s,nav,wrappedMotion(a,b),.4/120*ACTIVE_SECONDS_PER_DAY);
   assert.ok(moved.finished);assert.ok(Math.abs(s.day-.4/120)<1e-8);
 });
 

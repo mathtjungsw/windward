@@ -3,6 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {initialState} from '../dist/engine.js';
+import {previewPrefix,previewHeader,previewStyles,previewEntry,previewShipRules} from './speed-preview.mjs';
 
 const root=fileURLToPath(new URL('../dist/',import.meta.url));
 const useEmulators=process.argv.includes('--emulators');
@@ -27,6 +28,20 @@ async function fixturePage(game,crew=false){
     .replace('run(prepare);',`account.seenVersion=RELEASE;beginPlaying(${JSON.stringify(game)});${crew?crewFixture:''}`);
   return (await read('index.html')).replace('<head>','<head><base href="/">')
     .replace('<script type="module" src="app.js"></script>',()=>'<script type="module">'+app.replace(/<\/script/gi,'<\\/script')+'</script>');
+}
+
+async function speedPreviewPage(){
+  const app=await read('app.js');
+  const entry='clearLegacyStorage(storage);\n  renderFleetStatus();showEntry();';
+  const normalized=app.replaceAll('\r\n','\n');
+  if(!normalized.includes(entry))throw Error('Speed preview could not find the game entry point.');
+  const code=`import {setPreviewSpeed} from './ship-rules.js';\n`+normalized
+    .replace(entry,()=>previewEntry)
+    .replace("}catch(error){$('#map-loading').innerHTML=", "}catch(error){console.error(error);$('#speed-route').textContent='테스트 화면을 불러오지 못했어요. 새로고침해 주세요.';const loading=$('#map-loading');if(loading)loading.innerHTML=");
+  return (await read('index.html'))
+    .replace('<body>','<body>'+previewHeader)
+    .replace('</head>',previewStyles+'</head>')
+    .replace('<script type="module" src="app.js"></script>',()=>'<script type="module">'+code.replace(/<\/script/gi,'<\\/script')+'</script>');
 }
 
 async function emulatorAccount(){
@@ -57,6 +72,11 @@ function reply(res,type,data){
 const server=createServer(async(req,res)=>{
   try{
     const url=new URL(req.url,'http://localhost');
+    if(url.pathname===previewPrefix.slice(0,-1)){
+      res.writeHead(302,{Location:previewPrefix});res.end();return;
+    }
+    if(url.pathname===previewPrefix)return reply(res,'.html',await speedPreviewPage());
+    if(url.pathname===previewPrefix+'ship-rules.js')return reply(res,'.js',previewShipRules(await read('ship-rules.js')));
     if(useEmulators&&url.pathname==='/account.js')return reply(res,'.js',await emulatorAccount());
     const manual={...initialState(),port:null,controlMode:'manual'};
     if(url.pathname==='/__qa/harbor')return reply(res,'.html',await fixturePage({...manual,position:[url.searchParams.has('near')?-9.44:-10.1,41]}));
@@ -64,7 +84,8 @@ const server=createServer(async(req,res)=>{
     if(url.pathname==='/__qa/wrap')return reply(res,'.html',await fixturePage({...manual,position:[0,url.searchParams.get('edge')==='south'?-59.8:79.8]}));
     if(url.pathname==='/__qa/crew')return reply(res,'.html',await fixturePage(initialState(),true));
     if(url.pathname==='/__qa/mobile')return reply(res,'.html','<!doctype html><html lang="ko"><meta charset="utf-8"><title>바람의 항로 모바일 화면 검증</title><style>body{margin:0;background:#dce8e8;text-align:center}iframe{display:block;margin:auto;width:390px;height:844px;border:0;max-width:100%}</style><iframe title="모바일 항해 게임" src="/"></iframe></html>');
-    const target=path.resolve(root,'.'+(url.pathname==='/'?'/index.html':decodeURIComponent(url.pathname)));
+    const relative=url.pathname.startsWith(previewPrefix)?'/'+url.pathname.slice(previewPrefix.length):url.pathname;
+    const target=path.resolve(root,'.'+(relative==='/'?'/index.html':decodeURIComponent(relative)));
     if(!target.startsWith(path.resolve(root)+path.sep)){res.writeHead(403);res.end();return;}
     reply(res,path.extname(target),await readFile(target));
   }catch{res.writeHead(404);res.end('Not found');}

@@ -13,7 +13,7 @@ export const distance = (a,b)=>{
 };
 export const INITIAL_PORTS=['lisbon','porto','sanlucar','seville','setubal','sines','lagos'];
 export function initialState(){return {
-  version:2,world:'real',knownPorts:[...INITIAL_PORTS],explored:'',money:2400,food:6,supplyCreditDays:0,day:0,cargo:{},visited:['lisbon'],port:'lisbon',
+  version:2,world:'real',knownPorts:[...INITIAL_PORTS],explored:'',money:2400,food:ship({level:0}).supply,supplyCreditDays:0,day:0,cargo:{},visited:['lisbon'],port:'lisbon',
   position:[-9.14,38.72],voyage:null,controlMode:'auto',profit:0,trades:0,soldAway:false,level:0,speed:1,
   favorites:[],recentPorts:['lisbon'],recentRoutes:[],missions:[],quiz:[],boughtLisbonWine:false,
   log:[{day:0,text:'리스본에서 연안 교역을 시작합니다. 보급과 화물 공간을 함께 확인하세요.',type:'discovery'}]
