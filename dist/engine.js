@@ -14,6 +14,7 @@ export const distance = (a,b)=>{
 };
 export const INITIAL_PORTS=['lisbon','porto','seville'];
 export function initialState(){return {
+  raftStart:{id:'raft-start-2026-11-06',fromTier:0,fromFleetCount:1,refund:0},
   version:3,legacyHarbor:false,shipTier:0,fleetCount:1,discoveries:{},rumors:[],supplyCreditValue:0,worldCatalogVersion:'2026.11.06',explorationMaskVersion:1,world:'real',knownPorts:[...INITIAL_PORTS],explored:'',money:2400,food:10,day:0,cargo:{},visited:['lisbon'],port:'lisbon',
   position:[-9.14,38.72],voyage:null,controlMode:'auto',profit:0,trades:0,soldAway:false,level:0,speed:1,
   favorites:[],recentPorts:['lisbon'],recentRoutes:[],missions:[],quiz:[],boughtLisbonWine:false,

@@ -27,6 +27,8 @@ export function parseState(raw,defaults){
  if(s.version===3&&s.discoveries&&(typeof s.discoveries!=='object'||Array.isArray(s.discoveries)))bad();
  for(const [id,d]of Object.entries(s.discoveries||{}))if(Object.hasOwn(DISCOVERY_BY_ID,id)){if(!d||!finite(d.foundDay)||d.foundDay<0||!finite(d.foundAt)||d.foundAt<0)bad();game.discoveries[id]={foundDay:d.foundDay,foundAt:d.foundAt,catalogVersion:String(d.catalogVersion||'2026.11.06')};}
  delete game.supplyCreditDays;
+ // Defaults describe new captains; an old save must not inherit their grant marker.
+ if(!Object.hasOwn(s,'raftStart'))delete game.raftStart;
  if(s.version<3)game.migrationId='world-fleet-2026-11-06';
  if(s.version===1){if(v)game.voyage={...v,legacy:true,legacyShipLevel:s.level};else if(!s.port)game.transitionPending=true;else {const max=SHIPS[game.shipTier].supply,extra=Math.max(0,game.food-max);game.food-=extra;game.supplyCreditValue+=extra*[3,6,12][s.level];}}
  if(game.voyage?.legacy&&game.voyage.legacyShipLevel===undefined)game.voyage.legacyShipLevel=Math.min(2,s.level||0);

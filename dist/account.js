@@ -1,5 +1,6 @@
 import {FIREBASE_CONFIG} from './firebase-config.js';
 import {initialState,parseSavedGame} from './engine.js';
+import {applyRaftStart} from './raft-start.js';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
@@ -107,7 +108,8 @@ export class CaptainAccount {
       }
     } catch(error) { throw Error('기기 저장을 읽지 못했어요. 원본은 유지됩니다.'); }
     const observed = (await this.sdk.get(ref)).val();
-    if(observed?.schemaVersion>3)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
+    if(observed?.schemaVersion>4)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
+    if(observed&&observed.schemaVersion<4){const backup='windward-before-raft-start-v4:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('전환 전 기록을 기기에 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
     if(observed&&observed.schemaVersion<3){const backup='windward-before-world-v3:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('이관 전 기기 백업을 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
     if(cached?.data?.version<3){const backup=key+':before-world-v3';if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(cached));}
     let block, recovered;
@@ -125,10 +127,11 @@ export class CaptainAccount {
       recovered = !!cached?.pending;
       const source = recovered ? cached.data : current ? current.data : initialState();
       const game = parseGame(source);
+      applyRaftStart(game);
       game.world = 'real';
       game.speed = 1;
       return {
-        schemaVersion: 3,
+        schemaVersion: 4,
         revision: (current?.revision || 0) + 1,
         data: JSON.stringify(game),
         session: this.session,
@@ -206,7 +209,7 @@ export class CaptainAccount {
       const result = await this.sdk.runTransaction(this.ref, current => {
         current ??= this.record;
         if (current?.session !== this.session || current.revision !== expected) return;
-        return {...current, schemaVersion:3, data, revision: expected + 1, leaseUntil: Date.now() + 90000,
+        return {...current, schemaVersion:4, data, revision: expected + 1, leaseUntil: Date.now() + 90000,
           updatedAt: this.sdk.serverTimestamp()};
       }, {applyLocally: false});
       if (!result.committed) {

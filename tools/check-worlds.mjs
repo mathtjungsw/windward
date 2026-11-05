@@ -10,7 +10,7 @@ assert.equal((await req('.settings/rules',{admin:true,method:'PUT',body:JSON.par
 const uid='world-test-a',other='world-test-b';
 {
  const world='real';
- const path=`gameV2/privateSaves/${uid}`,data={...initialState(),world,speed:world==='real'?1:4},record={schemaVersion:2,revision:1,session:'session-1',leaseUntil:Date.now()+60000,updatedAt:timestamp,data:JSON.stringify(data)};
+ const path=`gameV2/privateSaves/${uid}`,data={...initialState(),world,speed:world==='real'?1:4},record={schemaVersion:4,revision:1,session:'session-1',leaseUntil:Date.now()+60000,updatedAt:timestamp,data:JSON.stringify(data)};
  await req(path,{admin:true,method:'DELETE'});
  assert.equal((await req(path,{uid,method:'PUT',body:record})).status,200,'own save');
  assert.equal((await req(path,{uid:other})).status,401,'another captain cannot read private cargo/exploration');
@@ -20,8 +20,10 @@ const uid='world-test-a',other='world-test-b';
  assert.equal((await req(path,{uid,method:'PUT',body:{...record,revision:2}})).status,200,'next revision');
  const {schemaVersion,...oldRecord}=record;
  assert.equal((await req(path,{uid,method:'PUT',body:{...oldRecord,revision:3}})).status,401,'old save envelope cannot overwrite current record');
- assert.equal((await req(path,{uid,method:'PUT',body:{...record,schemaVersion:3,revision:3}})).status,200,'migrate to schema three');
- assert.equal((await req(path,{uid,method:'PUT',body:{...record,schemaVersion:2,revision:4}})).status,401,'old client cannot downgrade schema three');
+ assert.equal((await req(path,{uid,method:'PUT',body:{...record,schemaVersion:3,revision:3}})).status,401,'pre-conversion client cannot overwrite schema four');
+ assert.equal((await req(path,{uid,method:'PUT',body:{...record,revision:3}})).status,200,'schema four advances normally');
+ assert.equal((await req(path,{uid,method:'PUT',body:{...record,schemaVersion:2,revision:4}})).status,401,'old client cannot downgrade schema four');
+ assert.equal((await req('gameV2/privateSaves/old-new-player',{uid:'old-new-player',method:'PUT',body:{...record,schemaVersion:3}})).status,401,'old client cannot create an unconverted new captain');
  const saved=JSON.parse((await req(path,{uid})).value.data);assert.deepEqual(saved.cargo,{});assert.equal(saved.world,world);
  const rank={name:'검증 선장',money:2400,profit:100,visited:3,updatedAt:timestamp};
  assert.equal((await req(`gameV2/real/rankings/${uid}`,{uid,method:'PUT',body:rank})).status,200);

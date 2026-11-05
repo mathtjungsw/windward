@@ -3,6 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {initialState} from '../dist/engine.js';
+import {applyRaftStart} from '../dist/raft-start.js';
 import {DISCOVERIES} from '../dist/discoveries-catalog.js';
 import {PORTS} from '../dist/data.js';
 import {previewPrefix,previewHeader,previewStyles,previewEntry,previewShipRules} from './speed-preview.mjs';
@@ -34,6 +35,7 @@ async function fixturePage(game,crew=false){
 
 async function expeditionPage(mode){
  const game=initialState();
+ if(mode==='raft'){game.shipTier=4;delete game.raftStart;applyRaftStart(game,123);}
  if(mode==='ship'){Object.assign(game,{shipTier:9,fleetCount:2,money:150000,food:20});}
  if(mode==='album'){game.day=30;game.shipTier=9;game.food=20;for(const d of DISCOVERIES.slice(0,6))game.discoveries[d.id]={foundDay:1,foundAt:1000,catalogVersion:'2026.11.06'};}
  if(mode==='discovery'){const d=DISCOVERIES.find(d=>d.id==='relic-compass');game.port=null;game.position=[...d.point];}

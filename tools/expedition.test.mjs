@@ -12,6 +12,7 @@ import {inspectDiscovery,discoveryStats,readRumor,nearbyDiscoveries} from '../di
 import {wrappedMotion} from '../dist/world-wrap.js';
 import {rankFleet} from '../dist/social-core.js';
 import {FleetPresence} from '../dist/multiplayer.js';
+import {RAFT_START_ID,fleetAppraisal,applyRaftStart} from '../dist/raft-start.js';
 const data=n=>JSON.parse(readFileSync(new URL('../dist/assets/'+n+'.json',import.meta.url),'utf8'));
 const nav=new Navigator(data('navigation'),data('rivers'));
 
@@ -94,4 +95,21 @@ test('a committed change while summary publishing is pending is drained before l
  const f=new FleetPresence({readShip:()=>({}),readStats:()=>stats,onChange:()=>{},onStatus:()=>{}});Object.assign(f,{connected:true,active:true,uid:'u',root:'test',name:'선장',sdk:{ref:()=>'',serverTimestamp:()=>1,runTransaction:async(_,fn)=>{if(++calls===1){started();await gate;}current=fn(current);return {committed:true};}}});
  const first=f.publishSummary();await ready;stats={...stats,money:1800,shipTier:1,saveRevision:2};const pending=f.publishSummary();release();await Promise.all([first,pending]);
  assert.equal(current.money,1800);assert.equal(current.shipTier,1);assert.equal(current.saveRevision,2);assert.equal(calls,2);
+});
+
+test('all old captains receive a raft once and their catalog value is refunded without erasing progress',()=>{
+ const s={...initialState(),shipTier:9,fleetCount:3,money:1234,food:20,cargo:{wine:{qty:80,cost:2800}},visited:['lisbon','porto'],port:'porto',explored:'kept',discoveries:{'relic-compass':{foundDay:1,foundAt:2}}};delete s.raftStart;
+ const before=structuredClone(s),expected=fleetAppraisal(s);const r=applyRaftStart(s,123);
+ assert.equal(r.refund,expected);assert.equal(s.money,1234+expected);assert.equal(s.shipTier,0);assert.equal(s.fleetCount,1);assert.equal(s.food,10);assert.equal(s.supplyCreditValue,300);assert.deepEqual(s.cargo,before.cargo);assert.deepEqual(s.visited,before.visited);assert.equal(s.explored,'kept');assert.deepEqual(s.discoveries,before.discoveries);assert.equal(s.profit,before.profit);
+ const first=structuredClone(s);assert.equal(applyRaftStart(s).applied,false);assert.deepEqual(s,first);assert.equal(applyRaftStart(parseSavedGame(s)).applied,false);
+ s.shipTier=1;assert.equal(applyRaftStart(s).applied,false);assert.equal(s.shipTier,1,'new upgrades must survive reconnect');
+});
+test('legacy saves do not inherit a new captain marker and already-owned rafts are not compensated',()=>{
+ const old={...initialState(),version:2,level:0};delete old.raftStart;delete old.shipTier;delete old.fleetCount;
+ const migrated=parseSavedGame(old);assert.equal(migrated.raftStart,undefined);assert.equal(applyRaftStart(migrated,123).refund,5200);assert.equal(migrated.money,7600);assert.equal(migrated.raftStart.id,RAFT_START_ID);
+ const raft=initialState();delete raft.raftStart;assert.equal(applyRaftStart(raft).refund,0);assert.equal(raft.money,2400);assert.equal(applyRaftStart(initialState()).applied,false);
+});
+test('a downgraded ship at sea returns only to a visited port without exploration or rescue fees',()=>{
+ const s={...initialState(),shipTier:15,port:null,position:[100,0],voyage:{target:'havana',origin:'porto'},visited:['lisbon','porto'],recentPorts:['porto','lisbon'],explored:'unchanged',food:4,money:0};delete s.raftStart;
+ const expected=fleetAppraisal(s);applyRaftStart(s,123);assert.equal(s.money,expected);assert.equal(s.port,'porto');assert.equal(s.voyage,null);assert.deepEqual(s.visited,['lisbon','porto']);assert.equal(s.explored,'unchanged');assert.equal(s.explorationLockedUntilSailing,true);assert.equal(s.food,4);
 });

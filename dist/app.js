@@ -38,7 +38,7 @@ const account=new CaptainAccount(storage,tabSession);
 try{sessionStorage.setItem('windward-v3-tab',account.session);}catch{}
 account.readGame=()=>{state.explored=exploration.encode();return state;};
 account.onStatus=text=>{$('#save-status').textContent=text;};
-account.onConflict=()=>{sessionBlocked=true;paused=true;heldKeys.clear();manualActive=false;fleet.stop();showModal('다른 화면에서 이어하고 있어요','항해 기록 보호','<p>이 화면의 항해와 저장을 멈췄어요. 이 기기의 기록은 보존했습니다. 다시 접속하려면 새로고침해 주세요.</p>');};
+account.onConflict=()=>{sessionBlocked=true;paused=true;heldKeys.clear();manualActive=false;fleet.stop();showModal('항해 기록이 갱신됐어요','항해 기록 보호','<p>다른 화면이나 서버에서 기록이 변경되어 이 화면의 항해와 저장을 멈췄어요. 이 기기 기록은 보존했습니다. 새로고침하면 최신 기록과 전환 보상을 확인할 수 있어요.</p>');};
 const FIXED_MAP_SCALE=12;
 const CHART_TILES=[-1600,0,1600].flatMap(x=>[-800,0,800].map(y=>[x,y]));
 let camera={x:project(state.position)[0],y:project(state.position)[1]},screen={w:0,h:0,k:FIXED_MAP_SCALE},drag=null,dragged=false,frame=0,globe=null;

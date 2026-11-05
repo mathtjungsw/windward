@@ -12,6 +12,13 @@ function fixture(record=null){
  return {a,records,values,storage,cold:()=>cold=true,offline:()=>{online=false;failWrite=true;}};
 }
 const user={uid:'owner'},input={name:'테스트 선장'};
+test('old cloud ship conversion pays once, upgrades remain after schema four reconnect',async()=>{
+ const game={...initialState(),shipTier:4,money:2400};delete game.raftStart;
+ const f=fixture({schemaVersion:3,revision:4,data:JSON.stringify(game),session:'expired',leaseUntil:0});
+ const s=await f.a.enter(user,null,input);clearInterval(f.a.timer);assert.equal(s.shipTier,0);assert.equal(s.money,7600);assert.equal(f.records.get('gameV2/privateSaves/owner').schemaVersion,4);assert.ok(f.values.has('windward-before-raft-start-v4:owner'));
+ f.a.readGame=()=>s;s.shipTier=1;s.money-=600;f.a.save(s);await f.a.flushPromise;if(f.a.dirty)await f.a.flush();
+ const again=await f.a.enter(user,{name:input.name},input);clearInterval(f.a.timer);assert.equal(again.shipTier,1);assert.equal(again.money,7000);assert.equal(again.raftStart.refund,5200);
+});
 test('a cold Firebase transaction does not falsely freeze a save; edits persist with a newer revision',async()=>{
  const f=fixture(),s=await f.a.enter(user,null,input);clearInterval(f.a.timer);f.a.readGame=()=>s;s.money=2700;f.a.save(s);await new Promise(r=>setTimeout(r,0));
  // Force the SDK callback to report its initial empty cache on the next flush.
