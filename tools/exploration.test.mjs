@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {initialState,loadState,Navigator,distance,helmStep} from '../dist/engine.js';
 import {PORT_BY_ID,PORTS} from '../dist/data.js';
 import {Exploration,SIGHT_NM,discoverPorts,buyInformation,informationCandidate,dockAlong,dockingRadius,leftHarbor,knowsPort,worldSpeed} from '../dist/voyage-core.js';
-import {accountName,validPin,captainAddress,localSaveKey,parseGame} from '../dist/account.js';
+import {accountName,parseGame} from '../dist/account.js';
 import {seaSector,nearbySectors} from '../dist/presence-core.js';
 const nav=new Navigator(JSON.parse(readFileSync(new URL('../dist/assets/navigation.json',import.meta.url))),JSON.parse(readFileSync(new URL('../dist/assets/rivers.json',import.meta.url))));
 const approaches=new Map(PORTS.map(p=>[p.id,nav.approach(p)]));
@@ -52,11 +52,10 @@ test('nearby docking still rejects land shortcuts, another river and premature r
 });
 
 test('real-world speed normalizes buttons, motion and reloaded saves while legacy voyage and progress remain',()=>{
- const s=initialState();s.speed=4;s.world='real';assert.equal(worldSpeed(s),1);const old={...s,money:6789,visited:['lisbon','london'],knownPorts:undefined};const loaded=loadState({getItem:()=>JSON.stringify(old)});assert.equal(loaded.speed,1);assert.equal(loaded.money,6789);assert.equal(knowsPort(loaded,'london'),true);assert.equal(localSaveKey('uid','peace')===localSaveKey('uid','real'),false);
+ const s=initialState();s.speed=4;s.world='real';assert.equal(worldSpeed(s),1);const old={...s,money:6789,visited:['lisbon','london'],knownPorts:undefined};const loaded=loadState({getItem:()=>JSON.stringify(old)});assert.equal(loaded.speed,1);assert.equal(loaded.money,6789);assert.equal(knowsPort(loaded,'london'),true);
 });
-test('test account names normalize, numeric six digits retain zeroes and serialized cloud saves keep empty cargo',async()=>{
- assert.equal(accountName('  바람선장 '),'바람선장');assert.equal(validPin('012345'),true);for(const pin of ['12345','1234567','abcdef','12 456'])assert.equal(validPin(pin),false);assert.throws(()=>accountName('<script>'));
- assert.equal(await captainAddress('ＣＡＰＴＡＩＮ'),await captainAddress('captain'));assert.notEqual(await captainAddress('선장1'),await captainAddress('선장2'));
+test('captain names normalize and serialized cloud saves keep empty cargo',()=>{
+ assert.equal(accountName('  바람선장 '),'바람선장');assert.throws(()=>accountName('<script>'));
  const s=initialState();assert.deepEqual(parseGame(JSON.stringify(s)),s);assert.throws(()=>parseGame('{bad'));assert.throws(()=>parseGame({...s,money:-1}));
 });
 test('nearby sea subscriptions cover the sight circle, date line and high latitudes without fetching the world',()=>{

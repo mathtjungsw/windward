@@ -7,7 +7,7 @@ export class CaptainChat{
     if(!this.fleet.connected)return;
     if(this.connected&&this.uid===this.fleet.uid)return;
     this.disconnect();this.connected=true;this.uid=this.fleet.uid;const generation=this.generation,s=this.fleet.sdk,db=this.fleet.db;
-    this.path=this.fleet.root?`${this.fleet.root}/chat`:'chat/v1';this.room=s.ref(db,this.path);
+    this.path=`${this.fleet.root}/chat`;this.room=s.ref(db,this.path);
     const q=s.query(s.ref(db,this.path+'/messages'),s.orderByChild('seq'),s.limitToLast(CHAT_LIMIT));
     const receive=snapshot=>{if(generation!==this.generation)return;const message=snapshot.val();if(!validChat(message))return;this.messages.set(snapshot.key,message);this.sequence=Math.max(this.sequence,message.seq);if(message.uid===this.uid)this.lastAt=Math.max(this.lastAt,message.at);this.onChange(this.list());};
     const error=()=>{if(generation!==this.generation)return;this.ready=false;this.onStatus('채팅에 연결하지 못했어요. 함께 항해에서 다시 연결해 주세요.');};

@@ -6,3 +6,7 @@ tools/source-data/
 
 # Legacy Sites metadata is local; GitHub Pages is the primary host.
 .openai/
+
+# Firebase CLI and emulator logs
+firebase-debug.log*
+database-debug.log*

@@ -10,7 +10,7 @@ export const distance = (a,b)=>{
   return 3440.065*2*Math.atan2(Math.sqrt(h),Math.sqrt(Math.max(0,1-h)));
 };
 export function initialState(){return {
-  version:1,world:'peace',knownPorts:['lisbon','porto','sanlucar','seville'],explored:'',money:2400,food:100,day:0,cargo:{},visited:['lisbon'],port:'lisbon',
+  version:1,world:'real',knownPorts:['lisbon','porto','sanlucar','seville'],explored:'',money:2400,food:100,day:0,cargo:{},visited:['lisbon'],port:'lisbon',
   position:[-9.14,38.72],voyage:null,controlMode:'auto',profit:0,trades:0,soldAway:false,level:0,speed:1,
   missions:[],quiz:[],boughtLisbonWine:false,log:[{day:0,text:'리스본에서 첫 항해를 준비합니다. 바람이 당신 편이기를!',type:'discovery'}],
 };}

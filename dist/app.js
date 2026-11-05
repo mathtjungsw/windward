@@ -1,12 +1,12 @@
 import {GOODS,PORTS,PORT_BY_ID,MISSIONS} from './data.js';
-import {SAVE_KEY,START_DATE,initialState,loadState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js';
+import {START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js';
 import {GlobeAtlas} from './globe.js';
 import {FleetPresence} from './multiplayer.js';
 import {PRESENCE_COLORS,shipsInSight} from './presence-core.js';
 import {CaptainChat} from './chat.js';
 import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,INFO_PRICE,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,worldSpeed} from './voyage-core.js';
-import {CaptainAccount,authMessage,localSaveKey,parseGame} from './account.js';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,INFO_PRICE,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor} from './voyage-core.js';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js';
 import {CaptainRankings} from './rankings.js';
 import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js';
 
@@ -15,11 +15,17 @@ const fmt=n=>Math.round(n).toLocaleString('ko-KR');
 const toward=name=>{const final=(name.charCodeAt(name.length-1)-0xac00)%28;return name+(final>0&&final!==8?'으로':'로');};
 const icon=(name,cls='')=>`<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
 let storage;try{storage=localStorage;}catch{storage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};}
-try{const legacy=storage.getItem(SAVE_KEY);if(legacy&&!storage.getItem('windward-legacy-backup-v2'))storage.setItem('windward-legacy-backup-v2',legacy);}catch{}
-let state=loadState(storage),selected=state.port||state.voyage?.target||'lisbon',planned=null,nav=null,paused=false,sound=false,audio=null,activeTab='trade',mapReady=false,followShip=!!state.voyage;
-let exploration=new Exploration(state.explored),playing=false,legacyMode=true,sessionBlocked=false,lastFogAt=0;
+let state=initialState(),selected='lisbon',planned=null,nav=null,paused=false,sound=false,audio=null,activeTab='trade',mapReady=false,followShip=false;
+let exploration=new Exploration(state.explored),playing=false,sessionBlocked=false,lastFogAt=0;
 exploration.seed(state);
-const account=new CaptainAccount(storage);
+let tabSession;
+try {
+  if (performance.getEntriesByType('navigation')[0]?.type==='reload') {
+    tabSession=sessionStorage.getItem('windward-v3-tab')||undefined;
+  }
+} catch {}
+const account=new CaptainAccount(storage,tabSession);
+try{sessionStorage.setItem('windward-v3-tab',account.session);}catch{}
 account.readGame=()=>{state.explored=exploration.encode();return state;};
 account.onStatus=text=>{$('#save-status').textContent=text;};
 account.onConflict=()=>{sessionBlocked=true;paused=true;heldKeys.clear();manualActive=false;fleet.stop();showModal('다른 화면에서 이어하고 있어요','항해 기록 보호','<p>이 화면의 항해와 저장을 멈췄어요. 이 기기의 기록은 보존했습니다. 다시 접속하려면 새로고침해 주세요.</p>');};
@@ -31,12 +37,12 @@ let manualTarget=null,manualActive=false,departedPort=null,manualAngle=0,manualC
 const modal=$('#modal');
 let fleetStatus='offline',peerDrawTime=0,ownShipAngle=0,rankMetric='profit',chatOpen=true,chatUnread=0,chatSeen=0,chatLoading=true;
 const ownRank=()=>({id:fleet.uid||'self',name:fleet.name,money:Math.round(state.money),profit:Math.round(state.profit),visited:state.visited.length});
-const fleet=new FleetPresence({storage,readShip:()=>({position:[...state.position],angle:ownShipAngle,money:state.money,profit:state.profit,visited:state.visited.length,status:state.port?'정박':paused||modal.open||document.hidden||(!state.voyage&&!manualActive)?'멈춤':'항해'}),onChange:()=>{renderFleetStatus();renderRanks();renderPeers();renderMinimap();},onStatus:status=>{fleetStatus=status;if(status==='online'){chat.connect();rankings.connect();}else if(status==='offline'){chat.disconnect();}renderFleetStatus();renderRanks();renderChatConnection();}});
+const fleet=new FleetPresence({storage,readShip:()=>({position:[...state.position],angle:ownShipAngle,money:state.money,profit:state.profit,visited:state.visited.length,status:state.port?'정박':paused||modal.open||document.hidden||(!state.voyage&&!manualActive)?'멈춤':'항해'}),onChange:()=>{renderFleetStatus();renderRanks();renderPeers();renderMinimap();},onStatus:status=>{fleetStatus=status;if(status==='online'){chat.connect();rankings.connect();}else if(status==='offline'){chat.disconnect();rankings.disconnect();}renderFleetStatus();renderRanks();renderChatConnection();}});
 const chat=new CaptainChat({fleet,onChange:messages=>renderChat(messages),onStatus:text=>{$('#chat-status').textContent=text;renderChatConnection();}});
 const rankings=new CaptainRankings(fleet,()=>renderRanks());
 const visibleShips=()=>shipsInSight(fleet.captains(),state.position,SIGHT_NM);
 
-const RELEASE='2026.10.27-harbor-trade';
+const RELEASE='2026.11.05-google-real';
 function setupInterface(){
   const worldBadge=document.createElement('button');worldBadge.id='world-badge';worldBadge.className='world-badge';worldBadge.onclick=showAccount;$('.header-end').prepend(worldBadge);
   const tavernTab=document.createElement('button');tavernTab.id='tavern-tab';tavernTab.textContent='주점';tavernTab.onclick=()=>setTab('tavern');$('.panel-tabs').append(tavernTab);
@@ -67,36 +73,142 @@ function exploreMove(from,to){
   exploration.travel(from,to);const found=discoverPorts(state,from,to);if(found.length){for(const p of found){log(`${p.name}의 항구를 찾았습니다. 자동 항해 목적지가 열렸어요.`,'discovery');toast(`새 항구 정보 · ${p.name}`,'discovery');}renderPorts();renderPanel();save();}renderFog();
 }
 function showAccount(){
-  showModal('선장의 항해 기록','계정과 세계',`<p>${account.uid?'계정의 진행은 기기와 서버에 저장됩니다.':'지금은 이 브라우저에서 혼자 항해하고 있어요.'}<br>${state.world==='real'?'현실서버 · 1배속 고정':'평화서버 · 1·2·4배속'}</p><button class="primary-button" id="return-entry">저장하고 접속 화면으로</button><p class="modal-meta">세계마다 항해·채팅·랭킹이 따로 저장돼요. 다른 이름으로 시작해도 기존 선장 기록은 남아요.</p>`);
-  $('#return-entry').onclick=async()=>{save();$('#return-entry').disabled=true;await fleet.stop();await account.close();location.reload();};
+  showModal('선장의 항해 기록','현실서버 · 1배속',
+    '<p>항해 기록은 Google 계정에 연결돼요.</p><button class="primary-button" id="return-entry">저장하고 로그아웃</button>');
+  $('#return-entry').onclick=async()=>{
+    save();
+    playing=false;
+    $('#return-entry').disabled=true;
+    try {
+      await fleet.stop();
+      await account.close();
+      location.reload();
+    } catch {
+      playing=true;
+      $('#return-entry').disabled=false;
+      toast('로그아웃을 마치지 못했어요. 다시 시도해 주세요.','error');
+    }
+  };
 }
 function showPatchNotes(){
-  const seen=account.uid?account.seenVersion:storage.getItem('windward-patch-legacy');if(seen===RELEASE)return;
-  showModal('새로운 항해가 시작됩니다','업데이트 · 2026.10.27',`<div class="patch-list"><h3>두 개의 바다</h3><p>평화서버는 1·2·4배속, 현실서버는 1배속으로 항해해요. 기록과 대화는 세계별로 나뉘어요.</p><h3>탐험하며 여는 항구</h3><p>처음에는 리스본과 인근 3개 항구만 알아요. 40해리 이내로 접근하거나 주점에서 100 D에 정보를 얻으면 새 목적지가 열려요.</p><h3>시야와 탐험 지도</h3><p>현재 시야는 180해리예요. 지나온 곳은 회색으로 기억하고, 시야 안의 다른 배만 보여요.</p><h3>선장 기록과 편한 화면</h3><p>이름과 숫자 6자리로 이어하기. 접속을 종료해도 세 가지 랭킹에 기록이 남아요. 모든 정보창은 열린 상태로 시작하고 제목줄에서 접을 수 있어요.</p></div><p class="modal-meta">확인한 업데이트는 다시 표시하지 않아요. 채팅은 펼치면 최근 50개, 접으면 최근 5개를 미리 보여줘요.</p><button class="primary-button" id="patch-confirm">확인하고 항해하기</button><button class="service-button" id="patch-later">나중에</button>`);
-  $('#modal-content').insertAdjacentHTML('afterbegin','<div class="patch-list"><h3>입항 후 화물 판매를 개선했어요</h3><p>다른 항구 정보를 보고 있어도 현재 정박한 항구의 가격으로 판매할 수 있어요. 화물창에 입항 완료 여부와 판매 항구를 표시합니다.</p><h3>직접 조종 화면과 항구 입항을 개선했어요</h3><p>배 위를 가리던 직접 조종 상태창을 숨겼어요. 항구 근처의 바다나 같은 강에 접근하면 더 넓은 범위에서 입항합니다.</p><h3>접속한 모든 선장의 이름을 확인하세요</h3><p>위쪽 ‘접속 선장’에서 같은 서버에 접속한 선장 이름을 모두 볼 수 있어요. 지도와 지구본에는 내 시야 180해리 안의 배만 표시합니다.</p><h3>지도의 북쪽과 남쪽이 이어져요</h3><p>직접 조종으로 북쪽 끝을 넘으면 남쪽 끝에서 나옵니다. 반대 방향과 지도 드래그도 이어져요. 경계 이동 때문에 식량·항해 시간이 갑자기 늘어나지 않아요.</p></div>');
-  $('#patch-later').onclick=()=>modal.close();$('#patch-confirm').onclick=async()=>{const button=$('#patch-confirm');button.disabled=true;try{if(account.uid)await account.acknowledge(RELEASE);else storage.setItem('windward-patch-legacy',RELEASE);modal.close();}catch{button.disabled=false;toast('확인 기록을 저장하지 못했어요. 다시 눌러주세요.','error');}};
+  if(account.seenVersion===RELEASE)return;
+  showModal('새로운 항해가 시작됩니다','바람의 항로 업데이트',
+    '<p>Google 계정으로 현실서버에 접속해요. 이번 업데이트는 새 항해로 시작합니다.</p><button class="primary-button" id="patch-confirm">확인하고 항해하기</button>');
+  $('#patch-confirm').onclick=async()=>{
+    const button=$('#patch-confirm');button.disabled=true;
+    try{await account.acknowledge(RELEASE);modal.close();}
+    catch{button.disabled=false;toast('확인 기록을 저장하지 못했어요. 다시 눌러 주세요.','error');}
+  };
 }
 function beginPlaying(game){
-  state=game;state.speed=worldSpeed(state);exploration=new Exploration(state.explored);exploration.seed(state);selected=state.port||state.voyage?.target||'lisbon';planned=null;paused=false;playing=true;sessionBlocked=false;lastPanelPort=null;manualActive=false;manualTarget=null;manualChannel=null;departedPort=null;heldKeys.clear();
+  state=game;exploration=new Exploration(state.explored);exploration.seed(state);selected=state.port||state.voyage?.target||'lisbon';planned=null;paused=false;playing=true;sessionBlocked=false;lastPanelPort=null;manualActive=false;manualTarget=null;manualChannel=null;departedPort=null;heldKeys.clear();
   $('#entry-screen')?.remove();$$('.topbar,.statusbar,.game-layout,.bottom-bar').forEach(el=>el.inert=false);setTab('trade');checkMissions();renderHUD();renderPanel();renderPorts();renderRoutes();renderShip();renderFog(true);centerShip();save();showPatchNotes();
 }
 function showEntry(){
-  playing=false;$$('.topbar,.statusbar,.game-layout,.bottom-bar').forEach(el=>el.inert=true);const entry=document.createElement('section');entry.id='entry-screen';entry.setAttribute('aria-label','선장 접속');entry.setAttribute('role','dialog');entry.setAttribute('aria-modal','true');
-  entry.innerHTML=`<div class="entry-art"><span class="entry-kicker">WINDWARD · A TRADER'S ATLAS</span><h1>당신만의 항로가<br>시작되는 곳.</h1><p>바람을 따라 항구를 발견하고,<br>특산물을 거래하며 세계를 탐험하세요.</p><div class="entry-ship">${icon('ship')}</div><small>평면 해도 · 세계 지구본 · 64개의 항구</small></div><div class="entry-card"><h2>항해 시작</h2><p>테스트용 계정 · 이름과 숫자 6자리</p><div class="entry-tabs"><button type="button" data-entry="new" aria-pressed="true">새로하기</button><button type="button" data-entry="resume" aria-pressed="false">이어하기</button></div><form id="entry-form"><label for="entry-name">선장 이름</label><input id="entry-name" maxlength="16" autocomplete="username" required placeholder="바람선장"><label for="entry-pin">숫자 6자리 비밀번호</label><input id="entry-pin" type="password" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" autocomplete="new-password" required placeholder="숫자 6자리를 입력하세요"><fieldset class="world-options"><legend>항해할 세계</legend><label><input type="radio" name="world" value="real" checked><span><b>현실서버</b><small>1배속 고정 · 별도 항해 기록</small></span></label><label><input type="radio" name="world" value="peace"><span><b>평화서버</b><small>1·2·4배속으로 여유롭게</small></span></label></fieldset><label class="import-choice" id="legacy-choice"><input id="legacy-import" type="checkbox"> 이 브라우저의 기존 기록을 평화서버로 가져오기</label><p id="entry-error" role="status"></p><button class="primary-button" id="entry-submit">새 항해 시작 →</button></form><button class="service-button" id="offline-start">${storage.getItem(SAVE_KEY)?'기존 저장으로 혼자 항해':'계정 없이 혼자 항해'}</button><p class="entry-note">이름은 중복 사용할 수 없어요. 테스트 비밀번호를 잊으면 새 이름으로 시작해 주세요. 혼자 항해는 현재 브라우저에 저장돼요.</p></div>`;document.body.append(entry);
-  const share=document.createElement('label');share.className='import-choice';share.innerHTML='<input type="checkbox" id="entry-share" checked> 함께 항해 연결 · 배 위치와 순위 공유';$('#entry-error').before(share);
-  let mode='new',takeover=false;
-  $('#entry-name').value=storage.getItem('windward-last-account')||'';const canImport=!!storage.getItem(SAVE_KEY)&&!storage.getItem('windward-legacy-imported');$('#legacy-import').checked=canImport;const syncLegacyChoice=()=>{$('#legacy-choice').hidden=!canImport||$('input[name="world"]:checked').value!=='peace';};$$('input[name="world"]').forEach(input=>input.onchange=syncLegacyChoice);syncLegacyChoice();
-  $$('[data-entry]').forEach(b=>b.onclick=()=>{mode=b.dataset.entry;takeover=false;$$('[data-entry]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('#entry-submit').textContent=mode==='new'?'새 항해 시작 →':'이어서 항해 →';$('#entry-pin').autocomplete=mode==='new'?'new-password':'current-password';$('#entry-error').textContent='';});
-  $('#offline-start').onclick=()=>{try{const text=storage.getItem(SAVE_KEY),game=text?parseGame(JSON.parse(text)):initialState();legacyMode=true;beginPlaying(game);}catch{$('#entry-error').textContent='기존 저장을 확인하지 못했어요. 원본과 백업은 그대로 보존했어요. 새 계정으로 시작할 수 있어요.';}};
-  $('#entry-form').onsubmit=async event=>{event.preventDefault();const button=$('#entry-submit');button.disabled=true;$('#entry-error').textContent='항해 기록을 확인하고 있어요…';const world=$('input[name="world"]:checked').value,importLegacy=$('#legacy-import').checked&&!$('#legacy-choice').hidden;
-    try{const shareEnabled=$('#entry-share').checked;const game=await account.login({name:$('#entry-name').value,pin:$('#entry-pin').value,mode,world,importLegacy,takeover});storage.setItem('windward-last-account',account.name);if(importLegacy&&world==='peace')storage.setItem('windward-legacy-imported',account.uid);legacyMode=false;fleet.useAccount(account);beginPlaying(game);if(shareEnabled)fleet.start();}
-    catch(error){$('#entry-error').textContent=authMessage(error);if(error.code==='session'){takeover=true;button.textContent='다른 화면을 멈추고 여기서 이어하기';}if(error.code==='conflict'){const cacheKey=localSaveKey(account.uid,world),backupKey=cacheKey+':conflict:'+Date.now();storage.setItem(backupKey,storage.getItem(cacheKey));const choose=document.createElement('button');choose.type='button';choose.className='service-button';choose.textContent='이 기기 기록을 백업하고 서버 기록 이어하기';choose.onclick=()=>{const cached=JSON.parse(storage.getItem(cacheKey));cached.pending=false;storage.setItem(cacheKey,JSON.stringify(cached));choose.remove();$('#entry-error').textContent='이 기기 기록을 별도 보존했어요. 이어하기를 다시 눌러주세요.';};$('#entry-form').append(choose);}button.disabled=false;}
-  };
+  playing=false;
+  $$('.topbar,.statusbar,.game-layout,.bottom-bar').forEach(el=>el.inert=true);
+  const entry=document.createElement('section');
+  entry.id='entry-screen';
+  entry.setAttribute('aria-label','선장 접속');
+  entry.setAttribute('role','dialog');
+  entry.setAttribute('aria-modal','true');
+  entry.innerHTML=`
+    <div class="entry-art">
+      <span class="entry-kicker">WINDWARD · A TRADER'S ATLAS</span>
+      <h1>당신만의 항로가<br>시작되는 곳.</h1>
+      <p>바람을 따라 항구를 발견하고,<br>특산물을 거래하며 세계를 탐험하세요.</p>
+      <div class="entry-ship">${icon('ship')}</div>
+      <small>평면 해도 · 세계 지구본 · 64개의 항구</small>
+    </div>
+    <div class="entry-card">
+      <span class="entry-kicker">현실서버 · 1배속</span>
+      <h2>항해 시작</h2>
+      <p>Google 계정으로 로그인하면 현실서버에 바로 입장해요.</p>
+      <p class="entry-reset-note">이번 업데이트는 모든 선장이 리스본에서 새 항해를 시작해요.</p>
+      <button type="button" class="primary-button" id="google-login" disabled>Google로 로그인</button>
+      <form id="captain-setup" hidden>
+        <label for="entry-name">선장 이름</label>
+        <input id="entry-name" required maxlength="16" autocomplete="off" placeholder="게임에서 사용할 이름">
+        <button class="primary-button" id="captain-start">항해 시작</button>
+      </form>
+      <p id="entry-error" role="status">로그인을 준비하고 있어요…</p>
+      <button type="button" class="service-button" id="entry-retry" hidden>다시 시도</button>
+      <button type="button" class="service-button" id="entry-sign-out" hidden>다른 Google 계정으로 로그인</button>
+      <p class="entry-note">입장하면 게임용 선장 이름과 접속 상태, 가까운 배의 위치, 랭킹을 다른 선장과 공유해요.</p>
+    </div>`;
+  document.body.append(entry);
+
+  const login=$('#google-login'), status=$('#entry-error'), form=$('#captain-setup');
+  const retry=$('#entry-retry'), signOut=$('#entry-sign-out'), start=$('#captain-start');
+  let user, profile, busy=false, takeover=false;
+
+  async function run(action){
+    if(busy)return;
+    busy=true;
+    login.disabled=start.disabled=signOut.disabled=true;
+    retry.hidden=true;
+    status.textContent='접속을 확인하고 있어요…';
+    try{await action();}
+    catch(error){
+      status.textContent=authMessage(error);
+      if(error.code==='session'){
+        offerRetry('다른 화면을 멈추고 여기서 이어하기',()=>{takeover=true;return enter();});
+      }else if(error.code==='conflict'){
+        offerRetry('이 기기 기록을 백업하고 서버 기록 이어하기',async()=>{
+          const key=localSaveKey(user.uid);
+          const cached=storage.getItem(key);
+          if(cached)storage.setItem(key+':conflict:'+Date.now(),cached);
+          storage.removeItem(key);
+          await enter();
+        });
+      }else if(user&&form.hidden){
+        offerRetry('항해 기록 다시 확인',loadCaptain);
+      }else if(!account.setupPromise){
+        offerRetry('로그인 준비 다시 시도',prepare);
+      }
+    }finally{
+      busy=false;
+      login.disabled=start.disabled=signOut.disabled=false;
+    }
+  }
+  function offerRetry(label,action){
+    retry.textContent=label;
+    retry.hidden=false;
+    retry.onclick=()=>run(action);
+  }
+  async function enter(){
+    const game=await account.enter(user,profile,{name:$('#entry-name').value,takeover});
+    fleet.useAccount(account);
+    beginPlaying(game);
+    fleet.start();
+  }
+  async function loadCaptain(){
+    login.hidden=true;
+    signOut.hidden=false;
+    profile=await account.loadProfile(user);
+    if(profile){await enter();return;}
+    form.hidden=false;
+    status.textContent='게임에서 사용할 선장 이름을 정해 주세요.';
+    $('#entry-name').focus();
+  }
+  async function prepare(){
+    await account.setup();
+    user=account.auth.currentUser;
+    if(user)await loadCaptain();
+    else status.textContent='';
+  }
+  login.onclick=()=>run(async()=>{
+    user=await account.signIn();
+    await loadCaptain();
+  });
+  form.onsubmit=event=>{event.preventDefault();run(enter);};
+  signOut.onclick=()=>run(async()=>{await account.close();location.reload();});
+  run(prepare);
 }
 
 function renderFleetStatus(){
   const memberStatus=fleet.roster?.error?'접속 명단 확인 필요':fleet.roster&&!fleet.roster.ready?'접속 선장 · 확인 중…':`접속 선장 · ${fleet.onlineCaptains().length}명`;
-  const labels={offline:'혼자 항해',connecting:'연결 중…',reconnecting:'재연결 중…',online:memberStatus,permission:'접속 확인 필요',error:'연결 다시 시도',unconfigured:'연결 준비 중'};
+  const labels={offline:'연결 준비 중',connecting:'연결 중…',reconnecting:'재연결 중…',online:memberStatus,permission:'접속 확인 필요',error:'연결 다시 시도',unconfigured:'연결 준비 중'};
   $('#fleet-btn').textContent=labels[fleetStatus]||'함께 항해';$('#fleet-btn').classList.toggle('online',fleetStatus==='online');
   if($('#fleet-live-list'))renderFleetList();
 }
@@ -105,14 +217,15 @@ function renderRanks(){
   const ranks=rankFleet(players,rankMetric),top=ranks.slice(0,5),root=$('#rank-list');root.replaceChildren();
   for(const player of top){const row=document.createElement('li');row.className=player.id===ownRank().id?'my-rank':'';const number=document.createElement('b');number.textContent=player.rank;const name=document.createElement('span');name.textContent=player.name+(player.id===ownRank().id?' (나)':'');const score=document.createElement('strong');score.textContent=fmt(player[rankMetric])+(rankMetric==='visited'?'곳':' D');row.append(number,name,score);root.append(row);}
   if(!top.length){const empty=document.createElement('li');empty.textContent='선장들의 기록을 기다리는 중…';root.append(empty);}
-  const me=ranks.find(p=>p.id===ownRank().id),mine=me?.rank||rankings.myRanks[rankMetric];$('#my-rank').textContent=rankings.path?`내 순위 ${mine?mine+'위':'조회하기 ↓'} · 접속을 종료해도 기록 유지`:fleet.connected?`현재 접속 ${players.length}명 · 테스트 기록`:'혼자 항해 중 · 개인 기록';
+  const me=ranks.find(p=>p.id===ownRank().id),mine=me?.rank||rankings.myRanks[rankMetric];$('#my-rank').textContent=rankings.path?`내 순위 ${mine?mine+'위':'조회하기 ↓'} · 접속을 종료해도 기록 유지`:fleet.connected?`현재 접속 ${players.length}명 · 테스트 기록`:'서버 순위 연결 중…';
   $$('[data-rank]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.rank===rankMetric)));
 }
 function renderChatConnection(){
   const enabled=fleet.connected&&chat?.ready;
   $('#chat-send').disabled=!enabled||chat.sending;$('#chat-input').disabled=!enabled||chat.sending;
-  $('#chat-connection').hidden=!!enabled;$('#chat-connection').textContent=fleet.active?'연결을 기다리는 중…':'함께 항해 연결하기';
-  if(!fleet.connected)$('#chat-status').textContent='함께 항해에 연결하면 대화할 수 있어요.';
+  $('#chat-connection').hidden=!!enabled;$('#chat-connection').textContent=fleetStatus==='reconnecting'||fleetStatus==='connecting'?'연결을 기다리는 중…':'서버 다시 연결';
+  $('#chat-connection').disabled=fleetStatus==='reconnecting'||fleetStatus==='connecting';
+  if(!fleet.connected)$('#chat-status').textContent='현실서버에 연결되면 대화할 수 있어요.';
 }
 function renderChat(messages){
   const root=$('#chat-messages'),nearBottom=root.scrollHeight-root.scrollTop-root.clientHeight<60;
@@ -138,11 +251,9 @@ function renderFleetList(){
   for(const ship of players){const row=document.createElement('div');row.className='fleet-row';row.setAttribute('role','listitem');const dot=document.createElement('i');dot.style.background=PRESENCE_COLORS[ship.color];const name=document.createElement('strong');name.textContent=ship.name+(ship.uid===fleet.uid?' (나)':'');const status=document.createElement('span');status.textContent=ship.uid===fleet.uid?'내 배':ship.status;row.append(dot,name,status);root.append(row);}
 }
 function showFleet(){
-  showModal('접속 중인 모든 선장','SAIL TOGETHER',`<p>같은 ${state.world==='real'?'현실서버':'평화서버'}에서 함께 항해 중인 선장 이름을 모두 보여줘요.<br>지도와 지구본의 배는 내 시야 180해리 안에서만 보여요.</p><label class="fleet-name-label" for="captain-name">내 선장 이름</label><div class="fleet-name-input"><input id="captain-name" maxlength="16" autocomplete="off"><button id="captain-name-save" class="service-button">이름 저장</button></div><p id="fleet-online-count" role="status"></p><div id="fleet-live-list" role="list" aria-label="전체 접속 선장"></div><button class="primary-button" id="fleet-toggle">${fleet.active&&fleet.connected?'혼자 항해하기':'함께 항해 연결하기'}</button><p class="modal-meta">위치와 별도로 이름·항해 상태를 공유해 멀리 있는 선장도 명단에 표시합니다. 화물과 상세 진행은 본인만 볼 수 있어요. 이전 버전의 창은 새로고침하면 명단에 참여합니다.</p>`);
-  $('#captain-name').value=fleet.name;renderFleetList();
-  if(account.uid){$('#captain-name').readOnly=true;$('#captain-name-save').disabled=true;$('#captain-name-save').textContent='계정 이름';}
-  $('#captain-name-save').onclick=()=>{fleet.setName($('#captain-name').value);$('#captain-name').value=fleet.name;renderFleetList();toast('선장 이름을 저장했어요.');};
-  $('#fleet-toggle').onclick=async()=>{const leave=fleet.active&&fleet.connected;if(!leave&&!account.ready){save();modal.close();showEntry();return;}await fleet.stop();try{storage.setItem('windward-fleet-enabled',leave?'0':'1');}catch{}if(!leave)fleet.start();modal.close();};
+  showModal('접속 중인 모든 선장','현실서버',
+    '<p>함께 항해 중인 선장들의 이름을 보여줘요. 지도와 지구본에서는 내 시야 180해리 안의 배를 볼 수 있어요.</p><p id="fleet-online-count" role="status"></p><div id="fleet-live-list" role="list" aria-label="전체 접속 선장"></div>');
+  renderFleetList();
 }
 function renderPeers(){
   if(!mapReady)return;const root=$('#fleet-markers');root.replaceChildren();
@@ -155,9 +266,9 @@ function renderPeers(){
 }
 
 function save(){
-  if(!playing||sessionBlocked)return;state.speed=worldSpeed(state);state.explored=exploration.encode();
-  if(account.uid){account.save(state);return;}
-  try{storage.setItem(SAVE_KEY,JSON.stringify(state));}catch{$('#save-status').innerHTML='<i></i>저장 공간 부족';}
+  if(!playing||sessionBlocked)return;
+  state.explored=exploration.encode();
+  account.save(state);
 }
 function log(text,type='info'){state.log.unshift({day:state.day,text,type});state.log=state.log.slice(0,50);$('#latest-log').textContent=text;}
 function toast(text,type=''){const div=document.createElement('div');div.className='toast '+type;div.textContent=text;$('#toast-container').append(div);setTimeout(()=>div.remove(),4300);}
@@ -167,7 +278,6 @@ function dateText(day,short=false){const date=new Date(START_DATE+Math.floor(day
 function coordinates(p){return `${Math.abs(p.lat).toFixed(1)}° ${p.lat>=0?'N':'S'}  /  ${Math.abs(p.lon).toFixed(1)}° ${p.lon>=0?'E':'W'}`;}
 
 function renderHUD(){
-  state.speed=worldSpeed(state);
   $('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
   $('#money').innerHTML=`${fmt(state.money)} <em>D</em>`;
   $('#cargo-stat').innerHTML=`${usedCargo(state)} <em>/ ${capacity(state)}</em>`;
@@ -195,8 +305,7 @@ function renderHUD(){
   $('.voyage-progress').classList.toggle('hidden',!state.voyage);
   if(state.voyage){const v=state.voyage,percent=Math.min(100,v.travelled/v.total*100),days=(v.total-v.travelled)/dailySpeed(state),name=v.target?PORT_BY_ID[v.target].name:'새로운 해역';$('#sail-title').textContent=paused?`${name} · 일시 정지`:`${toward(name)} 항해 중`;$('#sail-percent').textContent=Math.floor(percent)+'%';$('#voyage-bar').style.width=percent+'%';$('#sail-remaining').textContent=`${fmt(v.total-v.travelled)} 해리 · 약 ${days.toFixed(1)}일 남음`;$('#pause-btn').textContent=paused?'▶':'Ⅱ';$('#pause-btn').setAttribute('aria-label',paused?'항해 재개':'항해 일시 정지');}
   else if(manualActive){$('#sail-title').textContent=paused?'직접 조종 · 일시 정지':'직접 조종 중';$('#sail-percent').textContent='HELM';$('#sail-remaining').textContent=manualTarget?`클릭한 지점까지 ${fmt(mapDistance(state.position,manualTarget))}해리`:'방향키를 놓으면 멈춰요 · 스페이스: 정지';$('#pause-btn').textContent=paused?'▶':'Ⅱ';$('#pause-btn').setAttribute('aria-label',paused?'항해 재개':'항해 일시 정지');$('#current-location').textContent='직접 조종 · '+coordinates({lon:state.position[0],lat:state.position[1]});}
-  $$('[data-speed]').forEach(b=>{b.classList.toggle('active',Number(b.dataset.speed)===state.speed);b.disabled=state.world==='real'&&Number(b.dataset.speed)!==1;b.title=state.world==='real'?'현실서버는 1배속으로 고정됩니다.':'';});
-  $('#world-badge')?.replaceChildren(document.createTextNode(state.world==='real'?'현실서버 · 1배속 고정':'평화서버 · 1·2·4배속'));
+  $('#world-badge')?.replaceChildren(document.createTextNode('현실서버 · 1배속'));
 }
 
 function renderMission(){
@@ -408,8 +517,9 @@ function showAtlas(){
   };
   $('#atlas-search').oninput=render;$('#river-only').onchange=render;render();
 }
-function showJournal(){showModal('파도 위에 남긴 기록','THE CAPTAIN’S JOURNAL',`<div class="atlas-summary"><span><b>${Math.floor(state.day)}<small>항해 일수</small></b></span><span><b>${state.trades}<small>거래 횟수</small></b></span><span><b>${fmt(state.profit)}<small>무역 이익 D</small></b></span></div>${state.log.map(l=>`<div class="log-entry"><time>${dateText(l.day,true)}</time><p>${l.text}</p></div>`).join('')}<p class="modal-meta">최근 50개의 기록이 보관됩니다. 게임은 이 브라우저에 자동 저장됩니다.</p>`);}
-function showHelp(){showModal('당신만의 항로를 그려보세요','WELCOME ABOARD, CAPTAIN',`<p>바람을 따라 항구를 발견하고, 특산물을 거래하며<br>세계의 지리를 익히는 작은 항해 게임입니다.</p><div class="help-step"><b>01</b><div><h3>리스본의 와인을 화물창에 싣기</h3><p>교역소에서 와인을 구매하세요. 특산물은 다른 항구보다 저렴해요.</p></div></div><div class="help-step"><b>02</b><div><h3>지도에서 다음 항구 선택 → 출항</h3><p>첫 목적지는 가까운 세비야를 추천해요. 경로와 필요한 식량을 확인하고 출항하세요. 바다를 눌러 자유 항해도 할 수 있어요.</p></div></div><div class="help-step"><b>03</b><div><h3>판매하고, 발견하고, 더 멀리 나아가기</h3><p>도착한 항구에서 화물을 판매하세요. 새 항구 발견과 지리 퀴즈로 보상을 얻고 선박을 개량할 수 있어요.</p></div></div><p class="help-tip">자동 항해: 항구 선택 → 출항. 바다 항로를 따라 이동해요.<br>직접 조종: 바다 클릭 또는 방향키 ↑ ↓ ← →. ■ / 스페이스로 정지.<br>지구본 드래그: 회전 · 지구본 클릭: 해당 해도 보기<br>평면 해도는 고정 배율이에요. 드래그로 둘러보고 내 배 ↗로 돌아오세요.<br>강을 따라 18개 강 항구에 입항할 수 있어요. 좁은 강에서는 천천히 조종해요.<br>1/2/4: 배속 · 항구 찾기에서 이름과 강으로 검색</p><button class="primary-button" id="start-game">좋아, 항해를 시작하자 ${icon('ship')}</button><p class="modal-meta">지도: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (퍼블릭 도메인) · 국가명은 현재 기준. 해안선·강폭·입항 위치는 게임용으로 단순화했어요. 진행 상황은 브라우저에 자동 저장됩니다.</p><button class="reset-button" id="reset-btn">새 항해 시작 · 저장된 진행 초기화</button>`);$('#start-game').onclick=()=>{modal.close();storage.setItem('windward-intro-seen','1');};$('#reset-btn').onclick=()=>{showModal('새로운 항해를 시작할까요?','A FRESH START','<p>현재 화물, 두카트, 발견한 항구 기록이 초기화됩니다.</p><button class="primary-button" id="confirm-reset">초기화하고 리스본에서 시작</button><button class="service-button" id="cancel-reset">현재 항해 계속하기 <span>→</span></button>');$('#cancel-reset').onclick=()=>modal.close();$('#confirm-reset').onclick=()=>{if(account.uid){modal.close();showAccount();toast('기존 선장 기록을 남기고 접속 화면에서 새 이름으로 시작하세요.');return;}storage.setItem('windward-before-reset:'+Date.now(),JSON.stringify(state));stopManual();departedPort=null;state=initialState();exploration=new Exploration();exploration.seed(state);selected='lisbon';planned=null;paused=false;modal.close();setTab('trade');changed();renderFog(true);renderRoutes();centerShip();toast('이전 기록을 백업하고 리스본에서 시작합니다.');};};}
+function showJournal(){showModal('파도 위에 남긴 기록','THE CAPTAIN’S JOURNAL',`<div class="atlas-summary"><span><b>${Math.floor(state.day)}<small>항해 일수</small></b></span><span><b>${state.trades}<small>거래 횟수</small></b></span><span><b>${fmt(state.profit)}<small>무역 이익 D</small></b></span></div>${state.log.map(l=>`<div class="log-entry"><time>${dateText(l.day,true)}</time><p>${l.text}</p></div>`).join('')}<p class="modal-meta">최근 50개의 기록이 보관됩니다. 게임은 Google 계정에 연결해 자동 저장됩니다.</p>`);}
+function showHelp(){showModal('당신만의 항로를 그려보세요','WELCOME ABOARD, CAPTAIN',`<p>바람을 따라 항구를 발견하고, 특산물을 거래하며<br>세계의 지리를 익히는 작은 항해 게임입니다.</p><div class="help-step"><b>01</b><div><h3>리스본의 와인을 화물창에 싣기</h3><p>교역소에서 와인을 구매하세요. 특산물은 다른 항구보다 저렴해요.</p></div></div><div class="help-step"><b>02</b><div><h3>지도에서 다음 항구 선택 → 출항</h3><p>첫 목적지는 가까운 세비야를 추천해요. 경로와 필요한 식량을 확인하고 출항하세요. 바다를 눌러 자유 항해도 할 수 있어요.</p></div></div><div class="help-step"><b>03</b><div><h3>판매하고, 발견하고, 더 멀리 나아가기</h3><p>도착한 항구에서 화물을 판매하세요. 새 항구 발견과 지리 퀴즈로 보상을 얻고 선박을 개량할 수 있어요.</p></div></div><p class="help-tip">자동 항해: 항구 선택 → 출항. 바다 항로를 따라 이동해요.<br>직접 조종: 바다 클릭 또는 방향키 ↑ ↓ ← →. ■ / 스페이스로 정지.<br>지구본 드래그: 회전 · 지구본 클릭: 해당 해도 보기<br>평면 해도는 고정 배율이에요. 드래그로 둘러보고 내 배 ↗로 돌아오세요.<br>강을 따라 18개 강 항구에 입항할 수 있어요. 좁은 강에서는 천천히 조종해요.<br>항구 찾기에서 이름과 강으로 검색</p><button class="primary-button" id="start-game">좋아, 항해를 시작하자 ${icon('ship')}</button><p class="modal-meta">지도: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (퍼블릭 도메인) · 국가명은 현재 기준. 해안선·강폭·입항 위치는 게임용으로 단순화했어요. 진행 상황은 Google 계정에 연결해 자동 저장됩니다.</p>`);$('#start-game').onclick=()=>modal.close();}
+
 
 function followPosition(){const [x,y]=project(state.position),offset=innerWidth>850&&screen.w<850?80:0;camera.x=x+offset/screen.k;camera.y=y;}
 function centerShip(){followPosition();followShip=!!state.voyage||state.controlMode==='manual';globe?.home();applyCamera();}
@@ -472,13 +582,11 @@ $('#help-btn').onclick=showHelp;$('#journal-btn').onclick=showJournal;$('#atlas-
 $('#map-tab').onclick=()=>{modal.close();$('.chart').scrollIntoView({behavior:'smooth'});};
 $('#close-modal').onclick=()=>modal.close();modal.addEventListener('click',e=>{if(e.target===modal){const rect=modal.getBoundingClientRect();if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)modal.close();}});
 $('#pause-btn').onclick=()=>{paused=!paused;renderHUD();};
-$$('[data-speed]').forEach(b=>b.onclick=()=>{state.speed=state.world==='real'?1:Number(b.dataset.speed);renderHUD();save();});
 $('#sound-btn').onclick=()=>{sound=!sound;$('#sound-btn').innerHTML=`♬ <span>소리 ${sound?'켬':'끔'}</span>`;$('#sound-btn').setAttribute('aria-label',`항구 종소리 ${sound?'끄기':'켜기'}`);if(sound)bell();};
 document.addEventListener('keydown',e=>{
   if(!playing||sessionBlocked||e.defaultPrevented||modal.open||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)||document.activeElement?.closest('.rank-card,.chat-panel,#entry-screen,#port-panel'))return;
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();if(!nav||(e.repeat&&!heldKeys.has(e.key)))return;setControlMode('manual');manualTarget=null;if(beginManual()){heldKeys.add(e.key);renderHUD();}return;}
   if(e.code==='Space'&&(state.voyage||manualActive)){e.preventDefault();if(e.repeat)return;if(state.controlMode==='manual')stopManual();else{paused=!paused;renderHUD();}}
-  if(['1','2','4'].includes(e.key)){state.speed=state.world==='real'?1:Number(e.key);renderHUD();save();}
 });
 document.addEventListener('keyup',e=>heldKeys.delete(e.key));
 window.addEventListener('blur',()=>heldKeys.clear());
@@ -488,7 +596,6 @@ new ResizeObserver(()=>{if(mapReady)resizeMap();}).observe($('.chart'));
 let last=performance.now(),lastHud=0,lastSave=0;
 function tick(now){
   const delta=Math.min((now-last)/1000,.1);last=now;
-  state.speed=worldSpeed(state);
   if(playing&&!sessionBlocked&&state.voyage&&!paused&&!modal.open&&!document.hidden){
     const v=state.voyage,remaining=v.total-v.travelled,river=nav.riverAt(state.position),move=Math.min(remaining,dailySpeed(state)*delta*1.3*state.speed*(river?.river ? .18 : 1)),days=move/dailySpeed(state);
     const previous=[...state.position];v.travelled+=move;state.day+=days;state.food=Math.max(0,state.food-days*.9);v.foodRemaining=Math.max(0,v.foodRemaining-days*.9);state.position=positionAlong(v,v.travelled);exploreMove(previous,state.position);if(followShip){followPosition();applyCamera();}else renderShip();
@@ -504,7 +611,11 @@ setupInterface();renderHUD();renderMission();renderPanel();$('#latest-log').text
 $('#fleet-btn').onclick=showFleet;
 $$('[data-rank]').forEach(button=>button.onclick=()=>{rankMetric=button.dataset.rank;renderRanks();});
 $('#chat-toggle').onclick=()=>toggleChat();$('#chat-close').onclick=()=>toggleChat();
-$('#chat-connection').onclick=async()=>{if(!account.ready){save();showEntry();return;}if(fleet.active&&!fleet.connected)await fleet.stop();fleet.start();try{storage.setItem('windward-fleet-enabled','1');}catch{}};
+$('#chat-connection').onclick=async()=>{
+  if(!account.ready||fleet.connected)return;
+  if(fleet.active)await fleet.stop();
+  fleet.start();
+};
 $('#chat-input').oninput=()=>$('#chat-count').textContent=`${$('#chat-input').value.length}/${CHAT_MAX_LENGTH}`;
 $('#chat-input').onfocus=()=>heldKeys.clear();
 $('#chat-panel').addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){e.preventDefault();toggleChat(false);}else if(e.target.id==='chat-input'&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('#chat-form').requestSubmit();}});
@@ -513,7 +624,6 @@ renderRanks();renderChatConnection();
 try{
   const responses=await Promise.all(['assets/world-land.geojson','assets/world-countries.geojson','assets/navigation.json','assets/rivers.json'].map(url=>fetch(url).then(r=>{if(!r.ok)throw Error('지도 데이터 오류');return r.json();})));
   nav=new Navigator(responses[2],responses[3]);PORTS.forEach(p=>portApproaches.set(p.id,nav.approach(p)));setupMap(responses[0],responses[1]);centerShip();requestAnimationFrame(tick);
+  clearLegacyStorage(storage);
   renderFleetStatus();showEntry();
-  // Keep the first view playable; help is available through the ? button.
-  try{if(!storage.getItem('windward-intro-seen')){toast('⚓ 환영합니다! 와인을 싣고 지도에서 다음 항구를 골라보세요.');storage.setItem('windward-intro-seen','1');}}catch{/* Sailing still works when browser storage is unavailable. */}
 }catch(error){$('#map-loading').innerHTML='<p>지도를 불러오지 못했어요.</p><button class="primary-button" style="width:180px" onclick="location.reload()">다시 불러오기</button>';console.error(error);}
