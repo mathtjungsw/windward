@@ -3,7 +3,7 @@ import {shipArtPath} from './art.js';
 import {NEW_PORT_HISTORY} from './world-catalog.js';
 import {PORTS,PORT_BY_ID,GOODS} from './data.js';
 import {PORT_HISTORY} from './port-history.js';
-import {RELEASE,RELEASES} from './release-notes.js';
+import {RELEASE,RELEASES} from './release-notes.js?v=20261106-rankings';
 import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js';
 import {isTypingTarget} from './controls.js';
 import {validCard} from './social-core.js';

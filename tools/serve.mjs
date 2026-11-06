@@ -30,7 +30,7 @@ async function fixturePage(game,crew=false){
     .replace('clearLegacyStorage(storage);','')
     .replace('renderFleetStatus();showEntry();',()=>`account.seenVersion=RELEASE;beginPlaying(${JSON.stringify(game)});${crew?crewFixture:''}`);
   return (await read('index.html')).replace('<head>','<head><base href="/">')
-    .replace('<script type="module" src="app.js"></script>',()=>'<script type="module">'+app.replace(/<\/script/gi,'<\\/script')+'</script>');
+    .replace(/<script type="module" src="app\.js(?:\?[^"]*)?"><\/script>/,()=>'<script type="module">'+app.replace(/<\/script/gi,'<\\/script')+'</script>');
 }
 
 async function expeditionPage(mode){
@@ -60,7 +60,7 @@ async function speedPreviewPage(){
   return (await read('index.html'))
     .replace('<body>','<body>'+previewHeader)
     .replace('</head>',previewStyles+'</head>')
-    .replace('<script type="module" src="app.js"></script>',()=>'<script type="module">'+code.replace(/<\/script/gi,'<\\/script')+'</script>');
+    .replace(/<script type="module" src="app\.js(?:\?[^"]*)?"><\/script>/,()=>'<script type="module">'+code.replace(/<\/script/gi,'<\\/script')+'</script>');
 }
 
 async function emulatorAccount(){

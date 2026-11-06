@@ -17,6 +17,6 @@ if(!app.includes(fetchStatement))throw Error('Map loading code changed. Update t
 app=app.replace(fetchStatement,'const responses=BUNDLED_MAP;');
 const maps=await Promise.all(['world-land.geojson','world-countries.geojson','navigation.json','rivers.json'].map(name=>read('assets/'+name).then(JSON.parse)));
 const bundled='const BUNDLED_MAP='+JSON.stringify(maps).replace(/<\/script/gi,'<\\/script')+';\n'+harbors+'\n'+data+'\n'+engine+'\n'+globe+'\n'+presence+'\n'+app;
-html=html.replace('<link rel="stylesheet" href="style.css">',()=>'<style>'+css+'</style>').replace('<link rel="stylesheet" href="upgrade.css">','').replace('<script type="module" src="app.js"></script>',()=>'<script type="module">\n'+bundled+'\n</script>').replace('href="./"','href="#"');
+html=html.replace('<link rel="stylesheet" href="style.css">',()=>'<style>'+css+'</style>').replace('<link rel="stylesheet" href="upgrade.css">','').replace(/<script type="module" src="app\.js(?:\?[^"]*)?"><\/script>/,()=>'<script type="module">\n'+bundled+'\n</script>').replace('href="./"','href="#"');
 await writeFile(output,html,'utf8');
 console.log('Standalone game: '+output+' ('+(Buffer.byteLength(html)/1024/1024).toFixed(2)+' MB)');

@@ -1,6 +1,6 @@
 import {REAL_WORLD_ROOT} from './account.js';
 import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js';
-import {CaptainRoster} from './captains.js';
+import {CaptainRoster} from './captains.js?v=20261106-rankings';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{

@@ -14,7 +14,7 @@ export class CaptainRoster{
     const f=this.fleet,s=f.sdk;this.selfRef=s.ref(f.db,`${f.root}/captains/${f.shipKey}`);const generation=++this.generation;
     this.unsubscribe?.();this.ready=false;this.error=false;
     const q=s.query(s.ref(f.db,`${f.root}/captains`),s.orderByChild('updatedAt'),s.startAt(Date.now()-PRESENCE_TTL),s.limitToLast(100));
-    this.unsubscribe=s.onValue(q,snapshot=>{if(generation!==this.generation)return;const records=[];snapshot.forEach(child=>records.push(child.val()));this.records=records;this.ready=true;this.error=false;f.onChange();},()=>{if(generation!==this.generation)return;this.ready=false;this.error=true;this.records=[];f.onChange();});
+    this.unsubscribe=s.onValue(q,snapshot=>{if(generation!==this.generation)return;const records=[];snapshot.forEach(child=>{records.push(child.val());});this.records=records;this.ready=true;this.error=false;f.onChange();},()=>{if(generation!==this.generation)return;this.ready=false;this.error=true;this.records=[];f.onChange();});
   }
   async prepareDisconnect(){await this.fleet.sdk.onDisconnect(this.selfRef).remove();}
   async publish(ship,force=false){

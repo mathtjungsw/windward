@@ -1,21 +1,21 @@
-import {createExpansion} from './expansion-ui.js';
+import {createExpansion} from './expansion-ui.js?v=20261106-rankings';
 import {gameStats} from './public-stats.js';
 import {shipTier,fleetCount} from './ship-rules.js';
 import {shipGlyph} from './art.js';
 import {inspectDiscovery,explorationAllowed} from './discoveries.js';
-import {RELEASE} from './release-notes.js';
-import {createUX} from './ux.js';
+import {RELEASE} from './release-notes.js?v=20261106-rankings';
+import {createUX} from './ux.js?v=20261106-rankings';
 import {directionForKey,isTypingTarget} from './controls.js';
 import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js';
 import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js';
 import {GlobeAtlas} from './globe.js';
-import {FleetPresence} from './multiplayer.js';
+import {FleetPresence} from './multiplayer.js?v=20261106-rankings';
 import {PRESENCE_COLORS,shipsInSight} from './presence-core.js';
-import {CaptainChat} from './chat.js';
+import {CaptainChat} from './chat.js?v=20261106-rankings';
 import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js';
 import {Exploration,SIGHT_NM,DISCOVERY_NM,INFO_PRICE,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor} from './voyage-core.js';
 import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js';
-import {CaptainRankings} from './rankings.js';
+import {CaptainRankings} from './rankings.js?v=20261106-rankings';
 import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -222,11 +222,11 @@ function renderFleetStatus(){
   if($('#fleet-live-list'))renderFleetList();
 }
 function renderRanks(){
-  const players=rankings.path?(rankings.rows[rankMetric]||[]):fleet.connected?[ownRank(),...fleet.captains()]:[ownRank()];
+  const players=rankings.path?(rankings.rows[rankMetric]||[]):[];
   const ranks=rankFleet(players,rankMetric),top=ranks.slice(0,5),root=$('#rank-list');root.replaceChildren();
   for(const player of top){const row=document.createElement('li');row.className=player.id===ownRank().id?'my-rank':'';const number=document.createElement('b');number.textContent=player.rank;const name=document.createElement('span');name.textContent=player.name+(player.id===ownRank().id?' (나)':'');const score=document.createElement('strong');score.textContent=rankMetric==='explorationScore'?((player.explorationPercent??player.explorationScore/10000).toFixed(2)+'%'):fmt(player[rankMetric])+(rankMetric==='visited'?'곳':rankMetric==='fame'?' 명성':' D');row.append(number,name,score);root.append(row);}
   if(!top.length){const empty=document.createElement('li');empty.textContent='선장들의 기록을 기다리는 중…';root.append(empty);}
-  const me=ranks.find(p=>p.id===ownRank().id),mine=me?.rank||rankings.myRanks[rankMetric];$('#my-rank').textContent=rankings.path?`내 순위 ${mine?mine+'위':'조회하기 ↓'} · 접속을 종료해도 기록 유지`:fleet.connected?`현재 접속 ${players.length}명 · 테스트 기록`:'서버 순위 연결 중…';
+  const me=ranks.find(p=>p.id===ownRank().id),mine=me?.rank||rankings.myRanks[rankMetric];$('#my-rank').textContent=rankings.path?`내 순위 ${mine?mine+'위':'조회하기 ↓'} · 전체 선장 기준`:'서버 순위 연결 중…';
   $$('[data-rank]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.rank===rankMetric)));
 }
 function renderChatConnection(){

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node tools/serve.mjs",
-    "test": "node --test tools/game.test.mjs tools/social.test.mjs tools/exploration.test.mjs tools/account.test.mjs tools/wrap.test.mjs tools/captains.test.mjs tools/coastal.test.mjs tools/expedition.test.mjs tools/art.test.mjs tools/world-catalog.test.mjs",
+    "test": "node --test tools/game.test.mjs tools/social.test.mjs tools/exploration.test.mjs tools/account.test.mjs tools/wrap.test.mjs tools/captains.test.mjs tools/coastal.test.mjs tools/expedition.test.mjs tools/art.test.mjs tools/world-catalog.test.mjs tools/snapshot-regression.test.mjs",
     "notes:check": "node tools/build-release-notes.mjs --check && node tools/build-catalog.mjs --check && node tools/build-world-catalog.mjs --check && node tools/build-art.mjs --check",
     "test:rules": "node tools/check-social.mjs && node tools/check-worlds.mjs"
   }

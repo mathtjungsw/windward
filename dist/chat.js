@@ -14,7 +14,7 @@ export class CaptainChat{
     this.stops.push(s.onChildAdded(q,receive,error),s.onChildChanged(q,receive,error),s.onChildRemoved(q,snapshot=>{this.messages.delete(snapshot.key);this.onChange(this.list());},error));
     this.stops.push(s.onValue(q,()=>{if(generation!==this.generation||this.ready)return;this.ready=true;this.onStatus('최근 50개 · 200자 · 3초 간격');this.onChange(this.list());},error,{onlyOnce:true}));
     const old=s.query(s.ref(db,this.path+'/lastSent'),s.orderByValue(),s.endAt(Date.now()-172800000),s.limitToFirst(20));
-    s.get(old).then(snapshot=>{if(generation!==this.generation)return;this.expired=[];snapshot.forEach(child=>this.expired.push(child.key));}).catch(()=>{});
+    s.get(old).then(snapshot=>{if(generation!==this.generation)return;this.expired=[];snapshot.forEach(child=>{this.expired.push(child.key);});}).catch(()=>{});
   }
   list(){return recentChat(this.messages.values());}
   async send(value,card){
