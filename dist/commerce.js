@@ -1,6 +1,7 @@
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.09-frontiers';
-import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.09-frontiers';
-import {tradeQuote} from './market-rules.js?v=2026.11.09-frontiers';
+import {recordTrade} from './rank-progress.js?v=2026.11.10-community-battle';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-community-battle';
+import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.10-community-battle';
+import {tradeQuote} from './market-rules.js?v=2026.11.10-community-battle';
 export const NEUTRAL_PORTS=['lisbon','porto'];
 export const LARGE_PORTS=['london','amsterdam','venice','alexandria','istanbul','macau','shanghai','nagasaki','havana','buenos','sydney'];
 export const investmentBase=id=>LARGE_PORTS.includes(id)?3000000:1000000;
@@ -14,7 +15,7 @@ export function executeTrade(game,content,uid,portId,goodId,qty,mode,quote,now,r
  if(mode==='buy'){if(usedSpace(game)+qty>capacity(game)||game.money<actual.total)throw Error('화물 공간과 두카트를 확인하세요.');game.money-=actual.total;game.cargo[goodId]={qty:old.qty+qty,cost:old.cost+actual.total};if(portId==='lisbon'&&goodId==='wine')game.boughtLisbonWine=true;}
  else{if(old.qty<qty)throw Error('판매할 화물이 부족해요.');const cost=old.cost*qty/old.qty;game.money+=actual.total;game.profit+=actual.total-cost;if(old.qty===qty)delete game.cargo[goodId];else game.cargo[goodId]={qty:old.qty-qty,cost:old.cost-cost};if(portId!=='lisbon'&&goodId==='wine'&&game.boughtLisbonWine)game.soldAway=true;}
  const owner=ownership(content).ownerUid;if(owner&&actual.tax){content.treasury??={};content.treasury[owner]=(content.treasury[owner]||0)+actual.tax;}
- content.markets??={};content.markets[goodId]=actual.next;game.trades++;return {ok:true,...actual};
+ content.markets??={};content.markets[goodId]=actual.next;game.trades++;recordTrade(game,goodId,mode,mode==='sell'?actual.total-old.cost*qty/old.qty:0,now);return {ok:true,...actual};
 }
 export function changePortPolicy(content,uid,defaultRate,rates,blacklist){if(ownership(content).ownerUid!==uid)throw Error('현재 소유자만 변경할 수 있어요.');if(!Number.isFinite(defaultRate)||defaultRate<0||defaultRate>10||Object.keys(rates).length>100||Object.values(rates).some(n=>!Number.isFinite(n)||n<0||n>10)||blacklist.length>20)throw Error('세율 0~10%, 제한 선장 최대 20명을 확인하세요.');content.defaultRate=defaultRate;content.rates=rates;content.blacklist=blacklist;return {ok:true};}
 export function withdrawTax(game,content,uid){const n=content.treasury?.[uid]||0;if(!n)throw Error('인출할 세금이 없어요.');game.money+=n;content.treasury[uid]=0;return {ok:true,total:n};}

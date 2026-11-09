@@ -1,7 +1,7 @@
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.09-frontiers';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.09-frontiers';
-import {applyRaftStart} from './raft-start.js?v=2026.11.09-frontiers';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.09-frontiers';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.10-community-battle';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.10-community-battle';
+import {applyRaftStart} from './raft-start.js?v=2026.11.10-community-battle';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.10-community-battle';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';

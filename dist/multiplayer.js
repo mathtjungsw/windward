@@ -1,7 +1,7 @@
-import {mapDistance} from './world-wrap.js?v=2026.11.09-frontiers';
-import {REAL_WORLD_ROOT} from './account.js?v=2026.11.09-frontiers';
-import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.09-frontiers';
-import {CaptainRoster} from './captains.js?v=2026.11.09-frontiers';
+import {mapDistance} from './world-wrap.js?v=2026.11.10-community-battle';
+import {REAL_WORLD_ROOT} from './account.js?v=2026.11.10-community-battle';
+import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.10-community-battle';
+import {CaptainRoster} from './captains.js?v=2026.11.10-community-battle';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{
@@ -52,6 +52,7 @@ export class FleetPresence{
         if(generation!==this.generation)return;
         this.connected=true;
         this.lastSignature='';
+        await this.preparePortProfile();
         await this.send(true);
         if(generation===this.generation&&this.connected)this.onStatus('online');
       }catch{
@@ -60,13 +61,14 @@ export class FleetPresence{
     });
     this.timer=setInterval(()=>{this.send();this.onChange();},500);
   }
+  async preparePortProfile(){const s=this.sdk;await s.runTransaction(s.ref(this.db,`${this.root}/portRankings/${this.uid}`),current=>{if(current?.name===this.name)return;return current?{...current,name:this.name,updatedAt:s.serverTimestamp()}:{name:this.name,ownedPortCount:0,revision:1,updatedAt:s.serverTimestamp()};},{applyLocally:false});}
   async publishSummary(){
     if(!this.connected||!this.active||!this.readStats)return;
     if(this.summaryPromise){await this.summaryPromise;if(this.connected&&this.active)return this.publishSummary();return;}
     const stats=this.readStats();if(!stats)return;
     const signature=JSON.stringify({...stats,saveRevision:0});if(signature===this.lastRank&&Date.now()-(this.lastSeenSent||0)<30000)return;
     const sdk=this.sdk,ref=sdk.ref(this.db,`${this.root}/rankings/${this.uid}`);
-    this.summaryPromise=sdk.runTransaction(ref,current=>{if(current?.statsVersion===3&&(current.saveRevision||0)>stats.saveRevision)return;return {...stats,name:this.name,updatedAt:sdk.serverTimestamp(),lastSeenAt:sdk.serverTimestamp()};},{applyLocally:false}).then(result=>{if(result.committed){this.lastRank=signature;this.lastSeenSent=Date.now();}}).catch(()=>{}).finally(()=>this.summaryPromise=null);
+    this.summaryPromise=sdk.runTransaction(ref,current=>{if(current?.rankProgressVersion===1&&stats.rankProgressVersion!==1)return;if(current?.statsVersion===3&&(current.saveRevision||0)>stats.saveRevision)return;return {...stats,name:this.name,updatedAt:sdk.serverTimestamp(),lastSeenAt:sdk.serverTimestamp()};},{applyLocally:false}).then(result=>{if(result.committed){this.lastRank=signature;this.lastSeenSent=Date.now();}}).catch(()=>{}).finally(()=>this.summaryPromise=null);
     return this.summaryPromise;
   }
   watchSectors(){

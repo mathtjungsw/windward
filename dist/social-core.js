@@ -1,4 +1,5 @@
-import {PORT_BY_ID,ALL_PORTS} from './data.js?v=2026.11.09-frontiers';
+import {RANK_METRICS} from './rank-metrics.js?v=2026.11.10-community-battle';
+import {PORT_BY_ID,ALL_PORTS} from './data.js?v=2026.11.10-community-battle';
 export const CHAT_LIMIT=50,CHAT_MAX_LENGTH=200,CHAT_INTERVAL=3000;
 export function validCard(card){
   if(!card||!card.ref||typeof card.ref!=='object')return false;
@@ -12,10 +13,10 @@ export function chatText(value){return String(value||'').replace(/[\u0000-\u0008
 export function validChat(message){return !!message&&Number.isSafeInteger(message.seq)&&message.seq>0&&typeof message.uid==='string'&&message.uid.length>0&&typeof message.name==='string'&&message.name.length>0&&message.name.length<=16&&typeof message.text==='string'&&message.text.length>0&&message.text.length<=CHAT_MAX_LENGTH&&Number.isFinite(message.at);}
 export function recentChat(messages){return [...messages].filter(validChat).sort((a,b)=>a.seq-b.seq).slice(-CHAT_LIMIT);}
 export function rankStats(ship){
-  return Number.isInteger(ship?.money)&&ship.money>=0&&ship.money<=1e12&&Number.isInteger(ship?.profit)&&Math.abs(ship.profit)<=1e12&&Number.isInteger(ship?.visited)&&ship.visited>=1&&ship.visited<=ALL_PORTS.length;
+  return Number.isInteger(ship?.money)&&ship.money>=0&&ship.money<=1e12&&Number.isInteger(ship?.profit)&&Math.abs(ship.profit)<=1e12&&Number.isInteger(ship?.visited)&&ship.visited>=1&&ship.visited<=Object.keys(PORT_BY_ID).length;
 }
 export function rankFleet(players,metric){
-  if(!['profit','money','visited','explorationScore','fame'].includes(metric))return [];
-  const list=players.filter(p=>rankStats(p)&&Number.isInteger(p[metric])).sort((a,b)=>b[metric]-a[metric]||String(b.id).localeCompare(String(a.id)));
+  if(!RANK_METRICS.includes(metric))return [];
+  const list=players.filter(p=>(metric==='ownedPortCount'?typeof p.name==='string'&&p.ownedPortCount>=0:rankStats(p))&&Number.isInteger(p[metric])).sort((a,b)=>b[metric]-a[metric]||String(b.id).localeCompare(String(a.id)));
   let rank=0,previous=null;return list.map((p,i)=>{if(i===0||p[metric]!==previous)rank=i+1;previous=p[metric];return {...p,rank};});
 }

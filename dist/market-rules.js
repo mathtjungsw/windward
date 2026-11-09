@@ -1,4 +1,4 @@
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.09-frontiers';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-community-battle';
 export const PRESSURE_SCALE=4000000,PRESSURE_BOX=4000,PRESSURE_LIMIT=1200000;
 export function pressureAt(item,now){const old=item?.pressure||0,decay=Math.max(0,Math.floor(now-(item?.at??now)));return Math.sign(old)*Math.max(0,Math.abs(old)-decay);}
 export function stockAt(item,good,now){if(!good.premium)return Infinity;const base=item?.stock??10,at=item?.stockAt??now,steps=Math.max(0,Math.floor((now-at)/7200000));return Math.min(10,base+steps);}

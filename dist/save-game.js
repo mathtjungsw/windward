@@ -1,6 +1,6 @@
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.09-frontiers';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.09-frontiers';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.09-frontiers';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-community-battle';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.10-community-battle';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.10-community-battle';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
@@ -37,6 +37,7 @@ export function parseState(raw,defaults){
  for(const key of ['lootClaims'])if(s[key]!==undefined){const c=s[key];if(!c||typeof c!=='object'||Array.isArray(c)||Object.entries(c).some(([id,v])=>!Object.hasOwn(GOODS,id)||!Number.isInteger(v.qty)||v.qty<0||!finite(v.cost)||v.cost<0)||Object.values(c).reduce((n,v)=>n+v.qty,0)>50)bad();}
  if(s.battleReserve!==undefined){const r=s.battleReserve;let c;try{c=JSON.parse(r.cargoJSON);}catch{bad();}if(typeof r.id!=='string'||r.id.length>80||!Number.isInteger(r.money)||r.money<0||r.money>2000||!c||typeof c!=='object'||Array.isArray(c)||Object.entries(c).some(([id,v])=>!Object.hasOwn(GOODS,id)||!Number.isInteger(v.qty)||v.qty<0||!finite(v.cost)||v.cost<0)||Object.values(c).reduce((n,v)=>n+v.qty,0)>5)bad();}
  if(s.npcBattle!==undefined&&(!['atlantic','caribbean','africa','indian','asia','pacific'].includes(s.npcBattle?.zoneId)||!finite(s.npcBattle.hp)||s.npcBattle.hp<0||s.npcBattle.hp>500||!finite(s.npcBattle.readyAt)))bad();
+ if(s.rankProgress!==undefined){const p=s.rankProgress;if(!p||p.version!==1||!finite(p.since)||p.since<0||!Array.isArray(p.tradedGoods)||p.tradedGoods.length>128||p.tradedGoods.some(id=>!Object.hasOwn(GOODS,id))||['pirateKills','fleetDefeats','duelWins','bestTradeProfit'].some(k=>!Number.isSafeInteger(p[k])||p[k]<0||p[k]>1e12))bad();game.rankProgress={...p,tradedGoods:[...new Set(p.tradedGoods)]};}
  // Defaults describe new captains; an old save must not inherit their grant marker.
  if(!Object.hasOwn(s,'raftStart'))delete game.raftStart;
  if(s.version<3)game.migrationId='world-fleet-2026-11-06';

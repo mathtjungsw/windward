@@ -1,8 +1,8 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.09-frontiers';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.09-frontiers';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.09-frontiers';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.09-frontiers';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.09-frontiers';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.10-community-battle';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.10-community-battle';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.10-community-battle';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.10-community-battle';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.10-community-battle';
 Object.assign(GOODS,PREMIUM_GOODS);
 
 export {GOODS};

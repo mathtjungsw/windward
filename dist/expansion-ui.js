@@ -1,11 +1,12 @@
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.09-frontiers';
-import {SHIPS,ship,shipTier,fleetCount,fleetShips,syncFleet,fleetLimit,upgradeCost,additionalShipCost} from './ship-rules.js?v=2026.11.09-frontiers';
-import {mapDistance} from './world-wrap.js?v=2026.11.09-frontiers';
-import {capacity,usedSpace,upgradeShip,addShip} from './engine.js?v=2026.11.09-frontiers';
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMORS} from './discoveries-catalog.js?v=2026.11.09-frontiers';
-import {nearbyDiscoveries,discoveryEntry,readRumor,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.09-frontiers';
-import {shipArt,shipArtPath,discoveryArt} from './art.js?v=2026.11.09-frontiers';
-import {lastSeenText} from './captain-time.js?v=2026.11.09-frontiers';
+import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.10-community-battle';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.10-community-battle';
+import {SHIPS,ship,shipTier,fleetCount,fleetShips,syncFleet,fleetLimit,upgradeCost,additionalShipCost} from './ship-rules.js?v=2026.11.10-community-battle';
+import {mapDistance} from './world-wrap.js?v=2026.11.10-community-battle';
+import {capacity,usedSpace,upgradeShip,addShip} from './engine.js?v=2026.11.10-community-battle';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMORS} from './discoveries-catalog.js?v=2026.11.10-community-battle';
+import {nearbyDiscoveries,discoveryEntry,readRumor,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.10-community-battle';
+import {shipArt,shipArtPath,discoveryArt} from './art.js?v=2026.11.10-community-battle';
+import {lastSeenText} from './captain-time.js?v=2026.11.10-community-battle';
 const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const KINDS={ruin:'유적',relic:'유물',animal:'동물',treasure:'보물'};
@@ -77,9 +78,9 @@ export function createExpansion(api){
  }
  async function showCaptain(p,online){
   const generation=++detailGeneration;const token=p.id||p.uid;api.onModal(p.name,'선장의 공개 기록','<p id="captain-detail-status">기록을 불러오는 중…</p>','medium');
-  try{if(p.statsVersion!==3&&token!==api.getFleet().uid){const full=await api.getRankings().captain(token);if(full)p=full;}else if(token===api.getFleet().uid)p={...p,...api.getStats()};}catch{}
+  try{if(token!==api.getFleet().uid){const full=await api.getRankings().captain(token);if(full)p=full;}else if(token===api.getFleet().uid){const full=await api.getRankings().captain(token);p={...p,...(full||{}),...api.getStats()};}}catch{}
   if(generation!==detailGeneration||!$('#captain-detail-status'))return;
-  const modern=p.statsVersion===3;$('#modal-content').innerHTML=`<p>${online?'접속 중':'오프라인'}</p><p>${esc(lastSeenText(p.lastSeenAt,online))}</p>${modern?`<img class="captain-ship" src="${shipArtPath(p.shipTier)}" alt="선박"><p>${p.shipTier+1}/20단계 · ${p.fleetCount}척</p>`:''}<dl class="vessel-stats"><dt>방문 도시</dt><dd>${p.visited??'—'}곳</dd><dt>지도 탐험</dt><dd>${modern?Number(p.explorationPercent).toFixed(2)+'% · '+fmt(p.explorationScore)+'점':'업데이트 대기'}</dd><dt>해도상 탐험 면적</dt><dd>${modern?fmt(p.explorationArea)+' km²':'업데이트 대기'}</dd><dt>발견 수</dt><dd>${modern?p.foundCount+'/'+DISCOVERIES.length:'업데이트 대기'}</dd><dt>발견 명성</dt><dd>${modern?fmt(p.fame):'업데이트 대기'}</dd></dl><button id="captain-back" class="service-button">선장 목록으로</button>`;$('#captain-back').onclick=()=>showCaptains();
+  const modern=p.statsVersion===3;$('#modal-content').innerHTML=`<p>${online?'접속 중':'오프라인'}</p><p>${esc(lastSeenText(p.lastSeenAt,online))}</p>${modern?`<img class="captain-ship" src="${shipArtPath(p.shipTier)}" alt="선박"><p>${p.shipTier+1}/20단계 · ${p.fleetCount}척</p>`:''}<dl class="vessel-stats"><dt>방문 도시</dt><dd>${p.visited??'—'}곳</dd><dt>지도 탐험</dt><dd>${modern?Number(p.explorationPercent).toFixed(2)+'% · '+fmt(p.explorationScore)+'점':'업데이트 대기'}</dd><dt>해도상 탐험 면적</dt><dd>${modern?fmt(p.explorationArea)+' km²':'업데이트 대기'}</dd><dt>발견 수</dt><dd>${modern?p.foundCount+'/'+DISCOVERIES.length:'업데이트 대기'}</dd><dt>발견 명성</dt><dd>${modern?fmt(p.fame):'업데이트 대기'}</dd></dl><h3>탐험·교역·성장·전투 기록</h3><dl class="vessel-stats">${RANK_DEFINITIONS.filter(m=>['tradedGoodCount','bestTradeProfit','islandPorts','fleetGrowth','ownedPortCount','pirateKills','fleetDefeats','duelWins'].includes(m.id)).map(m=>`<dt>${m.label}</dt><dd>${p.rankProgressVersion===1||m.id==='ownedPortCount'?formatRankScore(p,m.id):'집계 대기'}</dd>`).join('')}</dl><p class="modal-meta">해적 처치·격파·결투·거래 종류·최고 단일 이익은 이번 업데이트부터 기록합니다. 도감·섬 방문·선단 단계는 기존 저장을 이어 사용해요.</p><button id="captain-back" class="service-button">선장 목록으로</button>`;$('#captain-back').onclick=()=>showCaptains();
  }
  return {intercept:(from,to)=>api.canShowDiscovery?.()?discoveryEntry(get(),from,to,d=>!dismissed.has(d.id)||(dismissed.get(d.id).outside&&Date.now()-dismissed.get(d.id).at>300000)):1,investigate:showInvestigation,renderHUD,showShip,showAlbum,showCaptains,renderRumors,found:d=>{lastFound=d;nearKey='';renderHUD();}};
 }

@@ -20,7 +20,7 @@ from PIL import Image, ImageDraw, ImageFont
 import qrcode
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "player-guide" / "2026-11-09"
+OUT = ROOT / "player-guide" / "2026-11-10"
 W, H = 1800, 2550
 LEFT, RIGHT = 124, 1676
 INK = "#214E56"
@@ -141,7 +141,7 @@ class Poster:
         if not self.final:
             self.d.text((LEFT,H-63),"개발 검수용 · 구현 완료 후 최종 규칙과 대조",font=font(24),fill=BRASS)
         else:
-            self.d.text((LEFT,H-63),"2026.11.09 업데이트 안내 · 수치는 게임 내 표시를 함께 확인하세요",font=font(24),fill=BRASS)
+            self.d.text((LEFT,H-63),"2026.11.10 업데이트 안내 · 수치는 게임 내 표시를 함께 확인하세요",font=font(24),fill=BRASS)
         path=OUT/f"{self.n:02d}-{slug}.jpg"
         self.im.save(path,"JPEG",quality=95,subsampling=0,optimize=True,dpi=(180,180))
         return {"file":path.name,"size":[W,H],"contentBottom":max([r["bottom"] for r in self.records] or [0]),"blocks":self.records}
@@ -301,8 +301,8 @@ def page5(final):
 
 def page6(final):
     p=Poster(6,"다른 선장과 기록을 나누세요","오프라인 선장의 기록도 명부와 순위에 남습니다",final)
-    p.heading("다섯 가지 랭킹 · 각각 상위 5명")
-    rows=[("무역 이익","교역으로 남긴 누적 판매 이익"),("보유금","지금 가진 두카트"),("방문 도시","실제로 입항한 서로 다른 항구 수"),("지도 탐험","밝힌 유효 해도 면적의 점수"),("발견 명성","발견물 점수와 해적 토벌 명성의 합")]
+    p.heading("4개 분야 · 14종 랭킹 · 각각 상위 5명")
+    rows=[("교역 · 4종","무역 이익 / 지금 가진 돈 / 교역품 수집왕 / 최고의 한 거래"),("탐험 · 5종","방문 도시 / 지도 탐험 / 명성 / 도감 수집왕 / 섬 탐험왕"),("선단·경영 · 2종","선단 성장왕: 보유한 모든 배의 단계 합 / 항구 경영왕: 현재 소유 항구 수"),("전투 · 3종","해적 토벌 / 선장 선단 격파: 자유 전투에서 HP 0 / 결투 승리")]
     for i,(title,body) in enumerate(rows):
         p.d.line((LEFT,p.y+9,RIGHT,p.y+9),fill=LINE,width=2)
         p.d.text((LEFT+4,p.y+26),title,font=font(47,bold=True),fill=TEAL)
@@ -310,8 +310,8 @@ def page6(final):
     p.para("점수가 같으면 공동 순위로 표시합니다. 상위 5명 밖의 내 정확한 순위는 ‘내 순위 조회’로 확인하세요. 항구 정보를 얻기만 한 것은 실제 방문과 다릅니다.",43)
     p.section("지금 접속 / 모든 선장", "‘선장 목록’에서 현재 접속 중인 사람과 한 번이라도 정상 입장한 사람을 나눠 봅니다. 전체 명부에는 로그아웃한 선장도 남고 방문 수·개방률·명성·선박 성장과 최종 접속 확인 시각을 한국 시간으로 보여줍니다.")
     p.section("이름은 멀리 있어도, 배는 시야 안에서", "명부에서는 먼 선장의 이름도 확인할 수 있습니다. 지도 위 다른 배는 내 시야 180해리 안에서만 보입니다. 먼 사람의 실시간 좌표나 개인 탐험 지도는 공개되지 않습니다.")
-    p.section("최근 대화 50개와 항로 공유", "채팅은 최근 50개를 순환 보관합니다. 항구·완료한 항로 정보를 공유하거나 가까운 선장에게 인사를 보낼 수 있습니다. 정보 공유만으로 상대 항구가 자동 개방되지는 않습니다.")
-    p.note("Enter는 전송, Shift+Enter는 줄바꿈입니다. 채팅을 접으면 화면을 넓게 쓸 수 있습니다. 이메일·계정 비밀·개인 화물 전체를 다른 선장에게 보여주는 명부가 아닙니다.")
+    p.section("채팅 · 개선 제안 · 소유 항구", "채팅은 최근 50개를 순환 보관합니다. ‘개선 제안’은 별도 게시판에 보관하며 1분에 한 글, 20개씩 봅니다. ‘소유 항구’에서는 항구명·소유 선장·지분·기본 세율을 봅니다. 모바일은 ‘더보기’에서 엽니다.")
+    p.note("해적·격파·결투·거래 종류·최고 이익은 이번 업데이트부터 집계합니다. 기존 도감·섬 입항·선박 단계는 이어집니다. 최고의 한 거래는 매입 원가와 세금을 뺀 이익입니다.")
     return p
 
 def page7(final):
@@ -359,6 +359,7 @@ def page9(final):
 
 def page10(final):
     p=Poster(10,"다른 선장과 겨루고 해적을 토벌하세요","세 전투 모드 · 해안 활동 · 게임 두카트 주사위장",final)
+    p.section("지도 위에서 바로 포격", "전투 창이 지도를 덮지 않습니다. 지도 아래 대포 버튼으로 발사하고 포탄·명중·빗나감을 봅니다. 배 옆에 현재/최대 내구도가 표시됩니다. 전투 조작은 접거나 펼칠 수 있습니다.",40)
     p.section("합의한 선장끼리 강화 결투", "시야 안 선장에게 요청하고 60초 안에 수락합니다. 결투 중에는 항해를 멈추며 피해 ×1.5, 명중률 +10%p, 재장전 ×0.7을 임시 적용합니다. 재장전과 제한 시간은 현실 시간으로 흐릅니다.",42)
     p.section("시야 안 자유 공격과 해적 토벌", "자유 공격은 상대 동의 없이 기본 대포 성능으로 시작합니다. 사거리는 같은 바닷길의 180해리입니다. 해적은 먼저 공격하지 않으며 선장이 쏜 뒤 반격합니다. 토벌 명성은 50·150·400점, 재출현은 현실 30분입니다.",42)
     p.section("패배하면 방문한 항구로 구조", "돈 10%(최대 2,000 D), 화물 10%(최대 5상자)와 수리비·구조비를 정산합니다. 돈이 없어도 구조합니다. 출항 때 손실 한도만 보관하고 남은 정산금은 전투 뒤 또는 입항 시 반환합니다. 전리품은 항구에서 수령하며 보관 한도는 50상자입니다.",42)
@@ -378,9 +379,10 @@ def main():
 import {PORTS,ALL_PORTS} from './dist/data.js';
 import {DISCOVERIES} from './dist/discoveries-catalog.js';
 import {initialState} from './dist/engine.js';
-console.log(JSON.stringify({ships:SHIPS.map(s=>[s.name,s.speed,s.capacity,s.supply,s.cost]),seconds:ACTIVE_SECONDS_PER_DAY,ports:PORTS.length,allPorts:ALL_PORTS.length,discoveries:DISCOVERIES.length,fame:DISCOVERIES.reduce((n,d)=>n+d.fame,0),start:initialState(),fleetLimits:[0,5,9,13,17].map(shipTier=>fleetLimit({shipTier}))}));"""
+import {RANK_METRICS,RANK_GROUPS} from './dist/rank-metrics.js';
+console.log(JSON.stringify({ships:SHIPS.map(s=>[s.name,s.speed,s.capacity,s.supply,s.cost]),seconds:ACTIVE_SECONDS_PER_DAY,ports:PORTS.length,allPorts:ALL_PORTS.length,discoveries:DISCOVERIES.length,fame:DISCOVERIES.reduce((n,d)=>n+d.fame,0),start:initialState(),fleetLimits:[0,5,9,13,17].map(shipTier=>fleetLimit({shipTier})),rankings:RANK_METRICS.length,rankingGroups:RANK_GROUPS.length}));"""
         runtime=json.loads(subprocess.run(["node","--input-type=module","-e",code],cwd=ROOT,check=True,capture_output=True,text=True,encoding="utf8").stdout)
-        expected={"seconds":2,"ports":78,"allPorts":112,"discoveries":40,"fame":15600,"fleetLimits":[1,2,3,4,5]}
+        expected={"seconds":2,"ports":78,"allPorts":112,"discoveries":40,"fame":15600,"fleetLimits":[1,2,3,4,5],"rankings":14,"rankingGroups":4}
         for key,value in expected.items():
             if runtime[key]!=value:raise ValueError(f"Guide and game differ: {key} = {runtime[key]} != {value}")
         if runtime["ships"]!=[list(row) for row in SHIP_ROWS]:raise ValueError("Guide ship table differs from actual ship-rules.js")
@@ -391,7 +393,7 @@ console.log(JSON.stringify({ships:SHIPS.map(s=>[s.name,s.speed,s.capacity,s.supp
     for create,slug in zip([page1,page2,page3,page4,page5,page6,page7,page8,page9,page10],slugs):
         p=create(args.final);all_records.append(p.save(slug));print(f"Rendered {all_records[-1]['file']} bottom={all_records[-1]['contentBottom']}")
     (OUT/"layout-check.json").write_text(json.dumps({"status":"final" if args.final else "draft-pending-implementation-review","pages":all_records},ensure_ascii=False,indent=2),encoding="utf8")
-    text=["# 바람의 항로 · 플레이 안내 JPG 원고\n", "- 제작일: 2026-11-09", "- 크기: 1800×2550, JPEG, 10장", "- 상태: "+("실제 구현 수치·표시 문구 대조 완료" if args.final else "초안 · 구현 최종 대조 대기"), "- 원본 생성기: ../../tools/build-player-guide.py", "- 게임 주소: "+URL,("\n게임 규칙과 표시 문구를 대조했습니다. 내용 좌표·높이는 layout-check.json, 실제 규칙 검사는 runtime-rules-check.json에 기록했습니다.\n" if args.final else ("\n본문은 실제 게임 설정과 대조했습니다. 아래 좌표·높이는 layout-check.json에 기록했습니다.\n" if args.final else "\n구현 대조 전 초안입니다. 아래 좌표·높이는 layout-check.json에 기록했습니다.\n"))]
+    text=["# 바람의 항로 · 플레이 안내 JPG 원고\n", "- 제작일: 2026-11-10", "- 크기: 1800×2550, JPEG, 10장", "- 상태: "+("실제 구현 수치·표시 문구 대조 완료" if args.final else "초안 · 구현 최종 대조 대기"), "- 원본 생성기: ../../tools/build-player-guide.py", "- 게임 주소: "+URL,("\n게임 규칙과 표시 문구를 대조했습니다. 내용 좌표·높이는 layout-check.json, 실제 규칙 검사는 runtime-rules-check.json에 기록했습니다.\n" if args.final else ("\n본문은 실제 게임 설정과 대조했습니다. 아래 좌표·높이는 layout-check.json에 기록했습니다.\n" if args.final else "\n구현 대조 전 초안입니다. 아래 좌표·높이는 layout-check.json에 기록했습니다.\n"))]
     for rec in all_records:
         text.append("## "+rec["file"]+"\n")
         text += [r["text"]+"\n" for r in rec["blocks"]]
@@ -410,8 +412,8 @@ console.log(JSON.stringify({ships:SHIPS.map(s=>[s.name,s.speed,s.capacity,s.supp
         titles=["게임 시작","조작 방법","교역과 보급","20단계 선박과 선단","탐험과 수집","선장과 랭킹","구조와 저장","항구 투자·개발","대포와 수리","전투와 활동"]
         for rec in all_records:shutil.copy2(OUT/rec["file"],published/rec["file"])
         shutil.copy2(OUT/"windward-player-guide-10pages.zip",published/"windward-player-guide-10pages.zip")
-        html='<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>바람의 항로 · 자세한 게임 안내</title><style>*{box-sizing:border-box}body{margin:0;background:#f3efdf;color:#245963;font:16px/1.7 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:24px}h1{font-size:26px}nav{display:flex;flex-wrap:wrap;gap:12px}a{color:#245963}figure{margin:30px 0;background:#fffdf4;border-radius:8px;overflow:hidden}figcaption{padding:12px}img{display:block;width:100%;height:auto}nav a{padding:10px 16px;background:#fffdf4;border:1px solid #b8c8b4;border-radius:6px}</style><main><h1>바람의 항로 · 자세한 게임 안내</h1><p>2026.11.09 규칙 기준 · JPG 10장입니다. 각 그림을 저장하거나 ZIP을 내려받으세요.</p><nav><a href="../">게임으로 돌아가기</a><a href="windward-player-guide-10pages.zip" download>JPG 10장 전체 내려받기</a></nav>'
-        for i,(rec,title) in enumerate(zip(all_records,titles),1):html+=f'<figure><figcaption>{i}. {title} · <a href="{rec["file"]}?v=20261109" download>JPG 저장</a></figcaption><a href="{rec["file"]}?v=20261109"><img src="{rec["file"]}?v=20261109" alt="{title} 안내" loading="lazy" width="1800" height="2550"></a></figure>'
+        html='<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>바람의 항로 · 자세한 게임 안내</title><style>*{box-sizing:border-box}body{margin:0;background:#f3efdf;color:#245963;font:16px/1.7 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:24px}h1{font-size:26px}nav{display:flex;flex-wrap:wrap;gap:12px}a{color:#245963}figure{margin:30px 0;background:#fffdf4;border-radius:8px;overflow:hidden}figcaption{padding:12px}img{display:block;width:100%;height:auto}nav a{padding:10px 16px;background:#fffdf4;border:1px solid #b8c8b4;border-radius:6px}</style><main><h1>바람의 항로 · 자세한 게임 안내</h1><p>2026.11.10 규칙 기준 · JPG 10장입니다. 각 그림을 저장하거나 ZIP을 내려받으세요.</p><nav><a href="../">게임으로 돌아가기</a><a href="windward-player-guide-10pages.zip" download>JPG 10장 전체 내려받기</a></nav>'
+        for i,(rec,title) in enumerate(zip(all_records,titles),1):html+=f'<figure><figcaption>{i}. {title} · <a href="{rec["file"]}?v=20261110-community" download>JPG 저장</a></figcaption><a href="{rec["file"]}?v=20261110-community"><img src="{rec["file"]}?v=20261110-community" alt="{title} 안내" loading="lazy" width="1800" height="2550"></a></figure>'
         (published/"index.html").write_text('<!doctype html>'+html+'</main></html>',encoding="utf8")
     print(f"Output: {OUT}")
 

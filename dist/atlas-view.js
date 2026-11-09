@@ -1,5 +1,5 @@
-import {GlobeAtlas} from './globe.js?v=2026.11.09-frontiers';
-import {wrapPosition} from './world-wrap.js?v=2026.11.09-frontiers';
+import {GlobeAtlas} from './globe.js?v=2026.11.10-community-battle';
+import {wrapPosition} from './world-wrap.js?v=2026.11.10-community-battle';
 export function viewportRects(points){if(!points?.length)return [];const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),rects=[];for(const dx of [-360,0,360])for(const dy of [-140,0,140]){const left=Math.max(-180,Math.min(...xs)+dx),right=Math.min(180,Math.max(...xs)+dx),south=Math.max(-60,Math.min(...ys)+dy),north=Math.min(80,Math.max(...ys)+dy);if(right>left&&north>south)rects.push({left,right,south,north});}return rects;}
 export class AtlasView extends GlobeAtlas{
  constructor(canvas,land,rivers,ports,onLook){
@@ -11,7 +11,7 @@ export class AtlasView extends GlobeAtlas{
   canvas.addEventListener('pointerup',e=>{if(this.mode!=='flat')return;const r=canvas.getBoundingClientRect(),lon=(e.clientX-r.left)/r.width*360-180,lat=90-(e.clientY-r.top)/r.height*180;if(lat>=-60&&lat<=80)this.onLook(wrapPosition([lon,lat]));e.stopImmediatePropagation();},true);
   this.setMode(this.mode);
  }
- setMode(mode){this.mode=mode;try{localStorage.setItem('windward-atlas-view',mode);}catch{}this.bar?.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===mode)));this.canvas.width=mode==='flat'?360:240;this.canvas.height=mode==='flat'?180:240;this.canvas.style.aspectRatio=mode==='flat'?'2':'1';this.canvas.setAttribute('aria-label',mode==='flat'?'평면 세계지도. 클릭한 곳으로 해도 화면만 이동합니다.':'지구본. 드래그 회전, 클릭한 곳으로 해도 화면만 이동합니다.');this.draw(true);}
+ setMode(mode){mode=mode==='flat'?'flat':'globe';this.mode=mode;try{localStorage.setItem('windward-atlas-view',mode);}catch{}this.bar?.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===mode)));this.canvas.dataset.atlasMode=mode;const card=this.canvas.closest('.minimap-card');if(card)card.dataset.atlasMode=mode;const hint=card?.querySelector('.minimap-caption span:last-child');if(hint)hint.textContent=mode==='flat'?'클릭·터치: 해도 보기':'드래그: 회전 · 클릭: 해도 보기';this.canvas.width=mode==='flat'?360:240;this.canvas.height=mode==='flat'?180:240;this.canvas.style.aspectRatio=mode==='flat'?'2':'1';this.canvas.setAttribute('aria-label',mode==='flat'?'평면 세계지도. 클릭한 곳으로 해도 화면만 이동합니다.':'지구본. 드래그 회전, 클릭한 곳으로 해도 화면만 이동합니다.');this.draw(true);}
  update(state,viewport,route,force=false){this.rects=viewportRects(viewport);super.update(state,viewport,route,force);}
  line(points,color,width){if(points===this.viewport&&this.rects){for(const r of this.rects)super.line([[r.left,r.south],[r.right,r.south],[r.right,r.north],[r.left,r.north],[r.left,r.south]],color,width);}else super.line(points,color,width);}
  draw(force=false){if(this.mode!=='flat')return super.draw(force);if(!this.state||!this.flatCtx)return;const now=performance.now();if(!force&&now-this.lastDraw<150)return;this.lastDraw=now;const a=this.flatImage.data;

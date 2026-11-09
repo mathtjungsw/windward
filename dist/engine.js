@@ -1,8 +1,9 @@
-import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.09-frontiers';
-import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,ACTIVE_SECONDS_PER_DAY,SHIPS} from './ship-rules.js?v=2026.11.09-frontiers';
-import {parseState} from './save-game.js?v=2026.11.09-frontiers';
-import {gunWeight} from './cannons.js?v=2026.11.09-frontiers';
-export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.09-frontiers';
+import {recordTrade} from './rank-progress.js?v=2026.11.10-community-battle';
+import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.10-community-battle';
+import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,ACTIVE_SECONDS_PER_DAY,SHIPS} from './ship-rules.js?v=2026.11.10-community-battle';
+import {parseState} from './save-game.js?v=2026.11.10-community-battle';
+import {gunWeight} from './cannons.js?v=2026.11.10-community-battle';
+export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.10-community-battle';
 
 export const SAVE_KEY='windward-save-v1';
 export const START_DATE=Date.UTC(1522,3,6);
@@ -66,7 +67,7 @@ export function buy(s,goodId,qty){
   const c=s.cargo[goodId]||{qty:0,cost:0};
   s.cargo[goodId]={qty:c.qty+qty,cost:c.cost+total};s.money-=total;s.trades++;
   if(s.port==='lisbon'&&goodId==='wine')s.boughtLisbonWine=true;
-  return {ok:true,total,qty,unit};
+  recordTrade(s,goodId,'buy');return {ok:true,total,qty,unit};
 }
 export function sell(s,goodId,qty){
   qty=Math.floor(qty);const c=s.cargo[goodId];
@@ -76,7 +77,7 @@ export function sell(s,goodId,qty){
   c.qty-=qty;c.cost-=cost;s.money+=total;s.profit+=total-cost;s.trades++;
   if(!c.qty)delete s.cargo[goodId];
   if(s.port!=='lisbon'&&goodId==='wine'&&s.boughtLisbonWine)s.soldAway=true;
-  return {ok:true,total,qty,unit,profit:Math.round(total-cost)};
+  recordTrade(s,goodId,'sell',total-cost);return {ok:true,total,qty,unit,profit:Math.round(total-cost)};
 }
 
 class Heap{

@@ -58,17 +58,25 @@
       },
       "real": {
         "rankings": {
-          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && (((query.orderByChild == 'money' || query.orderByChild == 'profit' || query.orderByChild == 'visited' || query.orderByChild == 'explorationScore' || query.orderByChild == 'fame') && query.limitToLast != null && (query.limitToLast <= 5 || (query.limitToLast <= 1000 && query.startAt != null))) || (query.orderByKey == true && query.limitToFirst != null && query.limitToFirst <= 20))",
+          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && (((query.orderByChild == 'money' || query.orderByChild == 'profit' || query.orderByChild == 'visited' || query.orderByChild == 'explorationScore' || query.orderByChild == 'fame' || query.orderByChild == 'pirateKills' || query.orderByChild == 'fleetDefeats' || query.orderByChild == 'duelWins' || query.orderByChild == 'tradedGoodCount' || query.orderByChild == 'bestTradeProfit' || query.orderByChild == 'islandPorts' || query.orderByChild == 'fleetGrowth' || query.orderByChild == 'foundCount') && query.limitToLast != null && (query.limitToLast <= 5 || (query.limitToLast <= 1000 && query.startAt != null))) || (query.orderByKey == true && query.limitToFirst != null && query.limitToFirst <= 20))",
           ".indexOn": [
             "money",
             "profit",
             "visited",
             "explorationScore",
-            "fame"
+            "fame",
+            "pirateKills",
+            "fleetDefeats",
+            "duelWins",
+            "tradedGoodCount",
+            "bestTradeProfit",
+            "islandPorts",
+            "fleetGrowth",
+            "foundCount"
           ],
           "$uid": {
             ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists()",
-            ".validate": "newData.hasChildren(['name','money','profit','visited','updatedAt']) && (!data.child('statsVersion').exists() || data.child('statsVersion').val() != 3 || newData.child('statsVersion').val() == 3) && (!newData.child('statsVersion').exists() || (newData.hasChildren(['explorationScore','explorationArea','explorationPercent','foundCount','fame','shipTier','fleetCount','saveRevision']) && (!data.child('saveRevision').exists() || newData.child('saveRevision').val() >= data.child('saveRevision').val())))",
+            ".validate": "newData.hasChildren(['name','money','profit','visited','updatedAt']) && (!data.child('statsVersion').exists() || data.child('statsVersion').val() != 3 || newData.child('statsVersion').val() == 3) && (!newData.child('statsVersion').exists() || (newData.hasChildren(['explorationScore','explorationArea','explorationPercent','foundCount','fame','shipTier','fleetCount','saveRevision']) && (!data.child('saveRevision').exists() || newData.child('saveRevision').val() >= data.child('saveRevision').val()))) && (!data.child('rankProgressVersion').exists() || newData.child('rankProgressVersion').val() == 1) && (!newData.child('rankProgressVersion').exists() || newData.hasChildren(['pirateKills','fleetDefeats','duelWins','tradedGoodCount','bestTradeProfit','islandPorts','fleetGrowth']))",
             "name": {
               ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 16"
             },
@@ -117,6 +125,30 @@
             },
             "lastSeenAt": {
               ".validate": "newData.isNumber() && newData.val() == now && (!data.exists() || newData.val() >= data.val())"
+            },
+            "pirateKills": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000"
+            },
+            "fleetDefeats": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000"
+            },
+            "duelWins": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000"
+            },
+            "tradedGoodCount": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 128"
+            },
+            "bestTradeProfit": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000"
+            },
+            "islandPorts": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 124"
+            },
+            "fleetGrowth": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 100"
+            },
+            "rankProgressVersion": {
+              ".validate": "newData.val() == 1"
             }
           }
         },
@@ -285,6 +317,117 @@
               ".validate": false
             }
           }
+        },
+        "portRankings": {
+          ".indexOn": [
+            "ownedPortCount"
+          ],
+          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && query.orderByChild == 'ownedPortCount' && query.limitToLast != null && (query.limitToLast <= 5 || (query.limitToLast <= 1000 && query.startAt != null))",
+          "$uid": {
+            ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
+            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && ((auth.uid == $uid && !data.exists() && newData.child('ownedPortCount').val() == 0 && newData.child('revision').val() == 1 && !newData.child('lastPort').exists() && !newData.child('operationId').exists()) || (auth.uid == $uid && data.exists() && newData.child('ownedPortCount').val() == data.child('ownedPortCount').val() && newData.child('revision').val() == data.child('revision').val() && newData.child('lastPort').val() == data.child('lastPort').val() && newData.child('operationId').val() == data.child('operationId').val()) || (newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('revision').val() == root.child('gameV2/privateSaves').child(auth.uid).child('revision').val()+1 && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'ports' && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == newData.child('lastPort').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.child('operationId').val() && newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('lastOperation/id').val() == newData.child('operationId').val() && (root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val()) != (newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val()) && ($uid == (root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val()) || $uid == (newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val())) && newData.child('revision').val() == (data.child('revision').exists()?data.child('revision').val():0)+1 && newData.child('ownedPortCount').val() == (data.child('ownedPortCount').exists()?data.child('ownedPortCount').val():0) + ($uid == (newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val())?1:0) - ($uid == (root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val())?1:0)))",
+            ".validate": "newData.hasChildren(['name','ownedPortCount','revision','updatedAt']) && (auth.uid != $uid?newData.child('name').val() == data.child('name').val():newData.child('name').val() == root.child('gameV2/accounts').child($uid).child('name').val())",
+            "name": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 16"
+            },
+            "ownedPortCount": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 124"
+            },
+            "revision": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 1"
+            },
+            "updatedAt": {
+              ".validate": "newData.val() == now"
+            },
+            "operationId": {
+              ".validate": "newData.isString() && newData.val().length <= 200"
+            },
+            "lastPort": {
+              ".validate": "newData.isString() && newData.val().matches(/^[a-z-]{1,80}$/)"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "suggestions": {
+          "posts": {
+            ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && query.orderByKey == true && query.limitToLast != null && query.limitToLast <= 20",
+            "$post": {
+              ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
+              ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && !data.exists() && newData.exists() && newData.child('uid').val() == auth.uid && root.child('gameV2/accounts').child(auth.uid).exists() && (!root.child('gameV2/real/suggestions/lastSent').child(auth.uid).exists() || now-root.child('gameV2/real/suggestions/lastSent').child(auth.uid).child('at').val() >= 60000) && newData.parent().parent().child('lastSent').child(auth.uid).child('postId').val() == $post && newData.parent().parent().child('lastSent').child(auth.uid).child('at').val() == now",
+              ".validate": "newData.hasChildren(['uid','name','title','body','at']) && $post.matches(/^[a-zA-Z0-9_-]{20}$/)",
+              "uid": {
+                ".validate": "newData.val() == auth.uid"
+              },
+              "name": {
+                ".validate": "newData.val() == root.child('gameV2/accounts').child(auth.uid).child('name').val()"
+              },
+              "title": {
+                ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50"
+              },
+              "body": {
+                ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 1200"
+              },
+              "at": {
+                ".validate": "newData.val() == now"
+              },
+              "$other": {
+                ".validate": false
+              }
+            }
+          },
+          "lastSent": {
+            "$uid": {
+              ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid",
+              ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && (!data.exists() || now-data.child('at').val() >= 60000) && newData.child('at').val() == now && !root.child('gameV2/real/suggestions/posts').child(newData.child('postId').val()).exists() && newData.parent().parent().child('posts').child(newData.child('postId').val()).child('uid').val() == auth.uid && newData.parent().parent().child('posts').child(newData.child('postId').val()).child('at').val() == now",
+              ".validate": "newData.hasChildren(['postId','at'])",
+              "postId": {
+                ".validate": "newData.isString() && newData.val().matches(/^[a-zA-Z0-9_-]{20}$/)"
+              },
+              "at": {
+                ".validate": "newData.val() == now"
+              },
+              "$other": {
+                ".validate": false
+              }
+            }
+          }
+        },
+        "ownedPorts": {
+          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && query.orderByKey == true && query.limitToFirst != null && query.limitToFirst <= 124",
+          "$port": {
+            ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
+            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.parent().parent().parent().child('shared/ports').child($port).child('lastOperation/uid').val() == auth.uid && newData.parent().parent().parent().child('shared/ports').child($port).child('lastOperation/id').val() == newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'ports' && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == $port && newData.parent().parent().parent().child('shared/ports').child($port).child('revision').val() == (root.child('gameV2/shared/ports').child($port).child('revision').exists()?root.child('gameV2/shared/ports').child($port).child('revision').val():0)+1 && (((newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('ownerUid').val()) == null && !newData.exists()) || (newData.exists() && newData.child('ownerUid').val() == (newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('ownerUid').val()) && newData.child('operationId').val() == newData.parent().parent().parent().child('shared/ports').child($port).child('lastOperation/id').val()))",
+            ".validate": "newData.hasChildren(['ownerUid','ownerName','portName','share','defaultRate','kind','operationId','updatedAt'])",
+            "ownerUid": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 128"
+            },
+            "ownerName": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 16"
+            },
+            "portName": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 40"
+            },
+            "share": {
+              ".validate": "newData.isNumber() && newData.val() > 50 && newData.val() <= 100"
+            },
+            "defaultRate": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10 && newData.val() == (newData.parent().parent().parent().parent().child('shared/ports').child($port).child('content').child('defaultRate').exists()?newData.parent().parent().parent().parent().child('shared/ports').child($port).child('content').child('defaultRate').val():0)"
+            },
+            "kind": {
+              ".validate": "newData.val() == 'general' || newData.val() == 'developed'"
+            },
+            "operationId": {
+              ".validate": "newData.isString() && newData.val().length <= 200"
+            },
+            "updatedAt": {
+              ".validate": "newData.val() == now"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
         }
       },
       "shared": {
@@ -292,7 +435,7 @@
           "$key": {
             ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && ($kind == 'ports' || ($kind == 'personal' && $key == auth.uid))",
             ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && ($kind == 'ports' || ($kind == 'personal' && $key == auth.uid)) && newData.child('revision').val() == (data.child('revision').exists()?data.child('revision').val():0)+1 && newData.child('lastOperation/uid').val() == auth.uid && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.child('lastOperation/id').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == $kind && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == $key && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('revision').val() == newData.child('lastOperation/saveRevision').val()",
-            ".validate": "newData.hasChildren(['revision','content','updatedAt','lastOperation']) && newData.child('updatedAt').val() == now"
+            ".validate": "(newData.hasChildren(['revision','content','updatedAt','lastOperation']) && newData.child('updatedAt').val() == now && ($kind != 'ports' || (data.child('content').child('developedOwner').exists()?data.child('content').child('developedOwner').val():data.child('content').child('ownerUid').val()) == (newData.child('content').child('developedOwner').exists()?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) || (((data.child('content').child('developedOwner').exists()?data.child('content').child('developedOwner').val():data.child('content').child('ownerUid').val()) == null || newData.parent().parent().parent().child('real/portRankings').child((data.child('content').child('developedOwner').exists()?data.child('content').child('developedOwner').val():data.child('content').child('ownerUid').val())).child('operationId').val() == newData.child('lastOperation/id').val()) && ((newData.child('content').child('developedOwner').exists()?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) == null || newData.parent().parent().parent().child('real/portRankings').child((newData.child('content').child('developedOwner').exists()?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val())).child('operationId').val() == newData.child('lastOperation/id').val())))) && ($kind != 'ports' || (data.child('content/developedOwner').exists()?data.child('content/developedOwner').val():data.child('content/ownerUid').val()) == (newData.child('content').child('developedOwner').exists()?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) || (((newData.child('content').child('developedOwner').exists()?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) == null && !newData.parent().parent().parent().child('real/ownedPorts').child($key).exists()) || (newData.parent().parent().parent().child('real/ownedPorts').child($key).child('ownerUid').val() == (newData.child('content').child('developedOwner').exists()?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) && newData.parent().parent().parent().child('real/ownedPorts').child($key).child('operationId').val() == newData.child('lastOperation/id').val())))"
           }
         },
         "battles": {
@@ -381,7 +524,7 @@
       "combatSlots": {
         "$uid": {
           ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
-          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.parent().parent().child('privateSaves').child(auth.uid).child('revision').val() == root.child('gameV2/privateSaves').child(auth.uid).child('revision').val()+1 && ((!data.exists() && newData.isString() && ((auth.uid == $uid && newData.val() == 'npc:'+auth.uid && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'personal') || (newData.parent().parent().child('shared/battles').child(newData.val()).child('revision').val() == 1 && newData.parent().parent().child('shared/battles').child(newData.val()).child('content/a').val() == auth.uid && (newData.parent().parent().child('shared/battles').child(newData.val()).child('content/a').val() == $uid || newData.parent().parent().child('shared/battles').child(newData.val()).child('content/b').val() == $uid) && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == newData.val()))) || (!newData.exists() && auth.uid == $uid && (data.val() == 'npc:'+auth.uid || (newData.parent().parent().child('shared/battles').child(data.val()).child('content/status').val() == 'closed' && newData.parent().parent().child('shared/battles').child(data.val()).child('content/claimed').child($uid).val() == true))))"
+          ".write": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.parent().parent().child('privateSaves').child(auth.uid).child('revision').val() == root.child('gameV2/privateSaves').child(auth.uid).child('revision').val()+1 && ((!data.exists() && newData.isString() && ((auth.uid == $uid && newData.val() == 'npc:'+auth.uid && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'personal') || (newData.parent().parent().child('shared/battles').child(newData.val()).child('revision').val() == 1 && newData.parent().parent().child('shared/battles').child(newData.val()).child('content/a').val() == auth.uid && (newData.parent().parent().child('shared/battles').child(newData.val()).child('content/a').val() == $uid || newData.parent().parent().child('shared/battles').child(newData.val()).child('content/b').val() == $uid) && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == newData.val()))) || (data.exists() && !newData.exists() && auth.uid == $uid && (data.val() == 'npc:'+auth.uid || (newData.parent().parent().child('shared/battles').child(data.val()).child('content/status').val() == 'closed' && newData.parent().parent().child('shared/battles').child(data.val()).child('content/claimed').child($uid).val() == true))))) || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.parent().parent().child('privateSaves').child(auth.uid).child('revision').val() == root.child('gameV2/privateSaves').child(auth.uid).child('revision').val()+1 && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'personal' && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == auth.uid && ((!data.exists() && !newData.exists()) || (data.val() == 'npc:'+auth.uid && newData.val() == data.val())))"
         }
       },
       "combatVaults": {
@@ -464,13 +607,13 @@
             ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && root.child('gameV2/shared/battles').child($battle).child('content').child('status').val() == 'active' && (root.child('gameV2/shared/battles').child($battle).child('content').child('a').val() == $uid || root.child('gameV2/shared/battles').child($battle).child('content').child('b').val() == $uid)",
             ".validate": "newData.hasChildren(['point','at'])",
             "point": {
-              ".validate": "newData.hasChildren(['0','1'])",
               "0": {
                 ".validate": "newData.isNumber() && newData.val() >= -180 && newData.val() <= 180"
               },
               "1": {
                 ".validate": "newData.isNumber() && newData.val() >= -60 && newData.val() <= 80"
               },
+              ".validate": "newData.hasChildren(['0','1'])",
               "$other": {
                 ".validate": false
               }

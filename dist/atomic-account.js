@@ -1,3 +1,4 @@
+import {ownershipRankChanges} from './port-rankings.js?v=2026.11.10-community-battle';
 async function bounded(task,ms=5000){let timer;try{return await Promise.race([task,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('network-timeout')),ms))]);}finally{clearTimeout(timer);}}
 // Economic writes share the same queue as autosave. Acknowledgement precedes UI state.
 export function installAtomicAccount(Type){
@@ -19,13 +20,14 @@ export function installAtomicAccount(Type){
    const record={...this.record,schemaVersion:5,revision,session:this.session,data:JSON.stringify(game),leaseUntil:now+90000,updatedAt:stamp,operationSequence:sequence,lastOperation:op};
    content._version=1;
    const shared={revision:before.revision+1,content,updatedAt:stamp,lastOperation:{id,uid:this.uid,sequence,saveRevision:revision}};
+   const ownerChanges=kind==='ports'?await bounded(ownershipRankChanges(this,key,before.content||{},content,id)):{};
    const journal='windward-economic-pending:'+this.uid;try{this.storage.setItem(journal,JSON.stringify({id,sequence,revision,kind,key}));}catch{throw Error('처리 전 기기 기록을 보관할 수 없어요.');}
    let confirmed=record;
-   const changes={...(result?.extras||{}),['privateSaves/'+this.uid]:record,[path]:shared};if(result?.registry)changes['harborRegistry/'+result.registry.id]=result.registry;
+   const changes={...ownerChanges,...(result?.extras||{}),['privateSaves/'+this.uid]:record,[path]:shared};if(result?.registry)changes['harborRegistry/'+result.registry.id]=result.registry;
    let timeout;
    try{await Promise.race([s.update(s.ref(this.db,root),changes),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('ack-timeout')),20000);})]);}
    catch(error){let observed;const uncertain=()=>{this.economicUncertain=true;this.ready=false;this.onUncertain?.();};try{observed=await this.readConfirmedSave();}catch{uncertain();throw Error('결과 확인 중이에요. 새로고침하면 서버 기록으로 이어집니다.');}
-    if(observed?.lastOperation?.id!==id){if(!/permission.?denied/i.test(String(error?.code||error?.message))){uncertain();throw Error('처리 결과를 확인 중이에요. 새로고침해 서버 기록으로 이어가세요.');}this.storage.removeItem(journal);if(observed?.session!==this.session||observed?.revision!==this.revision){this.lost=true;this.ready=false;this.onConflict();}throw Error('다른 거래로 상태가 바뀌었거나 요청이 거절됐어요. 새 금액을 확인하고 다시 시도하세요.');}confirmed=observed;
+    if(observed?.lastOperation?.id!==id){if(!/permission.?denied/i.test(String(error?.code||error?.message))){uncertain();throw Error('처리 결과를 확인 중이에요. 새로고침해 서버 기록으로 이어가세요.');}this.storage.removeItem(journal);if(observed?.session!==this.session||observed?.revision!==this.revision){this.lost=true;this.ready=false;this.onConflict();}throw Error(kind==='personal'?'전투·활동 기록 저장을 서버가 거절했어요. 현재 기록은 유지되며, 다시 시도할 수 있어요.':kind==='battles'?'전투 상태가 갱신됐거나 저장이 거절됐어요. 최신 전투 화면에서 다시 시도하세요.':'시세·항구 상태가 바뀌었거나 요청이 거절됐어요. 새 견적을 확인하세요.');}confirmed=observed;
    }finally{clearTimeout(timeout);}
    this.record=confirmed;this.revision=confirmed.revision;this.lastFlush=Date.now();this.dirty=false;this.applyGame?.(JSON.parse(confirmed.data));this.cache(JSON.parse(confirmed.data),false);this.storage.removeItem(journal);this.onCommitted(JSON.parse(confirmed.data),this.revision);return result;
   }finally{this.busy=false;this.onBusy?.(false);}

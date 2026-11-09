@@ -6,7 +6,7 @@ import {CaptainRoster} from '../dist/captains.js';
 // Firebase's ordered tree stops for any truthy callback return, including push's
 // numeric length. Array.forEach is not a faithful substitute for this API.
 function snapshot(rows){return {forEach(fn){for(const [key,value]of rows)if(fn({key,val:()=>value}))return true;return false;}};}
-const profiles=Array.from({length:27},(_,i)=>['qa-'+String(i).padStart(2,'0'),{name:'검증 선장 '+i,money:1000+i,profit:i,visited:[2,16,12,9,4][i]||1,explorationScore:i,explorationPercent:i/10000,fame:i*50}]);
+const profiles=Array.from({length:27},(_,i)=>['qa-'+String(i).padStart(2,'0'),{...Object.fromEntries(RANK_METRICS.map(m=>[m,i])),name:'검증 선장 '+i,money:1000+i,profit:i,visited:[2,16,12,9,4][i]||1,explorationScore:i,explorationPercent:i/10000,fame:i*50}]);
 function fixture(){
  const fleet={root:'gameV2/real',db:{},uid:'qa-00'};let receive,stops=0,lastFilters;
  const sdk={ref:(_,p)=>p,orderByChild:x=>({metric:x}),orderByKey:()=>({key:true}),limitToLast:n=>({last:n}),limitToFirst:n=>({first:n}),startAt:n=>({start:n}),startAfter:x=>({after:x}),query:(ref,...filters)=>({ref,filters}),onValue(q,fn){receive=fn;return ()=>stops++;},async get(q){lastFilters=q.filters;const after=q.filters.find(f=>f.after)?.after;return snapshot(profiles.filter(([id])=>!after||id>after).slice(0,20));}};

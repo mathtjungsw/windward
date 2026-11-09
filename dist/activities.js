@@ -1,7 +1,7 @@
-import {ship,fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.09-frontiers';
-import {usedSpace,capacity,usedCargo,supplyCost} from './engine.js?v=2026.11.09-frontiers';
-import {currentHP} from './cannons.js?v=2026.11.09-frontiers';
-import {mapDistance} from './world-wrap.js?v=2026.11.09-frontiers';
+import {ship,fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.10-community-battle';
+import {usedSpace,capacity,usedCargo,supplyCost} from './engine.js?v=2026.11.10-community-battle';
+import {currentHP} from './cannons.js?v=2026.11.10-community-battle';
+import {mapDistance} from './world-wrap.js?v=2026.11.10-community-battle';
 export function repairHull(s){if(!s.port||s.voyage)throw Error('항구에서 수리하세요.');const max=fleetMaxHP(s),missing=max-currentHP(s);if(!missing)throw Error('이미 수리가 끝났어요.');const cost=Math.max(1,Math.ceil(Math.min(3000,Math.max(100,fleetAppraisal(s)*.02))*missing/max));if(s.money<cost)throw Error('수리할 두카트가 부족해요.');s.money-=cost;s.hullHP=max;return {ok:true,cost};}
 export function coastalAction(s,site,action,now,random){if(s.voyage||s.port||s.npcBattle||s.battleId||mapDistance(s.position,site.point)>10)throw Error('해안 지점 앞 10해리 이내에서 정지하세요.');s.coastalVisits??={};const past=s.coastalVisits[site.id]||{};
  if(action==='supply'){if(past.supplyAt!==undefined&&now-past.supplyAt<86400000)throw Error('이 지점은 24시간마다 보급할 수 있어요.');const amount=Math.max(0,Math.min(2,ship(s).supply-s.food,2*(capacity(s)-usedSpace(s))/s.fleetCount));if(amount<=0)throw Error('보급 한도와 화물 공간을 확인하세요.');const cost=Math.ceil(amount*s.fleetCount*ship(s).supplyPrice*1.5);if(s.money<cost)throw Error('보급할 두카트가 부족해요.');s.money-=cost;s.food+=amount;s.coastalVisits[site.id]={...past,supplyAt:now};return {ok:true,message:`보급 ${amount.toFixed(1)}일 · ${cost} D`};}

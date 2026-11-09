@@ -1,12 +1,12 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.09-frontiers';
-import {shipArtPath} from './art.js?v=2026.11.09-frontiers';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.09-frontiers';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.09-frontiers';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.09-frontiers';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.09-frontiers';
-import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.09-frontiers';
-import {isTypingTarget} from './controls.js?v=2026.11.09-frontiers';
-import {validCard} from './social-core.js?v=2026.11.09-frontiers';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.10-community-battle';
+import {shipArtPath} from './art.js?v=2026.11.10-community-battle';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.10-community-battle';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-community-battle';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.10-community-battle';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.10-community-battle';
+import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.10-community-battle';
+import {isTypingTarget} from './controls.js?v=2026.11.10-community-battle';
+import {validCard} from './social-core.js?v=2026.11.10-community-battle';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -74,11 +74,11 @@ export function createUX(api){
     openSheet(mode==='cargo'?'내 화물':mode==='supply'?'선박·보급':mode==='target'?'선택한 항구':'항구·보급',mode);
   }
   function openMore(){
-    restorePanel();$('#quick-content').innerHTML='<div class="quick-links"><button data-menu="business">항구 투자·활동</button><button data-menu="guns">대포·수리</button><button data-menu="combat">전투·해적</button><button data-menu="collection">수집 도감</button><button data-menu="ship">내 배 보기</button><button data-menu="captains">전체 선장</button><button data-menu="atlas">항구 찾기</button><button data-menu="globe">세계 지구본</button><button data-menu="rank">랭킹</button><button data-menu="mission">의뢰</button><button data-menu="chat">채팅</button><button data-menu="journal">항해일지</button><button data-menu="settings">조작·화면 설정</button><button data-menu="help">도움말</button></div>';
+    restorePanel();$('#quick-content').innerHTML='<div class="quick-links"><button data-menu="suggestions">개선 제안 게시판</button><button data-menu="ownedPorts">소유 항구 현황</button><button data-menu="business">항구 투자·활동</button><button data-menu="guns">대포·수리</button><button data-menu="combat">전투·해적</button><button data-menu="collection">수집 도감</button><button data-menu="ship">내 배 보기</button><button data-menu="captains">전체 선장</button><button data-menu="atlas">항구 찾기</button><button data-menu="globe">세계 지구본</button><button data-menu="rank">랭킹</button><button data-menu="mission">의뢰</button><button data-menu="chat">채팅</button><button data-menu="journal">항해일지</button><button data-menu="settings">조작·화면 설정</button><button data-menu="help">도움말</button></div>';
     openSheet('더보기','more');
     $('#quick-content').querySelectorAll('[data-menu]').forEach(b=>b.onclick=()=>{
       closeSheet();const key=b.dataset.menu;
-      if(key==='business')api.onBusiness?.();else if(key==='guns')api.onGuns?.();else if(key==='combat')api.onCombat?.();else if(key==='collection')api.onCollection?.();else if(key==='ship')api.onShip?.();else if(key==='captains')api.onCaptains?.();else if(key==='atlas')api.onAtlas();else if(key==='journal')api.onJournal();else if(key==='settings')showSettings();else if(key==='help')api.onHelp();else {
+      if(key==='suggestions')api.onSuggestions?.();else if(key==='ownedPorts')api.onOwnedPorts?.();else if(key==='business')api.onBusiness?.();else if(key==='guns')api.onGuns?.();else if(key==='combat')api.onCombat?.();else if(key==='collection')api.onCollection?.();else if(key==='ship')api.onShip?.();else if(key==='captains')api.onCaptains?.();else if(key==='atlas')api.onAtlas();else if(key==='journal')api.onJournal();else if(key==='settings')showSettings();else if(key==='help')api.onHelp();else {
         if(key==='chat')api.onChat(true);
         $({globe:'.minimap-card',rank:'.rank-card',mission:'.mission-card',chat:'#chat-panel'}[key])?.scrollIntoView({block:'nearest'});
       }
