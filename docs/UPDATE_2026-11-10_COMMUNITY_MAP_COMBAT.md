@@ -22,6 +22,8 @@
 
 ## 실제 배포 확인
 
-- Firebase `windward-voyage` 운영 DB에 최종 규칙 배포 성공. 읽어 온 규칙 JSON을 검사한 로컬 규칙과 비교한다.
+- Firebase `windward-voyage` 운영 DB에 최종 규칙 배포 성공. 읽어 온 운영 규칙 JSON과 검사한 로컬 규칙이 일치함을 확인했다.
 - 공개 집계 보강: 저장 10명, 기존 항구 소유 카운터 10명 유지, 공개 요약 10명 갱신. 실제 소유 항구가 0곳이므로 새 소유 목록도 0곳이다. 개인 저장·계정·항구 상태를 쓰지 않았다. 원본은 Git 제외 `.qa/ranking-refresh/`에 백업했다.
-- GitHub Pages 및 공개 파일 확인은 아래에 이어 기록한다.
+- 구현 커밋 `ba6e55fe9da430247836c5f940125d9259eccfbb`. [GitHub Actions 배포](https://github.com/mathtjungsw/windward/actions/runs/42698223377)는 2026-11-10 06:00:20 KST에 성공했다. CI의 게임 검사·생성 자산 검사·Pages 게시가 모두 성공했다.
+- 공개 게임 `https://mathtjungsw.github.io/windward/`에서 진입 HTML·앱·게시판·전투·랭킹·소유 목록·미니맵·CSS·패치노트·안내 JPG·ZIP 총 19개 파일의 HTTP 200과 로컬 검증본 일치를 확인했다. 결과는 Git 제외 `.qa/live-verification.json`에 보관했다.
+- 최종 상태: 구현·검증·운영 서버/공개 사이트 배포 완료. 실제 기기 화면·애니메이션 시각 검증의 제한은 위와 같다.
