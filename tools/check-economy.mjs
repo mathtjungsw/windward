@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {initialState} from '../dist/engine.js';
-import {reserveLoss,combatProfile,openBattle,fireCannon,claimBattle} from '../dist/combat-core.js';
+import {reserveLoss,combatProfile,openBattle,fireCannon,claimBattle,finishExpired} from '../dist/combat-core.js';
 const namespace='demo-windward-economy',base='http://127.0.0.1:9000/',stamp={'.sv':'timestamp'};
 function token(uid){const t=Math.floor(Date.now()/1000),enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url');return enc({alg:'none',typ:'JWT'})+'.'+enc({aud:namespace,iss:`https://securetoken.google.com/${namespace}`,sub:uid,user_id:uid,iat:t,exp:t+3600,auth_time:t,firebase:{sign_in_provider:'google.com',identities:{}}})+'.';}
 async function req(path,{uid,admin=false,method='GET',body}={}){const u=new URL(path+'.json',base);u.searchParams.set('ns',namespace);if(uid)u.searchParams.set('auth',token(uid));const r=await fetch(u,{method,headers:{'Content-Type':'application/json',...(admin?{Authorization:'Bearer owner'}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});return {status:r.status,value:await r.json()};}
@@ -33,4 +33,12 @@ assert.equal((await apply('a',patch)).status,401,'shot cannot replay');
 const bad=structuredClone(room);bad.status='active';patch=await prepare('b','battles',id,bad);assert.equal((await apply('b',patch)).status,401,'closed combat cannot reopen');
 for(const uid of ['b','a']){claimBattle(games[uid],room,uid,Date.now());patch=await prepare(uid,'battles',id,room,{['combatSlots/'+uid]:null,['combatVaults/'+uid]:null});result=await apply(uid,patch);assert.equal(result.status,200,'claim actual deposit once: '+uid+' '+JSON.stringify(result.value));assert.equal((await apply(uid,patch)).status,401,'claim replay');}
 assert.equal(games.a.money+games.b.money,19900);assert.equal((await req('gameV2/combatVaults/a',{uid:'a'})).value,null);assert.equal((await req('gameV2/combatSlots/b',{uid:'b'})).value,null);
+// A real invitation allows the receiver to open a boosted duel. Surrender and
+// both claims must work even when the ships retained a prior cannon cooldown.
+for(const uid of ['a','b']){games[uid].defeatProtectionUntil=0;const reserve=reserveLoss(games[uid],uid+'-duel-reserve');patch=await prepare(uid,'personal',uid,{}, {['combatVaults/'+uid]:reserve});assert.equal((await apply(uid,patch)).status,200);const {point,at,...profile}=combatProfile(games[uid],uid,Date.now());assert.equal((await req('gameV2/combatProfiles/'+uid,{uid,method:'PUT',body:{...profile,at:stamp}})).status,200);}
+assert.equal((await req('gameV2/combatInvites/a/b',{uid:'b',method:'PUT',body:{from:'b',name:'b',at:stamp}})).status,200);
+time=Date.now();profiles=Object.fromEntries(['a','b'].map(uid=>[uid,combatProfile(games[uid],uid,time)]));reserves=Object.fromEntries(['a','b'].map(uid=>[uid,games[uid].battleReserve]));room=openBattle('duel','a','b',profiles,reserves,time);patch=await prepare('a','battles','duel-accepted',room,{'combatSlots/a':'duel-accepted','combatSlots/b':'duel-accepted'});assert.equal((await apply('a',patch)).status,200,'receiver accepts a fresh invitation');
+finishExpired(room,'a',Date.now(),{},true);patch=await prepare('a','battles','duel-accepted',room);assert.equal((await apply('a',patch)).status,200,'surrender closes a duel without firing');
+for(const uid of ['a','b']){claimBattle(games[uid],room,uid,Date.now());patch=await prepare(uid,'battles','duel-accepted',room,{['combatSlots/'+uid]:null,['combatVaults/'+uid]:null});assert.equal((await apply(uid,patch)).status,200,'duel settlement '+uid);}
+assert.equal(games.a.money+games.b.money,19800,'two actual repair fees, no minted duel rewards');
 console.log('PASS: isolated atomic market, concurrency, vaults, two-participant battle, immutable settlement, claims and replay rules');
