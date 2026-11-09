@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {CaptainAccount,clearLegacyStorage,localSaveKey} from '../dist/account.js';
-import {initialState} from '../dist/engine.js';
+import {initialState,upgradeShip} from '../dist/engine.js';
 Object.defineProperty(globalThis.navigator,'onLine',{value:true,configurable:true});
 
 function fixture(record=null){
@@ -13,10 +13,10 @@ function fixture(record=null){
 }
 const user={uid:'owner'},input={name:'테스트 선장'};
 test('old cloud ship conversion pays once, upgrades remain after schema four reconnect',async()=>{
- const game={...initialState(),shipTier:4,money:2400};delete game.raftStart;
+ const game={...initialState(),version:3,shipTier:4,money:2400};delete game.raftStart;delete game.fleetShips;delete game.flagshipId;
  const f=fixture({schemaVersion:3,revision:4,data:JSON.stringify(game),session:'expired',leaseUntil:0});
- const s=await f.a.enter(user,null,input);clearInterval(f.a.timer);assert.equal(s.shipTier,0);assert.equal(s.money,7600);assert.equal(f.records.get('gameV2/privateSaves/owner').schemaVersion,4);assert.ok(f.values.has('windward-before-raft-start-v4:owner'));
- f.a.readGame=()=>s;s.shipTier=1;s.money-=600;f.a.save(s);await f.a.flushPromise;if(f.a.dirty)await f.a.flush();
+ const s=await f.a.enter(user,null,input);clearInterval(f.a.timer);assert.equal(s.shipTier,0);assert.equal(s.money,7600);assert.equal(f.records.get('gameV2/privateSaves/owner').schemaVersion,5);assert.ok(f.values.has('windward-before-raft-start-v4:owner'));
+ f.a.readGame=()=>s;assert.equal(upgradeShip(s).ok,true);f.a.save(s);await f.a.flushPromise;if(f.a.dirty)await f.a.flush();
  const again=await f.a.enter(user,{name:input.name},input);clearInterval(f.a.timer);assert.equal(again.shipTier,1);assert.equal(again.money,7000);assert.equal(again.raftStart.refund,5200);
 });
 test('a cold Firebase transaction does not falsely freeze a save; edits persist with a newer revision',async()=>{

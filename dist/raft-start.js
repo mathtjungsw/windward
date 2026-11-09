@@ -1,5 +1,5 @@
-import {SHIPS,shipTier,fleetCount} from './ship-rules.js';
-import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js';
+import {SHIPS,shipTier,fleetCount,syncFleet} from './ship-rules.js?v=2026.11.09-frontiers';
+import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.09-frontiers';
 
 export const RAFT_START_ID='raft-start-2026-11-06';
 // Replacement value: one hull's cumulative upgrades plus the current quote
@@ -20,6 +20,7 @@ export function applyRaftStart(s,at=Date.now()){
   if(!returnedPort)throw Error('방문한 귀환 항구를 확인해야 해요. 원본은 유지됩니다.');
  }
  s.money+=refund;s.shipTier=0;s.fleetCount=1;s.level=0;
+ syncFleet(s,[{id:'vessel-0',tier:0}],'vessel-0');
  s.food=keptFood;s.supplyCreditValue=(s.supplyCreditValue||0)+(totalFood-keptFood)*oldSpec.supplyPrice;
  const grant={id:RAFT_START_ID,fromTier:tier,fromFleetCount:n,refund,at};
  if(returnedPort){grant.returnedPort=returnedPort;grant.fromPosition=[...s.position];s.port=returnedPort;s.position=[PORT_BY_ID[returnedPort].lon,PORT_BY_ID[returnedPort].lat];s.voyage=null;s.controlMode='auto';s.legacyHarbor=!ACTIVE_PORT_BY_ID[returnedPort];s.explorationLockedUntilSailing=true;delete s.detourTarget;delete s.transitionPending;delete s.rescueReplanPending;}

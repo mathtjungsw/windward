@@ -12,7 +12,7 @@ const root=fileURLToPath(new URL('../dist/',import.meta.url));
 const useEmulators=process.argv.includes('--emulators');
 const fixtureLogin=process.argv.includes('--fixture-login');
 const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8',
-  '.css':'text/css; charset=utf-8','.json':'application/json','.geojson':'application/geo+json','.svg':'image/svg+xml'};
+  '.css':'text/css; charset=utf-8','.json':'application/json','.geojson':'application/geo+json','.svg':'image/svg+xml','.jpg':'image/jpeg','.jpeg':'image/jpeg','.zip':'application/zip'};
 const read=name=>readFile(path.join(root,name),'utf8');
 
 const crewFixture=`
@@ -28,7 +28,7 @@ const crewFixture=`
 async function fixturePage(game,crew=false){
   const app=(await read('app.js')).replaceAll("from './","from '/")
     .replace('clearLegacyStorage(storage);','')
-    .replace('renderFleetStatus();showEntry();',()=>`account.seenVersion=RELEASE;beginPlaying(${JSON.stringify(game)});${crew?crewFixture:''}`);
+    .replace('renderFleetStatus();showEntry();',()=>`account.seenVersion=RELEASE;combat.hasReserve=()=>true;combat.blocked=()=>false;combat.onArrival=async()=>{};beginPlaying(${JSON.stringify(game)});${crew?crewFixture:''}`);
   return (await read('index.html')).replace('<head>','<head><base href="/">')
     .replace(/<script type="module" src="app\.js(?:\?[^"]*)?"><\/script>/,()=>'<script type="module">'+app.replace(/<\/script/gi,'<\\/script')+'</script>');
 }
@@ -70,6 +70,7 @@ async function emulatorAccount(){
     .replace('await this.auth.authStateReady();',`
       authSdk.connectAuthEmulator(this.auth,'http://127.0.0.1:9099',{disableWarnings:true});
       dbSdk.connectDatabaseEmulator(this.db,'127.0.0.1',9000);
+      this.restEndpoint='http://127.0.0.1:9000';this.restNamespace='demo-windward-chat';
       await this.auth.authStateReady();
     `);
   if(fixtureLogin){
@@ -105,7 +106,7 @@ const server=createServer(async(req,res)=>{
     if(url.pathname==='/__qa/crew')return reply(res,'.html',await fixturePage(initialState(),true));
     if(url.pathname==='/__qa/mobile')return reply(res,'.html','<!doctype html><html lang="ko"><meta charset="utf-8"><title>바람의 항로 모바일 화면 검증</title><style>body{margin:0;background:#dce8e8;text-align:center}iframe{display:block;margin:auto;width:390px;height:844px;border:0;max-width:100%}</style><iframe title="모바일 항해 게임" src="/"></iframe></html>');
     const relative=url.pathname.startsWith(previewPrefix)?'/'+url.pathname.slice(previewPrefix.length):url.pathname;
-    const target=path.resolve(root,'.'+(relative==='/'?'/index.html':decodeURIComponent(relative)));
+    const target=path.resolve(root,'.'+decodeURIComponent(relative)+(relative.endsWith('/')?'index.html':''));
     if(!target.startsWith(path.resolve(root)+path.sep)){res.writeHead(403);res.end();return;}
     reply(res,path.extname(target),await readFile(target));
   }catch{res.writeHead(404);res.end('Not found');}

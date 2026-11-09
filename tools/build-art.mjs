@@ -10,4 +10,4 @@ async function output(name,text){
 }
 for(let i=0;i<SHIP_ART_NAMES.length;i++)await output(`ships/ship-${String(i+1).padStart(2,'0')}.svg`,shipArt(i)+'\n');
 for(const id of [...DISCOVERY_ART_IDS,'unknown'])await output(`discoveries/${id}.svg`,discoverySvg(id)+'\n');
-console.log(`${check?'확인':'생성'}: 선박 20종·발견물 32종·미발견 그림 1종 (${count} SVG)`);
+console.log(`${check?'확인':'생성'}: 선박 20종·발견물 ${DISCOVERY_ART_IDS.length}종·미발견 그림 1종 (${count} SVG)`);

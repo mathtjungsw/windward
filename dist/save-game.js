@@ -1,32 +1,42 @@
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js';
-import {LEGACY_TIER,SHIPS} from './ship-rules.js';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID} from './discoveries-catalog.js';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.09-frontiers';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.09-frontiers';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.09-frontiers';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
 const bad=()=>{throw Error('항해 기록 형식을 확인할 수 없어요. 원본 기록은 유지됩니다.');};
 export function parseState(raw,defaults){
  const s=typeof raw==='string'?JSON.parse(raw):structuredClone(raw);
- if(!s||![1,2,3].includes(s.version))throw Error('이 기록은 현재 버전에서 열 수 없어요. 원본을 보존하고 최신 게임으로 접속해 주세요.');
+ if(!s||![1,2,3,4].includes(s.version))throw Error('이 기록은 현재 버전에서 열 수 없어요. 원본을 보존하고 최신 게임으로 접속해 주세요.');
  if(!finite(s.money)||s.money<0||s.money>1e12||!finite(s.day)||s.day<0||!finite(s.food)||s.food<0||s.food>1000||!point(s.position)||!Array.isArray(s.visited)||s.visited.some(id=>!Object.hasOwn(PORT_BY_ID,id))||!s.cargo||typeof s.cargo!=='object'||Array.isArray(s.cargo)||Object.entries(s.cargo).some(([id,c])=>!Object.hasOwn(GOODS,id)||!Number.isInteger(c?.qty)||c.qty<0||c.qty>100000||!finite(c.cost)||c.cost<0))bad();
  if(s.version<3&&(!Number.isInteger(s.level)||s.level<0||s.level>2))bad();
- if(s.version===3&&(!Number.isInteger(s.shipTier)||s.shipTier<0||s.shipTier>=20||!Number.isInteger(s.fleetCount)||s.fleetCount<1||s.fleetCount>5))bad();
+ if(s.version>=3&&(!Number.isInteger(s.shipTier)||s.shipTier<0||s.shipTier>=20||!Number.isInteger(s.fleetCount)||s.fleetCount<1||s.fleetCount>5))bad();
  if(s.port!==null&&!Object.hasOwn(PORT_BY_ID,s.port))bad();
  const v=s.voyage;
  if(v&&(!Array.isArray(v.path)||v.path.length<2||v.path.length>10000||v.path.some(p=>!point(p))||!Array.isArray(v.lengths)||v.lengths.length!==v.path.length-1||v.lengths.some(n=>!finite(n)||n<0)||(v.target!==null&&!Object.hasOwn(PORT_BY_ID,v.target))||!finite(v.total)||v.total<=0||!finite(v.travelled)||v.travelled<0||v.travelled>v.total+.1||!finite(v.foodRemaining)))bad();
- const ids=(value,max=ALL_PORTS.length)=>[...new Set((Array.isArray(value)?value:[]).filter(id=>Object.hasOwn(PORT_BY_ID,id)))].slice(0,max);
- const game={...defaults(),...s,version:3,world:'real',speed:1,shipTier:s.version===3?s.shipTier:LEGACY_TIER[s.level],fleetCount:s.version===3?s.fleetCount:1,
+ const ids=(value,max=Object.keys(PORT_BY_ID).length)=>[...new Set((Array.isArray(value)?value:[]).filter(id=>Object.hasOwn(PORT_BY_ID,id)))].slice(0,max);
+ const game={...defaults(),...s,version:3,world:'real',speed:1,shipTier:s.version>=3?s.shipTier:LEGACY_TIER[s.level],fleetCount:s.version>=3?s.fleetCount:1,
   visited:ids(s.visited),knownPorts:ids([...(s.knownPorts||defaults().knownPorts),...s.visited,s.port,v?.kind?null:v?.target]),
   controlMode:v?'auto':s.controlMode==='manual'?'manual':'auto',explored:typeof s.explored==='string'&&s.explored.length<40000?s.explored:'',
   missions:Array.isArray(s.missions)?s.missions.slice(0,20):[],quiz:ids(s.quiz),log:Array.isArray(s.log)?s.log.slice(0,50):[],favorites:ids(s.favorites,20),recentPorts:ids(s.recentPorts||[s.port],8),
   recentRoutes:(s.recentRoutes||[]).filter(r=>PORT_BY_ID[r.from]&&PORT_BY_ID[r.to]&&finite(r.nm)&&r.nm>0).slice(0,5),
   discoveries:{},rumors:[...new Set((s.rumors||[]).filter(id=>Object.hasOwn(RUMOR_BY_ID,id)))],
-  supplyCreditValue:s.version===3&&finite(s.supplyCreditValue)&&s.supplyCreditValue>=0?s.supplyCreditValue:Math.max(0,Number(s.supplyCreditDays)||0)*[3,6,12][s.level||0],
-  worldCatalogVersion:'2026.11.06',explorationMaskVersion:1};
- if(s.version===3&&s.supplyCreditValue!==undefined&&(!finite(s.supplyCreditValue)||s.supplyCreditValue<0))bad();
- if(s.version===3&&s.discoveries&&(typeof s.discoveries!=='object'||Array.isArray(s.discoveries)))bad();
+  supplyCreditValue:s.version>=3&&finite(s.supplyCreditValue)&&s.supplyCreditValue>=0?s.supplyCreditValue:Math.max(0,Number(s.supplyCreditDays)||0)*[3,6,12][s.level||0],
+  worldCatalogVersion:'2026.11.09-world-78',explorationMaskVersion:1};
+ if(s.version>=3&&s.supplyCreditValue!==undefined&&(!finite(s.supplyCreditValue)||s.supplyCreditValue<0))bad();
+ if(s.version>=3&&s.discoveries&&(typeof s.discoveries!=='object'||Array.isArray(s.discoveries)))bad();
  for(const [id,d]of Object.entries(s.discoveries||{}))if(Object.hasOwn(DISCOVERY_BY_ID,id)){if(!d||!finite(d.foundDay)||d.foundDay<0||!finite(d.foundAt)||d.foundAt<0)bad();game.discoveries[id]={foundDay:d.foundDay,foundAt:d.foundAt,catalogVersion:String(d.catalogVersion||'2026.11.06')};}
  delete game.supplyCreditDays;
+ if(s.version===4){if(!Array.isArray(s.fleetShips)||s.fleetShips.length<1||s.fleetShips.length>5||new Set(s.fleetShips.map(p=>p?.id)).size!==s.fleetShips.length||s.fleetShips.some(p=>typeof p?.id!=='string'||!p.id.length||p.id.length>80||!Number.isInteger(p.tier)||p.tier<0||p.tier>19)||!s.fleetShips.some(p=>p.id===s.flagshipId)||s.fleetCount!==s.fleetShips.length||s.shipTier!==s.fleetShips.find(p=>p.id===s.flagshipId).tier)bad();}
+ if(s.version===4)syncFleet(game,s.fleetShips.map(p=>({id:p.id,tier:p.tier})),s.flagshipId);else syncFleet(game,Array.from({length:game.fleetCount},(_,i)=>({id:'vessel-'+i,tier:game.shipTier})));
+ game.version=4;
+ if(s.cannons!==undefined){if(!Array.isArray(s.cannons)||s.cannons.length>100||new Set(s.cannons.map(p=>p?.id)).size!==s.cannons.length||s.cannons.some(p=>typeof p?.id!=='string'||p.id.length>100||!['swivel','light','rapid','standard','long','precision','heavy','large'].includes(p.kind)||!Number.isInteger(p.quality)||p.quality<0||p.quality>4||!finite(p.readyAt)||p.readyAt<0||p.shipId!==null&&!game.fleetShips.some(v=>v.id===p.shipId)))bad();}
+ if(s.hullHP!==undefined&&(!finite(s.hullHP)||s.hullHP<0||s.hullHP>100000))bad();
+
+ if(s.pirateFame!==undefined&&(!Number.isSafeInteger(s.pirateFame)||s.pirateFame<0||s.pirateFame>1e12))bad();
+ for(const key of ['lootClaims'])if(s[key]!==undefined){const c=s[key];if(!c||typeof c!=='object'||Array.isArray(c)||Object.entries(c).some(([id,v])=>!Object.hasOwn(GOODS,id)||!Number.isInteger(v.qty)||v.qty<0||!finite(v.cost)||v.cost<0)||Object.values(c).reduce((n,v)=>n+v.qty,0)>50)bad();}
+ if(s.battleReserve!==undefined){const r=s.battleReserve;let c;try{c=JSON.parse(r.cargoJSON);}catch{bad();}if(typeof r.id!=='string'||r.id.length>80||!Number.isInteger(r.money)||r.money<0||r.money>2000||!c||typeof c!=='object'||Array.isArray(c)||Object.entries(c).some(([id,v])=>!Object.hasOwn(GOODS,id)||!Number.isInteger(v.qty)||v.qty<0||!finite(v.cost)||v.cost<0)||Object.values(c).reduce((n,v)=>n+v.qty,0)>5)bad();}
+ if(s.npcBattle!==undefined&&(!['atlantic','caribbean','africa','indian','asia','pacific'].includes(s.npcBattle?.zoneId)||!finite(s.npcBattle.hp)||s.npcBattle.hp<0||s.npcBattle.hp>500||!finite(s.npcBattle.readyAt)))bad();
  // Defaults describe new captains; an old save must not inherit their grant marker.
  if(!Object.hasOwn(s,'raftStart'))delete game.raftStart;
  if(s.version<3)game.migrationId='world-fleet-2026-11-06';

@@ -1,5 +1,5 @@
 // Static discovery stories and game observation points. See docs/WORLD_CONTENT_VERIFICATION_2026-11-06.md.
-export const DISCOVERY_CATALOG_VERSION='2026.11.06-discoveries-32';
+export const DISCOVERY_CATALOG_VERSION='2026.11.09-discoveries-40';
 const source=(label,url)=>({label,url});
 const UNESCO=(id,label)=>source('UNESCO · '+label,'https://whc.unesco.org/en/list/'+id+'/');
 const rows=[
@@ -34,9 +34,17 @@ const rows=[
  {id:'treasure-namib',kind:'treasure',name:'나미브 해안의 보물 상자',region:'아프리카',tier:3,point:[14.2,-23],fiction:true,description:'나미브 연안에 배치한 창작 난파선 상자예요. 실제 사고나 고고학 발굴의 좌표를 뜻하지 않아요.',sources:[],hintPorts:['cape'],hints:['아프리카 남서쪽의 메마른 해안에는 파도에 남겨진 상자 이야기가 전해진대요.']},
  {id:'treasure-atacama',kind:'treasure',name:'아타카마의 숨은 보물지도',region:'남아메리카',tier:3,point:[-70.9,-24],fiction:true,description:'아타카마 연안을 따라 찾는 창작 보물지도예요. 지리적 배경과 가상의 보물 이야기를 구분해 읽어 보세요.',sources:[],hintPorts:['valparaiso'],hints:['칠레 태평양 해안을 따라 북쪽으로 가면 사막 앞 바다의 지도 이야기를 들을 수 있어요.']},
  {id:'treasure-andaman',kind:'treasure',name:'안다만의 푸른 보석함',region:'아시아',tier:4,point:[92.9,11.3],fiction:true,description:'안다만 섬 사이의 창작 보석함이에요. 실제 문화재나 채굴품이 아니라 게임의 보물찾기 수집물입니다.',sources:[],hintPorts:['colombo','malacca'],hints:['인도양 동쪽의 긴 섬줄기에는 푸른 보석함의 소문이 있어요.','안다만 제도 남쪽 섬 사이 접근 해역을 살펴보세요.']},
- {id:'treasure-pacific',kind:'treasure',name:'태평양의 별빛 상자',region:'오세아니아',tier:4,point:[-157,-6],fiction:true,description:'중앙 태평양에 놓인 창작 표류 상자예요. 가상의 고정 수집 지점이며 실제 섬이나 여울이 있다는 뜻은 아니에요.',sources:[],hintPorts:['papeete','honolulu'],hints:['타히티에서 북쪽의 넓은 바다로 향하면 별빛 상자 이야기가 있어요.','하와이 남쪽 대양과 타히티 북쪽 바다가 만나는 항해 구역을 살펴보세요.']}
+ {id:'treasure-pacific',kind:'treasure',name:'태평양의 별빛 상자',region:'오세아니아',tier:4,point:[-157,-6],fiction:true,description:'중앙 태평양에 놓인 창작 표류 상자예요. 가상의 고정 수집 지점이며 실제 섬이나 여울이 있다는 뜻은 아니에요.',sources:[],hintPorts:['papeete','honolulu'],hints:['타히티에서 북쪽의 넓은 바다로 향하면 별빛 상자 이야기가 있어요.','하와이 남쪽 대양과 타히티 북쪽 바다가 만나는 항해 구역을 살펴보세요.']},
+ {id:'relic-alaska-token',kind:'relic',name:'옛 항해자의 금속 패',region:'북아메리카',tier:2,point:[-149,59.5],fiction:true,description:'알래스카만에 배치한 창작 표류 유물이에요. 작은 배 문양이 새겨진 금속 패를 그림으로 기록하며 실제 발굴품이나 특정 주민의 유물을 가져오는 이야기는 아니에요.',sources:[],hintPorts:[]},
+ {id:'relic-pacific-chart',kind:'relic',name:'북태평양 해도 조각',region:'북아메리카',tier:3,point:[-128,49],fiction:true,description:'북미 태평양 연안의 창작 해도 조각이에요. 그려진 항로와 무늬는 보물찾기를 위한 게임 설정이며 실제 고지도 발견 기록이 아니에요.',sources:[],hintPorts:['vancouver'],hints:['밴쿠버 접근 해역에서 서쪽 바다를 살펴보면 오래된 해도 조각의 소문을 따라갈 수 있대요.']},
+ {id:'relic-amazon-weight',kind:'relic',name:'강 상인의 저울추',region:'남아메리카',tier:2,point:[-48,-.5],fiction:true,description:'아마존 하구권에 배치한 창작 상인의 저울추예요. 실제 발굴품이 아니라 하구와 교역을 소재로 만든 수집 그림입니다.',sources:[],hintPorts:[]},
+ {id:'relic-andean-pottery',kind:'relic',name:'표류 도기의 문양',region:'남아메리카',tier:3,point:[-81,-7],fiction:true,description:'남미 서안 바다에 떠밀려온 창작 도기의 문양이에요. 실제 유적의 유물을 인양하는 활동이 아니라 가상의 표류물 그림 기록입니다.',sources:[],hintPorts:['callao'],hints:['카야오에서 북쪽 해안을 따라가면 바다에 남겨진 도기 문양의 이야기를 들을 수 있어요.']},
+ {id:'relic-timor-tool',kind:'relic',name:'티모르해 항해 도구',region:'오세아니아',tier:2,point:[130,-11.8],fiction:true,description:'호주 북부 티모르해의 창작 항해 도구예요. 둥근 눈금과 자를 그림으로 남기며 실제 난파선 유물의 위치를 뜻하지 않습니다.',sources:[],hintPorts:[]},
+ {id:'relic-micronesia-marker',kind:'relic',name:'먼바다 항로 표식',region:'오세아니아',tier:4,point:[160,7],fiction:true,description:'미크로네시아 바다에 배치한 창작 항로 표식이에요. 특정 섬 문화의 실물을 반출하는 내용이 아니라 가상의 표류 유물 수집입니다.',sources:[],hintPorts:['kolonia','portmoresby'],hints:['폰페이 북쪽 항구에서 동쪽 바다의 표류 표식 이야기를 기억해 보세요.','뉴기니에서 북동쪽 대양으로 향하는 길에는 밧줄과 작은 표식이 남은 물건의 소문이 있어요.']},
+ {id:'ruin-sganggwaay',kind:'ruin',name:'스강과이 해안 유산',region:'북아메리카',tier:3,point:[-131.22,52.1],sitePoint:[-131.220278,52.095],description:'캐나다 하이다과이의 스강과이에는 집과 기둥 유산이 남아 있어요. 하이다의 살아 있는 문화와 바다의 관계를 이해하는 해안 관찰 그림이며 실물을 가져오지 않습니다.',sources:[UNESCO(157,'SGang Gwaay')],hintPorts:['vancouver'],hints:['캐나다 태평양 연안을 따라 북서쪽 섬들로 향하면 하이다의 집과 기둥 유산을 관찰하는 이야기가 있어요.']},
+ {id:'ruin-fortjesus',kind:'ruin',name:'몸바사 포트지저스',region:'아프리카',tier:2,point:[40,-4],sitePoint:[39.679444,-4.062778],description:'케냐 몸바사의 포트지저스는 1593~1596년에 세워진 요새예요. 여러 시대의 유산을 모은 게임이므로 1522년에 이미 있었다고 소개하지 않으며 해상 관찰 기록으로 수집합니다.',sources:[UNESCO(1295,'Fort Jesus')],hintPorts:[]}
 ];
-const fame=[0,50,150,400,1000],spot=[0,40,30,20,12],inspect=[0,12,10,8,6];
+const fame=[0,50,150,400,1000],spot=[0,100,100,100,100],inspect=[0,60,60,60,60];
 export const DISCOVERIES=rows.map(d=>({...d,lon:d.point[0],lat:d.point[1],fiction:!!d.fiction,fame:fame[d.tier],spotRadius:spot[d.tier],inspectRadius:inspect[d.tier],rumorIds:d.hintPorts.map((p,i)=>d.id+'-rumor-'+(i+1)),image:'assets/discoveries/'+d.id+'.svg'}));
 export const DISCOVERY_BY_ID=Object.fromEntries(DISCOVERIES.map(d=>[d.id,d]));
 export const RUMORS=DISCOVERIES.flatMap(d=>d.hintPorts.map((portId,i)=>({id:d.rumorIds[i],portId,discoveryId:d.id,text:d.hints[i]})));

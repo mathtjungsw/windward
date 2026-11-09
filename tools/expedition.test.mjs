@@ -36,9 +36,9 @@ test('v2 ships and retired harbors migrate without losing cargo, visits or suppl
   const migrated=parseSavedGame(JSON.stringify(old));assert.equal(shipTier(migrated),tier);assert.equal(migrated.fleetCount,1);assert.equal(migrated.food,6);assert.equal(migrated.money,8888);assert.equal(migrated.legacyHarbor,true);assert.equal(migrated.cargo.wine.qty,30);assert.ok(migrated.visited.includes('setubal'));
   assert.equal(migrated.supplyCreditValue,2*[3,6,12][level]);assert.deepEqual(parseSavedGame(JSON.stringify(migrated)),migrated);
  }
- assert.throws(()=>parseSavedGame({...initialState(),version:4}),/최신/);
+ assert.throws(()=>parseSavedGame({...initialState(),version:5}),/최신/);
  assert.throws(()=>parseSavedGame({...initialState(),visited:['constructor']}));
- assert.equal(PORTS.length,70);assert.equal(ALL_PORTS.length,104);
+ assert.equal(PORTS.length,78);assert.equal(ALL_PORTS.length,112);
 });
 test('rescue ignores undiscovered and known-but-unvisited ports, freezes exploration through restore and replan',()=>{
  const s={...initialState(),port:null,position:[-8.9,41.2],food:0,money:1500,knownPorts:PORTS.map(p=>p.id)};

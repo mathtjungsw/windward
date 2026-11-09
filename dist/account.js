@@ -1,6 +1,7 @@
-import {FIREBASE_CONFIG} from './firebase-config.js';
-import {initialState,parseSavedGame} from './engine.js';
-import {applyRaftStart} from './raft-start.js';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.09-frontiers';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.09-frontiers';
+import {applyRaftStart} from './raft-start.js?v=2026.11.09-frontiers';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.09-frontiers';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
@@ -75,10 +76,12 @@ export class CaptainAccount {
     this.authSdk = authSdk;
     this.sdk = dbSdk;
     this.auth = authSdk.initializeAuth(this.app, {
-      persistence: [authSdk.browserSessionPersistence, authSdk.inMemoryPersistence],
+      persistence: [authSdk.browserLocalPersistence, authSdk.browserSessionPersistence, authSdk.inMemoryPersistence],
       popupRedirectResolver: authSdk.browserPopupRedirectResolver
     });
     this.db = dbSdk.getDatabase(this.app);
+    this.restEndpoint=this.app.options.databaseURL;
+    this.clockOff?.();this.clockOff=dbSdk.onValue(dbSdk.ref(this.db,".info/serverTimeOffset"),snap=>{this.serverOffset=Number(snap.val())||0;});
     await this.auth.authStateReady();
   }
 
@@ -108,7 +111,8 @@ export class CaptainAccount {
       }
     } catch(error) { throw Error('기기 저장을 읽지 못했어요. 원본은 유지됩니다.'); }
     const observed = (await this.sdk.get(ref)).val();
-    if(observed?.schemaVersion>4)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
+    if(observed?.schemaVersion>5)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
+    if(observed&&(observed.schemaVersion||0)<5){const backup='windward-before-expansion-v5:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('업데이트 전 원본 기록을 보관하지 못했어요. 저장 공간을 확인하세요.');}}
     if(observed&&observed.schemaVersion<4){const backup='windward-before-raft-start-v4:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('전환 전 기록을 기기에 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
     if(observed&&observed.schemaVersion<3){const backup='windward-before-world-v3:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('이관 전 기기 백업을 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
     if(cached?.data?.version<3){const backup=key+':before-world-v3';if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(cached));}
@@ -116,7 +120,7 @@ export class CaptainAccount {
     const result = await this.sdk.runTransaction(ref, current => {
       current ??= observed;
       block = null;
-      if (current?.session !== this.session && current?.leaseUntil > Date.now() && !takeover) {
+      if (current?.session !== this.session && current?.leaseUntil > Date.now()+(this.serverOffset||0) && !takeover) {
         block = 'session';
         return;
       }
@@ -131,11 +135,13 @@ export class CaptainAccount {
       game.world = 'real';
       game.speed = 1;
       return {
-        schemaVersion: 4,
+        schemaVersion: 5,
+        operationSequence: current?.operationSequence||0,
+        ...(current?.lastOperation?{lastOperation:current.lastOperation}:{}),
         revision: (current?.revision || 0) + 1,
         data: JSON.stringify(game),
         session: this.session,
-        leaseUntil: Date.now() + 90000,
+        leaseUntil: Date.now()+(this.serverOffset||0) + 90000,
         updatedAt: this.sdk.serverTimestamp()
       };
     }, {applyLocally: false});
@@ -156,8 +162,9 @@ export class CaptainAccount {
     const game = parseGame(record.data);
     Object.assign(this, {
       uid, ref, record, name: profile.name, seenVersion: profile.seenVersion || '',
-      revision: record.revision, ready: true, lost: false, dirty: false
+      revision: record.revision, ready: true, lost: false, dirty: false, economicUncertain:false
     });
+    try{this.storage.removeItem?.('windward-economic-pending:'+uid);}catch{}
     this.cache(game, false);
     this.onCommitted(game,this.revision);
     this.onStatus(recovered ? '이 기기의 기록을 복원했어요.' : '클라우드 저장 연결됨');
@@ -185,14 +192,14 @@ export class CaptainAccount {
 
   save(game) {
     if (!this.ready || this.lost) return;
-    this.dirty = true;
-    this.cache(game, true);
-    if (Date.now() - (this.lastFlush || 0) > 15000) this.flush();
+    this.dirty = JSON.stringify(game) !== this.record.data;
+    this.cache(game, this.dirty);
+    if (this.dirty && Date.now() - (this.lastFlush || 0) > 15000) this.flush();
   }
 
   flush() {
     if (!this.ready || this.lost) return;
-    this.flushPromise ??= this.writeSave().finally(() => { this.flushPromise = null; });
+    this.flushPromise ??= this.enqueue(()=>this.writeSave()).finally(() => { this.flushPromise = null; });
     return this.flushPromise;
   }
 
@@ -209,7 +216,7 @@ export class CaptainAccount {
       const result = await this.sdk.runTransaction(this.ref, current => {
         current ??= this.record;
         if (current?.session !== this.session || current.revision !== expected) return;
-        return {...current, schemaVersion:4, data, revision: expected + 1, leaseUntil: Date.now() + 90000,
+        return {...current, schemaVersion:5, data, revision: expected + 1, leaseUntil: Date.now()+(this.serverOffset||0) + 90000,
           updatedAt: this.sdk.serverTimestamp()};
       }, {applyLocally: false});
       if (!result.committed) {
@@ -241,6 +248,7 @@ export class CaptainAccount {
 
   async close() {
     clearInterval(this.timer);
+    await this.writeQueue;
     await this.flushPromise;
     if (this.dirty) await this.flush();
     this.stopWatch?.();
@@ -257,3 +265,4 @@ export class CaptainAccount {
     if (this.auth) await this.authSdk.signOut(this.auth);
   }
 }
+installAtomicAccount(CaptainAccount);

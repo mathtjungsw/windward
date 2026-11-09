@@ -1,29 +1,33 @@
-import {createExpansion} from './expansion-ui.js?v=20261106-rankings';
-import {gameStats} from './public-stats.js';
-import {shipTier,fleetCount} from './ship-rules.js';
-import {shipGlyph} from './art.js';
-import {inspectDiscovery,explorationAllowed} from './discoveries.js';
-import {RELEASE} from './release-notes.js?v=20261106-rankings';
-import {createUX} from './ux.js?v=20261106-rankings';
-import {directionForKey,isTypingTarget} from './controls.js';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js';
-import {GlobeAtlas} from './globe.js';
-import {FleetPresence} from './multiplayer.js?v=20261106-rankings';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js';
-import {CaptainChat} from './chat.js?v=20261106-rankings';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,INFO_PRICE,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor} from './voyage-core.js';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js';
-import {CaptainRankings} from './rankings.js?v=20261106-rankings';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.09-frontiers';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.09-frontiers';
+import {createCombat} from './combat-ui.js?v=2026.11.09-frontiers';
+import {createBusiness} from './business-ui.js?v=2026.11.09-frontiers';
+import {createExpansion} from './expansion-ui.js?v=2026.11.09-frontiers';
+import {gameStats} from './public-stats.js?v=2026.11.09-frontiers';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.09-frontiers';
+import {shipGlyph} from './art.js?v=2026.11.09-frontiers';
+import {inspectDiscovery,explorationAllowed} from './discoveries.js?v=2026.11.09-frontiers';
+import {RELEASE} from './release-notes.js?v=2026.11.09-frontiers';
+import {createUX} from './ux.js?v=2026.11.09-frontiers';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.09-frontiers';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.09-frontiers';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.09-frontiers';
+import {AtlasView} from './atlas-view.js?v=2026.11.09-frontiers';
+import {FleetPresence} from './multiplayer.js?v=2026.11.09-frontiers';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.09-frontiers';
+import {CaptainChat} from './chat.js?v=2026.11.09-frontiers';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.09-frontiers';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,INFO_PRICE,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor} from './voyage-core.js?v=2026.11.09-frontiers';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.09-frontiers';
+import {CaptainRankings} from './rankings.js?v=2026.11.09-frontiers';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.09-frontiers';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
 const toward=name=>{const final=(name.charCodeAt(name.length-1)-0xac00)%28;return name+(final>0&&final!==8?'으로':'로');};
 const icon=(name,cls='')=>`<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
 let storage;try{storage=localStorage;}catch{storage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};}
-let ux,expansion,committedStats=null;
+let ux,expansion,business,combat,committedStats=null;
 let modalFocus=null,manualTrail=[];
 let state=initialState(),selected='lisbon',planned=null,nav=null,paused=false,sound=false,audio=null,activeTab='trade',mapReady=false,followShip=false;
 let exploration=new Exploration(state.explored),playing=false,sessionBlocked=false,lastFogAt=0;
@@ -36,8 +40,11 @@ try {
 } catch {}
 const account=new CaptainAccount(storage,tabSession);
 try{sessionStorage.setItem('windward-v3-tab',account.session);}catch{}
+account.applyGame=game=>{for(const k of Object.keys(state))delete state[k];Object.assign(state,game);};
 account.readGame=()=>{state.explored=exploration.encode();return state;};
+account.onBusy=value=>{document.querySelectorAll('.topbar,.statusbar,.game-layout,.bottom-bar,#modal,#quick-sheet').forEach(el=>el.inert=value||(account.economicUncertain&&!el.matches('#modal')));document.body.classList.toggle('economic-busy',value);};
 account.onStatus=text=>{$('#save-status').textContent=text;};
+account.onUncertain=()=>{sessionBlocked=true;paused=true;stopForUI();fleet.stop();showModal('거래 결과를 확인해야 해요','항해 기록 보호','<p>서버 응답을 확인하지 못해 항해와 저장을 멈췄어요. 요청 기록을 보관했습니다. 새로고침하면 서버에 확정된 기록으로 이어집니다.</p><button id="reload-economic" class="primary-button">새로고침해 결과 확인</button>','small');$('#reload-economic').onclick=()=>location.reload();};
 account.onConflict=()=>{sessionBlocked=true;paused=true;heldKeys.clear();manualActive=false;fleet.stop();showModal('항해 기록이 갱신됐어요','항해 기록 보호','<p>다른 화면이나 서버에서 기록이 변경되어 이 화면의 항해와 저장을 멈췄어요. 이 기기 기록은 보존했습니다. 새로고침하면 최신 기록과 전환 보상을 확인할 수 있어요.</p>');};
 const FIXED_MAP_SCALE=12;
 const CHART_TILES=[-1600,0,1600].flatMap(x=>[-800,0,800].map(y=>[x,y]));
@@ -49,7 +56,7 @@ const modal=$('#modal');
 let fleetStatus='offline',peerDrawTime=0,ownShipAngle=0,rankMetric='profit',chatOpen=true,chatUnread=0,chatSeen=0,chatLoading=true;
 const ownRank=()=>({id:fleet.uid||'self',name:fleet.name,...(committedStats||gameStats(state,exploration))});
 account.onCommitted=(game,revision)=>{committedStats={...gameStats(game),saveRevision:revision};fleet.publishSummary();};
-const fleet=new FleetPresence({storage,readStats:()=>committedStats,readShip:()=>({position:[...state.position],angle:ownShipAngle,money:state.money,profit:state.profit,visited:state.visited.length,shipTier:shipTier(state),fleetCount:fleetCount(state),status:state.port?'정박':paused||modal.open||document.hidden||(!state.voyage&&!manualActive)?'멈춤':'항해'}),onChange:()=>{renderFleetStatus();renderRanks();renderPeers();renderMinimap();},onStatus:status=>{fleetStatus=status;if(status==='online'){chat.connect();rankings.visible=!$('#body-rank-card')?.hidden;rankings.connect();}else if(status==='offline'){chat.disconnect();rankings.disconnect();}renderFleetStatus();renderRanks();renderChatConnection();}});
+const fleet=new FleetPresence({storage,readStats:()=>committedStats,readShip:()=>({position:[...state.position],angle:ownShipAngle,money:state.money,profit:state.profit,visited:state.visited.length,shipTier:shipTier(state),fleetCount:fleetCount(state),fleetTiers:orderedFleet(state).map(p=>p.tier),status:state.port?'정박':paused||modal.open||document.hidden||(!state.voyage&&!manualActive)?'멈춤':'항해'}),onChange:()=>{renderFleetStatus();renderRanks();renderPeers();renderMinimap();},onStatus:status=>{fleetStatus=status;if(status==='online'){chat.connect();rankings.visible=!$('#body-rank-card')?.hidden;rankings.connect();}else if(status==='offline'){chat.disconnect();rankings.disconnect();}renderFleetStatus();renderRanks();renderChatConnection();}});
 const chat=new CaptainChat({fleet,onChange:messages=>renderChat(messages),onStatus:text=>{$('#chat-status').textContent=text;renderChatConnection();}});
 const rankings=new CaptainRankings(fleet,()=>renderRanks());
 const visibleShips=()=>shipsInSight(fleet.captains(),state.position,SIGHT_NM);
@@ -63,7 +70,7 @@ function setupInterface(){
   const fog=svgEl('image',{id:'exploration-fog',x:0,y:0,width:1600,height:800,'pointer-events':'none',preserveAspectRatio:'none'});$('#routes').before(fog);
   const sight=svgEl('path',{id:'sight-boundary',fill:'none',stroke:'#fffdf0','stroke-width':1.4,'stroke-dasharray':'6 5','vector-effect':'non-scaling-stroke','pointer-events':'none'});fog.after(sight);
   const rankButton=document.createElement('button');rankButton.id='my-rank-query';rankButton.className='service-button';rankButton.textContent='내 순위 조회';rankButton.onclick=async()=>{if(!fleet.connected||!rankings.path){toast('계정으로 함께 항해에 연결하면 조회할 수 있어요.');return;}rankButton.disabled=true;try{await rankings.myRank(rankMetric,ownRank()[rankMetric]);renderRanks();}catch{toast('순위를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.');}finally{rankButton.disabled=false;}};$('.rank-card').append(rankButton);
-  for(const [selector,title] of [['.navigation-mode','항해 조작'],['.captain-card','내 항해 정보'],['.rank-card','선장 랭킹'],['.mission-card','항해사의 의뢰'],['.port-panel','항구 정보'],['.minimap-card','세계 지구본']]){
+  for(const [selector,title] of [['.navigation-mode','항해 조작'],['.captain-card','내 항해 정보'],['.rank-card','선장 랭킹'],['.mission-card','항해사의 의뢰'],['.port-panel','항구 정보'],['.minimap-card','세계지도']]){
     const panel=$(selector),body=document.createElement('div');body.className='fold-body';while(panel.firstChild)body.append(panel.firstChild);panel.append(body);const header=document.createElement('div');header.className='fold-heading';const label=document.createElement('strong');label.textContent=title;const button=document.createElement('button');button.type='button';button.textContent='− 접기';button.setAttribute('aria-expanded','true');body.id='body-'+selector.slice(1);button.setAttribute('aria-controls',body.id);button.onclick=()=>{const folded=panel.classList.toggle('is-collapsed');body.hidden=folded;button.textContent=folded?'+ 펼치기':'− 접기';button.setAttribute('aria-expanded',String(!folded));if(selector==='.rank-card')rankings.setVisible(!folded);if(mapReady)resizeMap();};header.append(label,button);panel.prepend(header);
   }
   const chatBody=document.createElement('div');chatBody.id='chat-body';while($('#chat-panel').children.length>1)chatBody.append($('#chat-panel').children[1]);$('#chat-panel').append(chatBody);$('#chat-close').textContent='− 접기';$('#chat-close').setAttribute('aria-label','채팅 접기 또는 펼치기');$('#chat-close').setAttribute('aria-expanded','true');$('#chat-panel').hidden=false;
@@ -107,7 +114,7 @@ function showAccount(){
 }
 function showPatchNotes(){ux?.patchNotes(false);}
 function beginPlaying(game){
-  manualTrail=[];state=game;exploration=new Exploration(state.explored);exploration.seed(state);selected=state.port||state.voyage?.target||'lisbon';planned=null;paused=false;playing=true;sessionBlocked=false;lastPanelPort=null;manualActive=false;manualTarget=null;manualChannel=null;departedPort=null;heldKeys.clear();
+  manualTrail=[];state=game;if(state.port&&ACTIVE_PORT_BY_ID[state.port])state.legacyHarbor=false;exploration=new Exploration(state.explored);exploration.seed(state);selected=state.port||state.voyage?.target||'lisbon';planned=null;paused=false;playing=true;sessionBlocked=false;lastPanelPort=null;manualActive=false;manualTarget=null;manualChannel=null;departedPort=null;heldKeys.clear();
   $('#entry-screen')?.remove();$$('.topbar,.statusbar,.game-layout,.bottom-bar').forEach(el=>el.inert=false);setTab('trade');checkMissions();renderHUD();renderPanel();renderPorts();renderRoutes();renderShip();renderFog(true);centerShip();save();ux?.loadPreferences();if(state.rescueReplanPending)launchRescue(state.voyage?.kind==='transition');else showPatchNotes();if(state.transitionPending)ux?.migration();
 }
 function showEntry(){
@@ -124,7 +131,7 @@ function showEntry(){
       <h1>당신만의 항로가<br>시작되는 곳.</h1>
       <p>바람을 따라 항구를 발견하고,<br>특산물을 거래하며 세계를 탐험하세요.</p>
       <div class="entry-ship">${icon('ship')}</div>
-      <small>평면 해도 · 세계 지구본 · 88개의 항구</small>
+      <small>평면 해도 · 두 가지 세계지도 · ${PORTS.length}개의 주요 항구</small>
     </div>
     <div class="entry-card">
       <span class="entry-kicker">현실서버 · 1배속</span>
@@ -188,8 +195,10 @@ function showEntry(){
   async function enter(){
     const game=await account.enter(user,profile,{name:$('#entry-name').value,takeover});
     fleet.useAccount(account);
+    await business?.syncPorts();
     beginPlaying(game);
     fleet.start();
+    await combat?.connect();
   }
   async function loadCaptain(){
     login.hidden=true;
@@ -227,7 +236,8 @@ function renderRanks(){
   for(const player of top){const row=document.createElement('li');row.className=player.id===ownRank().id?'my-rank':'';const number=document.createElement('b');number.textContent=player.rank;const name=document.createElement('span');name.textContent=player.name+(player.id===ownRank().id?' (나)':'');const score=document.createElement('strong');score.textContent=rankMetric==='explorationScore'?((player.explorationPercent??player.explorationScore/10000).toFixed(2)+'%'):fmt(player[rankMetric])+(rankMetric==='visited'?'곳':rankMetric==='fame'?' 명성':' D');row.append(number,name,score);root.append(row);}
   if(!top.length){const empty=document.createElement('li');empty.textContent='선장들의 기록을 기다리는 중…';root.append(empty);}
   const me=ranks.find(p=>p.id===ownRank().id),mine=me?.rank||rankings.myRanks[rankMetric];$('#my-rank').textContent=rankings.path?`내 순위 ${mine?mine+'위':'조회하기 ↓'} · 전체 선장 기준`:'서버 순위 연결 중…';
-  $$('[data-rank]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.rank===rankMetric)));
+
+$$('[data-rank]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.rank===rankMetric)));
 }
 function renderChatConnection(){
   const enabled=fleet.connected&&chat?.ready;
@@ -265,31 +275,34 @@ function showFleet(){
     '<p>함께 항해 중인 선장들의 이름을 보여줘요. 지도와 지구본에서는 내 시야 180해리 안의 배를 볼 수 있어요.</p><p id="fleet-online-count" role="status"></p><div id="fleet-live-list" role="list" aria-label="전체 접속 선장"></div>');
   renderFleetList();
 }
+function renderPirates(){const root=$('#npc-markers');if(!root||!playing)return;root.replaceChildren();const now=Date.now()+(account.serverOffset||0);for(const z of PIRATE_ZONES){if(mapDistance(state.position,z.point)>SIGHT_NM||now<(state.pirateRespawns?.[z.id]||0))continue;const p=project(z.point),g=svgEl('g',{class:'fleet-ship',transform:`translate(${p[0]},${p[1]}) scale(${.85/screen.k})`});g.innerHTML=shipGlyph([5,10,16][z.tier],'#9b4a4d');const label=svgEl('text',{x:0,y:-28,'text-anchor':'middle'});label.textContent='☠ '+z.name;g.append(label);g.onclick=e=>{e.stopPropagation();combat?.showPirate(z.id);};root.append(g);}}
 function renderPeers(){
-  if(!mapReady)return;const root=$('#fleet-markers');root.replaceChildren();
+  if(!mapReady)return;renderPirates();const root=$('#fleet-markers');root.replaceChildren();
   visibleShips().forEach((ship,i)=>{let [x,y]=project([ship.lon,ship.lat]);if(ship.status==='정박'){x+=(-35+(i%3)*25)/screen.k;y+=(-34-Math.floor(i/3)*20)/screen.k;}
+    if(ship.status!=='정박')for(const tail of wakeFollowers([...(ship.wake||[]),[ship.lon,ship.lat]],ship.fleetCount||1)){if(mapDistance(state.position,tail.point)>SIGHT_NM||nav?.isLand(tail.point))continue;const p=project(tail.point),q=project(tail.ahead);let dx=q[0]-p[0],dy=q[1]-p[1];if(Math.abs(dx)>800)dx-=Math.sign(dx)*1600;if(Math.abs(dy)>400)dy-=Math.sign(dy)*800;const t=svgEl('g',{transform:`translate(${p[0]},${p[1]}) scale(${.62/screen.k}) rotate(${Math.atan2(dy,dx)*180/Math.PI+90})`});t.innerHTML=shipGlyph(ship.fleetTiers?.[tail.index]??ship.shipTier??0,PRESENCE_COLORS[ship.color]);root.append(t);}
     const g=svgEl('g',{class:'fleet-ship',transform:`translate(${x},${y}) scale(${1/screen.k})`,'data-peer':ship.id});
-    const hull=svgEl('g');hull.innerHTML=shipGlyph(ship.shipTier??0,PRESENCE_COLORS[ship.color]);
+    const hull=svgEl('g');hull.innerHTML=shipGlyph(ship.shipTier??0,PRESENCE_COLORS[ship.color]);hull.setAttribute('transform',`rotate(${ship.angle})`);
     const arrow=svgEl('path',{d:'M0-20V-29m-4 5 4-5 4 5',stroke:PRESENCE_COLORS[ship.color],'stroke-width':2,transform:`rotate(${ship.angle})`});g.append(arrow);
     const text=svgEl('text',{x:0,y:-23,'text-anchor':'middle'});text.textContent=ship.name+((ship.fleetCount||1)>1?' · '+ship.fleetCount+'척':'');const title=svgEl('title');title.textContent=`${ship.name} · ${ship.status}`;g.style.pointerEvents='visiblePainted';g.onclick=e=>{e.stopPropagation();if(!dragged)ux?.signal(ship);};g.append(hull,text,title);root.append(g);
   });
 }
 
 function save(){
-  if(!playing||sessionBlocked)return;
+  if(!playing||sessionBlocked||account.busy||account.economicUncertain)return;
   state.explored=exploration.encode();
   account.save(state);
 }
 function log(text,type='info'){state.log.unshift({day:state.day,text,type});state.log=state.log.slice(0,50);$('#latest-log').textContent=text;}
 function toast(text,type=''){const div=document.createElement('div');div.className='toast '+type;div.textContent=text;$('#toast-container').append(div);setTimeout(()=>div.remove(),4300);}
 function bell(){if(!sound)return;try{audio??=new (window.AudioContext||window.webkitAudioContext)();audio.resume();const now=audio.currentTime;[523.25,659.25,783.99].forEach((freq,i)=>{const osc=audio.createOscillator(),gain=audio.createGain();osc.type='sine';osc.frequency.value=freq;gain.gain.setValueAtTime(0,now+i*.13);gain.gain.linearRampToValueAtTime(.08,now+i*.13+.015);gain.gain.exponentialRampToValueAtTime(.001,now+i*.13+.9);osc.connect(gain).connect(audio.destination);osc.start(now+i*.13);osc.stop(now+i*.13+1);});}catch{}}
-function showModal(title,eyebrow,content,size=null){if(!modal.open)modalFocus=document.activeElement;ux?.closeSheet();ux?.beforeDialog();modal.dataset.size=size||(content.includes('atlas-grid')||content.includes('patch-history')?'wide':content.length<600?'small':'medium');$('#modal-title').textContent=title;$('#modal-eyebrow').textContent=eyebrow;$('#modal-content').innerHTML=content;if(!modal.open)modal.showModal();}
+function showModal(title,eyebrow,content,size=null){if(!modal.open)modalFocus=document.activeElement;ux?.closeSheet();ux?.beforeDialog();delete modal.dataset.investigation;modal.dataset.size=size||(content.includes('atlas-grid')||content.includes('patch-history')?'wide':content.length<600?'small':'medium');$('#modal-title').textContent=title;$('#modal-eyebrow').textContent=eyebrow;$('#modal-content').innerHTML=content;if(!modal.open)modal.showModal();}
 function dateText(day,short=false){const date=new Date(START_DATE+Math.floor(day)*86400000);return short?`${date.getUTCFullYear()} · ${date.getUTCMonth()+1}.${String(date.getUTCDate()).padStart(2,'0')}`:`${date.getUTCFullYear()}년 ${date.getUTCMonth()+1}월 ${date.getUTCDate()}일`;}
 function coordinates(p){return `${Math.abs(p.lat).toFixed(1)}° ${p.lat>=0?'N':'S'}  /  ${Math.abs(p.lon).toFixed(1)}° ${p.lon>=0?'E':'W'}`;}
 
 function renderHUD(){
+  let note=$('#combat-reserve-note');if(!note){note=document.createElement('p');note.id='combat-reserve-note';note.className='modal-meta';$('#cargo-list').after(note);}const reserve=state.battleReserve;note.hidden=!reserve;note.textContent=reserve?`전투 정산 보관: ${fmt(reserve.money)} D · ${Object.values(JSON.parse(reserve.cargoJSON||'{}')).reduce((n,c)=>n+c.qty,0)}상자. 총 보유금·적재에 포함되며 전투 뒤 또는 입항 때 반환돼요.`:'';
   $('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
-  $('#money').innerHTML=`${fmt(state.money)} <em>D</em>`;
+  $('#money').innerHTML=`${fmt(state.money+(state.battleReserve?.money||0))} <em>D</em>`;$('#money').title=state.battleReserve?'전투 손실 정산 보관 '+fmt(state.battleReserve.money)+' D 포함':'보유 두카트';
   $('#cargo-stat').innerHTML=`${usedSpace(state)} <em>/ ${capacity(state)}</em>`;
   $('#food-stat').innerHTML=`${state.food.toFixed(1)} <em>/ ${ship(state).supply}일분</em>`;
   $('#food-bar').style.width=`${state.food/ship(state).supply*100}%`;
@@ -315,7 +328,7 @@ function renderHUD(){
   $('.voyage-progress').classList.toggle('hidden',!state.voyage);
   if(state.voyage){const v=state.voyage,percent=Math.min(100,v.travelled/v.total*100),days=voyageEstimate(state,v,v.travelled).days,name=v.target?PORT_BY_ID[v.target].name:'새로운 해역';$('#sail-title').textContent=v.kind?`${name} · 구조 중`:paused?`${name} · 일시 정지`:`${toward(name)} 항해 중`;$('#sail-percent').textContent=Math.floor(percent)+'%';$('#voyage-bar').style.width=percent+'%';$('#sail-remaining').textContent=`${fmt(v.total-v.travelled)} 해리 · 약 ${days.toFixed(1)}일 남음`;$('#pause-btn').textContent=paused?'▶':'Ⅱ';$('#pause-btn').setAttribute('aria-label',paused?'항해 재개':'항해 일시 정지');}
   else if(manualActive){$('#current-location').textContent='직접 조종 · '+coordinates({lon:state.position[0],lat:state.position[1]});}
-  ux?.renderHUD();expansion?.renderHUD();
+  ux?.renderHUD();expansion?.renderHUD();renderPirates();
   $('#world-badge')?.replaceChildren(document.createTextNode('현실서버 · 1배속'));
 }
 
@@ -350,16 +363,17 @@ function renderPanel(){
   $('#scene-label').textContent=p?'PORT OF '+p.en.toUpperCase():'THE OPEN SEA';
   $('#trade-heading').textContent=atPort?'이 항구의 교역품':'현지 시세 · 도착 후 거래 가능';
   $('#market').innerHTML=p?p.market.map(id=>{
-    const g=GOODS[id],unit=price(p.id,id,state.day);
+    const g=GOODS[id],unit=business?.displayUnit(p.id,id)??price(p.id,id,state.day);
     return `<div class="market-row"><span class="good-icon" style="color:${g.color}">${g.icon}</span><div class="good-name"><strong>${g.name}</strong><small class="${p.specialty===id?'specialty':''}">${{producer:'✦ 대표 공급',local:'지역 공급',import:'수입·중계'}[p.economy.stock[id]]}</small></div><div class="good-price">${unit}<small>D / 상자</small></div><button class="trade-btn" data-buy="${id}" ${atPort?'':'disabled'}>구매</button></div>`;
   }).join(''):'<div class="empty-cargo">가까운 항구에 들어가면<br>교역소를 이용할 수 있어요.</div>';
+  business?.observe(p?.id);
   const salePort=tradingPort(state);
   $('#cargo-trade-context').textContent=salePort?`${salePort.name} 입항 완료 · 이 항구의 가격으로 판매할 수 있어요.`:'항해 중 · 항구에 입항하면 화물을 판매할 수 있어요.';
   $('#cargo-port-btn').hidden=!salePort||salePort.id===selected;
   $('#cargo-port-btn').textContent=salePort?`${salePort.name} 교역소 열기`:'';
   $('#cargo-port-btn').onclick=()=>{if(salePort)selectPort(salePort.id);};
   $('#cargo-list').innerHTML=Object.entries(state.cargo).filter(([,c])=>c.qty>0).map(([id,c])=>{
-    const g=GOODS[id],unit=salePort?sellPrice(salePort.id,id,state.day):0,margin=unit-c.cost/c.qty;
+    const g=GOODS[id],unit=salePort?(business?.displayUnit(salePort.id,id,true)??sellPrice(salePort.id,id,state.day)):0,margin=unit-c.cost/c.qty;
     return `<div class="cargo-row"><span class="good-icon" style="color:${g.color}">${g.icon}</span><div class="good-name"><strong>${g.name} · ${c.qty}상자</strong><small>매입 평균 ${fmt(c.cost/c.qty)} D${salePort?` · ${margin>=0?'+':''}${fmt(margin)} D / 상자`:''}</small></div><div class="good-price">${salePort?unit:'—'}<small>판매가</small></div><button class="trade-btn" data-sell="${id}" ${salePort?'':'disabled'}>판매</button></div>`;
   }).join('')||'<div class="empty-cargo">화물창이 비어 있어요.<small>특산물을 싣고 새로운 바다로 떠나세요.</small></div>';
   $$('[data-buy]').forEach(b=>b.onclick=()=>tradeDialog('buy',b.dataset.buy));
@@ -399,11 +413,11 @@ function approachDiscovery(d){
  const destination=previous?{target:previous.target,point:previous.path.at(-1)}:null;
  state.voyage=null;planDestination(null,d.point||[d.lon,d.lat],false);
  if(!planned||!canDepart(state,planned.route).ok){state.voyage=previous;planned=oldPlan;toast('조사 후 돌아올 보급과 항로를 확인해 주세요.','error');renderHUD();return;}
- if(destination)state.detourTarget=destination;startVoyage();
+ if(destination)state.detourTarget=destination;state.investigationTarget=d.id;startVoyage();
 }
 function resumeDetour(){const d=state.detourTarget;if(!d||state.voyage)return;planDestination(d.target,d.point,false);if(planned&&canDepart(state,planned.route).ok){delete state.detourTarget;startVoyage();}}
 
-function tradeDialog(mode,id){ux?.trade(mode,id);}
+function tradeDialog(mode,id){business?business.trade(mode,id):ux?.trade(mode,id);}
 
 function setTab(tab){activeTab=tab;for(const id of ['trade','ship','tavern']){$('#'+id+'-tab')?.classList.toggle('active',tab===id);$('#'+id+'-content')?.classList.toggle('hidden',tab!==id);}}
 
@@ -418,9 +432,10 @@ function setupChartWrapping(){
   const ocean=root.querySelector('rect');for(const [key,value]of Object.entries({x:0,y:0,width:1600,height:800,stroke:'none'}))ocean.setAttribute(key,value);
   while(root.firstChild!==routes)terrain.append(root.firstChild);root.prepend(terrain);
   $('#sight-boundary').after(svgEl('use',{href:'#sight-boundary',y:-800,'pointer-events':'none'}),svgEl('use',{href:'#sight-boundary',y:800,'pointer-events':'none'}));
-  for(const [x,y]of CHART_TILES)if(x||y){routes.before(svgEl('use',{href:'#chart-terrain',x,y,'pointer-events':'none','aria-hidden':'true'}));for(const id of ['routes','fleet-markers','own-followers','ship-marker'])root.append(svgEl('use',{href:'#'+id,x,y,'pointer-events':'none','aria-hidden':'true'}));}
+  for(const [x,y]of CHART_TILES)if(x||y){routes.before(svgEl('use',{href:'#chart-terrain',x,y,'pointer-events':'none','aria-hidden':'true'}));for(const id of ['routes','fleet-markers','npc-markers','own-followers','ship-marker'])root.append(svgEl('use',{href:'#'+id,x,y,'pointer-events':'none','aria-hidden':'true'}));}
 }
 function setupMap(land,countries){
+  $('#ship-marker').before(svgEl('g',{id:'npc-markers'}));
   $('#ship-marker').before(svgEl('g',{id:'own-followers','pointer-events':'none'}));
   for(const f of land.features){const d=geoPath(f.geometry);$('#coast-shadow').append(svgEl('path',{d}));$('#land').append(svgEl('path',{d}));}
   for(const f of countries.features)$('#borders').append(svgEl('path',{d:geoPath(f.geometry)}));
@@ -428,7 +443,7 @@ function setupMap(land,countries){
   let grid='';for(let lon=-180;lon<=180;lon+=30){const x=project([lon,0])[0];grid+=`M${x} 0V800`;const t=svgEl('text',{x:x+5,y:790});t.textContent=Math.abs(lon)+'°';$('#graticule').append(t);}for(let lat=-60;lat<=80;lat+=20){const y=project([0,lat])[1];grid+=`M0 ${y}H1600`;const t=svgEl('text',{x:12,y:y-6});t.textContent=Math.abs(lat)+'°';$('#graticule').append(t);}$('#graticule').append(svgEl('path',{d:grid}));
   const labels=[[-39,28,'ATLANTIC',false],[-31,18,'OCEAN',false],[73,-19,'INDIAN OCEAN',false],[-128,4,'PACIFIC',false],[164,8,'PACIFIC',false],[-105,47,'북아메리카',true],[-57,-13,'남아메리카',true],[22,13,'아프리카',true],[65,50,'아시아',true],[132,-26,'오세아니아',true]];
   for(const [lon,lat,label,continent]of labels){const [x,y]=project([lon,lat]);const t=svgEl('text',{x,y,class:continent?'continent-label':''});t.textContent=label;$('#map-labels').append(t);}
-  globe=new GlobeAtlas($('#minimap'),land,nav.rivers,PORTS,point=>{followShip=false;[camera.x,camera.y]=project(wrapPosition(point));applyCamera();});
+  globe=new AtlasView($('#minimap'),land,nav.rivers,PORTS,point=>{followShip=false;[camera.x,camera.y]=project(wrapPosition(point));applyCamera();});
   setupChartWrapping();
   mapReady=true;$('#map-loading').remove();resizeMap();renderRoutes();renderShip();
   renderFog(true);
@@ -479,7 +494,11 @@ function renderShip(){
   if(state.port){x-=15/screen.k;y+=9/screen.k;}
   // The map uses screen-sized icons, so the ship stays readable while zooming.
   const drawing=$('.ship-drawing');if(drawing&&drawing.dataset.tier!==String(shipTier(state))){drawing.innerHTML=shipGlyph(shipTier(state));drawing.dataset.tier=shipTier(state);}
-  const followers=$('#own-followers');if(followers){followers.replaceChildren();if(state.voyage&&!state.voyage.kind)for(let i=1;i<fleetCount(state);i++){const at=Math.max(0,state.voyage.travelled-i*5);if(at<=0)continue;const point=positionAlong(state.voyage,at);if(nav.isLand(point))continue;const p=project(point),g=svgEl('g',{transform:`translate(${p[0]},${p[1]}) scale(${.62/screen.k})`});g.innerHTML=shipGlyph(shipTier(state));followers.append(g);}else if(state.controlMode==='manual'&&!state.port)for(let i=1;i<fleetCount(state);i++){const point=manualTrail.at(-1-i*2);if(!point||mapDistance(point,state.position)>30||nav.isLand(point))continue;const p=project(point),g=svgEl('g',{transform:`translate(${p[0]},${p[1]}) scale(${.62/screen.k})`});g.innerHTML=shipGlyph(shipTier(state));followers.append(g);}}
+  const followers=$('#own-followers');if(followers){followers.replaceChildren();let tails=[];
+   if(state.voyage&&!state.voyage.kind)for(let i=1;i<fleetCount(state);i++){const at=state.voyage.travelled-i*30;if(at>0)tails.push({index:i,point:positionAlong(state.voyage,at),ahead:positionAlong(state.voyage,at+2)});}
+   else if(!state.port)tails=wakeFollowers([...manualTrail,state.position],fleetCount(state));
+   for(const tail of tails){if(nav.isLand(tail.point))continue;const p=project(tail.point),q=project(tail.ahead);let dx=q[0]-p[0],dy=q[1]-p[1];if(Math.abs(dx)>800)dx-=Math.sign(dx)*1600;if(Math.abs(dy)>400)dy-=Math.sign(dy)*800;const angle=Math.atan2(dy,dx)*180/Math.PI+90,g=svgEl('g',{transform:`translate(${p[0]},${p[1]}) scale(${.62/screen.k}) rotate(${angle})`});g.innerHTML=shipGlyph(orderedFleet(state)[tail.index]?.tier??shipTier(state));followers.append(g);}
+  }
   $('#ship-marker').setAttribute('transform',`translate(${x},${y}) scale(${.78/screen.k})`);
   $('#heading-arrow').setAttribute('transform',`rotate(${angle})`);$('#heading-arrow').setAttribute('data-fleet',fleetCount(state));
   renderMinimap();
@@ -506,8 +525,10 @@ function planDestination(target,point,scroll=true){
   planned={target,point,route};renderRoutes();renderPanel();renderPorts();
   if(scroll&&innerWidth<=850)ux?.openPort('target',false);
 }
-function startVoyage(){
-  if(!playing||sessionBlocked)return;
+async function startVoyage(){
+  if(!playing||sessionBlocked||account.busy||account.economicUncertain)return;
+  if(combat?.blocked())return toast('전투 결과를 먼저 확인하세요.');
+  if(!combat?.hasReserve()){try{await combat.prepare();}catch(e){return toast(e.message,'error');}}
   if(state.controlMode==='manual'){if(selected&&selected!==state.port){ux?.closeSheet();startManual(portApproaches.get(selected));}return;}
   if(!planned||state.voyage||planned.target&&!knowsPort(state,planned.target))return;const estimate=canDepart(state,planned.route);if(!estimate.ok){toast(estimate.error,'error');return;}
   state.voyage={...planned.route,target:planned.target,origin:state.port,travelled:0,foodRemaining:estimate.food};state.port=null;paused=false;planned=null;log(`${toward(state.voyage.target?PORT_BY_ID[state.voyage.target].name:'새로운 해역')} 출항. 총 ${fmt(state.voyage.total)}해리.`, 'sailing');toast('⚓ 출항! 새로운 바다가 기다립니다.');modal.close();ux?.closeSheet();renderRoutes();renderPanel();renderHUD();centerShip();save();
@@ -517,10 +538,12 @@ function arrive(manualPort=null){
   const p=PORT_BY_ID[manualPort],v=p?{path:[[p.lon,p.lat]],target:p.id}:state.voyage;
   manualTarget=null;manualChannel=null;manualActive=false;heldKeys.clear();
   state.position=v.target?[PORT_BY_ID[v.target].lon,PORT_BY_ID[v.target].lat]:v.path.at(-1);state.port=v.target;state.voyage=null;planned=null;selected=v.target;paused=false;followShip=false;
-  const safeReturn=['rescue','transition'].includes(v.kind);let discovery=false;
+  const safeReturn=['rescue','transition'].includes(v.kind);if(safeReturn)state.hullHP=fleetMaxHP(state);let discovery=false;
   if(v.target&&!safeReturn){const p=PORT_BY_ID[v.target];discovery=!state.visited.includes(p.id);if(discovery){state.visited.push(p.id);state.money+=120;log(`${p.name} 발견! ${p.country} · ${p.sea}. 발견 보상 +120 D`,'discovery');toast(`✦ 새로운 항구, ${p.name}! +120 D`,'discovery');}else{log(`${p.name}에 입항했습니다.`);toast(`⚓ ${p.name}에 도착했습니다.`);}bell();}else if(safeReturn){log('구조가 완료됐습니다. 방문한 항구에서 다시 준비하세요.');toast('구조 완료 · 지원 보급 2일분');}else{log('목표 해역에 도착했습니다. 다음 항로를 선택하세요.');toast('목표 해역에 도착했어요. 가까운 항구로 향해보세요.');}
   if(v.target){recordArrival(state,v.target,v);state.legacyHarbor=!ACTIVE_PORT_BY_ID[v.target];}
   if(v.target&&!safeReturn&&!knowsPort(state,v.target))state.knownPorts.push(v.target);exploration.frozen=!explorationAllowed(state);if(!safeReturn)exploration.reveal(state.position);renderFog(true);changed();renderRoutes();
+  if(v.target)combat?.onArrival();
+  if(!v.target&&state.investigationTarget){delete state.investigationTarget;expansion?.investigate();}
   if(discovery){const p=PORT_BY_ID[v.target];showModal(`${p.name}, 새로운 발견`,'A NEW PAGE IN YOUR ATLAS',`<p style="color:var(--gold);font-size:11px">${p.country} · ${p.region} · ${coordinates(p)}</p><p>${p.fact}</p><p class="help-tip">지리 수첩에 새로운 항구가 기록됐어요.<br>발견 보상 <strong>+120 D</strong></p><button class="primary-button" id="discovery-quiz">지리 퀴즈에 도전 · +100 D</button><button class="service-button" id="discovery-close">항구 둘러보기 <span>→</span></button>`);$('#discovery-close').onclick=()=>modal.close();$('#discovery-quiz').onclick=()=>quiz(p);}
 }
 
@@ -553,7 +576,7 @@ function showJournal(){
   }
   for(const item of state.log){const row=document.createElement('div');row.className='log-entry';const time=document.createElement('time'),body=document.createElement('p');time.textContent=dateText(item.day,true);body.textContent=item.text;row.append(time,body);$('#journal-log').append(row);}
 }
-function showHelp(){showModal('당신만의 항로를 그려보세요','WELCOME ABOARD, CAPTAIN',`<p>뗏목으로 교역을 시작하고, 세계 70개 주요 항구와 32종 발견물을 찾아보세요.</p><div class="help-step"><b>01</b><div><h3>리스본에서 첫 교역 준비</h3><p>와인을 싣고 포르투로 향해보세요. 경로·보급·판매가를 확인하고 출항하세요.</p></div></div><div class="help-step"><b>02</b><div><h3>내 배 보기에서 성장</h3><p>20단계 개량과 최대 5척 선단을 준비해요. 배를 늘리면 적재와 보급 소모가 함께 늘어요.</p></div></div><div class="help-step"><b>03</b><div><h3>단서를 얻고 수집 도감 채우기</h3><p>주점의 무료 소문과 항해 중 흔적을 살펴보세요. 실제 지점에서 조사하면 그림과 명성을 얻어요.</p></div></div><p class="help-tip">자동 항해: 항구 선택 → 출항.<br>직접 조종: 바다 클릭 또는 방향키 ↑ ↓ ← → · W 위 · S 아래 · A 왼쪽 · D 오른쪽. ■ / 스페이스로 정지.<br>모바일 하단: 항해 / 항구·보급 / 화물 / 더보기.<br>지구본은 드래그로 회전, 클릭으로 해당 해도를 봐요. 평면 해도는 고정 배율이에요.<br>보급 소진 시 방문했던 항구로 구조돼요. 구조 중에는 탐험과 발견이 진행되지 않아요.</p><p><a class="service-button" href="guide/" target="_blank" rel="noopener">자세한 게임 설명 · JPG 7장 보기 ↗</a></p><button class="primary-button" id="start-game">좋아, 항해를 시작하자 ${icon('ship')}</button><p class="modal-meta">지도: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (퍼블릭 도메인) · 국가명은 현재 기준. 해안선·강폭·입항 위치와 선박 성능은 게임용 설정입니다. 진행은 Google 계정에 연결해 자동 저장됩니다.</p>`);$('#start-game').onclick=()=>modal.close();}
+function showHelp(){showModal('당신만의 항로를 그려보세요','WELCOME ABOARD, CAPTAIN',`<p>뗏목으로 교역을 시작하고, 세계 ${PORTS.length}개 주요 항구와 40종 발견물을 찾아보세요.</p><div class="help-step"><b>01</b><div><h3>리스본에서 첫 교역 준비</h3><p>와인을 싣고 포르투로 향해보세요. 경로·보급·판매가를 확인하고 출항하세요.</p></div></div><div class="help-step"><b>02</b><div><h3>내 배 보기에서 성장</h3><p>20단계 개량과 최대 5척 선단을 준비해요. 배를 늘리면 적재와 보급 소모가 함께 늘어요.</p></div></div><div class="help-step"><b>03</b><div><h3>단서를 얻고 수집 도감 채우기</h3><p>주점의 무료 소문과 항해 중 흔적을 살펴보세요. 실제 지점에서 조사하면 그림과 명성을 얻어요.</p></div></div><p class="help-tip">자동 항해: 항구 선택 → 출항.<br>직접 조종: 바다 클릭 또는 방향키 ↑ ↓ ← → · W 위 · S 아래 · A 왼쪽 · D 오른쪽. ■ / 스페이스로 정지.<br>모바일 하단: 항해 / 항구·보급 / 화물 / 더보기.<br>세계지도는 지구본 / 평면지도 중 고릅니다. 클릭은 화면만 이동해요. 평면 해도는 고정 배율이에요.<br>보급 소진 시 방문했던 항구로 구조돼요. 구조 중에는 탐험과 발견이 진행되지 않아요.</p><p>항구 투자·활동에서 지분·세금·개발·한정 상품을, 대포·수리와 전투·해적에서 장착과 세 전투 모드를 이용하세요. 미니맵 클릭은 배 이동과 별개예요.</p><p><a class="service-button" href="guide/" target="_blank" rel="noopener">자세한 게임 설명 · JPG 10장 보기 ↗</a></p><button class="primary-button" id="start-game">좋아, 항해를 시작하자 ${icon('ship')}</button><p class="modal-meta">지도: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (퍼블릭 도메인) · 국가명은 현재 기준. 해안선·강폭·입항 위치와 선박 성능은 게임용 설정입니다. 진행은 Google 계정에 연결해 자동 저장됩니다.</p>`);$('#start-game').onclick=()=>modal.close();}
 
 
 function followPosition(){const [x,y]=project(state.position),offset=innerWidth>850&&screen.w<850?80:0;camera.x=x+offset/screen.k;camera.y=y;}
@@ -568,7 +591,9 @@ function setControlMode(mode){
   if(mode==='auto'&&selected&&selected!==state.port)planDestination(selected,[PORT_BY_ID[selected].lon,PORT_BY_ID[selected].lat],false);
 }
 function beginManual(){
-  if(!playing||sessionBlocked||!nav||state.food<=0||state.transitionPending||state.voyage?.kind)return false;
+  if(combat?.blocked())return false;
+  if(combat&&!combat.hasReserve()){combat.prepare().catch(e=>toast(e.message,'error'));return false;}
+  if(!playing||sessionBlocked||account.busy||account.economicUncertain||!nav||state.food<=0||state.transitionPending||state.voyage?.kind)return false;
   if(usedSpace(state)>capacity(state)){toast('보급과 화물의 적재 공간을 먼저 정리하세요.','error');return false;}
   if(state.port){departedPort=state.port;state.position=[...portApproaches.get(state.port)];state.port=null;log('직접 조종으로 출항했습니다. 방향키나 바다 클릭으로 이동하세요.','sailing');renderPanel();}
   manualActive=true;paused=false;followShip=true;return true;
@@ -576,11 +601,14 @@ function beginManual(){
 function startManual(point){
   if(!point||!nav)return;
   if(state.food<=0){toast(state.port?'출항 전에 보급을 채워 주세요.':'보급이 떨어져 자동 구조합니다.','error');return;}
+  if(combat&&!combat.hasReserve()){combat.prepare().then(()=>startManual(point)).catch(e=>toast(e.message,'error'));return;}
   if(!beginManual())return;manualTarget=[...point];const a=nav.riverAt(state.position),b=nav.riverAt(point);manualChannel=a&&b&&a.river.id===b.river.id?{...nav.route(state.position,point),travelled:0}:null;heldKeys.clear();centerShip();renderRoutes();renderHUD();save();
   if(innerWidth<=850)$('.chart').scrollIntoView({behavior:'smooth',block:'start'});
 }
-function launchRescue(transition=false){
-  const result=beginRescue(state,nav,transition);if(!result.ok){toast(result.error,'error');return false;}
+function launchRescue(transition=false,damaged=false){
+  if(damaged&&(state.port||state.voyage?.kind))return false;
+  if(combat?.active()){combat.retreatForRescue().catch(e=>toast(e.message,'error'));return true;}
+  const result=beginRescue(state,nav,transition,damaged);if(!result.ok){toast(result.error,'error');return false;}
   exploration.frozen=true;renderFog(true);manualActive=false;manualTarget=null;manualChannel=null;heldKeys.clear();planned=null;paused=false;
   log(`${result.port.name}까지 ${transition?'안전 귀환':'자동 구조'} · 실제 비용 ${fmt(result.cost)} D`);toast(`${result.port.name}로 ${result.emergency?'안전 귀환합니다':'구조 이동합니다'} · ${fmt(result.cost)} D`);if(result.arrived)arrive();else {changed();renderRoutes();centerShip();}return true;
 }
@@ -594,8 +622,8 @@ function stepManual(delta){
   if(east||north){manualTarget=null;manualChannel=null;}
   const speed=nav.riverAt(state.position)?ship(state).riverSpeed:ship(state).speed,miles=speed*delta/ACTIVE_SECONDS_PER_DAY;
   let rawNext;if(manualChannel)rawNext=positionAlong(manualChannel,Math.min(manualChannel.total,manualChannel.travelled+miles));else rawNext=east||north?helmStep(state.position,east,north,miles):mapToward(state.position,manualTarget,miles);
-  const previous=[...state.position],motion=wrappedMotion(previous,rawNext),actual=advanceManualMotion(state,nav,motion,delta);
-  if(actual.error){stopManual();toast(actual.error);return;}
+  const previous=[...state.position],motion=wrappedMotion(previous,rawNext),actual=advanceManualMotion(state,nav,motion,delta,(from,to)=>expansion?.intercept(from,to)??1);
+  if(actual.error){stopManual();toast(actual.error);return;}if(actual.interrupted){stopForUI();paused=false;}
   if(manualChannel)manualChannel.travelled=Math.min(manualChannel.total,manualChannel.travelled+actual.miles);
   const a=project(previous),b=project(rawNext);let dx=b[0]-a[0];if(dx>800)dx-=1600;if(dx<-800)dx+=1600;manualAngle=Math.atan2(b[1]-a[1],dx)*180/Math.PI+90;
   for(const [from,to]of actual.legs||[]){exploreMove(from,to);if(!manualTrail.length||mapDistance(manualTrail.at(-1),to)>2.5){manualTrail.push([...to]);if(manualTrail.length>60)manualTrail.shift();}}
@@ -613,13 +641,13 @@ world.addEventListener('pointerup',endDrag);world.addEventListener('pointercance
 $('#home-map').onclick=centerShip;$('#ports-map').onclick=showAtlas;
 $('#auto-mode').onclick=()=>setControlMode('auto');$('#manual-mode').onclick=()=>setControlMode('manual');
 $('#manual-stop').onclick=stopManual;
-$$('[data-direction]').forEach(button=>{button.onpointerdown=e=>{e.preventDefault();button.setPointerCapture(e.pointerId);if(!nav)return;setControlMode('manual');manualTarget=null;if(beginManual()){heldKeys.add(button.dataset.direction);renderHUD();}};button.onpointerup=()=>heldKeys.delete(button.dataset.direction);button.onpointercancel=()=>heldKeys.delete(button.dataset.direction);button.onlostpointercapture=()=>heldKeys.delete(button.dataset.direction);});
+$$('[data-direction]').forEach(button=>{button.onpointerdown=async e=>{e.preventDefault();button.setPointerCapture(e.pointerId);if(!nav)return;setControlMode('manual');manualTarget=null;if(combat&&!combat.hasReserve()){try{await combat.prepare();}catch(error){toast(error.message,'error');return;}if(!button.hasPointerCapture(e.pointerId))return;}if(beginManual()){heldKeys.add(button.dataset.direction);renderHUD();}};button.onpointerup=()=>heldKeys.delete(button.dataset.direction);button.onpointercancel=()=>heldKeys.delete(button.dataset.direction);button.onlostpointercapture=()=>heldKeys.delete(button.dataset.direction);});
 $('#minimap-home').onclick=centerShip;
 $('#sail-btn').onclick=startVoyage;$('#trade-tab').onclick=()=>setTab('trade');$('#ship-tab').onclick=()=>setTab('ship');
 $('#mobile-port-btn').onclick=()=>$('#port-panel').scrollIntoView({behavior:'smooth',block:'start'});
 $('#help-btn').onclick=showHelp;$('#journal-btn').onclick=showJournal;$('#atlas-btn').onclick=showAtlas;
 $('#map-tab').onclick=()=>{modal.close();$('.chart').scrollIntoView({behavior:'smooth'});};
-modal.addEventListener('close',()=>{stopForUI();if(modalFocus?.isConnected)modalFocus.focus({preventScroll:true});});$('#close-modal').onclick=()=>modal.close();modal.addEventListener('click',e=>{if(e.target===modal){const rect=modal.getBoundingClientRect();if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)modal.close();}});
+modal.addEventListener('close',()=>{stopForUI();if(modalFocus?.isConnected)modalFocus.focus({preventScroll:true});});$('#close-modal').onclick=()=>account.economicUncertain?location.reload():modal.close();modal.addEventListener('cancel',e=>{if(account.economicUncertain)e.preventDefault();});modal.addEventListener('click',e=>{if(e.target===modal&&!account.economicUncertain){const rect=modal.getBoundingClientRect();if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)modal.close();}});
 $('#pause-btn').onclick=()=>{paused=!paused;renderHUD();};
 $('#sound-btn').onclick=()=>{sound=!sound;$('#sound-btn').innerHTML=`♬ <span>소리 ${sound?'켬':'끔'}</span>`;$('#sound-btn').setAttribute('aria-label',`항구 종소리 ${sound?'끄기':'켜기'}`);if(sound)bell();};
 document.addEventListener('keydown',e=>{
@@ -627,6 +655,7 @@ document.addEventListener('keydown',e=>{
   const direction=directionForKey(e,ux?.letterKeys!==false);
   if(direction){
     e.preventDefault();if(!nav||e.repeat)return;setControlMode('manual');if(state.controlMode!=='manual')return;
+    if(combat&&!combat.hasReserve()){const code=e.code||e.key;heldKeyboard.set(code,direction);combat.prepare().then(()=>{if(heldKeyboard.has(code)&&beginManual()){heldKeys.add(direction);renderHUD();}}).catch(error=>toast(error.message,'error'));return;}
     manualTarget=null;if(beginManual()){heldKeyboard.set(e.code||e.key,direction);heldKeys.add(direction);renderHUD();}return;
   }
   if(e.code==='Space'&&(state.voyage||manualActive)){e.preventDefault();if(e.repeat)return;if(state.controlMode==='manual')stopManual();else{paused=!paused;renderHUD();}}
@@ -640,20 +669,22 @@ new ResizeObserver(()=>{if(mapReady)resizeMap();}).observe($('.chart'));
 let last=performance.now(),lastHud=0,lastSave=0;
 function tick(now){
   const delta=Math.min((now-last)/1000,.1);last=now;
-  if(playing&&!sessionBlocked&&state.voyage&&!paused&&!modal.open&&!ux?.isBlocking()&&!document.hidden){
-    const previous=[...state.position],result=advanceVoyage(state,nav,delta);
+  if(playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!combat?.blocked()&&state.voyage&&!paused&&!modal.open&&!ux?.isBlocking()&&!document.hidden){
+    const previous=[...state.position],result=advanceVoyage(state,nav,delta,(from,to)=>expansion?.intercept(from,to)??1);
     exploreMove(previous,state.position);if(followShip){followPosition();applyCamera();}else renderShip();
-    if(result.arrived)arrive();else if(result.depleted)launchRescue();
+    if(result.interrupted){stopForUI();paused=true;renderHUD();}else if(result.arrived)arrive();else if(result.depleted)launchRescue();
     if(now-lastHud>150){renderHUD();lastHud=now;}if(now-lastSave>1800){save();lastSave=now;}
   }
-  if(playing&&!sessionBlocked&&state.controlMode==='manual'&&!paused&&!modal.open&&!ux?.isBlocking()&&!document.hidden){stepManual(delta);if(now-lastHud>150){renderHUD();lastHud=now;}if(manualActive&&now-lastSave>1500){save();lastSave=now;}}
-  if(playing&&!sessionBlocked&&!state.port&&!state.voyage&&!state.transitionPending&&state.food<=1e-8&&!modal.open&&!ux?.isBlocking())launchRescue();
+  if(playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!combat?.blocked()&&state.controlMode==='manual'&&!paused&&!modal.open&&!ux?.isBlocking()&&!document.hidden){stepManual(delta);if(now-lastHud>150){renderHUD();lastHud=now;}if(manualActive&&now-lastSave>1500){save();lastSave=now;}}
+  if(playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!state.port&&!state.voyage&&!state.transitionPending&&state.food<=1e-8&&!modal.open&&!ux?.isBlocking())launchRescue();
   if(now-peerDrawTime>80&&fleet.peers.size){renderPeers();renderMinimap();peerDrawTime=now;}
   frame=requestAnimationFrame(tick);
 }
 
-setupInterface();ux=createUX({getState:()=>state,getAccount:()=>account,getNav:()=>nav,getSelection:()=>selected,getPlan:()=>planned,getFleet:()=>fleet,getVisibleShips:visibleShips,getChat:()=>chat,storage,onStop:stopForUI,onHome:centerShip,onSelect:selectPort,onPlan:planDestination,onSail:startVoyage,onManual:startManual,onMode:setControlMode,onSave:changed,onPanel:renderPanel,onModal:showModal,onClose:()=>modal.close(),onToast:toast,onRescue:launchRescue,onTab:setTab,onChat:toggleChat,onRankVisibility:visible=>rankings.setVisible(visible),onAtlas:showAtlas,onJournal:showJournal,onHelp:showHelp,onShip:()=>expansion?.showShip(),onCollection:()=>expansion?.showAlbum(),onCaptains:()=>expansion?.showCaptains('all',true)});renderHUD();renderMission();renderPanel();$('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
-expansion=createExpansion({getState:()=>state,getNav:()=>nav,getFleet:()=>fleet,getRankings:()=>rankings,getStats:()=>gameStats(state,exploration),onModal:showModal,onToast:toast,onChanged:changed,onInspect:inspectNearby,onApproach:approachDiscovery,onResumeRoute:resumeDetour});
+setupInterface();ux=createUX({getState:()=>state,getAccount:()=>account,getNav:()=>nav,getSelection:()=>selected,getPlan:()=>planned,getFleet:()=>fleet,getVisibleShips:visibleShips,getChat:()=>chat,storage,onTrade:(mode,id)=>business?.trade(mode,id),onStop:stopForUI,onHome:centerShip,onSelect:selectPort,onPlan:planDestination,onSail:startVoyage,onManual:startManual,onMode:setControlMode,onSave:changed,onPanel:renderPanel,onModal:showModal,onClose:()=>modal.close(),onToast:toast,onRescue:launchRescue,onTab:setTab,onChat:toggleChat,onRankVisibility:visible=>rankings.setVisible(visible),onAtlas:showAtlas,onJournal:showJournal,onHelp:showHelp,onShip:()=>expansion?.showShip(),onCollection:()=>expansion?.showAlbum(),onBusiness:()=>business?.showHub(),onGuns:()=>business?.showArmory(),onCombat:()=>combat?.show(),onCaptains:()=>expansion?.showCaptains('all',true)});renderHUD();renderMission();renderPanel();$('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
+expansion=createExpansion({getState:()=>state,getNav:()=>nav,getFleet:()=>fleet,getRankings:()=>rankings,getStats:()=>gameStats(state,exploration),onModal:showModal,onToast:toast,onChanged:changed,onClose:()=>modal.close(),canShowDiscovery:()=>playing&&!!nav&&!modal.open&&!state.battleId&&!state.npcBattle&&!ux?.isBlocking(),onDiscoveryPause:()=>{stopForUI();paused=!!state.voyage;},onInspect:inspectNearby,onApproach:approachDiscovery,onResumeRoute:resumeDetour,onShipAction:fn=>business?.shipAction(fn),onCombat:()=>combat?.show()});
+business=createBusiness({account,directory:after=>rankings.page(after),getState:()=>state,modal:showModal,toast,pause:()=>{stopForUI();paused=!!state.voyage;},beforeService:()=>combat?.releaseIfPort(),changed,render:()=>{if(mapReady)renderPanel();},nav:()=>nav,rescue:()=>launchRescue(false,true),look:point=>{modal.close();followShip=false;[camera.x,camera.y]=project(wrapPosition(point));applyCamera();},onPorts:added=>{if(nav)for(const p of added)portApproaches.set(p.id,nav.approach(p));if(state.port&&ACTIVE_PORT_BY_ID[state.port])state.legacyHarbor=false;renderPorts();}});
+combat=createCombat({account,getState:()=>state,visible:visibleShips,nav:()=>nav,modal:showModal,close:()=>modal.close(),toast,changed,pause:()=>{stopForUI();paused=!!state.voyage;},rescue:()=>launchRescue(false,true),look:point=>{modal.close();followShip=false;[camera.x,camera.y]=project(wrapPosition(point));applyCamera();}});
 $('#fleet-btn').onclick=()=>expansion.showCaptains('online');
 $$('[data-rank]').forEach(button=>button.onclick=()=>{rankMetric=button.dataset.rank;rankings.select(rankMetric);renderRanks();});
 $('#chat-toggle').onclick=()=>toggleChat();$('#chat-close').onclick=()=>toggleChat();
@@ -669,7 +700,7 @@ $('#chat-form').onsubmit=async e=>{e.preventDefault();const input=$('#chat-input
 renderRanks();renderChatConnection();
 try{
   const responses=await Promise.all(['assets/world-land.geojson','assets/world-countries.geojson','assets/navigation.json','assets/rivers.json','assets/islands.geojson'].map(url=>fetch(url).then(r=>{if(!r.ok)throw Error('지도 데이터 오류');return r.json();})));
-  nav=new Navigator(responses[2],responses[3]);ALL_PORTS.forEach(p=>portApproaches.set(p.id,nav.approach(p)));responses[0].features.push(...responses[4].features);setupMap(responses[0],responses[1]);centerShip();requestAnimationFrame(tick);
+  nav=new Navigator(responses[2],responses[3]);[...new Map([...ALL_PORTS,...PORTS].map(p=>[p.id,p])).values()].forEach(p=>portApproaches.set(p.id,nav.approach(p)));responses[0].features.push(...responses[4].features);setupMap(responses[0],responses[1]);centerShip();requestAnimationFrame(tick);
   clearLegacyStorage(storage);
   renderFleetStatus();showEntry();
 }catch(error){$('#map-loading').innerHTML='<p>지도를 불러오지 못했어요.</p><button class="primary-button" style="width:180px" onclick="location.reload()">다시 불러오기</button>';console.error(error);}

@@ -1,5 +1,5 @@
 {
-  "version": "2026.11.06-world-70",
+  "version": "2026.11.09-world-78",
   "regions": {
     "유럽": [
       "lisbon",
@@ -31,7 +31,8 @@
       "laspalmas",
       "ribeiragrande",
       "portlouis",
-      "toamasina"
+      "toamasina",
+      "walvisbay"
     ],
     "아시아": [
       "muscat",
@@ -59,7 +60,9 @@
       "halifax",
       "veracruz",
       "acapulco",
-      "sanfrancisco"
+      "sanfrancisco",
+      "vancouver",
+      "seward"
     ],
     "남아메리카": [
       "cartagena",
@@ -69,7 +72,10 @@
       "rio",
       "callao",
       "valparaiso",
-      "ushuaia"
+      "ushuaia",
+      "belem",
+      "puertoayora",
+      "iquique"
     ],
     "오세아니아": [
       "sydney",
@@ -81,7 +87,9 @@
       "hangaroa",
       "portmoresby",
       "hobart",
-      "apia"
+      "apia",
+      "darwin",
+      "kolonia"
     ]
   },
   "retired": [
@@ -192,6 +200,14 @@
     [
       92.9,
       11.3
+    ],
+    [
+      -90.31,
+      -0.75
+    ],
+    [
+      158.22,
+      6.96
     ]
   ],
   "ports": [
@@ -546,6 +562,230 @@
         "wine"
       ],
       "fact": "사모아 우폴루섬 북쪽의 항구. 피지와 타히티 사이 태평양 항해의 거점으로 배치했습니다."
+    },
+    {
+      "id": "vancouver",
+      "name": "밴쿠버",
+      "en": "Vancouver",
+      "country": "캐나다",
+      "cityLon": -123.12359,
+      "cityLat": 49.275362,
+      "lon": -124.5,
+      "lat": 48.5,
+      "sea": "북태평양",
+      "stock": {
+        "timber": "producer",
+        "leather": "local",
+        "salt": "import",
+        "cotton": "import"
+      },
+      "demand": [
+        "porcelain",
+        "tea"
+      ],
+      "fact": "캐나다 태평양 연안의 항구 도시. 축약 해도의 좁은 해협을 피하도록 게임의 부두는 밴쿠버섬 남서쪽 접근 해역에 따로 두었습니다.",
+      "sources": [
+        {
+          "label": "공식 항만·지리 안내",
+          "url": "https://www.portvancouver.com/wp-content/uploads/2018/06/5335_VFPA_Map_Source-Files.pdf"
+        }
+      ]
+    },
+    {
+      "id": "seward",
+      "name": "수어드",
+      "en": "Seward",
+      "country": "미국",
+      "cityLon": -149.469983,
+      "cityLat": 60.126161,
+      "lon": -149.5,
+      "lat": 59.5,
+      "sea": "알래스카만",
+      "stock": {
+        "driedfish": "producer",
+        "leather": "local",
+        "timber": "local",
+        "salt": "import"
+      },
+      "demand": [
+        "cotton",
+        "tea"
+      ],
+      "fact": "알래스카 리저렉션만의 항구. 현재의 항만 시설을 과거 모습으로 재현하지 않고, 알래스카 연안 관찰을 위한 게임 거점으로 표현합니다.",
+      "sources": [
+        {
+          "label": "공식 항만·지리 안내",
+          "url": "https://www.cityofseward.us/departments/harbor"
+        }
+      ]
+    },
+    {
+      "id": "belem",
+      "name": "벨렝",
+      "en": "Belém",
+      "country": "브라질",
+      "cityLon": -48.481969,
+      "cityLat": -1.448057,
+      "lon": -48.5,
+      "lat": -1,
+      "sea": "아마존 하구권",
+      "stock": {
+        "timber": "producer",
+        "cacao": "local",
+        "cotton": "local",
+        "salt": "import"
+      },
+      "demand": [
+        "porcelain",
+        "glass"
+      ],
+      "fact": "브라질 북부의 과자라만을 마주한 항구. 아마존 하구권과 내륙 항해를 이어 보는 거점이며 부두는 접근 가능한 하구 수역으로 단순화했습니다.",
+      "sources": [
+        {
+          "label": "공식 항만·지리 안내",
+          "url": "https://www.gov.br/receitafederal/pt-br/assuntos/aduana-e-comercio-exterior/importacao-e-exportacao/recinto-aduaneiros/portos-maritimos-fluviais-e-lacustres"
+        }
+      ]
+    },
+    {
+      "id": "puertoayora",
+      "name": "푸에르토아요라",
+      "en": "Puerto Ayora",
+      "country": "에콰도르",
+      "cityLon": -90.31,
+      "cityLat": -0.75,
+      "lon": -90.31,
+      "lat": -0.75,
+      "sea": "갈라파고스",
+      "stock": {
+        "driedfish": "local",
+        "salt": "local",
+        "grain": "import",
+        "cotton": "import"
+      },
+      "demand": [
+        "timber",
+        "glass"
+      ],
+      "fact": "갈라파고스 산타크루스섬 남쪽의 항구. 현재 지명을 사용한 게임 거점이며 바다이구아나 등 관찰 기록으로 향하는 항해를 돕습니다.",
+      "sources": [
+        {
+          "label": "공식 항만·지리 안내",
+          "url": "https://www.galapagos.gob.ec/wp-content/uploads/downloads/2021/02/Historia-humana-Santa-Cruz.pdf"
+        }
+      ]
+    },
+    {
+      "id": "iquique",
+      "name": "이키케",
+      "en": "Iquique",
+      "country": "칠레",
+      "cityLon": -70.129968,
+      "cityLat": -20.249993,
+      "lon": -70.5,
+      "lat": -20,
+      "sea": "남동태평양",
+      "stock": {
+        "salt": "producer",
+        "cotton": "local",
+        "driedfish": "local",
+        "timber": "import"
+      },
+      "demand": [
+        "porcelain",
+        "tea"
+      ],
+      "fact": "칠레 북쪽 태평양 해안의 항구. 해안 건너 사막 지형과 남미 서안의 긴 항로를 연결하는 게임 거점입니다.",
+      "sources": [
+        {
+          "label": "공식 항만·지리 안내",
+          "url": "https://epi.cl/puerto-de-iquique/ubicacion/"
+        }
+      ]
+    },
+    {
+      "id": "darwin",
+      "name": "다윈",
+      "en": "Darwin",
+      "country": "오스트레일리아",
+      "cityLon": 130.850039,
+      "cityLat": -12.425354,
+      "lon": 130.5,
+      "lat": -12.5,
+      "sea": "티모르해",
+      "stock": {
+        "driedfish": "local",
+        "timber": "local",
+        "grain": "import",
+        "cotton": "import"
+      },
+      "demand": [
+        "tea",
+        "porcelain"
+      ],
+      "fact": "오스트레일리아 북부의 항구. 동남아시아와 호주 북부의 위치 관계를 배우며 항해하는 거점으로 삼았습니다.",
+      "sources": [
+        {
+          "label": "공식 항만·지리 안내",
+          "url": "https://www.darwinport.com.au/"
+        }
+      ]
+    },
+    {
+      "id": "kolonia",
+      "name": "콜로니아·폰페이",
+      "en": "Kolonia, Pohnpei",
+      "country": "미크로네시아연방",
+      "cityLon": 158.22,
+      "cityLat": 6.96,
+      "lon": 158.22,
+      "lat": 6.96,
+      "sea": "미크로네시아",
+      "stock": {
+        "driedfish": "local",
+        "timber": "local",
+        "grain": "import",
+        "cotton": "import"
+      },
+      "demand": [
+        "tea",
+        "porcelain"
+      ],
+      "fact": "폰페이섬 북쪽 콜로니아 주변의 항구. 남동쪽 난마돌 관찰 지점으로 향하는 항해를 돕고 미크로네시아의 섬들을 이어 봅니다.",
+      "sources": [
+        {
+          "label": "공식 항만·지리 안내",
+          "url": "https://www.ppa.fm/pohnpei-international-seaport/"
+        }
+      ]
+    },
+    {
+      "id": "walvisbay",
+      "name": "월비스베이",
+      "en": "Walvis Bay",
+      "country": "나미비아",
+      "cityLon": 14.505306,
+      "cityLat": -22.957528,
+      "lon": 14,
+      "lat": -23,
+      "sea": "남동대서양",
+      "stock": {
+        "salt": "producer",
+        "driedfish": "local",
+        "cotton": "import",
+        "timber": "import"
+      },
+      "demand": [
+        "porcelain",
+        "tea"
+      ],
+      "fact": "나미비아 중부 해안의 만과 항구. 나미브 해안 관찰과 아프리카 남서쪽 긴 항로를 연결하는 게임 거점입니다.",
+      "sources": [
+        {
+          "label": "공식 항만·지리 안내",
+          "url": "https://www.namport.com.na/ports/39/"
+        }
+      ]
     }
   ],
   "economyOverrides": {

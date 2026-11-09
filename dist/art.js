@@ -1,6 +1,6 @@
 // Original vector illustrations for Windward. No external images or runtime requests.
 export const SHIP_ART_NAMES=Object.freeze(['통나무 뗏목','돛 달린 뗏목','보강 뗏목','소형 노젓는 배','소형 교역 돛배','단돛 교역선','연안 교역선','개량 연안선','쌍돛 연안선','항해 캐러벨','개량 캐러벨','대형 캐러벨','소형 카락','교역 카락','대형 카락','원양 교역선','교역 갤리온','대형 갤리온','원양 대형 범선','명장의 교역 범선']);
-export const DISCOVERY_ART_IDS=Object.freeze(['ruin-azores','ruin-carthage','ruin-kilwa','ruin-mahabalipuram','ruin-itsukushima','ruin-anse','ruin-rapanui','ruin-nanmadol','relic-compass','relic-chart','relic-astrolabe','relic-amphora','relic-seal','relic-bell','relic-carving','relic-pendant','animal-penguin-africa','animal-seal-med','animal-otter','animal-whaleshark','animal-iguana','animal-hector','animal-seal-hawaii','animal-penguin-nz','treasure-azores','treasure-gulf','treasure-madagascar','treasure-malacca','treasure-namib','treasure-atacama','treasure-andaman','treasure-pacific']);
+export const DISCOVERY_ART_IDS=Object.freeze(['ruin-azores','ruin-carthage','ruin-kilwa','ruin-mahabalipuram','ruin-itsukushima','ruin-anse','ruin-rapanui','ruin-nanmadol','relic-compass','relic-chart','relic-astrolabe','relic-amphora','relic-seal','relic-bell','relic-carving','relic-pendant','animal-penguin-africa','animal-seal-med','animal-otter','animal-whaleshark','animal-iguana','animal-hector','animal-seal-hawaii','animal-penguin-nz','treasure-azores','treasure-gulf','treasure-madagascar','treasure-malacca','treasure-namib','treasure-atacama','treasure-andaman','treasure-pacific','relic-alaska-token','relic-pacific-chart','relic-amazon-weight','relic-andean-pottery','relic-timor-tool','relic-micronesia-marker','ruin-sganggwaay','ruin-fortjesus']);
 
 const P={ink:'#244e57',wood:'#9b7047',woodLight:'#c59c65',woodDark:'#654a36',paper:'#fff5da',gold:'#c39a49',water:'#a8d5d6',sea:'#6daeb7',sky:'#e8f4ef',sand:'#e9d8ae',stone:'#aeaa91',green:'#789976'};
 const esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -177,8 +177,25 @@ function treasureScene(id){
 }
 
 const DISCOVERY_TITLES={'ruin-azores':'아소르스 옛 요새','ruin-carthage':'카르타고 유산','ruin-kilwa':'킬와 유적','ruin-mahabalipuram':'마하발리푸람 해안 사원','ruin-itsukushima':'이쓰쿠시마 신사','ruin-anse':'랑스오메도 정착지','ruin-rapanui':'라파누이의 모아이','ruin-nanmadol':'난마돌 수로 유적','relic-compass':'오래된 나침반','relic-chart':'표류 해도 조각','relic-astrolabe':'황동 항해 도구','relic-amphora':'에게해 도기','relic-seal':'문양 인장','relic-bell':'난파선의 종','relic-carving':'조각된 목편','relic-pendant':'돌 펜던트','animal-penguin-africa':'남아프리카 펭귄','animal-seal-med':'지중해 몽크물범','animal-otter':'알래스카 해달','animal-whaleshark':'고래상어','animal-iguana':'바다이구아나','animal-hector':'헥터돌고래','animal-seal-hawaii':'하와이몽크물범','animal-penguin-nz':'노란눈펭귄','treasure-azores':'잠긴 상자','treasure-gulf':'동전 주머니','treasure-madagascar':'진주함','treasure-malacca':'옛 금고','treasure-namib':'난파선의 상자','treasure-atacama':'숨겨진 보물지도','treasure-andaman':'푸른 보석함','treasure-pacific':'별빛 상자'};
+Object.assign(DISCOVERY_TITLES,{'relic-alaska-token':'옛 항해자의 금속 패','relic-pacific-chart':'북태평양 해도 조각','relic-amazon-weight':'강 상인의 저울추','relic-andean-pottery':'표류 도기의 문양','relic-timor-tool':'티모르해 항해 도구','relic-micronesia-marker':'먼바다 항로 표식','ruin-sganggwaay':'스강과이 해안 유산','ruin-fortjesus':'몸바사 포트지저스'});
+function expandedDiscoveryScene(id){
+  let b=setting(id,'coast');
+  if(id==='relic-alaska-token')return b+circle(320,260,110,P.gold,P.woodDark,5)+circle(320,260,91,P.paper,'#ac8b4d',3)+path('M254 282L389 282L370 310H275Z',P.wood,P.woodDark)+line(320,195,320,282,P.woodDark,5)+path('M313 203L270 268H313Z',P.paper,P.ink)+circle(320,127,19,'none',P.gold,9);
+  if(id==='relic-pacific-chart')return b+path('M155 150L267 166L304 146L475 164L462 359L365 338L281 362L165 344Z',P.paper,'#a38b5e')+path('M189 206L246 242L272 204L329 235L364 193L433 218M201 292L256 310L299 274L367 301L433 271','none',P.green,'stroke-width="6"')+path('M205 250Q320 172 421 317','none',P.ink,'stroke-dasharray="8 10"')+circle(420,318,12,'none',P.gold,4);
+  if(id==='relic-amazon-weight')return b+path('M229 343L248 218Q320 189 393 218L411 343Q321 373 229 343Z',P.gold,P.woodDark)+circle(320,193,42,'none',P.woodDark,13)+line(268,292,375,292,P.woodDark,4)+line(320,243,320,315,P.woodDark,4)+path('M268 292L254 319H285ZM375 292L361 319H390Z',P.paper,P.woodDark);
+  if(id==='relic-andean-pottery')return b+path('M225 163L356 153L419 215L385 340L300 369L216 310L239 252L204 220Z','#c09064',P.woodDark)+path('M237 209L267 185L297 209L327 185L358 210L389 191M233 292L270 267L308 295L346 268L389 293','none',P.paper,'stroke-width="9"')+path('M298 161L283 224L310 256L295 363','none',P.woodDark,'stroke-width="4"');
+  if(id==='relic-timor-tool')return b+circle(320,245,110,'none',P.gold,18)+circle(320,245,83,'none',P.woodDark,3)+path('M246 316L394 174','none',P.woodDark,'stroke-width="9"')+line(320,134,320,356,P.gold,7)+line(208,245,432,245,P.gold,7)+circle(320,245,12,P.paper,P.woodDark)+circle(320,109,20,'none',P.gold,9);
+  if(id==='relic-micronesia-marker')return b+path('M175 337Q235 299 264 191Q304 167 335 205Q364 300 448 340L404 365L329 294L253 366Z',P.woodLight,P.woodDark)+path('M266 203Q328 166 382 222Q414 264 383 306Q347 330 308 301Q276 277 298 247Q320 224 342 247Q352 268 331 277','none','#d4bd8a','stroke-width="12"')+circle(422,340,29,P.paper,P.woodDark)+path('M410 326L432 349M431 326L410 348','none',P.ink,'stroke-width="4"');
+  if(id==='ruin-sganggwaay'){
+    b+=path('M0 310Q300 231 640 307V480H0Z','#8ca58a','none')+path('M158 281L290 219L430 282V366H158Z',P.wood,P.woodDark)+path('M139 282L290 206L450 282Z','#6f806b',P.woodDark)+rect(267,302,47,64,P.woodDark,P.woodDark);
+    for(const [x,h]of [[115,160],[466,200],[514,133]])b+=rect(x,355-h,22,h,'#b49772',P.woodDark,4)+line(x+4,365-h,x+17,365-h,P.woodDark,3);
+    return b;
+  }
+  if(id==='ruin-fortjesus')return b+blockWall(138,223,358,132,'#cfb98d')+blockWall(98,204,88,155,'#c8ac7f')+blockWall(452,195,83,162,'#c8ac7f')+path('M98 204L141 176L186 204M452 195L495 166L535 195',P.sand,P.woodDark)+arch(282,268,65,87)+path('M87 377L185 353L449 354L554 376L521 402H118Z','#b9ab87',P.woodDark);
+  return null;
+}
 export function discoverySvg(id){
   if(!DISCOVERY_ART_IDS.includes(id))return svg('discovery-unknown','아직 발견하지 않은 항목',setting('discovery-unknown')+circle(320,244,110,'#e4e7d8','#99ad9e',2)+`<text x="320" y="286" text-anchor="middle" font-family="Georgia,serif" font-size="130" fill="#799389">?</text>`);
-  const body=id.startsWith('ruin-')?ruinScene(id):id.startsWith('relic-')?relicScene(id):id.startsWith('animal-')?animalScene(id):treasureScene(id);
+  const body=expandedDiscoveryScene(id)||(id.startsWith('ruin-')?ruinScene(id):id.startsWith('relic-')?relicScene(id):id.startsWith('animal-')?animalScene(id):treasureScene(id));
   return svg(id,DISCOVERY_TITLES[id]+' · 바람의 항로 수집 그림',body);
 }

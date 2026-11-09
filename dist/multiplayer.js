@@ -1,6 +1,7 @@
-import {REAL_WORLD_ROOT} from './account.js';
-import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js';
-import {CaptainRoster} from './captains.js?v=20261106-rankings';
+import {mapDistance} from './world-wrap.js?v=2026.11.09-frontiers';
+import {REAL_WORLD_ROOT} from './account.js?v=2026.11.09-frontiers';
+import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.09-frontiers';
+import {CaptainRoster} from './captains.js?v=2026.11.09-frontiers';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{
@@ -46,6 +47,7 @@ export class FleetPresence{
       }
       try{
         await sdk.onDisconnect(this.selfRef).remove();
+        if(this.readStats?.())await sdk.onDisconnect(sdk.ref(this.db,`${this.root}/rankings/${this.uid}`)).update({lastSeenAt:sdk.serverTimestamp(),updatedAt:sdk.serverTimestamp()});
         await this.roster.prepareDisconnect();
         if(generation!==this.generation)return;
         this.connected=true;
@@ -56,15 +58,15 @@ export class FleetPresence{
         if(generation===this.generation)this.fail('permission');
       }
     });
-    this.timer=setInterval(()=>{this.send();this.onChange();},1500);
+    this.timer=setInterval(()=>{this.send();this.onChange();},500);
   }
   async publishSummary(){
     if(!this.connected||!this.active||!this.readStats)return;
     if(this.summaryPromise){await this.summaryPromise;if(this.connected&&this.active)return this.publishSummary();return;}
     const stats=this.readStats();if(!stats)return;
-    const signature=JSON.stringify({...stats,saveRevision:0});if(signature===this.lastRank)return;
+    const signature=JSON.stringify({...stats,saveRevision:0});if(signature===this.lastRank&&Date.now()-(this.lastSeenSent||0)<30000)return;
     const sdk=this.sdk,ref=sdk.ref(this.db,`${this.root}/rankings/${this.uid}`);
-    this.summaryPromise=sdk.runTransaction(ref,current=>{if(current?.statsVersion===3&&(current.saveRevision||0)>stats.saveRevision)return;return {...stats,name:this.name,updatedAt:sdk.serverTimestamp()};},{applyLocally:false}).then(result=>{if(result.committed)this.lastRank=signature;}).catch(()=>{}).finally(()=>this.summaryPromise=null);
+    this.summaryPromise=sdk.runTransaction(ref,current=>{if(current?.statsVersion===3&&(current.saveRevision||0)>stats.saveRevision)return;return {...stats,name:this.name,updatedAt:sdk.serverTimestamp(),lastSeenAt:sdk.serverTimestamp()};},{applyLocally:false}).then(result=>{if(result.committed){this.lastRank=signature;this.lastSeenSent=Date.now();}}).catch(()=>{}).finally(()=>this.summaryPromise=null);
     return this.summaryPromise;
   }
   watchSectors(){
@@ -79,11 +81,11 @@ export class FleetPresence{
   }
   mergeSectors(){
     const now=Date.now(),ships=new Map();for(const watch of this.sectorWatches.values())for(const [id,ship]of watch.ships)ships.set(id,ship);
-    for(const [id,ship]of ships){const old=this.peers.get(id);if(old?.to.updatedAt===ship.updatedAt)continue;this.peers.set(id,{from:old?this.at(old,now):ship,to:ship,received:now});}
+    for(const [id,ship]of ships){const old=this.peers.get(id);if(old?.to.updatedAt===ship.updatedAt)continue;const wake=[...(old?.wake||[])],point=[ship.lon,ship.lat];if(!wake.length||mapDistance(wake.at(-1),point)>1)wake.push(point);if(wake.length>80)wake.shift();this.peers.set(id,{from:old?this.at(old,now):ship,to:ship,received:now,wake});}
     for(const id of this.peers.keys())if(!ships.has(id))this.peers.delete(id);this.onChange();
   }
-  at(peer,now){return interpolateShip(peer.from,peer.to,(now-peer.received)/1500);}
-  captains(now=Date.now()){return [...this.peers.entries()].filter(([,p])=>validShip(p.to,now)).map(([id,p])=>({id,...this.at(p,now)}));}
+  at(peer,now){return interpolateShip(peer.from,peer.to,(now-peer.received)/2000);}
+  captains(now=Date.now()){return [...this.peers.entries()].filter(([,p])=>validShip(p.to,now)).map(([id,p])=>({id,...this.at(p,now),wake:p.wake}));}
   onlineCaptains(now=Date.now()){
     const players=this.roster?.list(now)||[];
     const others=players.filter(p=>p.uid!==this.uid);return [{uid:this.uid,name:this.name,color:this.color,status:this.readShip().status},...others];
@@ -93,8 +95,8 @@ export class FleetPresence{
     if(!this.active||!this.connected||this.sendPromise)return;
     const ship=this.readShip();
     const signature=JSON.stringify([this.name,...ship.position.map(n=>Number(n.toFixed(4))),
-      Math.round(ship.angle),ship.status,ship.shipTier,ship.fleetCount]);
-    if(!force&&signature===this.lastSignature&&Date.now()-this.lastSent<30000)return;
+      Math.round(ship.angle),ship.status,ship.shipTier,ship.fleetCount,ship.fleetTiers]);
+    if(!force&&(Date.now()-this.lastSent<2000||(signature===this.lastSignature&&Date.now()-this.lastSent<30000)))return;
     this.sendPromise=this.publish(ship,signature,force).finally(()=>{this.sendPromise=null;});
     return this.sendPromise;
   }
@@ -115,7 +117,7 @@ export class FleetPresence{
       const updatedAt=sdk.serverTimestamp();
       await sdk.set(this.selfRef,{name:this.name,uid:this.uid,updatedAt,
         lon:Number(ship.position[0].toFixed(5)),lat:Number(ship.position[1].toFixed(5)),
-        angle:Math.round(ship.angle)%360,color:this.color,status:ship.status,shipTier:ship.shipTier??0,fleetCount:ship.fleetCount??1});
+        angle:Math.round(ship.angle)%360,color:this.color,status:ship.status,shipTier:ship.shipTier??0,fleetCount:ship.fleetCount??1,...(ship.fleetTiers?{fleetTiers:ship.fleetTiers}:{})});
       if(!this.active)return;
       await this.publishSummary();
       await this.roster.publish(ship,force);
