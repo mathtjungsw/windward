@@ -717,7 +717,7 @@ function tick(now){
    if(result.interrupted){stopForUI();paused=true;renderHUD();sailingClock.reset(now);break;}if(result.arrived){arrive();sailingClock.reset(now);break;}if(result.depleted){launchRescue();sailingClock.reset(now);break;}
   }else{stepManual(delta,false);if(state.port||state.voyage||modal.open||!manualActive&&!heldKeys.size&&!manualTarget){sailingClock.reset(now);break;}}
  }
- if(before[0]!==state.position[0]||before[1]!==state.position[1]){if(followShip){followPosition();applyCamera();}else renderShip();if(now-lastHud>150){renderHUD();lastHud=now;}if(now-lastSave>1500){save();lastSave=now;}}
+ if(before[0]!==state.position[0]||before[1]!==state.position[1]){if(followShip){followPosition();applyCamera();}else renderShip();if(now-lastHud>150){renderHUD();lastHud=now;}if(now-lastSave>(mode==='auto'?1800:1500)){save();lastSave=now;}}
  if(playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!state.port&&!state.voyage&&!state.transitionPending&&state.food<=1e-8&&!modal.open&&!ux?.isBlocking())launchRescue();
  if(now-peerDrawTime>80&&fleet.peers.size){renderPeers();renderMinimap();peerDrawTime=now;}
  frame=requestAnimationFrame(tick);
