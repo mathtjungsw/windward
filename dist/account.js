@@ -1,10 +1,10 @@
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.10-session-fix';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.10-session-fix';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.10-session-fix';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.10-session-fix';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.10-session-fix';
-import {applyRaftStart} from './raft-start.js?v=2026.11.10-session-fix';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.10-session-fix';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.10-performance';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.10-performance';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.10-performance';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.10-performance';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.10-performance';
+import {applyRaftStart} from './raft-start.js?v=2026.11.10-performance';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.10-performance';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';

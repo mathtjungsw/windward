@@ -1,9 +1,9 @@
-import {watchSectorPages} from './sector-pages.js?v=2026.11.10-session-fix';
-import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.10-session-fix';
-import {mapDistance} from './world-wrap.js?v=2026.11.10-session-fix';
-import {REAL_WORLD_ROOT} from './account.js?v=2026.11.10-session-fix';
-import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.10-session-fix';
-import {CaptainRoster} from './captains.js?v=2026.11.10-session-fix';
+import {watchSectorPages} from './sector-pages.js?v=2026.11.10-performance';
+import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.10-performance';
+import {mapDistance} from './world-wrap.js?v=2026.11.10-performance';
+import {REAL_WORLD_ROOT} from './account.js?v=2026.11.10-performance';
+import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.10-performance';
+import {CaptainRoster} from './captains.js?v=2026.11.10-performance';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{

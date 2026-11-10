@@ -18,7 +18,7 @@ window.HTMLElement.prototype.scrollIntoView=()=>{};window.Element.prototype.getB
 globalThis.fetch=async url=>({ok:true,json:async()=>JSON.parse(await readFile(new URL('../dist/'+url.split('?')[0],import.meta.url),'utf8'))});
 await mkdir(new URL('../.qa/',import.meta.url),{recursive:true});
 let code=await readFile(new URL('../dist/app.js',import.meta.url),'utf8');code=code.replaceAll("from './","from '../dist/").replace('renderFleetStatus();showEntry();','renderFleetStatus();');
-code+='\nexport {state,beginPlaying,nav,renderHUD,renderPanel,expansion,business,combat,community,account,globe,fleet,rankings,selectPort,setControlMode,planDestination,startVoyage,stopForUI,heldKeys,heldPointers,heldKeyboard};\n';
+code+='\nexport {tick,sailingClock,renderPeers,renderMinimap,state,beginPlaying,nav,renderHUD,renderPanel,expansion,business,combat,community,account,globe,fleet,rankings,selectPort,setControlMode,planDestination,startVoyage,stopForUI,heldKeys,heldPointers,heldKeyboard};\n';
 await writeFile(new URL('../.qa/app-ui-unit.mjs',import.meta.url),code);
 for(const name of ['style.css','upgrade.css','ux.css','expedition.css']){const style=document.createElement('style');style.textContent=(await readFile(new URL('../dist/'+name,import.meta.url),'utf8')).replace(/@import[^;]*;/g,'');document.head.append(style);}
 const app=await import('../.qa/app-ui-unit.mjs');
@@ -52,4 +52,32 @@ test('cargo sale finder is reachable on desktop and mobile and labels the search
  globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('/markets/wine.json')?{pressure:1000,at:Date.now()}:null});
  try{app.renderPanel();assert.ok($('[data-sale-search=wine]'));$('#cargo-price-search').click();assert.match($('#modal-content').textContent,/지금 검색한 시점/);assert.match($('#modal-content').textContent,/실제 판매할 때 달라질/);assert.equal(document.querySelectorAll('.sale-search-row').length,0,'opening the form does not start a search');$('#sale-search-known').checked=true;$('#sale-search-form').requestSubmit();for(let i=0;i<60&&!$('.sale-search-timestamp');i++)await wait();assert.match($('.sale-search-timestamp').textContent,/한국 시간/);assert.equal(document.querySelectorAll('.sale-search-row').length,3);assert.match($('#sale-search-results').textContent,/10상자 수령/);$('#close-modal').click();$('#quick-more').click();assert.ok($('[data-menu=saleSearch]'));$('#quick-close').click();
  }finally{Object.assign(a,old);globalThis.fetch=originalFetch;app.state.cargo={};$('#modal').close();}
+});
+
+test('stationary and moving peers reuse SVG nodes and removed peers are cleaned up',()=>{
+ const old=app.fleet.peers,now=Date.now(),boat={uid:'cache-peer',name:'정박 선장',lon:-9.14,lat:38.72,angle:0,color:0,status:'정박',persistent:true,offline:true,updatedAt:now,shipTier:9,fleetCount:1};app.fleet.peers=new Map([['cache-peer',{from:boat,to:boat,received:now}]]);app.renderPeers();const node=$('[data-peer="cache-peer"]'),hull=node.querySelector('g');assert.ok(node);for(let i=0;i<20;i++)app.renderPeers();assert.equal($('[data-peer="cache-peer"]'),node);assert.equal(node.querySelector('g'),hull);const next={...boat,lon:-9.1,status:'항해',angle:90};app.fleet.peers.set('cache-peer',{from:next,to:next,received:now});app.renderPeers();assert.equal($('[data-peer="cache-peer"]'),node);assert.equal(node.querySelector('g'),hull);app.fleet.peers.clear();app.renderPeers();assert.equal($('[data-peer="cache-peer"]'),null);app.fleet.peers=old;
+});
+test('both minimaps reuse pixel backgrounds, invalidate on exploration, and stop when folded or off screen',()=>{
+ const globe=app.globe,canvas=$('#minimap'),card=canvas.closest('.minimap-card');for(const mode of ['globe','flat']){globe.setMode(mode);globe.draw(true);const before=globe.backgroundBuilds;for(let i=0;i<20;i++)globe.draw(true);assert.equal(globe.backgroundBuilds,before);globe.peers=[{uid:'p',lon:0,lat:0,fill:'#fff'}];globe.draw(true);assert.equal(globe.backgroundBuilds,before);globe.exploration.revision++;globe.draw(true);assert.equal(globe.backgroundBuilds,before+1);card.classList.add('is-collapsed');globe.exploration.revision++;globe.draw(true);assert.equal(globe.backgroundBuilds,before+1);card.classList.remove('is-collapsed');const rect=canvas.getBoundingClientRect;canvas.getBoundingClientRect=()=>({width:240,height:240,top:innerHeight+10,bottom:innerHeight+250,left:0,right:240});globe.draw(true);assert.equal(globe.backgroundBuilds,before+1);canvas.getBoundingClientRect=rect;globe.draw(true);assert.equal(globe.backgroundBuilds,before+2);}globe.peers=[];
+});
+
+test('application tick keeps automatic and manual sailing consistent at low FPS, and pauses while hidden',async()=>{
+ const oldReserve=app.combat.hasReserve,oldBlocked=app.combat.blocked;
+ app.combat.hasReserve=()=>true;app.combat.blocked=()=>false;
+ try{
+  for(const mode of ['auto','manual']){
+   const results=[];
+   for(const interval of [20,200,500]){
+    app.beginPlaying(initialState());$('#modal').close();app.stopForUI();
+    if(mode==='auto'){app.planDestination('porto',[-8.61,41.15],false);await app.startVoyage();}
+    else{app.state.controlMode='manual';app.heldKeys.add('ArrowLeft');}
+    app.sailingClock.reset(0);app.tick(0);
+    for(let t=interval;t<=1000;t+=interval)app.tick(t);
+    results.push({point:[...app.state.position],day:app.state.day,food:app.state.food});
+   }
+   for(const r of results){for(let i=0;i<2;i++)assert.ok(Math.abs(r.point[i]-results[0].point[i])<.0005,mode+' position differs by more than 0.03 nautical miles');assert.ok(Math.abs(r.day-results[0].day)<1e-7);assert.ok(Math.abs(r.food-results[0].food)<1e-7);}
+  }
+  app.beginPlaying(initialState());$('#modal').close();app.planDestination('porto',[-8.61,41.15],false);await app.startVoyage();app.sailingClock.reset(0);app.tick(0);app.tick(200);const point=[...app.state.position];
+  Object.defineProperty(document,'hidden',{value:true,configurable:true});app.tick(10000);assert.deepEqual(app.state.position,point);Object.defineProperty(document,'hidden',{value:false,configurable:true});app.tick(11000);assert.deepEqual(app.state.position,point);app.tick(11200);assert.notDeepEqual(app.state.position,point);
+ }finally{delete document.hidden;app.combat.hasReserve=oldReserve;app.combat.blocked=oldBlocked;app.stopForUI();app.beginPlaying(initialState());$('#modal').close();}
 });

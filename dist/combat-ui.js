@@ -1,10 +1,10 @@
-import {createOfflineCombat} from './offline-combat.js?v=2026.11.10-session-fix';
-import {createMapCombat} from './combat-map.js?v=2026.11.10-session-fix';
-import {fleetMaxHP} from './ship-rules.js?v=2026.11.10-session-fix';
-import {combatProfile,combatEligible,reserveLoss,returnReserve,openBattle,fireCannon,finishExpired,claimBattle,fireAtPirate,defeatNPC,npcSlotChanges,PIRATE_ZONES,cargoCount,addCargo} from './combat-core.js?v=2026.11.10-session-fix';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.10-session-fix';
-import {usedSpace,capacity} from './engine.js?v=2026.11.10-session-fix';
-import {mapDistance} from './world-wrap.js?v=2026.11.10-session-fix';
+import {createOfflineCombat} from './offline-combat.js?v=2026.11.10-performance';
+import {createMapCombat} from './combat-map.js?v=2026.11.10-performance';
+import {fleetMaxHP} from './ship-rules.js?v=2026.11.10-performance';
+import {combatProfile,combatEligible,reserveLoss,returnReserve,openBattle,fireCannon,finishExpired,claimBattle,fireAtPirate,defeatNPC,npcSlotChanges,PIRATE_ZONES,cargoCount,addCargo} from './combat-core.js?v=2026.11.10-performance';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.10-performance';
+import {usedSpace,capacity} from './engine.js?v=2026.11.10-performance';
+import {mapDistance} from './world-wrap.js?v=2026.11.10-performance';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const roll=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
 export function createCombat(api){

@@ -1,31 +1,32 @@
-import {createSaleFinder} from './sale-finder.js?v=2026.11.10-session-fix';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.10-session-fix';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.10-session-fix';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.10-session-fix';
-import {createCommunity} from './community.js?v=2026.11.10-session-fix';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.10-session-fix';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.10-session-fix';
-import {createCombat} from './combat-ui.js?v=2026.11.10-session-fix';
-import {createBusiness} from './business-ui.js?v=2026.11.10-session-fix';
-import {createExpansion} from './expansion-ui.js?v=2026.11.10-session-fix';
-import {gameStats} from './public-stats.js?v=2026.11.10-session-fix';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.10-session-fix';
-import {shipGlyph} from './art.js?v=2026.11.10-session-fix';
-import {inspectDiscovery,explorationAllowed} from './discoveries.js?v=2026.11.10-session-fix';
-import {RELEASE} from './release-notes.js?v=2026.11.10-session-fix';
-import {createUX} from './ux.js?v=2026.11.10-session-fix';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.10-session-fix';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.10-session-fix';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.10-session-fix';
-import {AtlasView} from './atlas-view.js?v=2026.11.10-session-fix';
-import {FleetPresence} from './multiplayer.js?v=2026.11.10-session-fix';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.10-session-fix';
-import {CaptainChat} from './chat.js?v=2026.11.10-session-fix';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.10-session-fix';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,INFO_PRICE,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor} from './voyage-core.js?v=2026.11.10-session-fix';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.10-session-fix';
-import {CaptainRankings} from './rankings.js?v=2026.11.10-session-fix';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.10-session-fix';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.10-performance';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.10-performance';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.10-performance';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.10-performance';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.10-performance';
+import {createCommunity} from './community.js?v=2026.11.10-performance';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.10-performance';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.10-performance';
+import {createCombat} from './combat-ui.js?v=2026.11.10-performance';
+import {createBusiness} from './business-ui.js?v=2026.11.10-performance';
+import {createExpansion} from './expansion-ui.js?v=2026.11.10-performance';
+import {gameStats} from './public-stats.js?v=2026.11.10-performance';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.10-performance';
+import {shipGlyph} from './art.js?v=2026.11.10-performance';
+import {inspectDiscovery,explorationAllowed} from './discoveries.js?v=2026.11.10-performance';
+import {RELEASE} from './release-notes.js?v=2026.11.10-performance';
+import {createUX} from './ux.js?v=2026.11.10-performance';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.10-performance';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.10-performance';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.10-performance';
+import {AtlasView} from './atlas-view.js?v=2026.11.10-performance';
+import {FleetPresence} from './multiplayer.js?v=2026.11.10-performance';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.10-performance';
+import {CaptainChat} from './chat.js?v=2026.11.10-performance';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.10-performance';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,INFO_PRICE,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor} from './voyage-core.js?v=2026.11.10-performance';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.10-performance';
+import {CaptainRankings} from './rankings.js?v=2026.11.10-performance';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.10-performance';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -34,6 +35,7 @@ const icon=(name,cls='')=>`<svg class="${cls}" aria-hidden="true"><use href="#i-
 let storage;try{storage=localStorage;}catch{storage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};}
 let ux,expansion,business,combat,community,saleFinder,committedStats=null;
 let modalFocus=null,manualTrail=[];
+const sailingClock=new SimulationClock();
 let state=initialState(),selected='lisbon',planned=null,nav=null,paused=false,sound=false,audio=null,activeTab='trade',mapReady=false,followShip=false;
 let exploration=new Exploration(state.explored),playing=false,sessionBlocked=false,lastFogAt=0;
 exploration.seed(state);
@@ -48,7 +50,7 @@ try{sessionStorage.setItem('windward-v3-tab',account.session);}catch{}
 account.applyGame=game=>{for(const k of Object.keys(state))delete state[k];Object.assign(state,game);};
 account.readGame=()=>{state.explored=exploration.encode();return state;};
 account.onDefense=()=>{stopForUI();paused=!!state.voyage;combat?.renderMap();};
-account.onBusy=value=>{document.querySelectorAll('.topbar,.statusbar,.game-layout,.bottom-bar,#modal,#quick-sheet').forEach(el=>el.inert=value||(account.economicUncertain&&!el.matches('#modal')));document.body.classList.toggle('economic-busy',value);};
+account.onBusy=value=>{sailingClock.reset(performance.now());document.querySelectorAll('.topbar,.statusbar,.game-layout,.bottom-bar,#modal,#quick-sheet').forEach(el=>el.inert=value||(account.economicUncertain&&!el.matches('#modal')));document.body.classList.toggle('economic-busy',value);};
 account.onStatus=text=>{$('#save-status').textContent=text;};
 account.onUncertain=()=>{sessionBlocked=true;paused=true;stopForUI();fleet.stop();showModal('거래 결과를 확인해야 해요','항해 기록 보호','<p>서버 응답을 확인하지 못해 항해와 저장을 멈췄어요. 요청 기록을 보관했습니다. 새로고침하면 서버에 확정된 기록으로 이어집니다.</p><button id="reload-economic" class="primary-button">새로고침해 결과 확인</button>','small');$('#reload-economic').onclick=()=>location.reload();};
 account.onConflict=()=>{sessionBlocked=true;paused=true;heldKeys.clear();manualActive=false;fleet.stop();showModal('항해 기록이 갱신됐어요','항해 기록 보호','<p>다른 화면이나 서버에서 기록이 변경되어 이 화면의 항해와 저장을 멈췄어요. 이 기기 기록은 보존했습니다. 새로고침하면 최신 기록과 전환 보상을 확인할 수 있어요.</p>');};
@@ -121,6 +123,7 @@ function showAccount(){
 }
 function showPatchNotes(){ux?.patchNotes(false);}
 function beginPlaying(game){
+  sailingClock.reset(performance.now());
   manualTrail=[];state=game;if(state.port&&ACTIVE_PORT_BY_ID[state.port])state.legacyHarbor=false;exploration=new Exploration(state.explored);exploration.seed(state);selected=state.port||state.voyage?.target||'lisbon';planned=null;paused=!!game.offlinePaused&&!!game.voyage;delete game.offlinePaused;playing=true;sessionBlocked=false;lastPanelPort=null;manualActive=false;manualTarget=null;manualChannel=null;departedPort=null;heldKeys.clear();
   $('#entry-screen')?.remove();$$('.topbar,.statusbar,.game-layout,.bottom-bar').forEach(el=>el.inert=false);setTab('trade');checkMissions();renderHUD();renderPanel();renderPorts();renderRoutes();renderShip();renderFog(true);centerShip();save();ux?.loadPreferences();if(state.offlineRescuePending){delete state.offlineRescuePending;launchRescue(false,true);}else if(state.rescueReplanPending)launchRescue(state.voyage?.kind==='transition');else showPatchNotes();if(state.transitionPending)ux?.migration();
 }
@@ -286,16 +289,21 @@ function showFleet(){
     '<p>함께 항해 중인 선장들의 이름을 보여줘요. 지도와 지구본에서는 내 시야 180해리 안의 배를 볼 수 있어요.</p><p id="fleet-online-count" role="status"></p><div id="fleet-live-list" role="list" aria-label="전체 접속 선장"></div>');
   renderFleetList();
 }
-function renderPirates(){const root=$('#npc-markers');if(!root||!playing)return;root.replaceChildren();const now=Date.now()+(account.serverOffset||0);for(const z of PIRATE_ZONES){if(mapDistance(state.position,z.point)>SIGHT_NM||now<(state.pirateRespawns?.[z.id]||0))continue;const p=project(z.point),g=svgEl('g',{class:'fleet-ship',transform:`translate(${p[0]},${p[1]}) scale(${.85/screen.k})`});g.innerHTML=shipGlyph([5,10,16][z.tier],'#9b4a4d');const label=svgEl('text',{x:0,y:-28,'text-anchor':'middle'});label.textContent='☠ '+z.name;g.append(label);g.onclick=e=>{e.stopPropagation();combat?.showPirate(z.id);};root.append(g);}}
+let piratePaintKey='',peerNodes=new Map();
+const setSvg=(node,key,value)=>{const text=String(value);if(node.getAttribute(key)!==text)node.setAttribute(key,text);};
+function renderPirates(){const root=$('#npc-markers');if(!root||!playing)return;const now=Date.now()+(account.serverOffset||0),zones=PIRATE_ZONES.filter(z=>mapDistance(state.position,z.point)<=SIGHT_NM&&now>=(state.pirateRespawns?.[z.id]||0)),key=zones.map(z=>z.id).join('|')+':'+screen.k;if(key===piratePaintKey)return;piratePaintKey=key;root.replaceChildren();for(const z of zones){const p=project(z.point),g=svgEl('g',{class:'fleet-ship',transform:`translate(${p[0]},${p[1]}) scale(${.85/screen.k})`});g.innerHTML=shipGlyph([5,10,16][z.tier],'#9b4a4d');const label=svgEl('text',{x:0,y:-28,'text-anchor':'middle'});label.textContent='☠ '+z.name;g.append(label);g.onclick=e=>{e.stopPropagation();combat?.showPirate(z.id);};root.append(g);}}
 function renderPeers(){
-  if(!mapReady)return;renderPirates();const root=$('#fleet-markers');root.replaceChildren();
-  visibleShips().forEach((ship,i)=>{let [x,y]=project([ship.lon,ship.lat]);if(ship.status==='정박'){x+=(-35+(i%3)*25)/screen.k;y+=(-34-Math.floor(i/3)*20)/screen.k;}
-    if(ship.status!=='정박')for(const tail of wakeFollowers([...(ship.wake||[]),[ship.lon,ship.lat]],ship.fleetCount||1)){if(mapDistance(state.position,tail.point)>SIGHT_NM||nav?.isLand(tail.point))continue;const p=project(tail.point),q=project(tail.ahead);let dx=q[0]-p[0],dy=q[1]-p[1];if(Math.abs(dx)>800)dx-=Math.sign(dx)*1600;if(Math.abs(dy)>400)dy-=Math.sign(dy)*800;const t=svgEl('g',{transform:`translate(${p[0]},${p[1]}) scale(${.62/screen.k}) rotate(${Math.atan2(dy,dx)*180/Math.PI+90})`});t.innerHTML=shipGlyph(ship.fleetTiers?.[tail.index]??ship.shipTier??0,PRESENCE_COLORS[ship.color]);root.append(t);}
-    const g=svgEl('g',{class:'fleet-ship',transform:`translate(${x},${y}) scale(${1/screen.k})`,'data-peer':ship.id});
-    const hull=svgEl('g');hull.innerHTML=shipGlyph(ship.shipTier??0,PRESENCE_COLORS[ship.color]);hull.setAttribute('transform',`rotate(${ship.angle})`);
-    const arrow=svgEl('path',{d:'M0-20V-29m-4 5 4-5 4 5',stroke:PRESENCE_COLORS[ship.color],'stroke-width':2,transform:`rotate(${ship.angle})`});g.append(arrow);
-    const text=svgEl('text',{x:0,y:-23,'text-anchor':'middle'});text.textContent=ship.name+(ship.offline?' · 오프라인':'')+((ship.fleetCount||1)>1?' · '+ship.fleetCount+'척':'');const title=svgEl('title');title.textContent=`${ship.name} · ${ship.status}`;g.style.pointerEvents='visiblePainted';g.onclick=e=>{e.stopPropagation();if(!dragged)ux?.signal(ship);};g.append(hull,text,title);root.append(g);
-  });
+ if(!mapReady)return;renderPirates();const root=$('#fleet-markers'),live=new Set();
+ visibleShips().forEach((ship,i)=>{
+  const id=ship.id||ship.uid,key=JSON.stringify([ship.shipTier,ship.fleetCount,ship.fleetTiers,ship.color,ship.name,ship.offline]);live.add(id);let item=peerNodes.get(id);
+  if(!item||item.key!==key||item.group.parentNode!==root){item?.group.remove();const group=svgEl('g'),tails=svgEl('g'),g=svgEl('g',{class:'fleet-ship','data-peer':id}),hull=svgEl('g'),arrow=svgEl('path',{d:'M0-20V-29m-4 5 4-5 4 5',stroke:PRESENCE_COLORS[ship.color],'stroke-width':2}),text=svgEl('text',{x:0,y:-23,'text-anchor':'middle'}),title=svgEl('title');hull.innerHTML=shipGlyph(ship.shipTier??0,PRESENCE_COLORS[ship.color]);text.textContent=ship.name+(ship.offline?' · 오프라인':'')+((ship.fleetCount||1)>1?' · '+ship.fleetCount+'척':'');g.style.pointerEvents='visiblePainted';g.append(arrow,hull,text,title);group.append(tails,g);root.append(group);item={key,group,tails,g,hull,arrow,title,ship,tailNodes:[]};g.onclick=e=>{e.stopPropagation();if(!dragged)ux?.signal(item.ship);};peerNodes.set(id,item);}
+  item.ship=ship;let [x,y]=project([ship.lon,ship.lat]);if(ship.status==='정박'){x+=(-35+(i%3)*25)/screen.k;y+=(-34-Math.floor(i/3)*20)/screen.k;}
+  setSvg(item.g,'transform',`translate(${x},${y}) scale(${1/screen.k})`);setSvg(item.hull,'transform',`rotate(${ship.angle})`);setSvg(item.arrow,'transform',`rotate(${ship.angle})`);const title=`${ship.name} · ${ship.status}`;if(item.title.textContent!==title)item.title.textContent=title;
+  const tails=ship.status==='정박'?[]:wakeFollowers([...(ship.wake||[]),[ship.lon,ship.lat]],ship.fleetCount||1).filter(t=>mapDistance(state.position,t.point)<=SIGHT_NM&&!nav?.isLand(t.point));
+  for(const [index,tail]of tails.entries()){let t=item.tailNodes[index];if(!t){t=svgEl('g');t.innerHTML=shipGlyph(ship.fleetTiers?.[tail.index]??ship.shipTier??0,PRESENCE_COLORS[ship.color]);item.tails.append(t);item.tailNodes.push(t);}const tier=ship.fleetTiers?.[tail.index]??ship.shipTier??0;if(t.dataset.tier!==String(tier)){t.innerHTML=shipGlyph(tier,PRESENCE_COLORS[ship.color]);t.dataset.tier=tier;}const p=project(tail.point),q=project(tail.ahead);let dx=q[0]-p[0],dy=q[1]-p[1];if(Math.abs(dx)>800)dx-=Math.sign(dx)*1600;if(Math.abs(dy)>400)dy-=Math.sign(dy)*800;setSvg(t,'transform',`translate(${p[0]},${p[1]}) scale(${.62/screen.k}) rotate(${Math.atan2(dy,dx)*180/Math.PI+90})`);}
+  while(item.tailNodes.length>tails.length)item.tailNodes.pop().remove();
+ });
+ for(const [id,item]of peerNodes)if(!live.has(id)){item.group.remove();peerNodes.delete(id);}
 }
 
 function save(){
@@ -306,7 +314,7 @@ function save(){
 function log(text,type='info'){state.log.unshift({day:state.day,text,type});state.log=state.log.slice(0,50);$('#latest-log').textContent=text;}
 function toast(text,type=''){const div=document.createElement('div');div.className='toast '+type;div.textContent=text;$('#toast-container').append(div);setTimeout(()=>div.remove(),4300);}
 function bell(){if(!sound)return;try{audio??=new (window.AudioContext||window.webkitAudioContext)();audio.resume();const now=audio.currentTime;[523.25,659.25,783.99].forEach((freq,i)=>{const osc=audio.createOscillator(),gain=audio.createGain();osc.type='sine';osc.frequency.value=freq;gain.gain.setValueAtTime(0,now+i*.13);gain.gain.linearRampToValueAtTime(.08,now+i*.13+.015);gain.gain.exponentialRampToValueAtTime(.001,now+i*.13+.9);osc.connect(gain).connect(audio.destination);osc.start(now+i*.13);osc.stop(now+i*.13+1);});}catch{}}
-function showModal(title,eyebrow,content,size=null){if(!modal.open)modalFocus=document.activeElement;ux?.closeSheet();ux?.beforeDialog();delete modal.dataset.investigation;modal.dataset.size=size||(content.includes('atlas-grid')||content.includes('patch-history')?'wide':content.length<600?'small':'medium');$('#modal-title').textContent=title;$('#modal-eyebrow').textContent=eyebrow;$('#modal-content').innerHTML=content;if(!modal.open)modal.showModal();}
+function showModal(title,eyebrow,content,size=null){sailingClock.reset(performance.now());if(!modal.open)modalFocus=document.activeElement;ux?.closeSheet();ux?.beforeDialog();delete modal.dataset.investigation;modal.dataset.size=size||(content.includes('atlas-grid')||content.includes('patch-history')?'wide':content.length<600?'small':'medium');$('#modal-title').textContent=title;$('#modal-eyebrow').textContent=eyebrow;$('#modal-content').innerHTML=content;if(!modal.open)modal.showModal();}
 function dateText(day,short=false){const date=new Date(START_DATE+Math.floor(day)*86400000);return short?`${date.getUTCFullYear()} · ${date.getUTCMonth()+1}.${String(date.getUTCDate()).padStart(2,'0')}`:`${date.getUTCFullYear()}년 ${date.getUTCMonth()+1}월 ${date.getUTCDate()}일`;}
 function coordinates(p){return `${Math.abs(p.lat).toFixed(1)}° ${p.lat>=0?'N':'S'}  /  ${Math.abs(p.lon).toFixed(1)}° ${p.lon>=0?'E':'W'}`;}
 
@@ -642,7 +650,7 @@ function launchRescue(transition=false,damaged=false){
   log(`${result.port.name}까지 ${transition?'안전 귀환':'자동 구조'} · 실제 비용 ${fmt(result.cost)} D`);toast(`${result.port.name}로 ${result.emergency?'안전 귀환합니다':'구조 이동합니다'} · ${fmt(result.cost)} D`);if(result.arrived)arrive();else {changed();renderRoutes();centerShip();}return true;
 }
 function stopForUI(){heldKeys.clear();heldKeyboard.clear();heldPointers.clear();manualTarget=null;manualChannel=null;manualActive=false;}
-function stepManual(delta){
+function stepManual(delta,paint=true){
   if(state.transitionPending)return;
   if(!state.port){const nearby=dockAlong(nav,state.position,state.position,portApproaches,departedPort);if(nearby){arrive(nearby.id);return;}}
   const east=Number(heldKeys.has('ArrowRight'))-Number(heldKeys.has('ArrowLeft')),north=Number(heldKeys.has('ArrowUp'))-Number(heldKeys.has('ArrowDown'));
@@ -656,7 +664,7 @@ function stepManual(delta){
   if(manualChannel)manualChannel.travelled=Math.min(manualChannel.total,manualChannel.travelled+actual.miles);
   const a=project(previous),b=project(rawNext);let dx=b[0]-a[0];if(dx>800)dx-=1600;if(dx<-800)dx+=1600;manualAngle=Math.atan2(b[1]-a[1],dx)*180/Math.PI+90;
   for(const [from,to]of actual.legs||[]){exploreMove(from,to);if(!manualTrail.length||mapDistance(manualTrail.at(-1),to)>2.5){manualTrail.push([...to]);if(manualTrail.length>60)manualTrail.shift();}}
-  if(followShip){followPosition();applyCamera();}else renderShip();
+  if(paint){if(followShip){followPosition();applyCamera();}else renderShip();}
   const dock=(actual.legs||[]).map(([from,to])=>dockAlong(nav,from,to,portApproaches,departedPort)).find(Boolean);
   if(departedPort&&leftHarbor(departedPort,state.position,portApproaches))departedPort=null;
   if(dock){arrive(dock.id);return;}if(actual.depleted){launchRescue();return;}
@@ -680,7 +688,7 @@ $('#mobile-port-btn').onclick=()=>$('#port-panel').scrollIntoView({behavior:'smo
 $('#help-btn').onclick=showHelp;$('#journal-btn').onclick=showJournal;$('#atlas-btn').onclick=showAtlas;
 $('#map-tab').onclick=()=>{modal.close();$('.chart').scrollIntoView({behavior:'smooth'});};
 modal.addEventListener('close',()=>{stopForUI();if(modalFocus?.isConnected)modalFocus.focus({preventScroll:true});});$('#close-modal').onclick=()=>account.economicUncertain?location.reload():modal.close();modal.addEventListener('cancel',e=>{if(account.economicUncertain)e.preventDefault();});modal.addEventListener('click',e=>{if(e.target===modal&&!account.economicUncertain){const rect=modal.getBoundingClientRect();if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)modal.close();}});
-$('#pause-btn').onclick=()=>{paused=!paused;renderHUD();};
+$('#pause-btn').onclick=()=>{sailingClock.reset(performance.now());paused=!paused;renderHUD();};
 $('#sound-btn').onclick=()=>{sound=!sound;$('#sound-btn').innerHTML=`♬ <span>소리 ${sound?'켬':'끔'}</span>`;$('#sound-btn').setAttribute('aria-label',`항구 종소리 ${sound?'끄기':'켜기'}`);if(sound)bell();};
 document.addEventListener('keydown',e=>{
   if(!playing||sessionBlocked||e.defaultPrevented||modal.open||ux?.isBlocking()||isTypingTarget(document.activeElement)||e.isComposing||e.ctrlKey||e.metaKey||e.altKey||document.activeElement?.closest('.rank-card,.chat-panel,#entry-screen,#port-panel'))return;
@@ -690,27 +698,29 @@ document.addEventListener('keydown',e=>{
     if(combat&&!combat.hasReserve()){const code=e.code||e.key;heldKeyboard.set(code,direction);combat.prepare().then(()=>{if(heldKeyboard.has(code)&&beginManual()){heldKeys.add(direction);renderHUD();}}).catch(error=>toast(error.message,'error'));return;}
     manualTarget=null;if(beginManual()){heldKeyboard.set(e.code||e.key,direction);heldKeys.add(direction);renderHUD();}return;
   }
-  if(e.code==='Space'&&(state.voyage||manualActive)){e.preventDefault();if(e.repeat)return;if(state.controlMode==='manual')stopManual();else{paused=!paused;renderHUD();}}
+  if(e.code==='Space'&&(state.voyage||manualActive)){e.preventDefault();if(e.repeat)return;sailingClock.reset(performance.now());if(state.controlMode==='manual')stopManual();else{paused=!paused;renderHUD();}}
 });
 document.addEventListener('keyup',e=>{const key=e.code||e.key,direction=heldKeyboard.get(key);heldKeyboard.delete(key);if(direction&&![...heldKeyboard.values(),...heldPointers.values()].includes(direction))heldKeys.delete(direction);});
 document.addEventListener('focusin',e=>{if(isTypingTarget(e.target))stopForUI();});
-window.addEventListener('blur',stopForUI);
-window.addEventListener('beforeunload',save);document.addEventListener('visibilitychange',()=>{if(document.hidden){stopForUI();save();}});
+window.addEventListener('blur',()=>{stopForUI();sailingClock.reset(performance.now());});
+window.addEventListener('beforeunload',save);document.addEventListener('visibilitychange',()=>{sailingClock.reset(performance.now());if(document.hidden){stopForUI();save();}});
 new ResizeObserver(()=>{if(mapReady)resizeMap();}).observe($('.chart'));
 
-let last=performance.now(),lastHud=0,lastSave=0;
+let lastHud=0,lastSave=0;
 function tick(now){
-  const delta=Math.min((now-last)/1000,.1);last=now;
-  if(playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!combat?.blocked()&&state.voyage&&!paused&&!modal.open&&!ux?.isBlocking()&&!document.hidden){
-    const previous=[...state.position],result=advanceVoyage(state,nav,delta,(from,to)=>expansion?.intercept(from,to)??1);
-    exploreMove(previous,state.position);if(followShip){followPosition();applyCamera();}else renderShip();
-    if(result.interrupted){stopForUI();paused=true;renderHUD();}else if(result.arrived)arrive();else if(result.depleted)launchRescue();
-    if(now-lastHud>150){renderHUD();lastHud=now;}if(now-lastSave>1800){save();lastSave=now;}
-  }
-  if(playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!combat?.blocked()&&state.controlMode==='manual'&&!paused&&!modal.open&&!ux?.isBlocking()&&!document.hidden){stepManual(delta);if(now-lastHud>150){renderHUD();lastHud=now;}if(manualActive&&now-lastSave>1500){save();lastSave=now;}}
-  if(playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!state.port&&!state.voyage&&!state.transitionPending&&state.food<=1e-8&&!modal.open&&!ux?.isBlocking())launchRescue();
-  if(now-peerDrawTime>80&&fleet.peers.size){renderPeers();renderMinimap();peerDrawTime=now;}
-  frame=requestAnimationFrame(tick);
+ const allowed=playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!combat?.blocked()&&!paused&&!modal.open&&!ux?.isBlocking()&&!document.hidden;
+ const mode=allowed?(state.voyage?'auto':state.controlMode==='manual'&&(manualActive||heldKeys.size||manualTarget)?'manual':null):null;
+ const before=[...state.position];
+ for(const delta of sailingClock.steps(now,!!mode)){
+  if(mode==='auto'){
+   if(!state.voyage)break;const previous=[...state.position],result=advanceVoyage(state,nav,delta,(from,to)=>expansion?.intercept(from,to)??1);exploreMove(previous,state.position);
+   if(result.interrupted){stopForUI();paused=true;renderHUD();sailingClock.reset(now);break;}if(result.arrived){arrive();sailingClock.reset(now);break;}if(result.depleted){launchRescue();sailingClock.reset(now);break;}
+  }else{stepManual(delta,false);if(state.port||state.voyage||modal.open||!manualActive&&!heldKeys.size&&!manualTarget){sailingClock.reset(now);break;}}
+ }
+ if(before[0]!==state.position[0]||before[1]!==state.position[1]){if(followShip){followPosition();applyCamera();}else renderShip();if(now-lastHud>150){renderHUD();lastHud=now;}if(now-lastSave>1500){save();lastSave=now;}}
+ if(playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!state.port&&!state.voyage&&!state.transitionPending&&state.food<=1e-8&&!modal.open&&!ux?.isBlocking())launchRescue();
+ if(now-peerDrawTime>80&&fleet.peers.size){renderPeers();renderMinimap();peerDrawTime=now;}
+ frame=requestAnimationFrame(tick);
 }
 
 setupInterface();ux=createUX({getState:()=>state,getAccount:()=>account,getNav:()=>nav,getSelection:()=>selected,getPlan:()=>planned,getFleet:()=>fleet,getVisibleShips:visibleShips,getChat:()=>chat,storage,onTrade:(mode,id)=>business?.trade(mode,id),onStop:stopForUI,onHome:centerShip,onSelect:selectPort,onPlan:planDestination,onSail:startVoyage,onManual:startManual,onMode:setControlMode,onSave:changed,onPanel:renderPanel,onModal:showModal,onClose:()=>modal.close(),onToast:toast,onRescue:launchRescue,onTab:setTab,onChat:toggleChat,onMapLabels:renderChartLabels,onRankVisibility:visible=>rankings.setVisible(visible),onAtlas:showAtlas,onJournal:showJournal,onHelp:showHelp,onShip:()=>expansion?.showShip(),onCollection:()=>expansion?.showAlbum(),onBusiness:()=>business?.showHub(),onGuns:()=>business?.showArmory(),onSaleSearch:()=>saleFinder?.open(),onCombat:()=>combat?.show(),onCombatTarget:uid=>combat?.attack(uid),onSuggestions:()=>community?.showSuggestions(true),onOwnedPorts:()=>community?.showOwnedPorts(),onCaptains:()=>expansion?.showCaptains('all',true)});renderHUD();renderMission();renderPanel();$('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';

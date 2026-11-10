@@ -40,15 +40,18 @@ export class GlobeAtlas{
   }
   home(){this.follow=true;if(this.state){this.center=[this.state.position[0],Math.max(-60,Math.min(60,this.state.position[1]*.6))];this.draw(true);}}
   update(state,viewport,route,force=false){this.state=state;this.viewport=viewport;this.route=route;if(this.follow&&!this.drag)this.center=[state.position[0],Math.max(-60,Math.min(60,state.position[1]*.6))];this.draw(force);}
+  canPaint(){const card=this.canvas?.closest?.('.minimap-card');if(typeof document!=='undefined'&&document.hidden)return false;if(card?.classList.contains('is-collapsed')||this.canvas?.closest?.('[hidden]'))return false;const r=this.canvas?.getBoundingClientRect?.();return !r||r.width>0&&r.height>0&&r.bottom>=0&&r.right>=0&&(typeof innerHeight==='undefined'||r.top<=innerHeight)&&(typeof innerWidth==='undefined'||r.left<=innerWidth);}
+  backgroundKey(mode){if(this.expRef!==this.exploration){this.expRef=this.exploration;this.expEpoch=(this.expEpoch||0)+1;}return JSON.stringify([mode,mode==='globe'?this.center:null,this.state.position,this.expEpoch,this.exploration?.revision||0,!!this.exploration?.frozen]);}
+  paintKey(background){const route=this.route?.length?this.route:null;if(route!==this.routeRef){this.routeRef=route;this.routeEpoch=(this.routeEpoch||0)+1;}return JSON.stringify([background,this.viewport,this.routeEpoch,this.state.knownPorts,this.state.visited,(this.peers||[]).map(p=>[p.uid,p.lon,p.lat,p.fill])]);}
   draw(force=false){
-    if(!this.state)return;const now=performance.now();if(!force&&now-this.lastDraw<90)return;this.lastDraw=now;
+    if(!this.state||!this.canPaint())return;const now=performance.now();if(!force&&now-this.lastDraw<200)return;const background=this.backgroundKey('globe'),paint=this.paintKey(background);if(!force&&paint===this.lastGlobePaint)return;this.lastDraw=now;this.lastGlobePaint=paint;
     const angle=this.center[1]*GLOBE_RAD,co=Math.cos(angle),si=Math.sin(angle),data=this.image.data,tex=this.texture;
-    for(const p of this.pixels){const lat=Math.asin(Math.max(-1,Math.min(1,p.y*co+p.z*si))),lon=globeLongitude(this.center[0]+Math.atan2(p.x,p.z*co-p.y*si)/GLOBE_RAD),x=Math.max(0,Math.min(1599,Math.floor((lon+180)/360*1600))),y=Math.max(0,Math.min(799,Math.floor((90-lat/GLOBE_RAD)/180*800))),i=(y*1600+x)*4,shade=.78+.19*p.z+.05*(p.y-p.x);
+    if(background!==this.lastGlobeBackground){this.lastGlobeBackground=background;this.backgroundBuilds=(this.backgroundBuilds||0)+1;for(const p of this.pixels){const lat=Math.asin(Math.max(-1,Math.min(1,p.y*co+p.z*si))),lon=globeLongitude(this.center[0]+Math.atan2(p.x,p.z*co-p.y*si)/GLOBE_RAD),x=Math.max(0,Math.min(1599,Math.floor((lon+180)/360*1600))),y=Math.max(0,Math.min(799,Math.floor((90-lat/GLOBE_RAD)/180*800))),i=(y*1600+x)*4,shade=.78+.19*p.z+.05*(p.y-p.x);
       const visibility=this.exploration?.visibility([lon,lat/GLOBE_RAD],this.state.position)??2;
       if(visibility===0){data[p.offset]=43*shade;data[p.offset+1]=69*shade;data[p.offset+2]=83*shade;}
       else if(visibility===1){const gray=(tex[i]+tex[i+1]+tex[i+2])/3;data[p.offset]=(gray*.45+110)*shade;data[p.offset+1]=(gray*.45+117)*shade;data[p.offset+2]=(gray*.45+120)*shade;}
       else{data[p.offset]=Math.min(255,tex[i]*shade);data[p.offset+1]=Math.min(255,tex[i+1]*shade);data[p.offset+2]=Math.min(255,tex[i+2]*shade);}data[p.offset+3]=255;
-    }
+    }}
     const ctx=this.ctx;ctx.clearRect(0,0,240,240);ctx.putImageData(this.image,0,0);
     ctx.save();ctx.beginPath();ctx.arc(120,120,this.radius,0,Math.PI*2);ctx.clip();
     this.line(this.route||[],'#8b5929',1.1);
