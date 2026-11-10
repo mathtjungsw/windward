@@ -1,4 +1,4 @@
-import {PRESENCE_TTL,PRESENCE_COLORS} from './presence-core.js?v=2026.11.10-login-fix';
+import {PRESENCE_TTL,PRESENCE_COLORS} from './presence-core.js?v=2026.11.10-session-fix';
 
 // Global membership contains no coordinates, cargo, scores or account secrets.
 export function validCaptain(value,now=Date.now()){
@@ -11,7 +11,7 @@ export function onlineCaptainList(values,now=Date.now()){
 export class CaptainRoster{
   constructor(fleet){this.fleet=fleet;this.records=[];this.generation=0;this.ready=false;this.error=false;this.lastSent=0;this.lastSignature='';}
   connect(){
-    const f=this.fleet,s=f.sdk;this.selfRef=s.ref(f.db,`${f.root}/captains/${f.shipKey}`);const generation=++this.generation;
+    const f=this.fleet,s=f.sdk;const sessionKey=f.account?.session?f.uid+'_'+f.account.session:f.shipKey;this.selfRef=s.ref(f.db,`${f.root}/captains/${sessionKey}`);const generation=++this.generation;
     this.unsubscribe?.();this.ready=false;this.error=false;
     const q=s.query(s.ref(f.db,`${f.root}/captains`),s.orderByChild('updatedAt'),s.startAt(Date.now()-PRESENCE_TTL),s.limitToLast(100));
     this.unsubscribe=s.onValue(q,snapshot=>{if(generation!==this.generation)return;const records=[];snapshot.forEach(child=>{records.push(child.val());});this.records=records;this.ready=true;this.error=false;f.onChange();},()=>{if(generation!==this.generation)return;this.ready=false;this.error=true;this.records=[];f.onChange();});

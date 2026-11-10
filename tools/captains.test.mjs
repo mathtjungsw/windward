@@ -24,3 +24,7 @@ test('directory subscription and disconnect cleanup are independent of location 
 test('fleet member count includes self only once even when own roster record has arrived',()=>{
  const fleet=new FleetPresence({storage:{getItem:()=>null},readShip:()=>({status:'정박'}),onChange:()=>{},onStatus:()=>{}});fleet.uid='self';fleet.name='나';fleet.color=0;fleet.root='worlds/peace';fleet.roster={list:()=>[member('self'),member('far')]};assert.equal(fleet.onlineCaptains().length,2);assert.equal(fleet.onlineCaptains()[0].name,'나');
 });
+
+test('persistent fleet UID remains separate from the session-scoped membership key',async()=>{
+ const paths=[],f={uid:'captain',shipKey:'captain',account:{session:'new-tab'},root:'gameV2/real',onChange:()=>{},sdk:{ref:(_,p)=>p,query:(p)=>p,orderByChild:()=>0,startAt:()=>0,limitToLast:()=>0,onValue:()=>()=>{},onDisconnect:p=>({remove:async()=>paths.push(p)})}};const r=new CaptainRoster(f);r.connect();await r.prepareDisconnect();assert.equal(r.selfRef,'gameV2/real/captains/captain_new-tab');assert.deepEqual(paths,[r.selfRef]);assert.equal(f.shipKey,'captain');
+});
