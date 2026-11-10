@@ -1,4 +1,4 @@
-import {fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.10-performance-map';
+import {fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.10-visible-place-names';
 export const CANNONS=[
  ['swivel','선회포',8,82,6,1,500,4],['light','경량포',14,76,9,2,1500,5],['rapid','속사포',10,72,4,2,2500,7],['standard','표준 함포',22,70,12,3,4000,7],['long','장포',26,85,20,4,9000,10],['precision','정밀 장포',32,90,22,5,14000,12],['heavy','중포',42,58,24,6,16000,13],['large','대구경포',60,50,32,8,28000,16]
 ].map(([id,name,damage,accuracy,reload,weight,cost,stage])=>({id,name,damage,accuracy,reload,weight,cost,stage}));

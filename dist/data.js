@@ -1,8 +1,8 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.10-performance-map';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.10-performance-map';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.10-performance-map';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.10-performance-map';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.10-performance-map';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.10-visible-place-names';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.10-visible-place-names';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.10-visible-place-names';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.10-visible-place-names';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.10-visible-place-names';
 Object.assign(GOODS,PREMIUM_GOODS);
 
 export {GOODS};

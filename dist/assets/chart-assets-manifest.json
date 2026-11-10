@@ -13,7 +13,8 @@
   },
   "simplificationDegrees": {
     "land": 0.012,
-    "countries": 0.035
+    "countries": 0.035,
+    "displayRegions": 0.15
   },
   "untouchedNavigationSources": {
     "navigation.json": "b3b51011ab62890bd94bc8b5738b802bd0e9e30d6a445044be664a0587b3e12a",
@@ -27,9 +28,10 @@
     "rivers.json": 40313,
     "islands.geojson": 127191,
     "terrain-shade.webp": 1012110,
-    "../place-names.js": 14954
+    "../place-names.js": 14954,
+    "../place-regions.js": 370080
   },
-  "totalBytes": 7087469,
+  "totalBytes": 7457549,
   "sources": {
     "land": {
       "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_land.geojson",

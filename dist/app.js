@@ -1,33 +1,33 @@
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.10-performance-map';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.10-performance-map';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.10-performance-map';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.10-performance-map';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.10-performance-map';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.10-performance-map';
-import {createCommunity} from './community.js?v=2026.11.10-performance-map';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.10-performance-map';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.10-performance-map';
-import {createCombat} from './combat-ui.js?v=2026.11.10-performance-map';
-import {createBusiness} from './business-ui.js?v=2026.11.10-performance-map';
-import {createExpansion} from './expansion-ui.js?v=2026.11.10-performance-map';
-import {gameStats} from './public-stats.js?v=2026.11.10-performance-map';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.10-performance-map';
-import {shipGlyph} from './art.js?v=2026.11.10-performance-map';
-import {inspectDiscovery,explorationAllowed} from './discoveries.js?v=2026.11.10-performance-map';
-import {RELEASE} from './release-notes.js?v=2026.11.10-performance-map';
-import {createUX} from './ux.js?v=2026.11.10-performance-map';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.10-performance-map';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.10-performance-map';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.10-performance-map';
-import {AtlasView} from './atlas-view.js?v=2026.11.10-performance-map';
-import {FleetPresence} from './multiplayer.js?v=2026.11.10-performance-map';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.10-performance-map';
-import {CaptainChat} from './chat.js?v=2026.11.10-performance-map';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.10-performance-map';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,INFO_PRICE,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor} from './voyage-core.js?v=2026.11.10-performance-map';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.10-performance-map';
-import {CaptainRankings} from './rankings.js?v=2026.11.10-performance-map';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.10-performance-map';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.10-visible-place-names';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.10-visible-place-names';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.10-visible-place-names';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.10-visible-place-names';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.10-visible-place-names';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.10-visible-place-names';
+import {createCommunity} from './community.js?v=2026.11.10-visible-place-names';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.10-visible-place-names';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.10-visible-place-names';
+import {createCombat} from './combat-ui.js?v=2026.11.10-visible-place-names';
+import {createBusiness} from './business-ui.js?v=2026.11.10-visible-place-names';
+import {createExpansion} from './expansion-ui.js?v=2026.11.10-visible-place-names';
+import {gameStats} from './public-stats.js?v=2026.11.10-visible-place-names';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.10-visible-place-names';
+import {shipGlyph} from './art.js?v=2026.11.10-visible-place-names';
+import {inspectDiscovery,explorationAllowed} from './discoveries.js?v=2026.11.10-visible-place-names';
+import {RELEASE} from './release-notes.js?v=2026.11.10-visible-place-names';
+import {createUX} from './ux.js?v=2026.11.10-visible-place-names';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.10-visible-place-names';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.10-visible-place-names';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.10-visible-place-names';
+import {AtlasView} from './atlas-view.js?v=2026.11.10-visible-place-names';
+import {FleetPresence} from './multiplayer.js?v=2026.11.10-visible-place-names';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.10-visible-place-names';
+import {CaptainChat} from './chat.js?v=2026.11.10-visible-place-names';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.10-visible-place-names';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,INFO_PRICE,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor} from './voyage-core.js?v=2026.11.10-visible-place-names';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.10-visible-place-names';
+import {CaptainRankings} from './rankings.js?v=2026.11.10-visible-place-names';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.10-visible-place-names';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -454,6 +454,8 @@ function setupChartWrapping(manifest){
   terrain.append(svgEl('image',{href:`assets/chart-tiles/${manifest.overview.file}?v=${manifest.overview.sha256.slice(0,16)}`,x:0,y:0,width:1600,height:800,preserveAspectRatio:'none','pointer-events':'none'}));
   const tiles=svgEl('g',{id:'terrain-tiles','pointer-events':'none'});routes.before(tiles,grid,labels,fog);chartTerrain=new ChartTerrain(tiles,manifest);
   for(const [x,y]of CHART_TILES)if(x||y){tiles.before(svgEl('use',{href:'#chart-terrain',x,y,'pointer-events':'none','aria-hidden':'true'}));labels.before(svgEl('use',{href:'#graticule',x,y,'pointer-events':'none','aria-hidden':'true'}));routes.before(svgEl('use',{href:'#chart-fog',x,y,'pointer-events':'none','aria-hidden':'true'}));for(const id of ['routes','fleet-markers','npc-markers','own-followers','ship-marker'])root.append(svgEl('use',{href:'#'+id,x,y,'pointer-events':'none','aria-hidden':'true'}));}
+  // Geographic text stays readable above every wrapped fog tile, below ships.
+  routes.before(labels);
 }
 function setupMap(land,manifest){
   $('#ship-marker').before(svgEl('g',{id:'npc-markers'}));
@@ -472,9 +474,10 @@ function renderChartLabels(force=false){
  clearTimeout(labelTimer);labelTimer=null;
  const points=[state.position,...PORTS.filter(p=>knowsPort(state,p.id)).map(p=>[p.lon,p.lat]),...visibleShips().map(p=>[p.lon,p.lat]),...PIRATE_ZONES.filter(z=>mapDistance(state.position,z.point)<=180&&Date.now()>(state.pirateRespawns?.[z.id]||0)).map(z=>z.point)];
  const key=JSON.stringify([screen.w,screen.h,screen.k,Math.round(camera.x*screen.k/8),Math.round(camera.y*screen.k/8),points.map(p=>{const q=combatScreenPoint(p);return [Math.round(q.x/8),Math.round(q.y/8)];})]);labelAt=now;labelView={...camera,w:screen.w,h:screen.h};if(key===labelKey)return;labelKey=key;
- const blocked=points.map(p=>{const q=combatScreenPoint(p);return {x:q.x-48,y:q.y-32,w:96,h:56};}),live=new Set();
- for(const label of layoutChartLabels(PLACE_NAMES,combatScreenPoint,{width:screen.w,height:screen.h,blocked})){
-  live.add(label.id);let t=labelNodes.get(label.id);if(!t){t=svgEl('text',{class:'chart-place-name '+label.kind,'font-size':label.font/screen.k,'text-anchor':'middle','dominant-baseline':'middle','data-place':label.id});t.style.fontSize=label.font/screen.k+'px';t.textContent=label.name;root.append(t);labelNodes.set(label.id,t);}let [x,y]=project([label.lon,label.lat]);x+=Math.round((camera.x-x)/1600)*1600;y+=Math.round((camera.y-y)/800)*800;setSvg(t,'x',x);setSvg(t,'y',y);
+ const blocked=points.map(p=>{const q=combatScreenPoint(p);return {x:q.x-48,y:q.y-32,w:96,h:56};}),live=new Set(),previous=new Map([...labelNodes].map(([id,t])=>[id,combatScreenPoint(unproject([Number(t.getAttribute('x')),Number(t.getAttribute('y'))]))]));
+ const fromScreen=p=>wrapPosition(unproject([camera.x+(p.x-screen.w/2)/screen.k,camera.y+(p.y-screen.h/2)/screen.k]));
+ for(const label of layoutChartLabels(PLACE_NAMES,combatScreenPoint,{width:screen.w,height:screen.h,blocked,fromScreen,previous})){
+  live.add(label.id);let t=labelNodes.get(label.id);if(!t){t=svgEl('text',{class:'chart-place-name '+label.kind,'font-size':label.font/screen.k,'text-anchor':'middle','dominant-baseline':'middle','data-place':label.id});t.style.fontSize=label.font/screen.k+'px';t.textContent=label.name;root.append(t);labelNodes.set(label.id,t);}const x=camera.x+(label.screenPoint.x-screen.w/2)/screen.k,y=camera.y+(label.screenPoint.y-screen.h/2)/screen.k;setSvg(t,'x',x);setSvg(t,'y',y);
  }for(const [id,node]of labelNodes)if(!live.has(id)){node.remove();labelNodes.delete(id);}
 }
 function combatScreenPoint(point){if(!mapReady)return null;const [x,y]=project(point);let dx=x-camera.x,dy=y-camera.y;dx-=Math.round(dx/1600)*1600;dy-=Math.round(dy/800)*800;return {x:screen.w/2+dx*screen.k,y:screen.h/2+dy*screen.k,width:screen.w,height:screen.h};}

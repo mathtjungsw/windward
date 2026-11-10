@@ -90,3 +90,11 @@ test('static terrain has no live coast paths, fog is independent, and labels reu
 test('geographical labels use the nearest wrapped copy across the date line without rebuilding the text',()=>{
  const saved={...app.camera},w=app.screen.w;app.screen.w=1280;app.camera.x=1595;app.camera.y=(80+41)*800/140;app.applyCamera();app.renderChartLabels(true);const name=$('[data-place="new-zealand"]');assert.ok(name);assert.ok(Number(name.getAttribute('x'))>1500);app.camera.x=2;app.applyCamera();app.renderChartLabels(true);assert.equal($('[data-place="new-zealand"]'),name);assert.ok(Number(name.getAttribute('x'))<0);app.screen.w=w;Object.assign(app.camera,saved);app.applyCamera();
 });
+
+test('mobile geography is visible above all fog copies and can be disabled and restored in settings',()=>{
+ const saved={...app.camera},size={w:app.screen.w,h:app.screen.h};app.beginPlaying(initialState());$('#modal').close();app.screen.w=390;app.screen.h=320;app.camera.x=(-9.14+180)*1600/360;app.camera.y=(80-38.72)*800/140;app.applyCamera();app.renderChartLabels(true);
+ const labels=[...document.querySelectorAll('[data-place]')];assert.ok(labels.length>0);assert.ok(labels.some(t=>t.dataset.place==='iberia'));assert.equal(getComputedStyle(labels[0]).opacity,'1');assert.equal(getComputedStyle(labels[0]).pointerEvents,'none');
+ const children=[...$('#map-camera').children],layer=children.indexOf($('#map-labels'));for(const node of children.filter(n=>n.id==='chart-fog'||n.getAttribute('href')==='#chart-fog'))assert.ok(layer>children.indexOf(node));assert.ok(layer<children.indexOf($('#port-markers')));
+ const before=JSON.stringify(app.state);for(let i=0;i<10;i++)app.renderChartLabels(true);assert.equal(JSON.stringify(app.state),before);
+ $('#ux-settings').click();const box=$('#place-names');assert.ok(box.checked);box.checked=false;box.dispatchEvent(new window.Event('change',{bubbles:true}));assert.equal($('#map-labels').children.length,0);box.checked=true;box.dispatchEvent(new window.Event('change',{bubbles:true}));assert.ok($('#map-labels').children.length>0);$('#modal').close();Object.assign(app.screen,size);Object.assign(app.camera,saved);app.applyCamera();
+});
