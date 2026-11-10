@@ -1,10 +1,10 @@
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.10-navigation-trade-offline';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.10-navigation-trade-offline';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.10-navigation-trade-offline';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.10-navigation-trade-offline';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.10-navigation-trade-offline';
-import {applyRaftStart} from './raft-start.js?v=2026.11.10-navigation-trade-offline';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.10-navigation-trade-offline';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.10-navigation-trade-offline.2';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.10-navigation-trade-offline.2';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.10-navigation-trade-offline.2';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.10-navigation-trade-offline.2';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.10-navigation-trade-offline.2';
+import {applyRaftStart} from './raft-start.js?v=2026.11.10-navigation-trade-offline.2';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.10-navigation-trade-offline.2';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';

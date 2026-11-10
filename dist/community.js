@@ -1,4 +1,4 @@
-import {PORT_BY_ID} from './data.js?v=2026.11.10-navigation-trade-offline';
+import {PORT_BY_ID} from './data.js?v=2026.11.10-navigation-trade-offline.2';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function suggestionDraft(title,body){title=String(title||'').trim();body=String(body||'').trim();if(!title||title.length>50||!body||body.length>1200||/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(title+body))throw Error('제목 1~50자, 내용 1~1,200자로 작성하세요.');return {title,body};}
 export function createCommunity(api){

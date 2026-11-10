@@ -5,7 +5,7 @@ import {GOODS} from '../dist/data.js';
 const file=new URL('../firebase.database.rules.json',import.meta.url),json=JSON.parse(fs.readFileSync(file)),r=json.rules.gameV2;
 const auth="auth != null && auth.token.firebase.sign_in_provider == 'google.com'";
 const oldRoot="root.child('gameV2')",child=(n,p)=>`${n}.child('${p}')`,val=(n,p)=>`${child(n,p)}.val()`,exists=(n,p)=>`${child(n,p)}.exists()`;
-const eq=(a,b,p)=>`${val(a,p)} == ${val(b,p)}`,all=a=>'('+a.join(' && ')+')',any=a=>'('+a.join(' || ')+')';
+const eq=(a,b,p)=>`${val(a,p)} == ${val(b,p)}`,all=a=>'('+a.map(x=>'('+x+')').join(' && ')+')',any=a=>'('+a.map(x=>'('+x+')').join(' || ')+')';
 const num=(n,p,lo=0,hi=1e12)=>`${child(n,p)}.isNumber() && ${val(n,p)} >= ${lo} && ${val(n,p)} <= ${hi}`;
 const immutable=(n,o,keys)=>all(keys.map(p=>eq(n,o,p)));
 const priv=r.privateSaves.$uid;
@@ -95,7 +95,7 @@ const participants=[A,B];
 const available=u=>all([`${val(state(u),'portId')} == ''`,`${val(state(u),'protected')} == false`,`${val(state(u),'rescuePending')} == false`,`${val(state(u),'protectedUntil')} <= now`,`${val(state(u),'hp')} > 0`,exists(state(u),'bank'),`(!${exists(state(u),'activeRaidId')} || ${val(state(u),'activeRaidId')} == '' || ${val(state(u),'raidUntil')} <= now)`,`(!${oldRoot}.child('combatSlots').child(${u}).exists() || (${oldRoot}.child('combatSlots').child(${u}).val() == 'raid:'+${val(state(u),'activeRaidId')} && ${val(state(u),'raidUntil')} <= now))`]);
 const offline=`(!${oldRoot}.child('real/fleetConnections').child(${B}).exists() || ${oldRoot}.child('real/fleetConnections').child(${B}).child('online').val() == false || ${oldRoot}.child('real/fleetConnections').child(${B}).child('at').val() < now-45000)`;
 const rr={'.read':`${auth} && (!data.exists() || data.child('content/a').val() == auth.uid || data.child('content/b').val() == auth.uid)`,'.write':all([auth,'newData.exists()',`${val('newData','revision')} == (${exists('data','revision')}?${val('data','revision')}:0)+1`,receipt(root,'raids','$raid','newData'),`(auth.uid == ${A} || auth.uid == ${B})`,
- `(!data.exists()?(${A} == auth.uid && ${A} != ${B} && ${available(A)} && ${available(B)} && ${offline} && ${val(C,'createdAt')} >= now-5000 && ${val(C,'createdAt')} <= now+5000):(${val(D,'status')} == 'active' && ${immutable(C,D,['id','offline','a','b','defender','defenderSession','mode','createdAt','deadline'])} && ${val(state(A),'activeRaidId')} == $raid && ${val(state(B),'activeRaidId')} == $raid))`,
+ `(!data.exists()?(${A} == auth.uid && ${val(C,'events/0/actor')} == auth.uid && ${A} != ${B} && ${available(A)} && ${available(B)} && ${offline} && ${val(C,'createdAt')} >= now-5000 && ${val(C,'createdAt')} <= now+5000):(${val(D,'status')} == 'active' && ${immutable(C,D,['id','offline','a','b','defender','defenderSession','mode','createdAt','deadline'])} && ${val(state(A),'activeRaidId')} == $raid && ${val(state(B),'activeRaidId')} == $raid))`,
  `${val(C,'id')} == $raid`,`${val(C,'offline')} == true`,`${val(C,'mode')} == 'free'`,`${val(C,'defender')} == ${B}`,`${val(C,'defenderSession')} == ${val(state(B),'session')}`,`${val(C,'deadline')} == ${val(C,'createdAt')}+180000`,`${val(C,'sequence')} == (${exists(D,'sequence')}?${val(D,'sequence')}:0)+${eventCount}`,
  `(${eventCount} > 0?now < ${val(C,'deadline')}:(${val(C,'status')} == 'draw' && now >= ${val(C,'deadline')} || ${val(C,'status')} == 'closed' && ${val(C,'reason')} == '후퇴' && ${val(C,'loser')} == auth.uid))`,
  `(${val(C,'status')} == 'active' || ${val(C,'status')} == 'draw' || (${val(C,'status')} == 'closed' && (${val(C,'winner')} == ${A} || ${val(C,'winner')} == ${B}) && (${val(C,'loser')} == ${A} || ${val(C,'loser')} == ${B}) && ${val(C,'winner')} != ${val(C,'loser')} && (${eventCount} == 0 || ${C}.child('players').child(${val(C,'loser')}).child('hp').val() == 0)))`,
@@ -106,6 +106,8 @@ rr.content.players={$uid:{'.validate':`($uid == newData.parent().parent().child(
 const PR='newData.parent().parent()',baseline=state('$uid');
 for(const p of ['name','maxHP','repair'])pc[p]={'.validate':`newData.val() == (data.exists()?data.val():${val(baseline,p)})`};
 pc.lootRoom={'.validate':`newData.val() == (data.exists()?data.val():${val(baseline,'lootRoom')}-${val(baseline,'pendingLootCount')})`};
+const attacked=`(data.child('wasAttacked').val() == true || (newData.parent().parent().child('events/0/actor').exists() && newData.parent().parent().child('events/0/actor').val() != $uid) || (newData.parent().parent().child('events/1/actor').exists() && newData.parent().parent().child('events/1/actor').val() != $uid))`;
+pc['.validate']+=` && (${attacked}?newData.child('wasAttacked').val() == true:(!newData.child('wasAttacked').exists() || newData.child('wasAttacked').val() == false))`;
 pc.beforeHP={'.validate':`newData.val() == (data.exists()?data.val():${val(baseline,'hp')})`};
 const damage=i=>`(newData.parent().parent().parent().child('events/${i}/actor').exists() && newData.parent().parent().parent().child('events/${i}/actor').val() != $uid?newData.parent().parent().parent().child('events/${i}/damage').val():0)`;
 pc.hp={'.validate':`newData.isNumber() && newData.val() >= 0 && newData.val() <= newData.parent().child('maxHP').val() && newData.val() == ${val(baseline,'hp')}-${damage(0)}-${damage(1)}`};
@@ -119,11 +121,15 @@ rr.content.reserves={$uid:{'.validate':`newData.child('id').val() == ${val(basel
 rr.content.events={'.validate':"!newData.exists() || newData.hasChild('0')",$index:{'.validate':"$index == '0' || $index == '1'"}};
 const E='newData',er='newData.parent().parent()',actor=val(E,'actor'),gun=state(actor)+`.child('guns').child(${val(E,'gunId')})`;
 const knownStats=any(CANNONS.flatMap(k=>QUALITIES.map((_,quality)=>{const s=cannonStats({kind:k.id,quality});return all([`${val(gun,'kind')} == '${k.id}'`,`${val(gun,'quality')} == ${quality}`,`${val(E,'damagePotential')} == ${s.damage}`,`${val(E,'reloadMS')} == ${Math.round(s.reload*1000)}`]);})));
-rr.content.events.$index['.validate']+=' && '+all([
+rr.content.events.$index['.validate']='('+rr.content.events.$index['.validate']+') && '+all([
  "newData.hasChildren(['sequence','actor','kind','gunId','gunIndex','damagePotential','reloadMS','hit','damage','at'])",`${val(E,'kind')} == 'shot'`,`${val(E,'sequence')} == (${oldRoot}.child('shared/raids').child($raid).child('content/sequence').exists()?${oldRoot}.child('shared/raids').child($raid).child('content/sequence').val():0)+($index == '0'?1:2)`,`${val(E,'at')} >= now-5000`,`${val(E,'at')} <= now+5000`,`${val(gun,'id')} == ${val(E,'gunId')}`,`${val(gun,'slot')} == ${val(E,'gunIndex')}`,`${val(gun,'readyAt')} <= ${val(E,'at')}`,`${val(E,'damage')} >= 0`,`${val(E,'damage')} <= ${val(E,'damagePotential')}`,`${child(E,'hit')}.isBoolean()`,`${val(E,'hit')} == true || ${val(E,'damage')} == 0`,knownStats,
- `(${actor} == auth.uid || (auth.uid == ${val(er,'a')} && ${actor} == ${val(er,'b')} && (!${oldRoot}.child('real/fleetConnections').child(${actor}).exists() || ${oldRoot}.child('real/fleetConnections').child(${actor}).child('online').val() == false || ${oldRoot}.child('real/fleetConnections').child(${actor}).child('at').val() < now-45000)))`,
- `($index == '0' || (${val(E,'actor')} != newData.parent().child('0/actor').val() && newData.parent().child('0/actor').val() == auth.uid && ${val(E,'actor')} == ${val(er,'b')}))`
+ `(${actor} == auth.uid || ((${actor} == ${val(er,'a')} || ${actor} == ${val(er,'b')}) && ${actor} != auth.uid && ($index == '1' || root.child('gameV2/shared/raids').child($raid).child('content/players').child(${actor}).child('wasAttacked').val() == true) && (!${oldRoot}.child('real/fleetConnections').child(${actor}).exists() || ${oldRoot}.child('real/fleetConnections').child(${actor}).child('online').val() == false || ${oldRoot}.child('real/fleetConnections').child(${actor}).child('at').val() < now-45000)))`,
+ `($index == '0' || (${val(E,'actor')} != newData.parent().child('0/actor').val() && newData.parent().child('0/actor').val() == auth.uid && ${val(E,'actor')} != auth.uid))`
 ]);
+
+// Check each exchanged event at the revision boundary as well, so the whole
+// paired transaction is rejected before any participant can consume its receipt.
+for(const index of [0,1]){const event=child('newData',`content/events/${index}`),expression=rr.content.events.$index['.validate'].replace(/\bnewData\b/g,event).replace(/\$index/g,"'"+index+"'");rr['.write']+=` && (!${event}.exists() || (${expression}))`;}
 
 // Every equipped canonical gun must survive a foreign update. Room slots are
 // exhaustive, not a caller-selected subset of the defender's equipment.
@@ -165,4 +171,3 @@ r.real.fleetIndex={$sector:{'.read':`${auth} && query.orderByKey == true && quer
 function normalize(node){for(const [k,v]of Object.entries(node)){if(v&&typeof v==='object')normalize(v);else if(typeof v==='string')node[k]=v.replace(/data((?:\.parent\(\))+?)\.child\('seq'\)\.val\(\)/g,(m,p)=>`(data${p}.child('seq').exists()?${m}:0)`);}}normalize(r.fleetStates);
 fs.writeFileSync(file,JSON.stringify(json,null,2)+'\n');
 console.log('Updated schema 6, persistent fleet and paired raid rules.');
-

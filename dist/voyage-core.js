@@ -1,6 +1,6 @@
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.10-navigation-trade-offline';
-import {distance,helmStep} from './engine.js?v=2026.11.10-navigation-trade-offline';
-import {wrapPosition,mapDistance} from './world-wrap.js?v=2026.11.10-navigation-trade-offline';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.10-navigation-trade-offline.2';
+import {distance,helmStep} from './engine.js?v=2026.11.10-navigation-trade-offline.2';
+import {wrapPosition,mapDistance} from './world-wrap.js?v=2026.11.10-navigation-trade-offline.2';
 
 export const SIGHT_NM=180,DISCOVERY_NM=80,INFO_PRICE=100,INFO_RANGE=600;
 export const START_PORTS=['lisbon','porto','seville'];

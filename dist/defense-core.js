@@ -1,8 +1,8 @@
-import {seaSector} from './presence-core.js?v=2026.11.10-navigation-trade-offline';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.10-navigation-trade-offline';
-import {fleetMaxHP} from './ship-rules.js?v=2026.11.10-navigation-trade-offline';
-import {combatProfile,openBattle,fireCannon,settlementFor,cargoCount,addCargo} from './combat-core.js?v=2026.11.10-navigation-trade-offline';
-import {mapDistance} from './world-wrap.js?v=2026.11.10-navigation-trade-offline';
+import {seaSector} from './presence-core.js?v=2026.11.10-navigation-trade-offline.2';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.10-navigation-trade-offline.2';
+import {fleetMaxHP} from './ship-rules.js?v=2026.11.10-navigation-trade-offline.2';
+import {combatProfile,openBattle,fireCannon,settlementFor,cargoCount,addCargo} from './combat-core.js?v=2026.11.10-navigation-trade-offline.2';
+import {mapDistance} from './world-wrap.js?v=2026.11.10-navigation-trade-offline.2';
 const copy=o=>structuredClone(o||{}),cargo=json=>JSON.parse(json||'{}');
 export const emptyDefenseAck=()=>({seq:0,cash:0,kills:0,lootJSON:'{}',lostReserveId:''});
 function cargoDifference(total,claimed){const out={};for(const [id,c]of Object.entries(total)){const old=claimed[id]||{qty:0,cost:0},qty=c.qty-old.qty,cost=c.cost-old.cost;if(qty<0||cost<-.0001)throw Error('전투 정산 순서가 맞지 않아요.');if(qty)out[id]={qty,cost:Math.max(0,cost)};}return out;}
@@ -30,15 +30,15 @@ export function openOfflineRaid(game,node,attacker,defender,id,now,clear=()=>tru
 }
 export function advanceOfflineRaid(game,room,node,uid,action,now,rolls=[0,0],clear=()=>true,attackerState=null){
  if(![room.a,room.b].includes(uid)||!room.offline||room.status!=='active')throw Error('진행 중인 내 교전이 아니에요.');
- const defender=room.defender,attacker=room.a,valid=node.activeRaidId===room.id;
+ const defender=room.defender,attacker=room.a,opponent=uid===room.a?room.b:room.a,valid=node.activeRaidId===room.id;
  const states={[attacker]:copy(attackerState||defenseFromGame(game,{seq:game.defenseAck?.seq||0}, {name:room.players[attacker].name,session:'test'},now)),[defender]:copy(node)};room.events=[];
  if(!valid||now>=room.deadline||action.kind==='draw'){if(now<room.deadline&&valid)throw Error('아직 교전 시간이 남았어요.');room.status='draw';room.reason='시간 종료 · 미격파 무승부';}
  else if(action.kind==='retreat'){room.status='closed';room.winner=uid===room.a?room.b:room.a;room.loser=uid;room.reason='후퇴';}
  else{
   const positions={[attacker]:{point:[...states[attacker].point],at:now},[defender]:{point:[...node.point],at:now}};
-  const shoot=(actor,id,roll)=>{const result=fireCannon(room,actor,id,now,roll,positions,clear);room.events.push(copy(room.event));return result;};
-  if(action.kind==='fire'){shoot(uid,action.gunId,rolls[0]);if(uid===attacker&&room.status==='active'&&action.autoDefense){const gun=(room.players[defender].guns||[]).find(g=>(g.readyAt||0)<=now);if(gun)shoot(defender,gun.id,rolls[1]);}}
-  else if(action.kind==='auto'){if(uid!==attacker||!action.autoDefense)throw Error('자동 반격 권한이 없어요.');const gun=(room.players[defender].guns||[]).find(g=>(g.readyAt||0)<=now);if(!gun)throw Error('상대 대포는 재장전 중이에요.');shoot(defender,gun.id,rolls[0]);}
+  const shoot=(actor,id,roll)=>{const result=fireCannon(room,actor,id,now,roll,positions,clear);room.events.push(copy(room.event));room.players[actor===room.a?room.b:room.a].wasAttacked=true;return result;};
+  if(action.kind==='fire'){shoot(uid,action.gunId,rolls[0]);if(room.status==='active'&&action.autoDefense){const gun=(room.players[opponent].guns||[]).find(g=>(g.readyAt||0)<=now);if(gun)shoot(opponent,gun.id,rolls[1]);}}
+  else if(action.kind==='auto'){if(!action.autoDefense||!room.players[opponent].wasAttacked)throw Error('자동 반격 권한이 없어요.');const gun=(room.players[opponent].guns||[]).find(g=>(g.readyAt||0)<=now);if(!gun)throw Error('상대 대포는 재장전 중이에요.');shoot(opponent,gun.id,rolls[0]);}
   else throw Error('전투 행동을 확인하세요.');
  }
  const changed={};
