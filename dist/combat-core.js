@@ -1,11 +1,11 @@
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.10-navigation-trade-offline.2';
-import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.10-navigation-trade-offline.2';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.10-navigation-trade-offline.2';
-import {fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.10-navigation-trade-offline.2';
-import {mapDistance} from './world-wrap.js?v=2026.11.10-navigation-trade-offline.2';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.10-login-fix';
+import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.10-login-fix';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.10-login-fix';
+import {fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.10-login-fix';
+import {mapDistance} from './world-wrap.js?v=2026.11.10-login-fix';
 export const COMBAT_RANGE=180,COMBAT_TIMEOUT=180000,PROTECTION_MS=120000;
 export function npcSlotChanges(game,uid,currentSlot){currentSlot??=null;const expected='npc:'+uid;if(currentSlot&&currentSlot!==expected)throw Error('선장 간 전투를 먼저 마치세요.');const next=game.npcBattle?expected:null;return currentSlot===next?{}:{['combatSlots/'+uid]:next};}
-export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.10-navigation-trade-offline.2';
+export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.10-login-fix';
 const copy=o=>structuredClone(o||{});
 export function splitCargo(cargo,limit){const taken={},rest={};for(const [id,c]of Object.entries(cargo||{}).sort(([a],[b])=>a.localeCompare(b))){const qty=Math.min(c.qty,Math.max(0,limit)),cost=c.qty?c.cost*qty/c.qty:0;if(qty)taken[id]={qty,cost};if(qty<c.qty)rest[id]={qty:c.qty-qty,cost:c.cost-cost};limit-=qty;}return {taken,rest};}
 export const cargoCount=c=>Object.values(c||{}).reduce((n,c)=>n+c.qty,0);

@@ -1,7 +1,7 @@
-import {recordTrade} from './rank-progress.js?v=2026.11.10-navigation-trade-offline.2';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-navigation-trade-offline.2';
-import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.10-navigation-trade-offline.2';
-import {tradeQuote} from './market-rules.js?v=2026.11.10-navigation-trade-offline.2';
+import {recordTrade} from './rank-progress.js?v=2026.11.10-login-fix';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-login-fix';
+import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.10-login-fix';
+import {tradeQuote} from './market-rules.js?v=2026.11.10-login-fix';
 export const NEUTRAL_PORTS=['lisbon','porto'];
 export const LARGE_PORTS=['london','amsterdam','venice','alexandria','istanbul','macau','shanghai','nagasaki','havana','buenos','sydney'];
 export const investmentBase=id=>LARGE_PORTS.includes(id)?600000:200000;

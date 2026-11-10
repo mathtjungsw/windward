@@ -1,10 +1,10 @@
-import {regionalFactor} from './regional-economy.js?v=2026.11.10-navigation-trade-offline.2';
-import {recordTrade} from './rank-progress.js?v=2026.11.10-navigation-trade-offline.2';
-import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.10-navigation-trade-offline.2';
-import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,ACTIVE_SECONDS_PER_DAY,SHIPS} from './ship-rules.js?v=2026.11.10-navigation-trade-offline.2';
-import {parseState} from './save-game.js?v=2026.11.10-navigation-trade-offline.2';
-import {gunWeight} from './cannons.js?v=2026.11.10-navigation-trade-offline.2';
-export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.10-navigation-trade-offline.2';
+import {regionalFactor} from './regional-economy.js?v=2026.11.10-login-fix';
+import {recordTrade} from './rank-progress.js?v=2026.11.10-login-fix';
+import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.10-login-fix';
+import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,ACTIVE_SECONDS_PER_DAY,SHIPS} from './ship-rules.js?v=2026.11.10-login-fix';
+import {parseState} from './save-game.js?v=2026.11.10-login-fix';
+import {gunWeight} from './cannons.js?v=2026.11.10-login-fix';
+export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.10-login-fix';
 
 export const SAVE_KEY='windward-save-v1';
 export const START_DATE=Date.UTC(1522,3,6);
