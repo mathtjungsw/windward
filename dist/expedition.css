@@ -70,3 +70,9 @@ dialog#modal[data-size=wide]{width:min(960px,calc(100vw - 32px));max-width:calc(
 @media(min-width:851px) and (max-width:1199px){.combat-deck{grid-column:1;grid-row:2}.game-layout:has(.combat-deck:not([hidden])){grid-template-rows:minmax(320px,1fr) auto auto}.game-layout:has(.combat-deck:not([hidden]))>.voyage-sidebar{grid-row:3}}
 @media(max-width:850px){.combat-deck{flex:none;width:100%;max-height:230px}.combat-deck button{font-size:13px}.community-nav{display:none!important}}
 @media(prefers-reduced-motion:reduce){.muzzle-flash,.combat-impact{animation:none}}
+
+#manual-pad,#manual-pad *,#world-map,#world-map text,.map-controls,.combat-deck button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}#manual-pad{touch-action:none}#manual-pad button{touch-action:none}
+
+#map-labels .chart-place-name{font-family:var(--font-sans, sans-serif);font-weight:500;letter-spacing:.04em;fill:#526f72;stroke:#fbf7e9;stroke-width:2.2px;paint-order:stroke;vector-effect:non-scaling-stroke;opacity:.85;pointer-events:none;user-select:none;-webkit-user-select:none}#map-labels .chart-place-name.ocean{fill:#48727a;letter-spacing:.12em}#map-labels .chart-place-name.peninsula,#map-labels .chart-place-name.region{fill:#796d4c}
+
+.sale-search-entry{width:100%;margin:10px 0}.cargo-sale-link{display:block;padding:4px 0;text-decoration:underline;color:#286d76;font-size:12px;text-align:left}.sale-search-row{padding:16px 0;border-bottom:1px solid #d4d9c8}.sale-search-row p{margin:8px 0}.sale-search-row button{padding:9px 14px;border:1px solid #9db5a6;border-radius:6px}.sale-search-timestamp{font-size:12px;color:#526d6d}#sale-search-good{display:block;width:100%;padding:12px;margin:8px 0;font:inherit}#sale-search-results .help-tip{font-size:14px}

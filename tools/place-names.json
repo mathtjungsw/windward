@@ -1,0 +1,714 @@
+{
+  "version": "2026.11.10",
+  "note": "Natural Earth named feature IDs; anchors are editorial label positions, not navigable destinations.",
+  "places": [
+    {
+      "id": "north-atlantic",
+      "name": "북대서양",
+      "sourceLayer": "marine",
+      "sourceName": "North Atlantic Ocean",
+      "point": [
+        -38.0,
+        30.0
+      ],
+      "kind": "ocean",
+      "priority": 100
+    },
+    {
+      "id": "south-atlantic",
+      "name": "남대서양",
+      "sourceLayer": "marine",
+      "sourceName": "South Atlantic Ocean",
+      "point": [
+        -20.0,
+        -28.0
+      ],
+      "kind": "ocean",
+      "priority": 100
+    },
+    {
+      "id": "north-pacific",
+      "name": "북태평양",
+      "sourceLayer": "marine",
+      "sourceName": "North Pacific Ocean",
+      "point": [
+        -148.0,
+        28.0
+      ],
+      "kind": "ocean",
+      "priority": 100
+    },
+    {
+      "id": "south-pacific",
+      "name": "남태평양",
+      "sourceLayer": "marine",
+      "sourceName": "South Pacific Ocean",
+      "point": [
+        -125.0,
+        -25.0
+      ],
+      "kind": "ocean",
+      "priority": 100
+    },
+    {
+      "id": "indian-ocean",
+      "name": "인도양",
+      "sourceLayer": "marine",
+      "sourceName": "INDIAN OCEAN",
+      "point": [
+        75.0,
+        -25.0
+      ],
+      "kind": "ocean",
+      "priority": 100
+    },
+    {
+      "id": "arctic-ocean",
+      "name": "북극해",
+      "sourceLayer": "marine",
+      "sourceName": "Arctic Ocean",
+      "point": [
+        -150,
+        78
+      ],
+      "kind": "ocean",
+      "priority": 90
+    },
+    {
+      "id": "mediterranean",
+      "name": "지중해",
+      "sourceLayer": "marine",
+      "sourceName": "Mediterranean Sea",
+      "point": [
+        17.0,
+        35.0
+      ],
+      "kind": "sea",
+      "priority": 90
+    },
+    {
+      "id": "caribbean",
+      "name": "카리브해",
+      "sourceLayer": "marine",
+      "sourceName": "Caribbean Sea",
+      "point": [
+        -75.0,
+        15.0
+      ],
+      "kind": "sea",
+      "priority": 90
+    },
+    {
+      "id": "arabian-sea",
+      "name": "아라비아해",
+      "sourceLayer": "marine",
+      "sourceName": "Arabian Sea",
+      "point": [
+        64.0,
+        16.0
+      ],
+      "kind": "sea",
+      "priority": 85
+    },
+    {
+      "id": "bay-bengal",
+      "name": "벵골만",
+      "sourceLayer": "marine",
+      "sourceName": "Bay of Bengal",
+      "point": [
+        88.0,
+        14.0
+      ],
+      "kind": "gulf",
+      "priority": 85
+    },
+    {
+      "id": "north-sea",
+      "name": "북해",
+      "sourceLayer": "marine",
+      "sourceName": "North Sea",
+      "point": [
+        3.0,
+        56.0
+      ],
+      "kind": "sea",
+      "priority": 75
+    },
+    {
+      "id": "baltic-sea",
+      "name": "발트해",
+      "sourceLayer": "marine",
+      "sourceName": "Baltic Sea",
+      "point": [
+        19.0,
+        58.0
+      ],
+      "kind": "sea",
+      "priority": 70
+    },
+    {
+      "id": "black-sea",
+      "name": "흑해",
+      "sourceLayer": "marine",
+      "sourceName": "Black Sea",
+      "point": [
+        34.0,
+        43.0
+      ],
+      "kind": "sea",
+      "priority": 75
+    },
+    {
+      "id": "red-sea",
+      "name": "홍해",
+      "sourceLayer": "marine",
+      "sourceName": "Red Sea",
+      "point": [
+        38.0,
+        21.0
+      ],
+      "kind": "sea",
+      "priority": 80
+    },
+    {
+      "id": "gulf-guinea",
+      "name": "기니만",
+      "sourceLayer": "marine",
+      "sourceName": "Gulf of Guinea",
+      "point": [
+        2.0,
+        1.0
+      ],
+      "kind": "gulf",
+      "priority": 75
+    },
+    {
+      "id": "bay-biscay",
+      "name": "비스케이만",
+      "sourceLayer": "marine",
+      "sourceName": "Bay of Biscay",
+      "point": [
+        -5.0,
+        45.0
+      ],
+      "kind": "gulf",
+      "priority": 70
+    },
+    {
+      "id": "gulf-mexico",
+      "name": "멕시코만",
+      "sourceLayer": "marine",
+      "sourceName": "Gulf of Mexico",
+      "point": [
+        -90.0,
+        24.0
+      ],
+      "kind": "gulf",
+      "priority": 80
+    },
+    {
+      "id": "mozambique-channel",
+      "name": "모잠비크해협",
+      "sourceLayer": "marine",
+      "sourceName": "Mozambique Channel",
+      "point": [
+        42.0,
+        -20.0
+      ],
+      "kind": "strait",
+      "priority": 75
+    },
+    {
+      "id": "andaman-sea",
+      "name": "안다만해",
+      "sourceLayer": "marine",
+      "sourceName": "Andaman Sea",
+      "point": [
+        95.0,
+        10.0
+      ],
+      "kind": "sea",
+      "priority": 70
+    },
+    {
+      "id": "malacca-strait",
+      "name": "말라카해협",
+      "sourceLayer": "marine",
+      "sourceName": "Strait of Malacca",
+      "point": [
+        100.5,
+        4.0
+      ],
+      "kind": "strait",
+      "priority": 85
+    },
+    {
+      "id": "gibraltar-strait",
+      "name": "지브롤터해협",
+      "sourceLayer": "marine",
+      "sourceName": "Strait of Gibraltar",
+      "point": [
+        -5.6,
+        35.96
+      ],
+      "kind": "strait",
+      "priority": 85
+    },
+    {
+      "id": "korea-strait",
+      "name": "대한해협",
+      "sourceLayer": "marine",
+      "sourceName": "Korea Strait",
+      "point": [
+        129.0,
+        34.0
+      ],
+      "kind": "strait",
+      "priority": 85
+    },
+    {
+      "id": "timor-sea",
+      "name": "티모르해",
+      "sourceLayer": "marine",
+      "sourceName": "Timor Sea",
+      "point": [
+        128.0,
+        -11.0
+      ],
+      "kind": "sea",
+      "priority": 70
+    },
+    {
+      "id": "east-china-sea",
+      "name": "동중국해",
+      "sourceLayer": "marine",
+      "sourceName": "East China Sea",
+      "point": [
+        125.0,
+        28.0
+      ],
+      "kind": "sea",
+      "priority": 75
+    },
+    {
+      "id": "south-china-sea",
+      "name": "남중국해",
+      "sourceLayer": "marine",
+      "sourceName": "South China Sea",
+      "point": [
+        114.0,
+        14.0
+      ],
+      "kind": "sea",
+      "priority": 85
+    },
+    {
+      "id": "yellow-sea",
+      "name": "황해",
+      "sourceLayer": "marine",
+      "sourceName": "Yellow Sea",
+      "point": [
+        123.0,
+        35.0
+      ],
+      "kind": "sea",
+      "priority": 75
+    },
+    {
+      "id": "java-sea",
+      "name": "자바해",
+      "sourceLayer": "marine",
+      "sourceName": "Java Sea",
+      "point": [
+        112.0,
+        -6.0
+      ],
+      "kind": "sea",
+      "priority": 70
+    },
+    {
+      "id": "banda-sea",
+      "name": "반다해",
+      "sourceLayer": "marine",
+      "sourceName": "Banda Sea",
+      "point": [
+        128.0,
+        -6.0
+      ],
+      "kind": "sea",
+      "priority": 65
+    },
+    {
+      "id": "philippine-sea",
+      "name": "필리핀해",
+      "sourceLayer": "marine",
+      "sourceName": "Philippine Sea",
+      "point": [
+        135.0,
+        17.0
+      ],
+      "kind": "sea",
+      "priority": 70
+    },
+    {
+      "id": "tasman-sea",
+      "name": "태즈먼해",
+      "sourceLayer": "marine",
+      "sourceName": "Tasman Sea",
+      "point": [
+        160.0,
+        -40.0
+      ],
+      "kind": "sea",
+      "priority": 75
+    },
+    {
+      "id": "africa",
+      "name": "아프리카",
+      "sourceLayer": "regions",
+      "sourceName": "AFRICA",
+      "point": [
+        20.0,
+        7.0
+      ],
+      "kind": "continent",
+      "priority": 95
+    },
+    {
+      "id": "asia",
+      "name": "아시아",
+      "sourceLayer": "regions",
+      "sourceName": "ASIA",
+      "point": [
+        82.0,
+        47.0
+      ],
+      "kind": "continent",
+      "priority": 95
+    },
+    {
+      "id": "europe",
+      "name": "유럽",
+      "sourceLayer": "regions",
+      "sourceName": "EUROPE",
+      "point": [
+        25.0,
+        52.0
+      ],
+      "kind": "continent",
+      "priority": 95
+    },
+    {
+      "id": "north-america",
+      "name": "북아메리카",
+      "sourceLayer": "regions",
+      "sourceName": "NORTH AMERICA",
+      "point": [
+        -105.0,
+        47.0
+      ],
+      "kind": "continent",
+      "priority": 95
+    },
+    {
+      "id": "south-america",
+      "name": "남아메리카",
+      "sourceLayer": "regions",
+      "sourceName": "SOUTH AMERICA",
+      "point": [
+        -59.0,
+        -17.0
+      ],
+      "kind": "continent",
+      "priority": 95
+    },
+    {
+      "id": "australia",
+      "name": "오스트레일리아",
+      "sourceLayer": "regions",
+      "sourceName": "AUSTRALIA",
+      "point": [
+        134.0,
+        -25.0
+      ],
+      "kind": "continent",
+      "priority": 95
+    },
+    {
+      "id": "iberia",
+      "name": "이베리아반도",
+      "sourceLayer": "regions",
+      "sourceName": "PENÍNSULA IBÉRICA",
+      "point": [
+        -4.0,
+        40.0
+      ],
+      "kind": "peninsula",
+      "priority": 75
+    },
+    {
+      "id": "scandinavia",
+      "name": "스칸디나비아반도",
+      "sourceLayer": "regions",
+      "sourceName": "SCANDINAVIA",
+      "point": [
+        16.0,
+        65.0
+      ],
+      "kind": "peninsula",
+      "priority": 70
+    },
+    {
+      "id": "arabian-peninsula",
+      "name": "아라비아반도",
+      "sourceLayer": "regions",
+      "sourceName": "ARABIAN PENINSULA",
+      "point": [
+        45.0,
+        23.0
+      ],
+      "kind": "peninsula",
+      "priority": 80
+    },
+    {
+      "id": "indochina",
+      "name": "인도차이나반도",
+      "sourceLayer": "regions",
+      "sourceName": "INDOCHINA PENINSULA",
+      "point": [
+        103.0,
+        18.0
+      ],
+      "kind": "peninsula",
+      "priority": 75
+    },
+    {
+      "id": "malay-peninsula",
+      "name": "말레이반도",
+      "sourceLayer": "regions",
+      "sourceName": "MALAY PENINSULA",
+      "point": [
+        100,
+        7.5
+      ],
+      "kind": "peninsula",
+      "priority": 65
+    },
+    {
+      "id": "india",
+      "name": "인도반도",
+      "sourceLayer": "regions",
+      "sourceName": "INDIA",
+      "point": [
+        78.0,
+        21.0
+      ],
+      "kind": "peninsula",
+      "priority": 80
+    },
+    {
+      "id": "patagonia",
+      "name": "파타고니아",
+      "sourceLayer": "regions",
+      "sourceName": "PATAGONIA",
+      "point": [
+        -69.0,
+        -46.0
+      ],
+      "kind": "region",
+      "priority": 65
+    },
+    {
+      "id": "sahara",
+      "name": "사하라사막",
+      "sourceLayer": "regions",
+      "sourceName": "SAHARA",
+      "point": [
+        12.0,
+        25.0
+      ],
+      "kind": "region",
+      "priority": 80
+    },
+    {
+      "id": "himalayas",
+      "name": "히말라야산맥",
+      "sourceLayer": "regions",
+      "sourceName": "HIMALAYAS",
+      "point": [
+        85.0,
+        29.0
+      ],
+      "kind": "mountain",
+      "priority": 75
+    },
+    {
+      "id": "andes",
+      "name": "안데스산맥",
+      "sourceLayer": "regions",
+      "sourceName": "ANDES",
+      "point": [
+        -69,
+        -22
+      ],
+      "kind": "mountain",
+      "priority": 75
+    },
+    {
+      "id": "borneo",
+      "name": "보르네오섬",
+      "sourceLayer": "regions",
+      "sourceName": "BORNEO",
+      "point": [
+        114.0,
+        1.0
+      ],
+      "kind": "island",
+      "priority": 65
+    },
+    {
+      "id": "sumatra",
+      "name": "수마트라섬",
+      "sourceLayer": "regions",
+      "sourceName": "SUMATRA",
+      "point": [
+        101.0,
+        -1.0
+      ],
+      "kind": "island",
+      "priority": 65
+    },
+    {
+      "id": "java",
+      "name": "자바섬",
+      "sourceLayer": "regions",
+      "sourceName": "JAVA",
+      "point": [
+        110.0,
+        -7.5
+      ],
+      "kind": "island",
+      "priority": 65
+    },
+    {
+      "id": "madagascar",
+      "name": "마다가스카르섬",
+      "sourceLayer": "regions",
+      "sourceName": "MADAGASCAR",
+      "point": [
+        46.5,
+        -20.0
+      ],
+      "kind": "island",
+      "priority": 75
+    },
+    {
+      "id": "greenland",
+      "name": "그린란드",
+      "sourceLayer": "regions",
+      "sourceName": "GREENLAND",
+      "point": [
+        -42.0,
+        72.0
+      ],
+      "kind": "island",
+      "priority": 75
+    },
+    {
+      "id": "iceland",
+      "name": "아이슬란드",
+      "sourceLayer": "regions",
+      "sourceName": "ICELAND",
+      "point": [
+        -19.0,
+        65.0
+      ],
+      "kind": "island",
+      "priority": 65
+    },
+    {
+      "id": "new-zealand",
+      "name": "뉴질랜드",
+      "sourceLayer": "regions",
+      "sourceName": "NEW ZEALAND",
+      "point": [
+        172.0,
+        -41.0
+      ],
+      "kind": "archipelago",
+      "priority": 75
+    },
+    {
+      "id": "philippines",
+      "name": "필리핀제도",
+      "sourceLayer": "regions",
+      "sourceName": "PHILIPPINES",
+      "point": [
+        122.0,
+        13.0
+      ],
+      "kind": "archipelago",
+      "priority": 70
+    },
+    {
+      "id": "hawaii",
+      "name": "하와이제도",
+      "sourceLayer": "regions",
+      "sourceName": "HAWAIIAN ISLANDS",
+      "point": [
+        -157.0,
+        20.7
+      ],
+      "kind": "archipelago",
+      "priority": 70
+    },
+    {
+      "id": "azores",
+      "name": "아소르스제도",
+      "sourceLayer": "regions",
+      "sourceName": "AÇORES",
+      "point": [
+        -28.0,
+        38.5
+      ],
+      "kind": "archipelago",
+      "priority": 70
+    },
+    {
+      "id": "canaries",
+      "name": "카나리아제도",
+      "sourceLayer": "regions",
+      "sourceName": "ISLAS CANARIAS",
+      "point": [
+        -15.7,
+        28.0
+      ],
+      "kind": "archipelago",
+      "priority": 70
+    },
+    {
+      "id": "good-hope",
+      "name": "희망봉",
+      "sourceLayer": "points",
+      "sourceName": "Cape of Good Hope",
+      "kind": "cape",
+      "priority": 75
+    },
+    {
+      "id": "horn",
+      "name": "혼곶",
+      "sourceLayer": "points",
+      "sourceName": "Cabo de Hornos",
+      "kind": "cape",
+      "priority": 75
+    },
+    {
+      "id": "cape-verde",
+      "name": "베르데곶",
+      "sourceLayer": "points",
+      "sourceName": "Cape Verde",
+      "kind": "cape",
+      "priority": 75
+    }
+  ]
+}

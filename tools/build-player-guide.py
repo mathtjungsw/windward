@@ -221,7 +221,7 @@ def page1(final):
 
 def page2(final):
     p=Poster(2,"원하는 방식으로 항해하세요","자동 항해와 직접 조종 · PC와 모바일 모두 지원",final)
-    p.section("자동 항해", "알고 있는 항구를 선택하고 예상 항해 시간·필요 보급·도착 잔량을 확인한 뒤 출항합니다. 배는 육지를 피해 경로를 따라갑니다. 강에서는 연결된 수로를 따라 이동합니다.")
+    p.section("자동 항해", "알고 있는 항구를 선택하고 예상 항해 시간·필요 보급·도착 잔량을 확인한 뒤 출항합니다. 직접 조종 중 항구를 고르면 자동 항해로 전환해 바로 출항합니다. 배는 육지를 피해 이동합니다. 강에서는 연결된 수로를 따라 이동합니다.")
     p.heading("직접 조종")
     keys=[("W / ↑","위"),("A / ←","왼쪽"),("S / ↓","아래"),("D / →","오른쪽")]
     for i,(key,label) in enumerate(keys):
@@ -231,15 +231,15 @@ def page2(final):
         p.d.text((xx+30,p.y+75),label,font=font(29),fill=MUTED)
     p.y+=154
     p.para("PC는 방향키 또는 WASD로 조종하고 바다를 클릭해 이동할 수 있습니다. 모바일은 방향 버튼을 누르거나 바다 터치 후 이동을 확정합니다. ■ 또는 Space로 정지하세요.")
-    p.section("지도를 둘러보고 내 배로 돌아오기", "메인 화면은 확대·축소 없는 평면 해도입니다. 드래그로 주변을 살펴보고 ‘내 배 위치’로 돌아옵니다. 세계지도는 지구본과 평면 중 고릅니다. 클릭하면 화면만 이동합니다. ‘내 배 보기’는 선박 상세를 여는 별도 버튼입니다.")
+    p.section("지도를 둘러보고 내 배로 돌아오기", "메인 화면은 확대·축소 없는 평면 해도입니다. 드래그로 주변을 살펴보고 ‘내 배 위치’로 돌아옵니다. 세계지도는 지구본과 평면 중 고릅니다. 지명은 조작·화면 설정에서 켜거나 끕니다. 클릭하면 화면만 이동합니다. ‘내 배 보기’는 선박 상세를 여는 별도 버튼입니다.")
     p.section("화면이 복잡하면 접으세요", "정보창 제목 옆 − 접기를 누르면 줄어들고 + 펼치기로 다시 엽니다. 사용자가 접은 상태를 기억합니다. 모바일 하단 바로가기로 항해·항구·화물·더보기에 접근하세요.")
     p.note("채팅이나 수량을 입력할 때에는 항해 키가 배를 움직이지 않습니다. 설명창을 닫은 뒤에도 이전에 누르던 방향으로 갑자기 출항하지 않도록 조작 상태를 정리합니다.")
     return p
 
 def page3(final):
     p=Poster(3,"잘 사고, 잘 팔고, 보급하세요","화물과 식량이 같은 배를 나누어 씁니다",final)
-    p.section("교역은 실제 입항한 항구에서", "항구마다 지역 공급·수입·중계 품목과 가격이 다릅니다. 다른 항구의 시세를 보고 있어도 판매 가격은 실제 정박지 기준입니다. 항해 중에는 교역할 수 없습니다.")
-    p.section("수량과 남는 공간을 확인", "1·5·10·최대 수량을 고르고 총액·거래 후 잔액·적재량을 확인하세요. 판매 한 건은 전량 같은 시작 단가입니다. 수량만큼 다음 시세에 반영하고, 현실 시간이 지나면 가격 압력이 회복됩니다.")
+    p.section("교역은 실제 입항한 항구에서", "항구마다 지역 공급·수입·중계 품목과 가격이 다릅니다. 다른 항구의 시세를 보고 있어도 판매 가격은 실제 정박지 기준입니다. 항해 중에는 교역할 수 없습니다. 일반 상품 31종의 생산지와 수요 지역을 비교하세요.")
+    p.section("수량과 남는 공간을 확인", "1·5·10·최대 수량을 고르고 총액·거래 후 잔액·적재량을 확인하세요. 판매 한 건은 전량 같은 시작 단가입니다. 수량은 다음 시세에 반영됩니다. 화물의 ‘최고가 판매처 찾기’로 검색 시점의 세후 수령액 상위 5곳을 보세요. 실제 판매할 때 가격은 달라질 수 있습니다.")
     p.heading("처음 배의 적재 예시")
     x=LEFT;y=p.y;unit=(RIGHT-LEFT)/20
     for i in range(20):
@@ -309,7 +309,7 @@ def page6(final):
         p.y=p.text(body,LEFT+410,p.y+28,RIGHT-LEFT-410,43,MUTED)+30
     p.para("점수가 같으면 공동 순위로 표시합니다. 상위 5명 밖의 내 정확한 순위는 ‘내 순위 조회’로 확인하세요. 항구 정보를 얻기만 한 것은 실제 방문과 다릅니다.",43)
     p.section("지금 접속 / 모든 선장", "‘선장 목록’에서 현재 접속 중인 사람과 한 번이라도 정상 입장한 사람을 나눠 봅니다. 전체 명부에는 로그아웃한 선장도 남고 방문 수·개방률·명성·선박 성장과 최종 접속 확인 시각을 한국 시간으로 보여줍니다.")
-    p.section("이름은 멀리 있어도, 배는 시야 안에서", "명부에서는 먼 선장의 이름도 확인할 수 있습니다. 지도 위 다른 배는 내 시야 180해리 안에서만 보입니다. 먼 사람의 실시간 좌표나 개인 탐험 지도는 공개되지 않습니다.")
+    p.section("이름은 멀리 있어도, 배는 시야 안에서", "명부에서는 먼 선장의 이름도 확인할 수 있습니다. 지도 위 다른 배는 내 시야 180해리 안에서만 보입니다. 로그아웃한 배도 마지막 확인 위치에 남으며, 가까운 배만 보입니다.")
     p.section("채팅 · 개선 제안 · 소유 항구", "채팅은 최근 50개를 순환 보관합니다. ‘개선 제안’은 별도 게시판에 보관하며 1분에 한 글, 20개씩 봅니다. ‘소유 항구’에서는 항구명·소유 선장·지분·기본 세율을 봅니다. 모바일은 ‘더보기’에서 엽니다.")
     p.note("해적·격파·결투·거래 종류·최고 이익은 이번 업데이트부터 집계합니다. 기존 도감·섬 입항·선박 단계는 이어집니다. 최고의 한 거래는 매입 원가와 세금을 뺀 이익입니다.")
     return p
@@ -321,7 +321,7 @@ def page7(final):
     p.section("구조를 탐험 지름길로 쓸 수는 없어요", "구조 중에는 새 안개 제거·항구 발견·유적/유물/동물/보물 수집·탐험 점수·발견 명성·최초 방문 보상이 진행되지 않습니다. 정상 출항해 다시 움직이면 탐험이 재개됩니다.")
     p.section("저장 상태를 확인하고 종료", "진행은 기기와 서버에 저장됩니다. 종료할 때는 계정의 ‘저장하고 로그아웃’을 이용하세요. 인터넷이 끊겼다면 저장 대기 안내를 확인하고 같은 기기에서 다시 연결하세요. 다른 기기 인계는 한 화면에서만 항해하도록 처리합니다.")
     p.heading("자주 묻는 질문")
-    p.para("Q. 개량하면 보급도 자동으로 가득 차나요?\nA. 최대 한도만 늘어납니다. 항구에서 채워야 합니다.\nQ. 화면을 꺼도 배와 식량이 계속 움직이나요?\nA. 숨겨진 탭·로그아웃 중 항해와 소모는 멈춥니다.",41,gap=20)
+    p.para("Q. 개량하면 보급도 자동으로 가득 차나요?\nA. 최대 한도만 늘어납니다. 항구에서 채워야 합니다.\nQ. 화면을 꺼도 배와 식량이 계속 움직이나요?\nA. 항해·보급 소모는 멈춥니다. 로그아웃한 해상 배는 공격받으면 장착 대포로 자동 반격합니다. 정박 배는 안전합니다.",41,gap=20)
     p.divider()
     qr=qrcode.make(URL).convert("RGB").resize((244,244),Image.Resampling.NEAREST)
     p.im.paste(qr,(RIGHT-244,p.y))
@@ -333,10 +333,10 @@ def page7(final):
 
 def page8(final):
     p=Poster(8,"항구의 주인, 바다의 상인이 되세요","누적 지분 소유 · 새 항구 개발 · 한정 고가 상품",final)
-    p.section("일반 항구는 지분 50% 초과가 소유", "최초 투자 기준은 일반 항구 100만 D, 대형 항구 300만 D입니다. 이후에는 1만 D 단위로 추가 투자합니다. 정확히 50%이거나 아무도 과반을 갖지 못하면 소유자가 없습니다. 투자 원금은 돌려받지 않습니다.",42)
+    p.section("일반 항구는 지분 50% 초과가 소유", "최초 투자 기준은 일반 항구 20만 D, 대형 항구 60만 D입니다. 이후에는 1만 D 단위로 추가 투자합니다. 정확히 50%이거나 아무도 과반을 갖지 못하면 소유자가 없습니다. 투자 원금은 돌려받지 않습니다.",42)
     p.section("세금은 기본 0%, 중립 보장은 두 곳", "소유자는 기본·선장별 세율을 0~10%로 지정합니다. 세금은 거래 총액에 붙고, 발생 당시 소유자의 장부에 적립됩니다. 블랙리스트는 교역·카지노·선박 서비스를 제한하며 필수 보급과 구조는 가능합니다. 리스본·포르투는 중립 항구입니다.",42)
-    p.section("새 항구 개발은 후보지에 접근해서", "개발 후보지 12곳에 실제 접근합니다. 개척 200만 D, 교역소 확장 100만 D, 조선 확장 150만 D입니다. 개발한 선장이 소유하며 이름을 지정합니다. 개발 전에는 일반 항구로 계산하지 않습니다.",42)
-    p.section("생산지에서만 살 수 있는 한정 상품", "선별 진주·최고급 견직물·정교한 자기·정선 향료 4종입니다. 생산지 공유 재고는 최대 10상자이며 현실 2시간마다 1상자씩 회복합니다. 다른 선장의 구매도 재고에 반영됩니다.",42)
+    p.section("새 항구 개발은 후보지에 접근해서", "개발 후보지 12곳에 실제 접근합니다. 개척 40만 D, 교역소 확장 20만 D, 조선 확장 30만 D입니다. 개발한 선장이 소유하며 이름을 지정합니다. 개발 전에는 일반 항구로 계산하지 않습니다.",42)
+    p.section("생산지에서만 살 수 있는 한정 상품", "선별 진주·최고급 견직물·정교한 자기·정선 향료 4종입니다. 생산지 공유 재고는 최대 30상자이며 현실 2시간마다 1상자씩 회복합니다. 다른 선장의 구매도 재고에 반영됩니다.",42)
     p.note("항구 투자·활동 메뉴에서 소유권과 내 세율을 확인하세요. 판매는 그 견적의 시작 단가로 전량 정산하고, 거래량은 다음 가격에 반영됩니다. 견적은 5초간 유효하며 다른 거래가 먼저 확정되면 다시 확인합니다.")
     return p
 
@@ -361,11 +361,11 @@ def page10(final):
     p=Poster(10,"다른 선장과 겨루고 해적을 토벌하세요","세 전투 모드 · 해안 활동 · 게임 두카트 주사위장",final)
     p.section("지도 위에서 바로 포격", "전투 창이 지도를 덮지 않습니다. 지도 아래 대포 버튼으로 발사하고 포탄·명중·빗나감을 봅니다. 배 옆에 현재/최대 내구도가 표시됩니다. 전투 조작은 접거나 펼칠 수 있습니다.",40)
     p.section("합의한 선장끼리 강화 결투", "시야 안 선장에게 요청하고 60초 안에 수락합니다. 결투 중에는 항해를 멈추며 피해 ×1.5, 명중률 +10%p, 재장전 ×0.7을 임시 적용합니다. 재장전과 제한 시간은 현실 시간으로 흐릅니다.",42)
-    p.section("시야 안 자유 공격과 해적 토벌", "자유 공격은 상대 동의 없이 기본 대포 성능으로 시작합니다. 사거리는 같은 바닷길의 180해리입니다. 해적은 먼저 공격하지 않으며 선장이 쏜 뒤 반격합니다. 토벌 명성은 50·150·400점, 재출현은 현실 30분입니다.",42)
+    p.section("시야 안 자유 공격과 해적 토벌", "자유 공격은 상대 동의 없이 기본 대포 성능으로 시작합니다. 사거리는 같은 바닷길의 180해리입니다. 해적은 24곳에 있으며 지도에서 발견합니다. 선제공격하지 않고 공격받은 뒤 반격합니다. 토벌 명성은 50·150·400점, 재출현은 현실 30분입니다.",42)
     p.section("패배하면 방문한 항구로 구조", "돈 10%(최대 2,000 D), 화물 10%(최대 5상자)와 수리비·구조비를 정산합니다. 돈이 없어도 구조합니다. 출항 때 손실 한도만 보관하고 남은 정산금은 전투 뒤 또는 입항 시 반환합니다. 전리품은 항구에서 수령하며 보관 한도는 50상자입니다.",42)
     p.section("해안의 보급과 위험한 약탈", "연안 지점 12곳의 10해리 안에서 이용합니다. 보급은 지점당 24시간 간격, 최대 2일, 항구 가격의 1.5배입니다. 약탈은 하루 3회, 보급 0.2일, 성공 70%·200 D입니다. 실패하면 HP 15%, 현금 5%(최대 500 D), 화물 5%(최대 3상자)를 잃습니다.",40)
     p.section("마카오·베네치아의 홀짝 주사위", "게임 두카트 10~500 D를 10 D 단위로 겁니다. 홀짝이 맞으면 베팅액을 포함한 1.9배, 틀리면 베팅금을 잃습니다. 현실 5초 간격이며 실제 돈 결제·환전은 없습니다.",40)
-    p.note("항구·구조·패전 직후는 공격에서 보호됩니다. 전투 중 항복하거나 항구로 이탈하면 패전으로 처리합니다. 접속이 끊긴 상대는 45초 뒤, 제한 시간은 180초 뒤 판정할 수 있습니다.")
+    p.note("실제 정박한 배는 모든 항구에서 보호됩니다. 해상 오프라인 배는 장착 대포가 원래 성능·재장전 간격으로 자동 반격합니다. 오프라인 교전은 180초 안에 격파하지 못하면 피해를 유지하고 무승부로 종료합니다. 합의 결투·온라인 자유 전투는 기존 판정을 따릅니다.")
     return p
 
 
@@ -379,10 +379,14 @@ def main():
 import {PORTS,ALL_PORTS} from './dist/data.js';
 import {DISCOVERIES} from './dist/discoveries-catalog.js';
 import {initialState} from './dist/engine.js';
+import {PREMIUM_STOCK_LIMIT} from './dist/market-rules.js';
+import {investmentBase} from './dist/commerce.js';
+import {PIRATE_ZONES} from './dist/pirate-catalog.js';
+import {PLACE_NAMES} from './dist/place-names.js';
 import {RANK_METRICS,RANK_GROUPS} from './dist/rank-metrics.js';
-console.log(JSON.stringify({ships:SHIPS.map(s=>[s.name,s.speed,s.capacity,s.supply,s.cost]),seconds:ACTIVE_SECONDS_PER_DAY,ports:PORTS.length,allPorts:ALL_PORTS.length,discoveries:DISCOVERIES.length,fame:DISCOVERIES.reduce((n,d)=>n+d.fame,0),start:initialState(),fleetLimits:[0,5,9,13,17].map(shipTier=>fleetLimit({shipTier})),rankings:RANK_METRICS.length,rankingGroups:RANK_GROUPS.length}));"""
+console.log(JSON.stringify({stock:PREMIUM_STOCK_LIMIT,invest:[investmentBase('seville'),investmentBase('london')],pirates:PIRATE_ZONES.length,placeNames:PLACE_NAMES.length,ships:SHIPS.map(s=>[s.name,s.speed,s.capacity,s.supply,s.cost]),seconds:ACTIVE_SECONDS_PER_DAY,ports:PORTS.length,allPorts:ALL_PORTS.length,discoveries:DISCOVERIES.length,fame:DISCOVERIES.reduce((n,d)=>n+d.fame,0),start:initialState(),fleetLimits:[0,5,9,13,17].map(shipTier=>fleetLimit({shipTier})),rankings:RANK_METRICS.length,rankingGroups:RANK_GROUPS.length}));"""
         runtime=json.loads(subprocess.run(["node","--input-type=module","-e",code],cwd=ROOT,check=True,capture_output=True,text=True,encoding="utf8").stdout)
-        expected={"seconds":2,"ports":78,"allPorts":112,"discoveries":40,"fame":15600,"fleetLimits":[1,2,3,4,5],"rankings":14,"rankingGroups":4}
+        expected={"stock":30,"invest":[200000,600000],"pirates":24,"placeNames":60,"seconds":2,"ports":78,"allPorts":112,"discoveries":40,"fame":15600,"fleetLimits":[1,2,3,4,5],"rankings":14,"rankingGroups":4}
         for key,value in expected.items():
             if runtime[key]!=value:raise ValueError(f"Guide and game differ: {key} = {runtime[key]} != {value}")
         if runtime["ships"]!=[list(row) for row in SHIP_ROWS]:raise ValueError("Guide ship table differs from actual ship-rules.js")
@@ -413,7 +417,7 @@ console.log(JSON.stringify({ships:SHIPS.map(s=>[s.name,s.speed,s.capacity,s.supp
         for rec in all_records:shutil.copy2(OUT/rec["file"],published/rec["file"])
         shutil.copy2(OUT/"windward-player-guide-10pages.zip",published/"windward-player-guide-10pages.zip")
         html='<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>바람의 항로 · 자세한 게임 안내</title><style>*{box-sizing:border-box}body{margin:0;background:#f3efdf;color:#245963;font:16px/1.7 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:24px}h1{font-size:26px}nav{display:flex;flex-wrap:wrap;gap:12px}a{color:#245963}figure{margin:30px 0;background:#fffdf4;border-radius:8px;overflow:hidden}figcaption{padding:12px}img{display:block;width:100%;height:auto}nav a{padding:10px 16px;background:#fffdf4;border:1px solid #b8c8b4;border-radius:6px}</style><main><h1>바람의 항로 · 자세한 게임 안내</h1><p>2026.11.10 규칙 기준 · JPG 10장입니다. 각 그림을 저장하거나 ZIP을 내려받으세요.</p><nav><a href="../">게임으로 돌아가기</a><a href="windward-player-guide-10pages.zip" download>JPG 10장 전체 내려받기</a></nav>'
-        for i,(rec,title) in enumerate(zip(all_records,titles),1):html+=f'<figure><figcaption>{i}. {title} · <a href="{rec["file"]}?v=20261110-community" download>JPG 저장</a></figcaption><a href="{rec["file"]}?v=20261110-community"><img src="{rec["file"]}?v=20261110-community" alt="{title} 안내" loading="lazy" width="1800" height="2550"></a></figure>'
+        for i,(rec,title) in enumerate(zip(all_records,titles),1):html+=f'<figure><figcaption>{i}. {title} · <a href="{rec["file"]}?v=20261110-navigation-offline" download>JPG 저장</a></figcaption><a href="{rec["file"]}?v=20261110-navigation-offline"><img src="{rec["file"]}?v=20261110-navigation-offline" alt="{title} 안내" loading="lazy" width="1800" height="2550"></a></figure>'
         (published/"index.html").write_text('<!doctype html>'+html+'</main></html>',encoding="utf8")
     print(f"Output: {OUT}")
 

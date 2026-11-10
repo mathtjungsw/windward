@@ -1,7 +1,10 @@
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.10-community-battle';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.10-community-battle';
-import {applyRaftStart} from './raft-start.js?v=2026.11.10-community-battle';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.10-community-battle';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.10-navigation-trade-offline';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.10-navigation-trade-offline';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.10-navigation-trade-offline';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.10-navigation-trade-offline';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.10-navigation-trade-offline';
+import {applyRaftStart} from './raft-start.js?v=2026.11.10-navigation-trade-offline';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.10-navigation-trade-offline';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
@@ -74,7 +77,7 @@ export class CaptainAccount {
     ]);
     this.app = appSdk.initializeApp(FIREBASE_CONFIG, 'windward-google');
     this.authSdk = authSdk;
-    this.sdk = dbSdk;
+    this.sdk = dbSdk;this.defenseEnabled=true;
     this.auth = authSdk.initializeAuth(this.app, {
       persistence: [authSdk.browserLocalPersistence, authSdk.browserSessionPersistence, authSdk.inMemoryPersistence],
       popupRedirectResolver: authSdk.browserPopupRedirectResolver
@@ -97,7 +100,9 @@ export class CaptainAccount {
     return profile?.name ? profile : null;
   }
 
-  async enter(user, profile, {name, takeover = false} = {}) {
+  async enter(...args){for(let retry=0;retry<3;retry++){try{return await this.enterOnce(...args);}catch(error){if(!this.defenseEnabled||retry===2||!/permission.?denied/i.test(String(error.code||error.message)))throw error;}}}
+
+  async enterOnce(user, profile, {name, takeover = false} = {}) {
     const requestedName = profile?.name || accountName(name);
     const uid = user.uid;
     const ref = this.sdk.ref(this.db, GAME_ROOT + '/privateSaves/' + uid);
@@ -111,11 +116,13 @@ export class CaptainAccount {
       }
     } catch(error) { throw Error('기기 저장을 읽지 못했어요. 원본은 유지됩니다.'); }
     const observed = (await this.sdk.get(ref)).val();
-    if(observed?.schemaVersion>5)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
+    if(observed?.schemaVersion>6)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
     if(observed&&(observed.schemaVersion||0)<5){const backup='windward-before-expansion-v5:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('업데이트 전 원본 기록을 보관하지 못했어요. 저장 공간을 확인하세요.');}}
     if(observed&&observed.schemaVersion<4){const backup='windward-before-raft-start-v4:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('전환 전 기록을 기기에 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
     if(observed&&observed.schemaVersion<3){const backup='windward-before-world-v3:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('이관 전 기기 백업을 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
     if(cached?.data?.version<3){const backup=key+':before-world-v3';if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(cached));}
+    const defense=this.defenseEnabled?(await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/fleetStates/'+uid))).val():null;
+    const checkpoint=this.defenseEnabled?(await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/privateNavigation/'+uid))).val():null;
     let block, recovered;
     const result = await this.sdk.runTransaction(ref, current => {
       current ??= observed;
@@ -124,18 +131,19 @@ export class CaptainAccount {
         block = 'session';
         return;
       }
-      if (cached?.pending && (!current || cached.revision !== current.revision)) {
+      const boundaryRecovery=recoverEnrollmentCache(current,cached);
+      if (cached?.pending && !boundaryRecovery && (!current || cached.revision !== current.revision)) {
         block = 'conflict';
         return;
       }
       recovered = !!cached?.pending;
-      const source = recovered ? cached.data : current ? current.data : initialState();
+      const source = boundaryRecovery || (recovered ? cached.data : current ? current.data : initialState());
       const game = parseGame(source);
-      applyRaftStart(game);
+      applyRaftStart(game);if(this.defenseEnabled){if(!recovered&&checkpoint?.data)restoreNavigation(game,JSON.parse(checkpoint.data),current?.revision);mergeDefense(game,defense,Date.now()+(this.serverOffset||0));if(!game.port){game.offlinePaused=true;}}
       game.world = 'real';
       game.speed = 1;
       return {
-        schemaVersion: 5,
+        schemaVersion:this.defenseEnabled?6:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}),
         operationSequence: current?.operationSequence||0,
         ...(current?.lastOperation?{lastOperation:current.lastOperation}:{}),
         revision: (current?.revision || 0) + 1,
@@ -165,7 +173,7 @@ export class CaptainAccount {
       revision: record.revision, ready: true, lost: false, dirty: false, economicUncertain:false
     });
     try{this.storage.removeItem?.('windward-economic-pending:'+uid);}catch{}
-    this.cache(game, false);
+    this.cache(game, false);if(this.defenseEnabled&&!await publishDefense(this,game)){this.ready=false;throw Object.assign(Error('접속 중 전투 상태가 갱신됐어요. 다시 연결합니다.'),{code:'permission_denied'});}
     this.onCommitted(game,this.revision);
     this.onStatus(recovered ? '이 기기의 기록을 복원했어요.' : '클라우드 저장 연결됨');
     this.stopWatch?.();
@@ -208,6 +216,7 @@ export class CaptainAccount {
       this.onStatus('이 기기에 저장 · 연결 후 동기화');
       return;
     }
+    if(this.defenseEnabled)await refreshDefense(this);
     const game = this.readGame();
     if (!game) return;
     const data = this.dirty ? JSON.stringify(game) : this.record.data;
@@ -216,7 +225,7 @@ export class CaptainAccount {
       const result = await this.sdk.runTransaction(this.ref, current => {
         current ??= this.record;
         if (current?.session !== this.session || current.revision !== expected) return;
-        return {...current, schemaVersion:5, data, revision: expected + 1, leaseUntil: Date.now()+(this.serverOffset||0) + 90000,
+        return {...current, schemaVersion:this.defenseEnabled?6:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}), data, revision: expected + 1, leaseUntil: Date.now()+(this.serverOffset||0) + 90000,
           updatedAt: this.sdk.serverTimestamp()};
       }, {applyLocally: false});
       if (!result.committed) {
@@ -234,7 +243,7 @@ export class CaptainAccount {
       this.dirty = JSON.stringify(current) !== data;
       this.cache(current, this.dirty);
       this.onStatus('클라우드 저장 완료');
-      this.onCommitted(JSON.parse(data),this.revision);
+      this.onCommitted(JSON.parse(data),this.revision);if(this.defenseEnabled)await publishDefense(this);
     } catch {
       this.onStatus('이 기기에 저장 · 서버 연결 확인 필요');
     }

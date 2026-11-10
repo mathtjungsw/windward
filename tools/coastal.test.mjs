@@ -20,7 +20,7 @@ test('coastal trade works while the starter cannot depart for Madeira or Havana'
   const porto=route('lisbon','porto',true);assert.ok(voyageEstimate(s,porto).food*2+.5<s.food);
   for(const id of ['funchal','havana'])assert.equal(canDepart(s,route('lisbon',id,true)).ok,false);
   const upgraded={...s};assert.equal(upgradeShip(upgraded).ok,true);assert.equal(upgraded.money,1800);assert.equal(upgraded.shipTier,1);
-  const goods=Object.entries(GOODS);assert.equal(goods.filter(([,g])=>!g.legacy&&!g.premium).length,23);
+  const goods=Object.entries(GOODS);assert.equal(goods.filter(([,g])=>!g.legacy&&!g.premium).length,31);
   for(const p of PORTS){assert.ok((NEW_PORT_HISTORY[p.id]||PORT_HISTORY[p.id])?.text,p.id);assert.ok(!p.market.includes('spice'));for(const [id]of goods)assert.ok(sellPrice(p.id,id,0)>0);}
   const net=(sellPrice('porto','wine',0)-price('lisbon','wine',0)+sellPrice('lisbon','driedfish',0)-price('porto','driedfish',0))*maxBuyQuantity(s,'wine')-6;
   assert.ok(net>0,`starter round trip net ${net}`);

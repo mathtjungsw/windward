@@ -144,6 +144,54 @@ export const GOODS = {
     "icon": "◈",
     "color": "#476c65",
     "legacy": true
+  },
+  "rawsilk": {
+    "name": "생사",
+    "base": 70,
+    "icon": "◈",
+    "color": "#476c65"
+  },
+  "rawcotton": {
+    "name": "면화",
+    "base": 32,
+    "icon": "◈",
+    "color": "#476c65"
+  },
+  "indigo": {
+    "name": "인디고 염료",
+    "base": 130,
+    "icon": "◈",
+    "color": "#476c65"
+  },
+  "saffron": {
+    "name": "사프란",
+    "base": 180,
+    "icon": "◈",
+    "color": "#476c65"
+  },
+  "ginger": {
+    "name": "생강",
+    "base": 80,
+    "icon": "◈",
+    "color": "#476c65"
+  },
+  "sandalwood": {
+    "name": "백단향",
+    "base": 150,
+    "icon": "◈",
+    "color": "#476c65"
+  },
+  "dyewood": {
+    "name": "염료목",
+    "base": 95,
+    "icon": "◈",
+    "color": "#476c65"
+  },
+  "silver": {
+    "name": "은",
+    "base": 200,
+    "icon": "◈",
+    "color": "#476c65"
   }
 };
 export const PORT_ECONOMY = {
@@ -156,7 +204,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "cotton"
-    ]
+    ],
+    "demandTiers": {
+      "cotton": 1.3
+    }
   },
   "sines": {
     "stock": {
@@ -167,7 +218,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "cotton"
-    ]
+    ],
+    "demandTiers": {
+      "cotton": 1.3
+    }
   },
   "lagos": {
     "stock": {
@@ -178,7 +232,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "porcelain"
-    ]
+    ],
+    "demandTiers": {
+      "porcelain": 1.3
+    }
   },
   "faro": {
     "stock": {
@@ -189,7 +246,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "porcelain"
-    ]
+    ],
+    "demandTiers": {
+      "porcelain": 1.3
+    }
   },
   "cadiz": {
     "stock": {
@@ -200,7 +260,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "sugar"
-    ]
+    ],
+    "demandTiers": {
+      "sugar": 1.3
+    }
   },
   "vigo": {
     "stock": {
@@ -211,7 +274,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "cotton"
-    ]
+    ],
+    "demandTiers": {
+      "cotton": 1.3
+    }
   },
   "acoruna": {
     "stock": {
@@ -222,7 +288,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "oliveoil"
-    ]
+    ],
+    "demandTiers": {
+      "oliveoil": 1.3
+    }
   },
   "bilbao": {
     "stock": {
@@ -233,7 +302,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "pepper"
-    ]
+    ],
+    "demandTiers": {
+      "pepper": 1.3
+    }
   },
   "plymouth": {
     "stock": {
@@ -244,7 +316,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "oliveoil"
-    ]
+    ],
+    "demandTiers": {
+      "oliveoil": 1.3
+    }
   },
   "southampton": {
     "stock": {
@@ -256,7 +331,11 @@ export const PORT_ECONOMY = {
     "demand": [
       "glass",
       "rawwool"
-    ]
+    ],
+    "demandTiers": {
+      "glass": 1.3,
+      "rawwool": 1.3
+    }
   },
   "larochelle": {
     "stock": {
@@ -267,51 +346,90 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "pepper"
-    ]
+    ],
+    "demandTiers": {
+      "pepper": 1.3
+    }
   },
   "funchal": {
     "stock": {
-      "wool": "import",
-      "timber": "import",
+      "sugar": "producer",
       "wine": "local",
-      "sugar": "producer"
+      "driedfish": "local",
+      "wool": "import",
+      "timber": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "cacao",
+      "cotton",
+      "nutmeg"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "cacao": 1.8,
+      "cotton": 1.3,
+      "nutmeg": 1.8
+    }
   },
   "laspalmas": {
     "stock": {
-      "wine": "import",
-      "wool": "import",
+      "sugar": "producer",
       "grain": "local",
-      "sugar": "producer"
+      "salt": "local",
+      "wine": "import",
+      "wool": "import"
     },
     "demand": [
-      "glass"
-    ]
+      "glass",
+      "cacao",
+      "cotton"
+    ],
+    "demandTiers": {
+      "glass": 1.8,
+      "cacao": 1.8,
+      "cotton": 1.3
+    }
   },
   "angra": {
     "stock": {
-      "wine": "import",
-      "wool": "import",
+      "grain": "producer",
       "timber": "local",
-      "grain": "producer"
+      "driedfish": "local",
+      "wine": "import",
+      "wool": "import"
     },
     "demand": [
-      "sugar"
-    ]
+      "cacao",
+      "porcelain",
+      "sugar",
+      "coffee"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "sugar": 1.3,
+      "coffee": 1.3
+    }
   },
   "ribeiragrande": {
     "stock": {
-      "grain": "import",
-      "wool": "import",
+      "driedfish": "producer",
       "salt": "local",
-      "driedfish": "producer"
+      "leather": "local",
+      "grain": "import",
+      "wool": "import"
     },
     "demand": [
-      "timber"
-    ]
+      "timber",
+      "cotton",
+      "glass"
+    ],
+    "demandTiers": {
+      "timber": 1.8,
+      "cotton": 1.8,
+      "glass": 1.3
+    }
   },
   "safi": {
     "stock": {
@@ -322,7 +440,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "porcelain"
-    ]
+    ],
+    "demandTiers": {
+      "porcelain": 1.3
+    }
   },
   "algiers": {
     "stock": {
@@ -333,7 +454,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "timber"
-    ]
+    ],
+    "demandTiers": {
+      "timber": 1.3
+    }
   },
   "dubrovnik": {
     "stock": {
@@ -344,7 +468,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "pepper"
-    ]
+    ],
+    "demandTiers": {
+      "pepper": 1.3
+    }
   },
   "hormuz": {
     "stock": {
@@ -354,7 +481,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "timber"
-    ]
+    ],
+    "demandTiers": {
+      "timber": 1.3
+    }
   },
   "calicut": {
     "stock": {
@@ -365,7 +495,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "copper"
-    ]
+    ],
+    "demandTiers": {
+      "copper": 1.3
+    }
   },
   "mocha": {
     "stock": {
@@ -376,29 +509,48 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "timber"
-    ]
+    ],
+    "demandTiers": {
+      "timber": 1.3
+    }
   },
   "ternate": {
     "stock": {
-      "cotton": "import",
-      "porcelain": "import",
+      "cloves": "producer",
       "driedfish": "local",
-      "cloves": "producer"
+      "ginger": "local",
+      "cotton": "import",
+      "porcelain": "import"
     },
     "demand": [
-      "wool"
-    ]
+      "cotton",
+      "copper",
+      "porcelain"
+    ],
+    "demandTiers": {
+      "cotton": 1.8,
+      "copper": 1.8,
+      "porcelain": 1.3
+    }
   },
   "bandaneira": {
     "stock": {
-      "cotton": "import",
-      "porcelain": "import",
+      "nutmeg": "producer",
       "driedfish": "local",
-      "nutmeg": "producer"
+      "cinnamon": "import",
+      "cotton": "import",
+      "porcelain": "import"
     },
     "demand": [
-      "wool"
-    ]
+      "cotton",
+      "copper",
+      "porcelain"
+    ],
+    "demandTiers": {
+      "cotton": 1.8,
+      "copper": 1.8,
+      "porcelain": 1.3
+    }
   },
   "quanzhou": {
     "stock": {
@@ -409,267 +561,502 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "wool"
-    ]
+    ],
+    "demandTiers": {
+      "wool": 1.3
+    }
   },
   "lisbon": {
     "stock": {
-      "salt": "import",
-      "wool": "import",
+      "wine": "producer",
       "oliveoil": "local",
-      "wine": "producer"
+      "driedfish": "import",
+      "wool": "import",
+      "cacao": "import",
+      "porcelain": "import"
     },
     "demand": [
+      "cacao",
+      "porcelain",
       "pepper",
-      "cinnamon"
-    ]
+      "driedfish",
+      "dyewood"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "pepper": 1.8,
+      "driedfish": 1.3,
+      "dyewood": 1.8
+    }
   },
   "seville": {
     "stock": {
-      "sugar": "import",
-      "cotton": "import",
+      "oliveoil": "producer",
       "wine": "local",
-      "oliveoil": "producer"
+      "saffron": "local",
+      "sugar": "import",
+      "silver": "import"
     },
     "demand": [
-      "pepper"
-    ]
+      "cacao",
+      "porcelain",
+      "pepper",
+      "indigo"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "pepper": 1.8,
+      "indigo": 1.3
+    }
   },
   "london": {
     "stock": {
-      "tea": "import",
-      "wine": "import",
+      "wool": "producer",
       "timber": "local",
-      "wool": "producer"
+      "tea": "import",
+      "cacao": "import",
+      "porcelain": "import",
+      "rawcotton": "import"
     },
     "demand": [
-      "pepper",
+      "cacao",
       "porcelain",
-      "rawwool"
-    ]
+      "rawwool",
+      "rawcotton"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "rawwool": 1.8,
+      "rawcotton": 1.3
+    }
   },
   "amsterdam": {
     "stock": {
+      "driedfish": "producer",
+      "wool": "local",
       "pepper": "import",
       "coffee": "import",
-      "wool": "local",
-      "driedfish": "producer"
+      "cacao": "import",
+      "porcelain": "import"
     },
     "demand": [
+      "cacao",
+      "porcelain",
       "silk",
-      "porcelain"
-    ]
+      "indigo",
+      "dyewood"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "silk": 1.3,
+      "indigo": 1.3,
+      "dyewood": 1.8
+    }
   },
   "venice": {
     "stock": {
+      "glass": "producer",
+      "wool": "local",
       "silk": "import",
       "pepper": "import",
-      "glass": "producer"
+      "rawsilk": "import"
     },
     "demand": [
-      "cloves"
-    ]
+      "cacao",
+      "porcelain",
+      "cloves",
+      "rawsilk"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "cloves": 1.8,
+      "rawsilk": 1.3
+    }
   },
   "alexandria": {
     "stock": {
-      "pepper": "import",
-      "cinnamon": "import",
+      "grain": "local",
+      "rawcotton": "local",
       "cotton": "import",
-      "grain": "local"
+      "pepper": "import",
+      "cinnamon": "import"
     },
     "demand": [
-      "timber"
-    ]
+      "timber",
+      "glass",
+      "rawsilk"
+    ],
+    "demandTiers": {
+      "timber": 1.8,
+      "glass": 1.3,
+      "rawsilk": 1.3
+    }
   },
   "accra": {
     "stock": {
-      "cotton": "import",
-      "salt": "import",
+      "driedfish": "producer",
       "grain": "local",
-      "driedfish": "producer"
-    },
-    "demand": [
-      "glass"
-    ]
-  },
-  "cape": {
-    "stock": {
-      "cotton": "import",
-      "pepper": "import",
-      "driedfish": "local",
-      "wine": "producer"
-    },
-    "demand": [
-      "porcelain"
-    ]
-  },
-  "zanzibar": {
-    "stock": {
-      "cotton": "import",
-      "grain": "import",
-      "cloves": "producer"
-    },
-    "demand": [
-      "porcelain"
-    ]
-  },
-  "muscat": {
-    "stock": {
-      "coffee": "import",
-      "cotton": "import",
-      "driedfish": "local",
-      "dates": "producer"
-    },
-    "demand": [
-      "timber"
-    ]
-  },
-  "goa": {
-    "stock": {
-      "pepper": "import",
-      "porcelain": "import",
-      "cotton": "producer"
-    },
-    "demand": [
-      "copper"
-    ]
-  },
-  "malacca": {
-    "stock": {
-      "pepper": "import",
-      "cloves": "import",
-      "nutmeg": "import",
+      "timber": "local",
       "cotton": "import"
     },
     "demand": [
-      "wool"
-    ]
+      "glass",
+      "cotton",
+      "copper",
+      "wine"
+    ],
+    "demandTiers": {
+      "glass": 1.8,
+      "cotton": 1.3,
+      "copper": 1.8,
+      "wine": 1.3
+    }
+  },
+  "cape": {
+    "stock": {
+      "wine": "producer",
+      "driedfish": "local",
+      "leather": "local",
+      "cotton": "import",
+      "pepper": "import"
+    },
+    "demand": [
+      "porcelain",
+      "tea",
+      "cotton"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "tea": 1.8,
+      "cotton": 1.3
+    }
+  },
+  "zanzibar": {
+    "stock": {
+      "cloves": "producer",
+      "driedfish": "local",
+      "coffee": "import",
+      "cotton": "import",
+      "porcelain": "import"
+    },
+    "demand": [
+      "porcelain",
+      "cotton",
+      "copper"
+    ],
+    "demandTiers": {
+      "porcelain": 1.3,
+      "cotton": 1.3,
+      "copper": 1.8
+    }
+  },
+  "muscat": {
+    "stock": {
+      "dates": "producer",
+      "driedfish": "local",
+      "coffee": "import",
+      "cotton": "import",
+      "saffron": "import"
+    },
+    "demand": [
+      "timber",
+      "cotton",
+      "porcelain"
+    ],
+    "demandTiers": {
+      "timber": 1.8,
+      "cotton": 1.3,
+      "porcelain": 1.8
+    }
+  },
+  "goa": {
+    "stock": {
+      "cotton": "producer",
+      "pepper": "local",
+      "rawcotton": "local",
+      "indigo": "local",
+      "sandalwood": "local",
+      "porcelain": "import"
+    },
+    "demand": [
+      "copper",
+      "glass",
+      "silver",
+      "cloves",
+      "dates"
+    ],
+    "demandTiers": {
+      "copper": 1.8,
+      "glass": 1.8,
+      "silver": 1.3,
+      "cloves": 1.3,
+      "dates": 1.3
+    }
+  },
+  "malacca": {
+    "stock": {
+      "driedfish": "local",
+      "pepper": "import",
+      "cloves": "import",
+      "nutmeg": "import",
+      "cotton": "import",
+      "sandalwood": "import"
+    },
+    "demand": [
+      "cotton",
+      "copper",
+      "porcelain"
+    ],
+    "demandTiers": {
+      "cotton": 1.3,
+      "copper": 1.8,
+      "porcelain": 1.3
+    }
   },
   "batavia": {
     "stock": {
-      "pepper": "import",
-      "cotton": "import",
+      "coffee": "producer",
       "sugar": "local",
-      "coffee": "producer"
+      "ginger": "local",
+      "dyewood": "local",
+      "pepper": "import",
+      "cotton": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "cotton",
+      "copper"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "cotton": 1.3,
+      "copper": 1.3
+    }
   },
   "macau": {
     "stock": {
       "silk": "import",
       "tea": "import",
-      "porcelain": "import"
+      "porcelain": "import",
+      "rawsilk": "import",
+      "sandalwood": "import"
     },
     "demand": [
-      "wool"
-    ]
+      "silver",
+      "wool",
+      "glass",
+      "sandalwood"
+    ],
+    "demandTiers": {
+      "silver": 1.8,
+      "wool": 1.8,
+      "glass": 1.3,
+      "sandalwood": 1.3
+    }
   },
   "nagasaki": {
     "stock": {
+      "copper": "local",
+      "silver": "local",
+      "porcelain": "local",
       "silk": "import",
-      "sugar": "import",
-      "copper": "producer"
+      "rawsilk": "import",
+      "sugar": "import"
     },
     "demand": [
+      "rawsilk",
+      "silk",
+      "sugar",
       "wool"
-    ]
+    ],
+    "demandTiers": {
+      "rawsilk": 1.8,
+      "silk": 1.3,
+      "sugar": 1.3,
+      "wool": 1.3
+    }
   },
   "busan": {
     "stock": {
+      "driedfish": "producer",
+      "porcelain": "local",
+      "grain": "local",
       "silk": "import",
-      "copper": "import",
-      "driedfish": "local",
-      "porcelain": "producer"
+      "copper": "import"
     },
     "demand": [
-      "sugar"
-    ]
+      "sugar",
+      "rawsilk",
+      "cotton"
+    ],
+    "demandTiers": {
+      "sugar": 1.8,
+      "rawsilk": 1.3,
+      "cotton": 1.3
+    }
   },
   "havana": {
     "stock": {
-      "wine": "import",
-      "wool": "import",
+      "sugar": "producer",
       "cacao": "local",
-      "sugar": "producer"
+      "driedfish": "local",
+      "wine": "import",
+      "wool": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "wine",
+      "porcelain",
+      "wool"
+    ],
+    "demandTiers": {
+      "wine": 1.8,
+      "porcelain": 1.8,
+      "wool": 1.3
+    }
   },
   "cartagena": {
     "stock": {
-      "wine": "import",
-      "wool": "import",
+      "cacao": "local",
       "leather": "local",
-      "cacao": "producer"
+      "sugar": "local",
+      "wine": "import",
+      "wool": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "wine",
+      "wool"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "wine": 1.8,
+      "wool": 1.3
+    }
   },
   "recife": {
     "stock": {
+      "sugar": "producer",
+      "dyewood": "producer",
+      "rawcotton": "local",
       "wine": "import",
-      "wool": "import",
-      "sugar": "producer"
+      "wool": "import"
     },
     "demand": [
-      "glass"
-    ]
+      "glass",
+      "porcelain",
+      "wool"
+    ],
+    "demandTiers": {
+      "glass": 1.8,
+      "porcelain": 1.8,
+      "wool": 1.3
+    }
   },
   "buenos": {
     "stock": {
-      "wine": "import",
-      "salt": "import",
+      "leather": "producer",
       "rawwool": "local",
-      "leather": "producer"
+      "grain": "local",
+      "wine": "import",
+      "salt": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "cotton",
+      "wine"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "cotton": 1.8,
+      "wine": 1.3
+    }
   },
   "sydney": {
     "stock": {
-      "tea": "import",
-      "wine": "import",
+      "rawwool": "producer",
       "timber": "local",
-      "rawwool": "producer"
+      "leather": "local",
+      "wine": "import",
+      "tea": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "cotton",
+      "tea"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "cotton": 1.8,
+      "tea": 1.3
+    }
   },
   "porto": {
     "stock": {
-      "salt": "import",
-      "wool": "import",
-      "wine": "producer"
+      "driedfish": "producer",
+      "wine": "local",
+      "salt": "local",
+      "timber": "local",
+      "wool": "import"
     },
     "demand": [
-      "glass"
-    ]
+      "cacao",
+      "porcelain",
+      "cotton",
+      "wine"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "cotton": 1.3,
+      "wine": 1.3
+    }
   },
   "bordeaux": {
     "stock": {
-      "wool": "import",
-      "salt": "import",
+      "wine": "producer",
       "timber": "local",
-      "wine": "producer"
+      "salt": "local",
+      "wool": "import",
+      "cacao": "import"
     },
     "demand": [
-      "pepper"
-    ]
+      "cacao",
+      "porcelain",
+      "ginger",
+      "rawsilk"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "ginger": 1.8,
+      "rawsilk": 1.3
+    }
   },
   "marseille": {
     "stock": {
+      "oliveoil": "producer",
+      "wine": "local",
       "cotton": "import",
-      "pepper": "import",
-      "oliveoil": "producer"
+      "rawsilk": "import",
+      "saffron": "import"
     },
     "demand": [
-      "wool"
-    ]
+      "cacao",
+      "porcelain",
+      "rawsilk",
+      "indigo"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "rawsilk": 1.3,
+      "indigo": 1.3
+    }
   },
   "barcelona": {
     "stock": {
@@ -680,7 +1067,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "silk"
-    ]
+    ],
+    "demandTiers": {
+      "silk": 1.3
+    }
   },
   "genoa": {
     "stock": {
@@ -690,7 +1080,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "cloves"
-    ]
+    ],
+    "demandTiers": {
+      "cloves": 1.3
+    }
   },
   "naples": {
     "stock": {
@@ -701,28 +1094,52 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "pepper"
-    ]
+    ],
+    "demandTiers": {
+      "pepper": 1.3
+    }
   },
   "athens": {
     "stock": {
-      "wool": "import",
-      "cotton": "import",
+      "oliveoil": "producer",
       "wine": "local",
-      "oliveoil": "producer"
+      "grain": "local",
+      "cotton": "import",
+      "saffron": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "cacao",
+      "porcelain",
+      "cinnamon",
+      "saffron"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "cinnamon": 1.8,
+      "saffron": 1.3
+    }
   },
   "istanbul": {
     "stock": {
+      "leather": "local",
+      "grain": "local",
       "silk": "import",
-      "cotton": "import",
-      "pepper": "import"
+      "rawsilk": "import",
+      "saffron": "import"
     },
     "demand": [
-      "glass"
-    ]
+      "cacao",
+      "porcelain",
+      "glass",
+      "saffron"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "glass": 1.3,
+      "saffron": 1.3
+    }
   },
   "rotterdam": {
     "stock": {
@@ -732,17 +1149,31 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "wine"
-    ]
+    ],
+    "demandTiers": {
+      "wine": 1.3
+    }
   },
   "cologne": {
     "stock": {
+      "wool": "local",
+      "glass": "local",
       "wine": "import",
       "salt": "import",
-      "wool": "local"
+      "cacao": "import"
     },
     "demand": [
-      "pepper"
-    ]
+      "cacao",
+      "porcelain",
+      "dyewood",
+      "indigo"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "dyewood": 1.8,
+      "indigo": 1.3
+    }
   },
   "ruse": {
     "stock": {
@@ -753,18 +1184,31 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "salt"
-    ]
+    ],
+    "demandTiers": {
+      "salt": 1.3
+    }
   },
   "belgrade": {
     "stock": {
-      "wine": "import",
-      "salt": "import",
+      "grain": "producer",
       "leather": "local",
-      "grain": "producer"
+      "wine": "local",
+      "salt": "import",
+      "cotton": "import"
     },
     "demand": [
-      "cotton"
-    ]
+      "cacao",
+      "porcelain",
+      "cotton",
+      "leather"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "cotton": 1.3,
+      "leather": 1.3
+    }
   },
   "sanlucar": {
     "stock": {
@@ -775,18 +1219,31 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "pepper"
-    ]
+    ],
+    "demandTiers": {
+      "pepper": 1.3
+    }
   },
   "dublin": {
     "stock": {
-      "wine": "import",
-      "salt": "import",
+      "wool": "producer",
       "leather": "local",
-      "wool": "producer"
+      "driedfish": "local",
+      "wine": "import",
+      "tea": "import"
     },
     "demand": [
-      "oliveoil"
-    ]
+      "cacao",
+      "porcelain",
+      "oliveoil",
+      "tea"
+    ],
+    "demandTiers": {
+      "cacao": 1.8,
+      "porcelain": 1.8,
+      "oliveoil": 1.3,
+      "tea": 1.3
+    }
   },
   "tangier": {
     "stock": {
@@ -797,7 +1254,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "porcelain"
-    ]
+    ],
+    "demandTiers": {
+      "porcelain": 1.3
+    }
   },
   "tunis": {
     "stock": {
@@ -808,40 +1268,65 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "timber"
-    ]
+    ],
+    "demandTiers": {
+      "timber": 1.3
+    }
   },
   "dakar": {
     "stock": {
-      "cotton": "import",
-      "grain": "import",
+      "driedfish": "producer",
       "salt": "local",
-      "driedfish": "producer"
+      "leather": "local",
+      "cotton": "import"
     },
     "demand": [
-      "glass"
-    ]
+      "glass",
+      "cotton",
+      "copper"
+    ],
+    "demandTiers": {
+      "glass": 1.8,
+      "cotton": 1.3,
+      "copper": 1.3
+    }
   },
   "luanda": {
     "stock": {
-      "cotton": "import",
-      "salt": "import",
+      "driedfish": "producer",
       "leather": "local",
-      "driedfish": "producer"
+      "salt": "local",
+      "cotton": "import"
     },
     "demand": [
-      "timber"
-    ]
+      "glass",
+      "cotton",
+      "copper"
+    ],
+    "demandTiers": {
+      "glass": 1.8,
+      "cotton": 1.8,
+      "copper": 1.3
+    }
   },
   "maputo": {
     "stock": {
-      "cotton": "import",
-      "salt": "import",
+      "driedfish": "producer",
       "timber": "local",
-      "driedfish": "producer"
+      "grain": "local",
+      "cotton": "import",
+      "salt": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "cotton",
+      "copper"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "cotton": 1.8,
+      "copper": 1.3
+    }
   },
   "mombasa": {
     "stock": {
@@ -852,29 +1337,49 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "porcelain"
-    ]
+    ],
+    "demandTiers": {
+      "porcelain": 1.3
+    }
   },
   "cairo": {
     "stock": {
-      "pepper": "import",
-      "cinnamon": "import",
+      "cotton": "producer",
       "grain": "local",
-      "cotton": "producer"
+      "rawcotton": "local",
+      "dates": "local",
+      "indigo": "import"
     },
     "demand": [
-      "timber"
-    ]
+      "timber",
+      "copper",
+      "indigo",
+      "rawcotton"
+    ],
+    "demandTiers": {
+      "timber": 1.8,
+      "copper": 1.8,
+      "indigo": 1.3,
+      "rawcotton": 1.3
+    }
   },
   "luxor": {
     "stock": {
-      "cotton": "import",
-      "salt": "import",
+      "grain": "producer",
       "dates": "local",
-      "grain": "producer"
+      "cotton": "local",
+      "salt": "import"
     },
     "demand": [
-      "timber"
-    ]
+      "timber",
+      "copper",
+      "wool"
+    ],
+    "demandTiers": {
+      "timber": 1.8,
+      "copper": 1.8,
+      "wool": 1.3
+    }
   },
   "mogadishu": {
     "stock": {
@@ -885,28 +1390,48 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "porcelain"
-    ]
+    ],
+    "demandTiers": {
+      "porcelain": 1.3
+    }
   },
   "aden": {
     "stock": {
-      "coffee": "import",
-      "cinnamon": "import",
+      "coffee": "local",
+      "dates": "local",
       "cotton": "import",
-      "dates": "local"
+      "cinnamon": "import",
+      "ginger": "import"
     },
     "demand": [
-      "timber"
-    ]
+      "timber",
+      "glass",
+      "cotton"
+    ],
+    "demandTiers": {
+      "timber": 1.8,
+      "glass": 1.8,
+      "cotton": 1.3
+    }
   },
   "jeddah": {
     "stock": {
+      "dates": "local",
       "coffee": "import",
       "cotton": "import",
-      "dates": "producer"
+      "grain": "import",
+      "saffron": "import"
     },
     "demand": [
-      "timber"
-    ]
+      "timber",
+      "porcelain",
+      "cotton"
+    ],
+    "demandTiers": {
+      "timber": 1.8,
+      "porcelain": 1.8,
+      "cotton": 1.3
+    }
   },
   "kochi": {
     "stock": {
@@ -916,28 +1441,52 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "copper"
-    ]
+    ],
+    "demandTiers": {
+      "copper": 1.3
+    }
   },
   "colombo": {
     "stock": {
-      "cotton": "import",
-      "sugar": "import",
+      "cinnamon": "producer",
       "tea": "local",
-      "cinnamon": "producer"
+      "ginger": "local",
+      "cotton": "import",
+      "sugar": "import"
     },
     "demand": [
-      "copper"
-    ]
+      "copper",
+      "glass",
+      "cotton",
+      "dates"
+    ],
+    "demandTiers": {
+      "copper": 1.8,
+      "glass": 1.8,
+      "cotton": 1.3,
+      "dates": 1.3
+    }
   },
   "chennai": {
     "stock": {
+      "cotton": "producer",
+      "indigo": "producer",
+      "rawcotton": "local",
       "pepper": "import",
-      "silk": "import",
-      "cotton": "producer"
+      "silk": "import"
     },
     "demand": [
-      "copper"
-    ]
+      "copper",
+      "silver",
+      "glass",
+      "rawcotton"
+    ],
+    "demandTiers": {
+      "copper": 1.8,
+      "silver": 1.8,
+      "glass": 1.3,
+      "rawcotton": 1.3
+    }
   },
   "singapore": {
     "stock": {
@@ -947,28 +1496,49 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "porcelain"
-    ]
+    ],
+    "demandTiers": {
+      "porcelain": 1.3
+    }
   },
   "manila": {
     "stock": {
+      "sugar": "producer",
+      "timber": "local",
+      "ginger": "local",
       "silk": "import",
       "porcelain": "import",
-      "timber": "local",
-      "sugar": "producer"
+      "silver": "import"
     },
     "demand": [
-      "wool"
-    ]
+      "silver",
+      "wool",
+      "glass"
+    ],
+    "demandTiers": {
+      "silver": 1.8,
+      "wool": 1.8,
+      "glass": 1.3
+    }
   },
   "shanghai": {
     "stock": {
+      "silk": "local",
+      "rawsilk": "local",
       "tea": "import",
       "porcelain": "import",
-      "silk": "producer"
+      "cotton": "local"
     },
     "demand": [
-      "wool"
-    ]
+      "silver",
+      "wool",
+      "sandalwood"
+    ],
+    "demandTiers": {
+      "silver": 1.8,
+      "wool": 1.8,
+      "sandalwood": 1.3
+    }
   },
   "nanjing": {
     "stock": {
@@ -979,40 +1549,67 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "pepper"
-    ]
+    ],
+    "demandTiers": {
+      "pepper": 1.3
+    }
   },
   "wuhan": {
     "stock": {
-      "silk": "import",
+      "tea": "local",
+      "grain": "producer",
+      "rawsilk": "local",
       "salt": "import",
-      "grain": "local",
-      "tea": "producer"
+      "porcelain": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "silver",
+      "wool",
+      "glass"
+    ],
+    "demandTiers": {
+      "silver": 1.8,
+      "wool": 1.8,
+      "glass": 1.3
+    }
   },
   "neworleans": {
     "stock": {
-      "sugar": "import",
-      "cotton": "import",
+      "grain": "producer",
+      "rawcotton": "local",
       "timber": "local",
-      "grain": "producer"
+      "sugar": "local",
+      "cotton": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "wine",
+      "cotton"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "wine": 1.8,
+      "cotton": 1.3
+    }
   },
   "memphis": {
     "stock": {
-      "cotton": "import",
-      "salt": "import",
+      "rawcotton": "producer",
       "grain": "local",
-      "timber": "producer"
+      "timber": "local",
+      "cotton": "import",
+      "salt": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "glass",
+      "wool"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "glass": 1.8,
+      "wool": 1.3
+    }
   },
   "macapa": {
     "stock": {
@@ -1023,7 +1620,10 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "porcelain"
-    ]
+    ],
+    "demandTiers": {
+      "porcelain": 1.3
+    }
   },
   "santarem": {
     "stock": {
@@ -1034,29 +1634,48 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "porcelain"
-    ]
+    ],
+    "demandTiers": {
+      "porcelain": 1.3
+    }
   },
   "manaus": {
     "stock": {
-      "cotton": "import",
-      "salt": "import",
+      "timber": "producer",
       "cacao": "local",
-      "timber": "producer"
+      "driedfish": "local",
+      "cotton": "import",
+      "salt": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "glass",
+      "cotton"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "glass": 1.8,
+      "cotton": 1.3
+    }
   },
   "rio": {
     "stock": {
-      "wine": "import",
-      "wool": "import",
+      "coffee": "producer",
       "sugar": "local",
-      "coffee": "producer"
+      "dyewood": "local",
+      "wine": "import",
+      "wool": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "wine",
+      "wool"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "wine": 1.8,
+      "wool": 1.3
+    }
   },
   "salvador": {
     "stock": {
@@ -1067,40 +1686,67 @@ export const PORT_ECONOMY = {
     },
     "demand": [
       "glass"
-    ]
+    ],
+    "demandTiers": {
+      "glass": 1.3
+    }
   },
   "callao": {
     "stock": {
+      "silver": "local",
+      "copper": "local",
+      "leather": "local",
       "wine": "import",
-      "salt": "import",
-      "wool": "import",
-      "copper": "producer"
+      "wool": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "wine",
+      "wool"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "wine": 1.8,
+      "wool": 1.3
+    }
   },
   "perth": {
     "stock": {
-      "tea": "import",
-      "wine": "import",
+      "sandalwood": "producer",
+      "rawwool": "local",
       "timber": "local",
-      "rawwool": "producer"
+      "tea": "import",
+      "wine": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "cotton",
+      "tea"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "cotton": 1.8,
+      "tea": 1.3
+    }
   },
   "auckland": {
     "stock": {
-      "tea": "import",
-      "salt": "import",
+      "timber": "producer",
       "rawwool": "local",
-      "timber": "producer"
+      "driedfish": "local",
+      "tea": "import",
+      "salt": "import"
     },
     "demand": [
-      "porcelain"
-    ]
+      "porcelain",
+      "cotton",
+      "tea"
+    ],
+    "demandTiers": {
+      "porcelain": 1.8,
+      "cotton": 1.8,
+      "tea": 1.3
+    }
   }
 };
 export const NEW_PORT_IDS = [
@@ -1129,3 +1775,773 @@ export const NEW_PORT_IDS = [
   "bandaneira",
   "quanzhou"
 ];
+export const TRADE_RESEARCH = {
+  "checkedAt": "2026-11-10",
+  "roleDefinition": {
+    "producer": "항구와 배후 생산권의 대표 수출 공급. 도시 안의 농장·광산·공방만 뜻하지 않습니다.",
+    "local": "주변 생산권에서 모이는 지역 공급.",
+    "import": "다른 생산권에서 들여온 수입 또는 재수출·중계."
+  },
+  "eraNote": "단일 연대를 재현하지 않습니다. 역사·식물·유물 자료는 원료와 교역 방향을 뒷받침하며 개별 항구의 재고·수요 배율·가격은 게임 설정입니다. 강제 노동과 식민 지배를 수반한 교역도 포함된 역사 자료이며 가치 판단이나 수익 보장이 아닙니다.",
+  "sources": {
+    "eic1836": {
+      "label": "East India Company · 1836 면화·생사·인디고 보고서 원본(Wellcome 소장)",
+      "url": "https://wellcomecollection.org/works/qpcpcrkd",
+      "kind": "primary-record",
+      "supports": "인도 면화·생사·인디고의 생산·상업 자료. 모든 게임 항구의 개별 생산을 증명하는 자료는 아닙니다."
+    },
+    "rawsilk": {
+      "label": "London Museum · 벵골 생사 무역 실물 표본",
+      "url": "https://www.londonmuseum.org.uk/collections/v/object-277398/sample-plaited-sample-of-raw-silk/",
+      "kind": "collection-object",
+      "supports": "생사 표본과 벵골 생사 무역의 설명."
+    },
+    "indigo": {
+      "label": "Kew · True indigo",
+      "url": "https://www.kew.org/plants/indigo",
+      "kind": "botanical-institution",
+      "supports": "인도 아대륙에서 재배된 인디고 및 아메리카로 확산된 역사."
+    },
+    "saffron": {
+      "label": "스페인 농업부 · Azafrán de La Mancha 제품 명세와 역사 기록",
+      "url": "https://www.mapa.gob.es/dam/mapa/contenido/alimentacion/temas/calidad-agroalimentaria/2017-calidad-diferenciada/nuevo_denominaciones/pliegos-de-condiciones/pliego-condiciones-agroalimentarios/azafran_2025_06_30.pdf",
+      "kind": "official-record",
+      "supports": "라만차 사프란의 재배 기록. 세비야 자체를 산지라고 설명하지 않습니다."
+    },
+    "ginger": {
+      "label": "Kew · Ginger",
+      "url": "https://www.kew.org/plants/ginger",
+      "kind": "botanical-institution",
+      "supports": "생강의 아시아 기원과 오랜 유럽 향신료 교역."
+    },
+    "sandalwood": {
+      "label": "호주 ACIAR · 서호주 백단향 산업사",
+      "url": "https://www.aciar.gov.au/sites/default/files/legacy/node/2231/pr84_pdf_20180.pdf",
+      "kind": "official-research",
+      "supports": "서호주 백단향의 1840년대 이후 수출과 중국 시장. 16세기 항구로 재현하지 않습니다."
+    },
+    "sandalwoodSpecies": {
+      "label": "서호주 산림생산위원회 · Sandalwood",
+      "url": "https://www.wa.gov.au/organisation/forest-products-commission/sandalwood",
+      "kind": "official-record",
+      "supports": "서호주 백단향의 자생 범위."
+    },
+    "dyewood": {
+      "label": "FAO · Natural colourants and dyestuffs",
+      "url": "https://www.fao.org/4/v8879e/v8879e.pdf",
+      "kind": "official-research",
+      "supports": "브라질·중남미의 브라질우드 및 아시아 소목의 염색용 심재."
+    },
+    "dyewoodRecipe": {
+      "label": "UCL · 중세 염료목 조리법 원문 전사와 실험",
+      "url": "https://www.ucl.ac.uk/art-history/sites/art_history/files/brazilwood_dye_public_final.pdf",
+      "kind": "primary-record-transcription",
+      "supports": "역사적 브라질우드 염료 조리법. 게임의 가격 자료가 아닙니다."
+    },
+    "silver": {
+      "label": "Met · Manila Galleon Trade · 소장 유물과 교역 설명",
+      "url": "https://www.metmuseum.org/essays/the-manila-galleon-trade-1565-1815",
+      "kind": "collection-research",
+      "supports": "신스페인·페루 은과 아시아 자기·비단의 교환, 마닐라·아카풀코 중계."
+    },
+    "porcelain": {
+      "label": "Met · 중국 수출 자기 · 실물 도자기와 수출시장",
+      "url": "https://www.metmuseum.org/essays/east-and-west-chinese-export-porcelain",
+      "kind": "collection-research",
+      "supports": "중국 자기의 유럽 수출과 소비. 유럽14항의 같은 수요 배율은 게임 설정입니다."
+    },
+    "cacao": {
+      "label": "Alimentarium · The history of chocolate",
+      "url": "https://www.alimentarium.org/en/fact-sheet/history-chocolate",
+      "kind": "museum-research",
+      "supports": "아메리카 카카오의 유럽 소비 확산. 개별 항구 수요와 가격은 게임 설정입니다."
+    },
+    "sandalwoodHawaii": {
+      "label": "하와이 농업국 · History of Agriculture in Hawaii",
+      "url": "https://dab.hawaii.gov/blog/ag-resources/history-of-agriculture-in-hawaii/",
+      "kind": "official-record",
+      "supports": "1790년 백단향 수출 시작과 1810~1825년 교역 절정의 연표."
+    },
+    "sandalwoodFiji": {
+      "label": "피지 중앙은행 · A History of Fiji’s Currency",
+      "url": "https://www.rbf.gov.fj/core-functions/currency-management/a-history-of-fijis-currency/",
+      "kind": "official-record",
+      "supports": "19세기 초 백단향을 위한 방문 선박과 피지인의 물물교환."
+    }
+  },
+  "goodsNotes": {
+    "rawsilk": {
+      "text": "완성 비단과 구분한 생사 원료입니다. 장강 권역과 벵골의 지역 공급, 마카오·나가사키 중계, 유럽 직물 시장 수요를 게임에 배치했습니다.",
+      "sources": [
+        "eic1836",
+        "rawsilk"
+      ]
+    },
+    "rawcotton": {
+      "text": "면직물과 구분한 원면입니다. 인도와 미시시피·이집트 권역을 잇되 후대의 농업도 함께 사용하는 게임 배치입니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "indigo": {
+      "text": "천연 식물성 파란 염료입니다. 인도 지역 공급과 유럽 직물 시장의 수요를 연결합니다.",
+      "sources": [
+        "eic1836",
+        "indigo"
+      ]
+    },
+    "saffron": {
+      "text": "라만차의 생산 기록을 참고하여 세비야에는 스페인 지역 공급으로 배치했습니다. 세비야 도시 안 재배나 아라비아 중계항 자체 생산을 주장하지 않습니다.",
+      "sources": [
+        "saffron"
+      ]
+    },
+    "ginger": {
+      "text": "기존 고가 향신료와 구분한 생강입니다. 남아시아와 동남아시아 공급·중계를 게임용으로 나눴습니다.",
+      "sources": [
+        "ginger"
+      ]
+    },
+    "sandalwood": {
+      "text": "백단향이라는 교역 범주에 인도양·태평양과 서호주의 서로 다른 향목·시대를 함께 담았습니다. 퍼스의 주요 공급은 19세기 이후 서호주 수출을 참고하며 다윈은 티모르해 중계입니다.",
+      "sources": [
+        "sandalwood",
+        "sandalwoodSpecies",
+        "sandalwoodHawaii",
+        "sandalwoodFiji"
+      ]
+    },
+    "dyewood": {
+      "text": "건축용 목재와 구분한 염색용 심재입니다. 헤시피는 페르남부쿠 권역 공급, 자카르타는 아시아 소목 계열의 지역 공급으로 설정했습니다.",
+      "sources": [
+        "dyewood",
+        "dyewoodRecipe"
+      ]
+    },
+    "silver": {
+      "text": "은은 멕시코·안데스의 배후 생산권에서 항구로 모이는 지역 공급이며 아카풀코·마닐라·마카오를 거쳐 동아시아로 연결됩니다. 항구 안 은광을 뜻하지 않습니다.",
+      "sources": [
+        "silver"
+      ]
+    }
+  },
+  "portNotes": {
+    "lisbon": {
+      "text": "게임 배치: 와인, 올리브유 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain"
+      ]
+    },
+    "porto": {
+      "text": "게임 배치: 건어물, 와인, 소금, 목재 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain"
+      ]
+    },
+    "seville": {
+      "text": "사프란은 라만차를 포함한 스페인 배후권의 지역 공급이며 세비야 자체 산지가 아닙니다. 은도 신대륙에서 들어오는 수입품입니다.",
+      "sources": [
+        "cacao",
+        "porcelain",
+        "eic1836",
+        "indigo",
+        "saffron",
+        "silver"
+      ]
+    },
+    "london": {
+      "text": "게임 배치: 모직물, 목재 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain",
+        "eic1836"
+      ]
+    },
+    "amsterdam": {
+      "text": "게임 배치: 건어물, 모직물 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain",
+        "eic1836",
+        "indigo"
+      ]
+    },
+    "bordeaux": {
+      "text": "게임 배치: 와인, 목재, 소금 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain",
+        "eic1836",
+        "rawsilk",
+        "ginger"
+      ]
+    },
+    "marseille": {
+      "text": "게임 배치: 올리브유, 와인 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain",
+        "eic1836",
+        "rawsilk",
+        "indigo",
+        "saffron"
+      ]
+    },
+    "venice": {
+      "text": "게임 배치: 유리공예, 모직물 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain",
+        "eic1836",
+        "rawsilk"
+      ]
+    },
+    "athens": {
+      "text": "게임 배치: 올리브유, 와인, 곡물 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain",
+        "saffron"
+      ]
+    },
+    "istanbul": {
+      "text": "게임 배치: 가죽, 곡물 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain",
+        "eic1836",
+        "rawsilk",
+        "indigo",
+        "saffron"
+      ]
+    },
+    "cologne": {
+      "text": "게임 배치: 모직물, 유리공예 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain",
+        "eic1836",
+        "indigo",
+        "dyewood",
+        "dyewoodRecipe"
+      ]
+    },
+    "belgrade": {
+      "text": "게임 배치: 곡물, 가죽, 와인 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain"
+      ]
+    },
+    "dublin": {
+      "text": "게임 배치: 모직물, 가죽, 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain"
+      ]
+    },
+    "angra": {
+      "text": "게임 배치: 곡물, 목재, 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다. 카카오·자기는 취급 여부와 별개로 유럽의 고가 수입 수요를 적용합니다.",
+      "sources": [
+        "cacao",
+        "porcelain"
+      ]
+    },
+    "alexandria": {
+      "text": "게임 배치: 곡물, 면화 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836",
+        "rawsilk"
+      ]
+    },
+    "cairo": {
+      "text": "게임 배치: 면직물, 곡물, 면화, 대추야자 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836",
+        "indigo"
+      ]
+    },
+    "luxor": {
+      "text": "게임 배치: 곡물, 대추야자, 면직물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "dakar": {
+      "text": "게임 배치: 건어물, 소금, 가죽 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "accra": {
+      "text": "게임 배치: 건어물, 곡물, 목재 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "luanda": {
+      "text": "게임 배치: 건어물, 가죽, 소금 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "cape": {
+      "text": "게임 배치: 와인, 건어물, 가죽 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "zanzibar": {
+      "text": "게임 배치: 정향, 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "maputo": {
+      "text": "게임 배치: 건어물, 목재, 곡물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "funchal": {
+      "text": "게임 배치: 설탕, 와인, 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "laspalmas": {
+      "text": "게임 배치: 설탕, 곡물, 소금 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "ribeiragrande": {
+      "text": "게임 배치: 건어물, 소금, 가죽 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "portlouis": {
+      "text": "게임 배치: 설탕, 건어물, 생강 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "ginger"
+      ]
+    },
+    "toamasina": {
+      "text": "게임 배치: 목재, 곡물, 생강 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "ginger"
+      ]
+    },
+    "walvisbay": {
+      "text": "게임 배치: 소금, 건어물, 가죽 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "muscat": {
+      "text": "게임 배치: 대추야자, 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "saffron"
+      ]
+    },
+    "aden": {
+      "text": "게임 배치: 커피, 대추야자 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "ginger"
+      ]
+    },
+    "jeddah": {
+      "text": "게임 배치: 대추야자 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "saffron"
+      ]
+    },
+    "goa": {
+      "text": "서인도 면직물 공급 거점이며 원면·후추·염료·향목은 인도 배후권의 지역 공급입니다. 고아 자체에서 전 품목이 생산된다는 뜻은 아닙니다.",
+      "sources": [
+        "eic1836",
+        "indigo",
+        "sandalwood",
+        "sandalwoodSpecies",
+        "silver"
+      ]
+    },
+    "colombo": {
+      "text": "게임 배치: 계피, 차, 생강 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "ginger"
+      ]
+    },
+    "malacca": {
+      "text": "게임 배치: 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "sandalwood",
+        "sandalwoodSpecies"
+      ]
+    },
+    "batavia": {
+      "text": "자바 커피·설탕과 생강·아시아 염료목의 지역 공급을 몰루카 향신료 중계와 구분합니다. 여러 시대의 상품 경제를 함께 사용합니다.",
+      "sources": [
+        "ginger",
+        "dyewood",
+        "dyewoodRecipe"
+      ]
+    },
+    "macau": {
+      "text": "중국 비단·차·자기를 다시 내보내는 중계항입니다. 은·향목 수입 수요를 두고 자기 생산항으로 취급하지 않습니다.",
+      "sources": [
+        "eic1836",
+        "rawsilk",
+        "sandalwood",
+        "sandalwoodSpecies",
+        "silver"
+      ]
+    },
+    "nagasaki": {
+      "text": "일본의 구리·은과 자기 산지에서 모이는 지역 공급을 중국 비단·생사 수입과 구분했습니다. 도시 안 광산을 뜻하지 않습니다.",
+      "sources": [
+        "eic1836",
+        "rawsilk",
+        "silver"
+      ]
+    },
+    "busan": {
+      "text": "건어물은 해안 공급, 자기는 한반도 산지에서 모인 지역 공급입니다. 부산을 자기 가마의 단일 원산지라고 소개하지 않습니다.",
+      "sources": [
+        "eic1836",
+        "rawsilk"
+      ]
+    },
+    "manila": {
+      "text": "비단·자기는 중국 등에서 들어오는 중계품이고 은은 아메리카에서 들어오는 수입품입니다. 은 수입 수요와 상품 취급을 함께 적용합니다.",
+      "sources": [
+        "ginger",
+        "silver"
+      ]
+    },
+    "shanghai": {
+      "text": "비단·생사는 장강 하류 생산권에서 모인 지역 공급입니다. 자기·차는 타 산지에서 모여 수출되는 중계품이며 상하이 자체 생산으로 두지 않습니다.",
+      "sources": [
+        "eic1836",
+        "rawsilk",
+        "sandalwood",
+        "sandalwoodSpecies",
+        "silver"
+      ]
+    },
+    "wuhan": {
+      "text": "장강 중류 곡물과 주변 생산권의 차·생사를 모으는 지역 거점입니다. 차나 생사의 도시 자체 생산을 뜻하지 않습니다.",
+      "sources": [
+        "eic1836",
+        "rawsilk",
+        "silver"
+      ]
+    },
+    "ternate": {
+      "text": "게임 배치: 정향, 건어물, 생강 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "ginger"
+      ]
+    },
+    "bandaneira": {
+      "text": "게임 배치: 육두구, 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    },
+    "chennai": {
+      "text": "코로만델의 면직물·염료 생산권을 대표하는 주요 공급항으로 설정했습니다. 원면은 완성 직물과 별개로 취급합니다.",
+      "sources": [
+        "eic1836",
+        "indigo",
+        "silver"
+      ]
+    },
+    "havana": {
+      "text": "게임 배치: 설탕, 카카오, 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "neworleans": {
+      "text": "게임 배치: 곡물, 면화, 목재, 설탕 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "memphis": {
+      "text": "미시시피 배후권의 원면을 주요 공급으로 바꿔 면직물과 구분했습니다. 19세기 교역을 포함한 시대 혼합 항구입니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "boston": {
+      "text": "게임 배치: 건어물, 목재, 모직물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "halifax": {
+      "text": "게임 배치: 건어물, 목재, 가죽 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "veracruz": {
+      "text": "은은 멕시코 내륙 생산권에서 모이는 지역 공급입니다. 카카오·설탕과 함께 내보내고 유럽의 와인·공예품을 수입하는 게임 배치입니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "acapulco": {
+      "text": "멕시코 은의 지역 공급과 마닐라에서 들어오는 비단·자기를 구분합니다. 아카풀코는 은광이나 자기 생산지가 아닌 태평양 교역항입니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "sanfrancisco": {
+      "text": "게임 배치: 목재, 곡물, 가죽 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "vancouver": {
+      "text": "게임 배치: 목재, 가죽, 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "seward": {
+      "text": "게임 배치: 건어물, 가죽, 목재 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "cartagena": {
+      "text": "카카오는 콜롬비아 배후권에서 모이는 지역 공급으로 두었습니다. 항구 자체 농장이나 아메리카 전체 카카오의 단일 산지를 뜻하지 않습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "recife": {
+      "text": "설탕과 브라질우드 계열 염료목은 브라질 북동부 페르남부쿠 생산권을 대표하는 공급으로 설정했습니다.",
+      "sources": [
+        "eic1836",
+        "dyewood",
+        "dyewoodRecipe"
+      ]
+    },
+    "buenos": {
+      "text": "게임 배치: 가죽, 양모, 곡물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "manaus": {
+      "text": "게임 배치: 목재, 카카오, 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "rio": {
+      "text": "게임 배치: 커피, 설탕, 염료목 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "dyewood",
+        "dyewoodRecipe"
+      ]
+    },
+    "callao": {
+      "text": "은·구리는 안데스 배후권에서 모이는 지역 공급입니다. 항구 안 광산을 뜻하지 않으며 유럽 가공품을 귀환 화물로 고를 수 있습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "valparaiso": {
+      "text": "게임 배치: 구리, 가죽, 와인 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "ushuaia": {
+      "text": "게임 배치: 건어물, 가죽, 목재 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "belem": {
+      "text": "게임 배치: 목재, 카카오, 곡물, 면화 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "puertoayora": {
+      "text": "게임 배치: 건어물, 소금 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "iquique": {
+      "text": "게임 배치: 소금, 은, 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "silver"
+      ]
+    },
+    "sydney": {
+      "text": "게임 배치: 양모, 목재, 가죽 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    },
+    "perth": {
+      "text": "주요 백단향 공급은 1840년대 이후 서호주의 수출을 참고한 시대 혼합 배치입니다. 퍼스 시내가 나무 산지라는 뜻은 아닙니다.",
+      "sources": [
+        "sandalwood",
+        "sandalwoodSpecies"
+      ]
+    },
+    "auckland": {
+      "text": "게임 배치: 목재, 양모, 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    },
+    "honolulu": {
+      "text": "하와이의 과거 백단향 교역과 지역 설탕을 참고한 시대 혼합 공급입니다. 원주민 사회에 미친 피해를 이익의 보장으로 표현하지 않습니다.",
+      "sources": [
+        "sandalwood",
+        "sandalwoodSpecies",
+        "sandalwoodHawaii"
+      ]
+    },
+    "suva": {
+      "text": "피지 권역의 향목·목재를 지역 공급으로 표현합니다. 수바 도시 자체 산림이나 특정 연도의 항만 모습 재현은 아닙니다.",
+      "sources": [
+        "sandalwood",
+        "sandalwoodSpecies",
+        "sandalwoodFiji"
+      ]
+    },
+    "papeete": {
+      "text": "게임 배치: 건어물, 설탕 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    },
+    "hangaroa": {
+      "text": "게임 배치: 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    },
+    "portmoresby": {
+      "text": "게임 배치: 목재, 곡물, 건어물 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    },
+    "hobart": {
+      "text": "게임 배치: 양모, 목재, 가죽 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    },
+    "apia": {
+      "text": "게임 배치: 건어물, 목재, 설탕 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    },
+    "darwin": {
+      "text": "백단향은 티모르해를 오가는 수입·중계품으로 두었습니다. 다윈 자체 백단향 생산항으로 소개하지 않습니다.",
+      "sources": [
+        "sandalwood",
+        "sandalwoodSpecies"
+      ]
+    },
+    "kolonia": {
+      "text": "게임 배치: 건어물, 목재 중심 공급에 수입·중계와 별도 수요를 결합했습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    },
+    "developed-stjohns": {
+      "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    },
+    "developed-reykjavik": {
+      "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다. 유럽의 카카오·자기 수입 수요를 포함합니다.",
+      "sources": [
+        "porcelain",
+        "cacao"
+      ]
+    },
+    "developed-bergen": {
+      "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다. 유럽의 카카오·자기 수입 수요를 포함합니다.",
+      "sources": [
+        "porcelain",
+        "cacao"
+      ]
+    },
+    "developed-casablanca": {
+      "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "developed-douala": {
+      "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "developed-mogadishu": {
+      "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "developed-salalah": {
+      "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "developed-chittagong": {
+      "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다. 벵골 권역의 면직물·원면·생사·염료 지역 공급 거점입니다.",
+      "sources": [
+        "eic1836",
+        "rawsilk",
+        "indigo"
+      ]
+    },
+    "developed-davao": {
+      "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        "eic1836"
+      ]
+    },
+    "developed-cairns": {
+      "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    },
+    "developed-dunedin": {
+      "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다. 양모 원료를 완성 모직물과 구분했습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    },
+    "developed-comodoro": {
+      "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다. 양모 원료를 완성 모직물과 구분했습니다.",
+      "sources": [
+        "porcelain"
+      ]
+    }
+  }
+};

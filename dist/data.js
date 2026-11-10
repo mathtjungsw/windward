@@ -1,8 +1,8 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.10-community-battle';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.10-community-battle';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.10-community-battle';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.10-community-battle';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.10-community-battle';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.10-navigation-trade-offline';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.10-navigation-trade-offline';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.10-navigation-trade-offline';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.10-navigation-trade-offline';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.10-navigation-trade-offline';
 Object.assign(GOODS,PREMIUM_GOODS);
 
 export {GOODS};
@@ -41,7 +41,7 @@ export const ALL_PORTS=[...OLD_PORTS,...NEW_PORTS.map((p,i)=>{const economy=NEW_
 export const PORTS=ALL_PORTS.filter(p=>p.active);
 export const PORT_BY_ID = Object.fromEntries(ALL_PORTS.map(p=>[p.id,p]));
 export const ACTIVE_PORT_BY_ID=Object.fromEntries(PORTS.map(p=>[p.id,p]));
-for(const site of DEVELOPMENT_SITES)PORT_BY_ID[site.portId]={...site,id:site.portId,name:site.name,en:site.name,developable:true,active:false,market:[],economy:{stock:site.stock,demand:site.demand},pricePhase:200+DEVELOPMENT_SITES.indexOf(site)};
+for(const site of DEVELOPMENT_SITES)PORT_BY_ID[site.portId]={...site,id:site.portId,name:site.name,en:site.name,developable:true,active:false,market:[],economy:{stock:site.stock,demand:site.demand,demandTiers:site.demandTiers},pricePhase:200+DEVELOPMENT_SITES.indexOf(site)};
 export function registerDevelopedPorts(registry={}){const added=[];for(const site of DEVELOPMENT_SITES){const entry=registry[site.portId];if(!entry||!Number.isInteger(entry.level)||entry.level<1)continue;const p=PORT_BY_ID[site.portId];Object.assign(p,{name:String(entry.name||site.name).replace(/[<>&"'\u0000-\u001f]/g,'').slice(0,16),market:entry.level>=2?site.market:[],developmentLevel:entry.level,active:true});if(!ACTIVE_PORT_BY_ID[p.id]){PORTS.push(p);ACTIVE_PORT_BY_ID[p.id]=p;added.push(p);}}return added;}
 export const MISSIONS = [
   { id:'trader', name:'첫 거래의 설렘', desc:'리스본에서 와인을 사고, 다른 항구에서 판매하세요.', reward:400 },

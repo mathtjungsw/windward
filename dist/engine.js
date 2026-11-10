@@ -1,9 +1,10 @@
-import {recordTrade} from './rank-progress.js?v=2026.11.10-community-battle';
-import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.10-community-battle';
-import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,ACTIVE_SECONDS_PER_DAY,SHIPS} from './ship-rules.js?v=2026.11.10-community-battle';
-import {parseState} from './save-game.js?v=2026.11.10-community-battle';
-import {gunWeight} from './cannons.js?v=2026.11.10-community-battle';
-export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.10-community-battle';
+import {regionalFactor} from './regional-economy.js?v=2026.11.10-navigation-trade-offline';
+import {recordTrade} from './rank-progress.js?v=2026.11.10-navigation-trade-offline';
+import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.10-navigation-trade-offline';
+import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,ACTIVE_SECONDS_PER_DAY,SHIPS} from './ship-rules.js?v=2026.11.10-navigation-trade-offline';
+import {parseState} from './save-game.js?v=2026.11.10-navigation-trade-offline';
+import {gunWeight} from './cannons.js?v=2026.11.10-navigation-trade-offline';
+export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.10-navigation-trade-offline';
 
 export const SAVE_KEY='windward-save-v1';
 export const START_DATE=Date.UTC(1522,3,6);
@@ -37,7 +38,7 @@ export function price(portId,goodId,day=0){
     const factor=old?(old.specialty==='spice'?.65:1.08+Math.min(nearest/3800,1.25)):1.12;
     return Math.round(110*factor*(1+.045*Math.sin(Math.floor(day/7)*1.7+Math.max(0,LEGACY_PORTS.indexOf(old))*2+3)));
   }
-  const role=p.economy.stock[goodId],factor=role?{producer:.72,local:.9,import:1.12}[role]:p.economy.demand.includes(goodId)?1.35:.9;
+  const factor=regionalFactor(p,goodId,g);
   return Math.round(g.base*factor*(1+.045*Math.sin(Math.floor(day/7)*1.7+(p.pricePhase??PORTS.indexOf(p))*2+Object.keys(GOODS).indexOf(goodId))));
 }
 export function supplyCost(s,amount){return Math.max(0,Math.ceil(amount*fleetCount(s)*ship(s).supplyPrice-(s.supplyCreditValue||0)-1e-9));}

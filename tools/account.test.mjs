@@ -1,3 +1,4 @@
+import {defenseFromGame} from '../dist/defense-core.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {CaptainAccount,clearLegacyStorage,localSaveKey} from '../dist/account.js';
@@ -84,4 +85,10 @@ test('legacy cleanup leaves current Windward records and other GitHub Pages stor
  for(const key of ['windward-save-v1','windward-account-v2:owner:real:conflict:123','windward-before-reset:1','windward-account-v3:owner','samguk-save'])f.values.set(key,'sample');
  clearLegacyStorage(storage);
  assert.deepEqual([...f.values.keys()],['windward-account-v3:owner','samguk-save']);
+});
+
+test('entry retries a concurrent defense ledger without merging into the previous global game',async()=>{
+ const game=initialState();game.money=10000;const f=fixture({schemaVersion:6,defenseSeq:0,revision:4,data:JSON.stringify(game),session:'expired',leaseUntil:0}),key='gameV2/fleetStates/owner';f.a.defenseEnabled=true;const node=defenseFromGame(game,{}, {name:input.name,session:'expired'},1000);f.records.set(key,node);let publications=0,applied=0;const original=f.a.sdk.runTransaction;f.a.readGame=()=>initialState();f.a.applyGame=()=>applied++;
+ f.a.sdk.runTransaction=async(ref,fn)=>{if(ref===key&&publications++===0){const latest={...node,seq:1,revision:2,cashTotal:500};f.records.set(key,latest);return {committed:false,snapshot:{val:()=>latest}};}return original(ref,fn);};
+ const entered=await f.a.enter(user,null,input);clearInterval(f.a.timer);assert.equal(entered.money,10500);assert.equal(entered.defenseAck.seq,1);assert.equal(applied,0);assert.equal(JSON.parse(f.records.get('gameV2/privateSaves/owner').data).money,10500);
 });

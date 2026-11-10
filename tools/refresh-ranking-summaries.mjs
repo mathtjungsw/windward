@@ -21,7 +21,7 @@ for(const uid of new Set([...Object.keys(saves),...Object.keys(ranks),...Object.
  const ownerPath='gameV2/real/portRankings/'+uid,current=await request(ownerPath);
  if(current.value){result.existingOwnerProfiles++;}
  else{const row={name,ownedPortCount:counts[uid]||0,revision:1,updatedAt:{'.sv':'timestamp'}};if(apply){const written=await request(ownerPath,{method:'PUT',body:row,etag:current.etag});if(written.conflict){result.existingOwnerProfiles++;}else result.ownerProfilesCreated++;}else result.ownerProfilesCreated++;}
- const save=saves[uid];if(!save)continue;if(save.schemaVersion>5)throw Error('Newer private save schema; original preserved.');const stats=gameStats(parseSavedGame(save.data));
+ const save=saves[uid];if(!save)continue;if(save.schemaVersion>6)throw Error('Newer private save schema; original preserved.');const stats=gameStats(parseSavedGame(save.data));
  for(let retry=0;retry<5;retry++){const key='gameV2/real/rankings/'+uid,latest=await request(key);if((latest.value?.saveRevision||0)>save.revision){result.skippedNewerSummary++;break;}const row={...(latest.value||{}),...stats,name,saveRevision:save.revision,updatedAt:{'.sv':'timestamp'}};if(!apply){result.summariesEnriched++;break;}const written=await request(key,{method:'PUT',body:row,etag:latest.etag});if(!written.conflict){result.summariesEnriched++;break;}if(retry===4)throw Error('Public summary kept changing; rerun safely.');}
 }
 await writeFile(new URL('result.json',backup),JSON.stringify(result,null,2));console.log(JSON.stringify(result));

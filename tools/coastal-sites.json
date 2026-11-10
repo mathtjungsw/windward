@@ -1,5 +1,5 @@
 {
-  "version": "2026.11.09-coastal-sites",
+  "version": "2026.11.10-coastal-trade-31",
   "sources": [
     {
       "label": "Natural Earth · 도시 위치와 연안 권역",
@@ -28,16 +28,30 @@
         "wool"
       ],
       "stock": {
-        "driedfish": "local",
+        "driedfish": "producer",
         "timber": "local",
         "salt": "import",
         "wool": "import"
       },
       "demand": [
-        "glass"
+        "glass",
+        "cotton",
+        "wine"
       ],
       "sea": "연안 개발 거점",
-      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다."
+      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다.",
+      "demandTiers": {
+        "glass": 1.8,
+        "cotton": 1.8,
+        "wine": 1.3
+      },
+      "economyNote": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        {
+          "label": "Met · 중국 수출 자기 · 실물 도자기와 수출시장",
+          "url": "https://www.metmuseum.org/essays/east-and-west-chinese-export-porcelain"
+        }
+      ]
     },
     {
       "id": "develop-reykjavik",
@@ -55,21 +69,43 @@
       "country": "아이슬란드",
       "market": [
         "driedfish",
-        "wool",
+        "rawwool",
         "timber",
-        "grain"
+        "grain",
+        "wool"
       ],
       "stock": {
-        "driedfish": "local",
-        "wool": "local",
+        "driedfish": "producer",
+        "rawwool": "local",
         "timber": "import",
-        "grain": "import"
+        "grain": "import",
+        "wool": "import"
       },
       "demand": [
-        "glass"
+        "glass",
+        "cacao",
+        "porcelain",
+        "timber"
       ],
       "sea": "연안 개발 거점",
-      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다."
+      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다.",
+      "demandTiers": {
+        "glass": 1.8,
+        "cacao": 1.8,
+        "porcelain": 1.8,
+        "timber": 1.3
+      },
+      "economyNote": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다. 유럽의 카카오·자기 수입 수요를 포함합니다.",
+      "sources": [
+        {
+          "label": "Met · 중국 수출 자기 · 실물 도자기와 수출시장",
+          "url": "https://www.metmuseum.org/essays/east-and-west-chinese-export-porcelain"
+        },
+        {
+          "label": "Alimentarium · The history of chocolate",
+          "url": "https://www.alimentarium.org/en/fact-sheet/history-chocolate"
+        }
+      ]
     },
     {
       "id": "develop-bergen",
@@ -88,20 +124,42 @@
       "market": [
         "driedfish",
         "timber",
+        "leather",
         "wool",
         "salt"
       ],
       "stock": {
-        "driedfish": "local",
+        "driedfish": "producer",
         "timber": "local",
+        "leather": "local",
         "wool": "import",
         "salt": "import"
       },
       "demand": [
-        "glass"
+        "porcelain",
+        "cacao",
+        "cotton",
+        "tea"
       ],
       "sea": "연안 개발 거점",
-      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다."
+      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다.",
+      "demandTiers": {
+        "porcelain": 1.8,
+        "cacao": 1.8,
+        "cotton": 1.3,
+        "tea": 1.3
+      },
+      "economyNote": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다. 유럽의 카카오·자기 수입 수요를 포함합니다.",
+      "sources": [
+        {
+          "label": "Met · 중국 수출 자기 · 실물 도자기와 수출시장",
+          "url": "https://www.metmuseum.org/essays/east-and-west-chinese-export-porcelain"
+        },
+        {
+          "label": "Alimentarium · The history of chocolate",
+          "url": "https://www.alimentarium.org/en/fact-sheet/history-chocolate"
+        }
+      ]
     },
     {
       "id": "develop-casablanca",
@@ -120,20 +178,36 @@
       "market": [
         "grain",
         "leather",
+        "oliveoil",
         "cotton",
         "glass"
       ],
       "stock": {
-        "grain": "local",
+        "grain": "producer",
         "leather": "local",
+        "oliveoil": "local",
         "cotton": "import",
         "glass": "import"
       },
       "demand": [
-        "glass"
+        "glass",
+        "cotton",
+        "copper"
       ],
       "sea": "연안 개발 거점",
-      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다."
+      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다.",
+      "demandTiers": {
+        "glass": 1.3,
+        "cotton": 1.8,
+        "copper": 1.8
+      },
+      "economyNote": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        {
+          "label": "East India Company · 1836 면화·생사·인디고 보고서 원본(Wellcome 소장)",
+          "url": "https://wellcomecollection.org/works/qpcpcrkd"
+        }
+      ]
     },
     {
       "id": "develop-douala",
@@ -152,20 +226,36 @@
       "market": [
         "timber",
         "grain",
+        "driedfish",
         "cotton",
         "salt"
       ],
       "stock": {
-        "timber": "local",
+        "timber": "producer",
         "grain": "local",
+        "driedfish": "local",
         "cotton": "import",
         "salt": "import"
       },
       "demand": [
-        "glass"
+        "glass",
+        "cotton",
+        "copper"
       ],
       "sea": "연안 개발 거점",
-      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다."
+      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다.",
+      "demandTiers": {
+        "glass": 1.8,
+        "cotton": 1.8,
+        "copper": 1.3
+      },
+      "economyNote": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        {
+          "label": "East India Company · 1836 면화·생사·인디고 보고서 원본(Wellcome 소장)",
+          "url": "https://wellcomecollection.org/works/qpcpcrkd"
+        }
+      ]
     },
     {
       "id": "develop-mogadishu",
@@ -182,22 +272,38 @@
       "region": "아프리카",
       "country": "소말리아",
       "market": [
-        "grain",
         "leather",
+        "grain",
+        "driedfish",
         "cotton",
         "salt"
       ],
       "stock": {
-        "grain": "local",
         "leather": "local",
+        "grain": "local",
+        "driedfish": "local",
         "cotton": "import",
         "salt": "import"
       },
       "demand": [
-        "glass"
+        "glass",
+        "cotton",
+        "porcelain"
       ],
       "sea": "연안 개발 거점",
-      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다."
+      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다.",
+      "demandTiers": {
+        "glass": 1.8,
+        "cotton": 1.8,
+        "porcelain": 1.3
+      },
+      "economyNote": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        {
+          "label": "East India Company · 1836 면화·생사·인디고 보고서 원본(Wellcome 소장)",
+          "url": "https://wellcomecollection.org/works/qpcpcrkd"
+        }
+      ]
     },
     {
       "id": "develop-salalah",
@@ -215,21 +321,37 @@
       "country": "오만",
       "market": [
         "dates",
+        "driedfish",
         "cotton",
         "grain",
-        "glass"
+        "ginger"
       ],
       "stock": {
         "dates": "local",
-        "cotton": "local",
+        "driedfish": "local",
+        "cotton": "import",
         "grain": "import",
-        "glass": "import"
+        "ginger": "import"
       },
       "demand": [
-        "glass"
+        "glass",
+        "timber",
+        "porcelain"
       ],
       "sea": "연안 개발 거점",
-      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다."
+      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다.",
+      "demandTiers": {
+        "glass": 1.8,
+        "timber": 1.8,
+        "porcelain": 1.3
+      },
+      "economyNote": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        {
+          "label": "East India Company · 1836 면화·생사·인디고 보고서 원본(Wellcome 소장)",
+          "url": "https://wellcomecollection.org/works/qpcpcrkd"
+        }
+      ]
     },
     {
       "id": "develop-chittagong",
@@ -247,21 +369,47 @@
       "country": "방글라데시",
       "market": [
         "cotton",
-        "grain",
+        "rawcotton",
+        "rawsilk",
+        "indigo",
         "salt",
         "porcelain"
       ],
       "stock": {
-        "cotton": "local",
-        "grain": "local",
+        "cotton": "producer",
+        "rawcotton": "local",
+        "rawsilk": "local",
+        "indigo": "local",
         "salt": "import",
         "porcelain": "import"
       },
       "demand": [
-        "glass"
+        "glass",
+        "copper",
+        "silver"
       ],
       "sea": "연안 개발 거점",
-      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다."
+      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다.",
+      "demandTiers": {
+        "glass": 1.8,
+        "copper": 1.8,
+        "silver": 1.3
+      },
+      "economyNote": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다. 벵골 권역의 면직물·원면·생사·염료 지역 공급 거점입니다.",
+      "sources": [
+        {
+          "label": "East India Company · 1836 면화·생사·인디고 보고서 원본(Wellcome 소장)",
+          "url": "https://wellcomecollection.org/works/qpcpcrkd"
+        },
+        {
+          "label": "London Museum · 벵골 생사 무역 실물 표본",
+          "url": "https://www.londonmuseum.org.uk/collections/v/object-277398/sample-plaited-sample-of-raw-silk/"
+        },
+        {
+          "label": "Kew · True indigo",
+          "url": "https://www.kew.org/plants/indigo"
+        }
+      ]
     },
     {
       "id": "develop-davao",
@@ -280,20 +428,36 @@
       "market": [
         "timber",
         "grain",
+        "ginger",
         "cotton",
         "porcelain"
       ],
       "stock": {
         "timber": "local",
         "grain": "local",
+        "ginger": "local",
         "cotton": "import",
         "porcelain": "import"
       },
       "demand": [
-        "glass"
+        "glass",
+        "cotton",
+        "copper"
       ],
       "sea": "연안 개발 거점",
-      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다."
+      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다.",
+      "demandTiers": {
+        "glass": 1.8,
+        "cotton": 1.8,
+        "copper": 1.3
+      },
+      "economyNote": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        {
+          "label": "East India Company · 1836 면화·생사·인디고 보고서 원본(Wellcome 소장)",
+          "url": "https://wellcomecollection.org/works/qpcpcrkd"
+        }
+      ]
     },
     {
       "id": "develop-cairns",
@@ -310,22 +474,38 @@
       "region": "오세아니아",
       "country": "오스트레일리아",
       "market": [
-        "driedfish",
         "timber",
+        "driedfish",
+        "grain",
         "cotton",
-        "grain"
+        "tea"
       ],
       "stock": {
-        "driedfish": "local",
         "timber": "local",
+        "driedfish": "local",
+        "grain": "import",
         "cotton": "import",
-        "grain": "import"
+        "tea": "import"
       },
       "demand": [
-        "glass"
+        "glass",
+        "porcelain",
+        "cotton"
       ],
       "sea": "연안 개발 거점",
-      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다."
+      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다.",
+      "demandTiers": {
+        "glass": 1.8,
+        "porcelain": 1.8,
+        "cotton": 1.3
+      },
+      "economyNote": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다.",
+      "sources": [
+        {
+          "label": "Met · 중국 수출 자기 · 실물 도자기와 수출시장",
+          "url": "https://www.metmuseum.org/essays/east-and-west-chinese-export-porcelain"
+        }
+      ]
     },
     {
       "id": "develop-dunedin",
@@ -342,22 +522,38 @@
       "region": "오세아니아",
       "country": "뉴질랜드",
       "market": [
-        "wool",
+        "rawwool",
         "timber",
+        "driedfish",
         "grain",
         "salt"
       ],
       "stock": {
-        "wool": "local",
+        "rawwool": "producer",
         "timber": "local",
+        "driedfish": "local",
         "grain": "import",
         "salt": "import"
       },
       "demand": [
-        "glass"
+        "glass",
+        "porcelain",
+        "cotton"
       ],
       "sea": "연안 개발 거점",
-      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다."
+      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다.",
+      "demandTiers": {
+        "glass": 1.8,
+        "porcelain": 1.8,
+        "cotton": 1.3
+      },
+      "economyNote": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다. 양모 원료를 완성 모직물과 구분했습니다.",
+      "sources": [
+        {
+          "label": "Met · 중국 수출 자기 · 실물 도자기와 수출시장",
+          "url": "https://www.metmuseum.org/essays/east-and-west-chinese-export-porcelain"
+        }
+      ]
     },
     {
       "id": "develop-comodoro",
@@ -374,22 +570,38 @@
       "region": "남아메리카",
       "country": "아르헨티나",
       "market": [
-        "wool",
+        "rawwool",
         "leather",
         "driedfish",
-        "salt"
+        "salt",
+        "wool"
       ],
       "stock": {
-        "wool": "local",
+        "rawwool": "local",
         "leather": "local",
-        "driedfish": "import",
-        "salt": "import"
+        "driedfish": "local",
+        "salt": "import",
+        "wool": "import"
       },
       "demand": [
-        "glass"
+        "glass",
+        "wine",
+        "cotton"
       ],
       "sea": "연안 개발 거점",
-      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다."
+      "fact": "실제 지명을 바탕으로 선정한 항구 개발 후보지입니다. 시설·상품·경제는 게임 설정이며 부두는 수역 격자에 맞춰 조정했습니다.",
+      "demandTiers": {
+        "glass": 1.8,
+        "wine": 1.8,
+        "cotton": 1.3
+      },
+      "economyNote": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다. 양모 원료를 완성 모직물과 구분했습니다.",
+      "sources": [
+        {
+          "label": "Met · 중국 수출 자기 · 실물 도자기와 수출시장",
+          "url": "https://www.metmuseum.org/essays/east-and-west-chinese-export-porcelain"
+        }
+      ]
     }
   ],
   "coastalActivitySites": [

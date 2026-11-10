@@ -1,4 +1,4 @@
-import {wrapLatitude,wrapNumber,mapDistance} from './world-wrap.js?v=2026.11.10-community-battle';
+import {wrapLatitude,wrapNumber,mapDistance} from './world-wrap.js?v=2026.11.10-navigation-trade-offline';
 
 export const PRESENCE_TTL=90000;
 export const PRESENCE_COLORS=['#267b93','#b36435','#6d65a0','#37816c','#a14868','#8a742c'];
@@ -6,12 +6,12 @@ export function captainName(value,fallback='바다의 선장'){
   const clean=String(value||'').normalize('NFKC').replace(/[<>\u0000-\u001f\u007f]/g,'').trim().slice(0,16);
   return clean||fallback;
 }
-export function shipsInSight(ships,position,radius=180,limit=29){return ships.filter(ship=>mapDistance(position,[ship.lon,ship.lat])<=radius).slice(0,limit);}
+export function shipsInSight(ships,position,radius=180,limit=29){return ships.filter(ship=>mapDistance(position,[ship.lon,ship.lat])<=radius).sort((a,b)=>mapDistance(position,[a.lon,a.lat])-mapDistance(position,[b.lon,b.lat])).slice(0,limit);}
 export function validShip(value,now=Date.now()){
   return !!value&&typeof value.name==='string'&&value.name.length>0&&value.name.length<=16&&
     Number.isFinite(value.lon)&&value.lon>=-180&&value.lon<=180&&Number.isFinite(value.lat)&&value.lat>=-80&&value.lat<=80&&
     Number.isFinite(value.angle)&&Math.abs(value.angle)<=360&&Number.isInteger(value.color)&&value.color>=0&&value.color<6&&
-    ['정박','항해','멈춤'].includes(value.status)&&Number.isFinite(value.updatedAt)&&value.updatedAt>now-PRESENCE_TTL&&value.updatedAt<now+30000;
+    ['정박','항해','멈춤'].includes(value.status)&&Number.isFinite(value.updatedAt)&&(value.persistent===true||value.updatedAt>now-PRESENCE_TTL)&&value.updatedAt<now+30000;
 }
 export function interpolateShip(from,to,fraction){
   const t=Math.max(0,Math.min(1,fraction));

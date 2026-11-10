@@ -1,10 +1,10 @@
-import {recordTrade} from './rank-progress.js?v=2026.11.10-community-battle';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-community-battle';
-import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.10-community-battle';
-import {tradeQuote} from './market-rules.js?v=2026.11.10-community-battle';
+import {recordTrade} from './rank-progress.js?v=2026.11.10-navigation-trade-offline';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-navigation-trade-offline';
+import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.10-navigation-trade-offline';
+import {tradeQuote} from './market-rules.js?v=2026.11.10-navigation-trade-offline';
 export const NEUTRAL_PORTS=['lisbon','porto'];
 export const LARGE_PORTS=['london','amsterdam','venice','alexandria','istanbul','macau','shanghai','nagasaki','havana','buenos','sydney'];
-export const investmentBase=id=>LARGE_PORTS.includes(id)?3000000:1000000;
+export const investmentBase=id=>LARGE_PORTS.includes(id)?600000:200000;
 export function ownership(content={}){const entries=Object.entries(content.investors||{}).filter(([,n])=>Number.isSafeInteger(n)&&n>0),total=entries.reduce((a,[,n])=>a+n,0),owner=entries.find(([,n])=>n*2>total);return {total,ownerUid:content.developedOwner||owner?.[0]||null};}
 export function taxRate(content,uid,portId){const owner=ownership(content).ownerUid;return NEUTRAL_PORTS.includes(portId)||!owner||owner===uid?0:Math.max(0,Math.min(10,content.rates?.[uid]??content.defaultRate??0));}
 export function permitted(content,uid){return !ownership(content).ownerUid||!(content.blacklist||[]).includes(uid);}

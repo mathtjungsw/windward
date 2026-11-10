@@ -21,7 +21,7 @@ test('one sale uses its starting unit for every box; quantity affects the next p
  assert.equal(a.gross,a.unit*50);assert.equal(b.gross,b.unit*100);assert.equal(a.unit,b.unit);assert.equal(b.next.pressure,a.next.pressure-200000);assert.equal(pressureAt(b.next,now+300001),0);
  const buy=tradeQuote('lisbon','wine',100,'buy',{},now);assert.ok(buy.gross>=buy.unit*100);assert.ok(buy.afterUnit>buy.unit);
 });
-test('premium stock refills lazily without resetting the partial two-hour interval',()=>{const g=Object.values(GOODS).find(g=>g.premium);assert.equal(stockAt({stock:0,stockAt:now},g,now+7200000),1);assert.equal(stockAt({stock:0,stockAt:now},g,now+100*7200000),10);});
+test('premium stock refills lazily without resetting the partial two-hour interval',()=>{const g=Object.values(GOODS).find(g=>g.premium);assert.equal(stockAt({stock:0,stockAt:now},g,now+7200000),1);assert.equal(stockAt({stock:0,stockAt:now},g,now+100*7200000),30);});
 test('strict investment majority controls ownership, resets policies, and preserves former owner tax',()=>{
  const s=initialState();s.port='havana';s.money=10000000;const c={};invest(s,c,'alice','havana',3000000);changePortPolicy(c,'alice',10,{},['bob']);c.treasury={alice:123};invest(s,c,'bob','havana',3000000);assert.equal(ownership(c).ownerUid,null);assert.equal(c.defaultRate,0);assert.deepEqual(c.blacklist,[]);invest(s,c,'bob','havana',10000);assert.equal(ownership(c).ownerUid,'bob');assert.equal(taxRate(c,'alice','havana'),0);assert.equal(c.treasury.alice,123);assert.throws(()=>changePortPolicy(c,'bo',1,{},[]));
 });

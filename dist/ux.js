@@ -1,19 +1,19 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.10-community-battle';
-import {shipArtPath} from './art.js?v=2026.11.10-community-battle';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.10-community-battle';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-community-battle';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.10-community-battle';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.10-community-battle';
-import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.10-community-battle';
-import {isTypingTarget} from './controls.js?v=2026.11.10-community-battle';
-import {validCard} from './social-core.js?v=2026.11.10-community-battle';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.10-navigation-trade-offline';
+import {shipArtPath} from './art.js?v=2026.11.10-navigation-trade-offline';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.10-navigation-trade-offline';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-navigation-trade-offline';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.10-navigation-trade-offline';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.10-navigation-trade-offline';
+import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.10-navigation-trade-offline';
+import {isTypingTarget} from './controls.js?v=2026.11.10-navigation-trade-offline';
+import {validCard} from './social-core.js?v=2026.11.10-navigation-trade-offline';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
 const escape=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const read=(storage,key,fallback)=>{try{return JSON.parse(storage.getItem(key))??fallback;}catch{return fallback;}};
 const write=(storage,key,value)=>{try{storage.setItem(key,JSON.stringify(value));}catch{/* Device storage may be unavailable. */}};
-const defaultPreferences=()=>({folds:{},hand:'right',width:315,letters:true});
+const defaultPreferences=()=>({folds:{},hand:'right',width:315,letters:true,placeNames:true});
 const SIGNAL_LABELS={hello:'안녕하세요',thanks:'고마워요',fairwind:'순항하세요'};
 
 export function createUX(api){
@@ -74,11 +74,11 @@ export function createUX(api){
     openSheet(mode==='cargo'?'내 화물':mode==='supply'?'선박·보급':mode==='target'?'선택한 항구':'항구·보급',mode);
   }
   function openMore(){
-    restorePanel();$('#quick-content').innerHTML='<div class="quick-links"><button data-menu="suggestions">개선 제안 게시판</button><button data-menu="ownedPorts">소유 항구 현황</button><button data-menu="business">항구 투자·활동</button><button data-menu="guns">대포·수리</button><button data-menu="combat">전투·해적</button><button data-menu="collection">수집 도감</button><button data-menu="ship">내 배 보기</button><button data-menu="captains">전체 선장</button><button data-menu="atlas">항구 찾기</button><button data-menu="globe">세계 지구본</button><button data-menu="rank">랭킹</button><button data-menu="mission">의뢰</button><button data-menu="chat">채팅</button><button data-menu="journal">항해일지</button><button data-menu="settings">조작·화면 설정</button><button data-menu="help">도움말</button></div>';
+    restorePanel();$('#quick-content').innerHTML='<div class="quick-links"><button data-menu="suggestions">개선 제안 게시판</button><button data-menu="ownedPorts">소유 항구 현황</button><button data-menu="saleSearch">내 물품 최고가 판매처</button><button data-menu="business">항구 투자·활동</button><button data-menu="guns">대포·수리</button><button data-menu="combat">선장 전투</button><button data-menu="collection">수집 도감</button><button data-menu="ship">내 배 보기</button><button data-menu="captains">전체 선장</button><button data-menu="atlas">항구 찾기</button><button data-menu="globe">세계 지구본</button><button data-menu="rank">랭킹</button><button data-menu="mission">의뢰</button><button data-menu="chat">채팅</button><button data-menu="journal">항해일지</button><button data-menu="settings">조작·화면 설정</button><button data-menu="help">도움말</button></div>';
     openSheet('더보기','more');
     $('#quick-content').querySelectorAll('[data-menu]').forEach(b=>b.onclick=()=>{
       closeSheet();const key=b.dataset.menu;
-      if(key==='suggestions')api.onSuggestions?.();else if(key==='ownedPorts')api.onOwnedPorts?.();else if(key==='business')api.onBusiness?.();else if(key==='guns')api.onGuns?.();else if(key==='combat')api.onCombat?.();else if(key==='collection')api.onCollection?.();else if(key==='ship')api.onShip?.();else if(key==='captains')api.onCaptains?.();else if(key==='atlas')api.onAtlas();else if(key==='journal')api.onJournal();else if(key==='settings')showSettings();else if(key==='help')api.onHelp();else {
+      if(key==='saleSearch')api.onSaleSearch?.();else if(key==='suggestions')api.onSuggestions?.();else if(key==='ownedPorts')api.onOwnedPorts?.();else if(key==='business')api.onBusiness?.();else if(key==='guns')api.onGuns?.();else if(key==='combat')api.onCombat?.();else if(key==='collection')api.onCollection?.();else if(key==='ship')api.onShip?.();else if(key==='captains')api.onCaptains?.();else if(key==='atlas')api.onAtlas();else if(key==='journal')api.onJournal();else if(key==='settings')showSettings();else if(key==='help')api.onHelp();else {
         if(key==='chat')api.onChat(true);
         $({globe:'.minimap-card',rank:'.rank-card',mission:'.mission-card',chat:'#chat-panel'}[key])?.scrollIntoView({block:'nearest'});
       }
@@ -97,7 +97,7 @@ export function createUX(api){
       const id=b.getAttribute('aria-controls'),body=document.getElementById(id),folded=!!prefs.folds[id];if(!body)return;
       body.hidden=folded;b.closest('.fold-heading').parentElement.classList.toggle('is-collapsed',folded);b.textContent=folded?'+ 펼치기':'− 접기';b.setAttribute('aria-expanded',String(!folded));
     });
-    if(prefs.folds.chat)api.onChat(false);
+    if(prefs.folds.chat)api.onChat(false);api.onMapLabels?.();
     api.onRankVisibility?.(!$('#body-rank-card')?.hidden);
   }
   function loadPreferences(){
@@ -108,12 +108,13 @@ export function createUX(api){
     prefs.folds[b.id==='chat-close'?'chat':b.getAttribute('aria-controls')]=b.getAttribute('aria-expanded')==='false';storePrefs();
   });
   function showSettings(){
-    api.onModal('조작·화면 설정','항해 환경','<p>PC는 방향키 또는 W 위 · S 아래 · A 왼쪽 · D 오른쪽으로 조종해요. Space는 정지·일시 정지예요.</p><p>지도에 초점이 있을 때 H 내 배 · T 교역 · B 보급 · U 업데이트를 사용할 수 있어요.</p><div class="settings-row"><strong>모바일 조작 위치</strong><button data-hand="left">왼손</button><button data-hand="right">오른손</button></div><div class="settings-row"><strong>PC 정보 영역</strong><button data-width="280">좁게</button><button data-width="315">기본</button><button data-width="420">넓게</button></div><label class="settings-row"><input id="letter-keys" type="checkbox"> WASD와 글자 단축키 사용</label><button class="service-button" id="reset-ux">화면 설정 초기화</button>');
-    const paint=()=>{modal.querySelectorAll('[data-hand]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.hand===prefs.hand)));modal.querySelectorAll('[data-width]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.width)===prefs.width)));$('#letter-keys').checked=prefs.letters;};
+    api.onModal('조작·화면 설정','항해 환경','<p>PC는 방향키 또는 W 위 · S 아래 · A 왼쪽 · D 오른쪽으로 조종해요. Space는 정지·일시 정지예요.</p><p>지도에 초점이 있을 때 H 내 배 · T 교역 · B 보급 · U 업데이트를 사용할 수 있어요.</p><div class="settings-row"><strong>모바일 조작 위치</strong><button data-hand="left">왼손</button><button data-hand="right">오른손</button></div><div class="settings-row"><strong>PC 정보 영역</strong><button data-width="280">좁게</button><button data-width="315">기본</button><button data-width="420">넓게</button></div><label class="settings-row"><input id="letter-keys" type="checkbox"> WASD와 글자 단축키 사용</label><label class="settings-row"><input id="place-names" type="checkbox"> 지도 지명 표시</label><button class="service-button" id="reset-ux">화면 설정 초기화</button>');
+    const paint=()=>{modal.querySelectorAll('[data-hand]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.hand===prefs.hand)));modal.querySelectorAll('[data-width]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.width)===prefs.width)));$('#letter-keys').checked=prefs.letters;$('#place-names').checked=prefs.placeNames;};
     const update=()=>{storePrefs();applyPreferences();paint();};
     modal.querySelectorAll('[data-hand]').forEach(b=>b.onclick=()=>{prefs.hand=b.dataset.hand;update();});
     modal.querySelectorAll('[data-width]').forEach(b=>b.onclick=()=>{prefs.width=Number(b.dataset.width);update();});
     $('#letter-keys').onchange=e=>{prefs.letters=e.target.checked;update();};
+    $('#place-names').onchange=e=>{prefs.placeNames=e.target.checked;update();};
     $('#reset-ux').onclick=()=>{prefs=defaultPreferences();api.onChat(true);update();};paint();
   }
   document.addEventListener('keydown',e=>{
@@ -214,7 +215,8 @@ export function createUX(api){
   }
   function signal(peer){
     if(!getVisibleShips().some(s=>s.uid===peer.uid))return;
-    api.onModal(peer.name,'시야 안 선장에게 인사','<p>인사는 전체 채팅에 표시돼요.</p>'+Object.entries(SIGNAL_LABELS).map(([code,label])=>`<button class="service-button" data-signal="${code}">${label}</button>`).join(''));
+    api.onModal(peer.name,'시야 안 선장 · '+(peer.offline?'오프라인':'접속 중'),'<button class="service-button" id="visible-captain-attack">이 선장 공격하기</button><p>항구에 정박한 배는 공격할 수 없어요.</p><p>인사는 전체 채팅에 표시돼요.</p>'+Object.entries(SIGNAL_LABELS).map(([code,label])=>`<button class="service-button" data-signal="${code}">${label}</button>`).join(''));
+    $('#visible-captain-attack').onclick=()=>{api.onClose();api.onCombatTarget?.(peer.uid);};
     modal.querySelectorAll('[data-signal]').forEach(b=>b.onclick=()=>{if(!getVisibleShips().some(s=>s.uid===peer.uid)){api.onToast('선장이 시야에서 벗어났어요.');return;}const code=b.dataset.signal;share(`${peer.name} 선장님, ${SIGNAL_LABELS[code]}!`,{kind:'signal',ref:{code,targetUid:peer.uid,targetName:peer.name}});});
   }
   function card(message){
@@ -227,5 +229,5 @@ export function createUX(api){
     };return b;
   }
 
-  return {get letterKeys(){return prefs.letters;},isBlocking:()=>sheet.open,beforeDialog:api.onStop,loadPreferences,renderHUD,renderShip,renderPortStory,renderDraft,trade,openPort,closeSheet,patchNotes,confirmSea,migration,signal,card,share,settings:showSettings};
+  return {get placeNames(){return prefs.placeNames;},get letterKeys(){return prefs.letters;},isBlocking:()=>sheet.open,beforeDialog:api.onStop,loadPreferences,renderHUD,renderShip,renderPortStory,renderDraft,trade,openPort,closeSheet,patchNotes,confirmSea,migration,signal,card,share,settings:showSettings};
 }

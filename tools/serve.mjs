@@ -12,7 +12,7 @@ const root=fileURLToPath(new URL('../dist/',import.meta.url));
 const useEmulators=process.argv.includes('--emulators');
 const fixtureLogin=process.argv.includes('--fixture-login');
 const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8',
-  '.css':'text/css; charset=utf-8','.json':'application/json','.geojson':'application/geo+json','.svg':'image/svg+xml','.jpg':'image/jpeg','.jpeg':'image/jpeg','.zip':'application/zip'};
+  '.css':'text/css; charset=utf-8','.json':'application/json','.geojson':'application/geo+json','.svg':'image/svg+xml','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.zip':'application/zip'};
 const read=name=>readFile(path.join(root,name),'utf8');
 
 const crewFixture=`

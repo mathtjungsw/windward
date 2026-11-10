@@ -1,17 +1,11 @@
-import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.10-community-battle';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.10-community-battle';
-import {fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.10-community-battle';
-import {mapDistance} from './world-wrap.js?v=2026.11.10-community-battle';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.10-navigation-trade-offline';
+import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.10-navigation-trade-offline';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.10-navigation-trade-offline';
+import {fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.10-navigation-trade-offline';
+import {mapDistance} from './world-wrap.js?v=2026.11.10-navigation-trade-offline';
 export const COMBAT_RANGE=180,COMBAT_TIMEOUT=180000,PROTECTION_MS=120000;
 export function npcSlotChanges(game,uid,currentSlot){currentSlot??=null;const expected='npc:'+uid;if(currentSlot&&currentSlot!==expected)throw Error('선장 간 전투를 먼저 마치세요.');const next=game.npcBattle?expected:null;return currentSlot===next?{}:{['combatSlots/'+uid]:next};}
-export const PIRATE_ZONES=[
- {id:'atlantic',name:'대서양 해적 정찰선',point:[-17,34],tier:0},
- {id:'caribbean',name:'카리브 해적 범선',point:[-77,19],tier:1},
- {id:'africa',name:'희망봉 해적선',point:[13,-33],tier:1},
- {id:'indian',name:'인도양 해적 기함',point:[61,8],tier:2},
- {id:'asia',name:'남중국해 해적선',point:[115,15],tier:1},
- {id:'pacific',name:'태평양 해적 기함',point:[-154,18],tier:2}
-];
+export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.10-navigation-trade-offline';
 const copy=o=>structuredClone(o||{});
 export function splitCargo(cargo,limit){const taken={},rest={};for(const [id,c]of Object.entries(cargo||{}).sort(([a],[b])=>a.localeCompare(b))){const qty=Math.min(c.qty,Math.max(0,limit)),cost=c.qty?c.cost*qty/c.qty:0;if(qty)taken[id]={qty,cost};if(qty<c.qty)rest[id]={qty:c.qty-qty,cost:c.cost-cost};limit-=qty;}return {taken,rest};}
 export const cargoCount=c=>Object.values(c||{}).reduce((n,c)=>n+c.qty,0);
@@ -19,7 +13,7 @@ export function addCargo(target,source){for(const [id,c]of Object.entries(source
 export function reserveLoss(game,id){if(game.battleReserve)throw Error('이미 보관 중인 전투 정산금이 있어요.');const money=Math.min(2000,Math.floor(game.money*.1)),qty=Math.min(5,Math.floor(cargoCount(game.cargo)*.1)),{taken,rest}=splitCargo(game.cargo,qty);game.money-=money;game.cargo=rest;const reserve={id,money,cargoJSON:JSON.stringify(taken)};game.battleReserve=copy(reserve);return reserve;}
 export const reserveCargo=r=>typeof r?.cargoJSON==='string'?JSON.parse(r.cargoJSON):r?.cargo||{};
 export function returnReserve(game){const r=game.battleReserve;if(!r)return;game.money+=r.money;addCargo(game.cargo,reserveCargo(r));delete game.battleReserve;}
-export function combatProfile(game,name,now){return {name,point:[...game.position],hp:currentHP(game),maxHP:fleetMaxHP(game),guns:(game.cannons||[]).filter(g=>g.shipId).map(g=>({...g})),at:now,protected:!!game.port||!!game.voyage?.kind||!!game.npcBattle||!game.battleReserve||now<(game.defeatProtectionUntil||0),lootRoom:Math.max(0,50-cargoCount(game.lootClaims)),repair:Math.max(100,Math.min(3000,Math.ceil(fleetAppraisal(game)*.02)))};}
+export function combatProfile(game,name,now){return {name,point:[...game.position],hp:currentHP(game),maxHP:fleetMaxHP(game),guns:(game.cannons||[]).filter(g=>g.shipId).map(g=>({...g})),at:now,protected:!!game.port||!!game.voyage?.kind||!!game.npcBattle||!!game.raidId||!game.battleReserve||now<(game.defeatProtectionUntil||0),lootRoom:Math.max(0,50-cargoCount(game.lootClaims)),repair:Math.max(100,Math.min(3000,Math.ceil(fleetAppraisal(game)*.02)))};}
 export function combatEligible(a,b,now,clear=()=>true){if(a.protected||b.protected)throw Error('항구·구조·전투 준비·패전 보호 상태에서는 공격할 수 없어요.');if(now-a.at>45000||now-b.at>45000)throw Error('접속 확인이 오래된 선장이에요.');if(mapDistance(a.point,b.point)>COMBAT_RANGE||!clear(a.point,b.point))throw Error('같은 바닷길의 시야 180해리 안에서 접근하세요.');}
 export function openBattle(mode,a,b,profiles,reserves,now,clear){if(a===b||!['duel','free'].includes(mode))throw Error('대결 대상을 확인하세요.');combatEligible(profiles[a],profiles[b],now,clear);for(const id of [a,b]){const r=reserves[id];if(!r?.id||!Number.isInteger(r.money)||r.money<0||r.money>2000)throw Error('선장의 전투 정산 준비를 확인하세요.');let cargo;try{cargo=reserveCargo(r);}catch{throw Error('정산 보관 화물을 확인하세요.');}if(!cargo||typeof cargo!=='object'||Array.isArray(cargo)||cargoCount(cargo)>5||Object.values(cargo).some(c=>!Number.isInteger(c.qty)||c.qty<0||!Number.isFinite(c.cost)||c.cost<0))throw Error('정산 보관 화물을 확인하세요.');}const players={};for(const id of [a,b]){const p=copy(profiles[id]);players[id]={...p,hp:mode==='duel'?p.maxHP:p.hp,beforeHP:p.hp};}return {mode,a,b,status:'active',players,reserves:copy(reserves),createdAt:now,lastAt:now,deadline:now+COMBAT_TIMEOUT,sequence:0,claimed:{},event:{text:mode==='duel'?'합의 결투 시작 · 대포 성능 강화':'해상 전투 시작',at:now,sequence:0}};}
 export function settleBattle(room,winner,now,reason='승부 결정'){if(room.status!=='active'||![room.a,room.b].includes(winner))throw Error('이미 정산된 전투예요.');const loser=winner===room.a?room.b:room.a,w=room.reserves[winner],l=room.reserves[loser],loot=splitCargo(reserveCargo(l),room.players[winner].lootRoom);room.status='closed';room.winner=winner;room.loser=loser;room.closedAt=now;room.reason=reason;return room;}
