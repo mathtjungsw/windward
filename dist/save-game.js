@@ -1,7 +1,7 @@
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.10-performance';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-performance';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.10-performance';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.10-performance';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.10-performance-map';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-performance-map';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.10-performance-map';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.10-performance-map';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;

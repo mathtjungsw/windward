@@ -1,5 +1,5 @@
-import {GlobeAtlas} from './globe.js?v=2026.11.10-performance';
-import {wrapPosition} from './world-wrap.js?v=2026.11.10-performance';
+import {GlobeAtlas} from './globe.js?v=2026.11.10-performance-map';
+import {wrapPosition} from './world-wrap.js?v=2026.11.10-performance-map';
 export function viewportRects(points){if(!points?.length)return [];const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),rects=[];for(const dx of [-360,0,360])for(const dy of [-140,0,140]){const left=Math.max(-180,Math.min(...xs)+dx),right=Math.min(180,Math.max(...xs)+dx),south=Math.max(-60,Math.min(...ys)+dy),north=Math.min(80,Math.max(...ys)+dy);if(right>left&&north>south)rects.push({left,right,south,north});}return rects;}
 export class AtlasView extends GlobeAtlas{
  constructor(canvas,land,rivers,ports,onLook){

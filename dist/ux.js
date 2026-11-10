@@ -1,12 +1,12 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.10-performance';
-import {shipArtPath} from './art.js?v=2026.11.10-performance';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.10-performance';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-performance';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.10-performance';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.10-performance';
-import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.10-performance';
-import {isTypingTarget} from './controls.js?v=2026.11.10-performance';
-import {validCard} from './social-core.js?v=2026.11.10-performance';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.10-performance-map';
+import {shipArtPath} from './art.js?v=2026.11.10-performance-map';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.10-performance-map';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-performance-map';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.10-performance-map';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.10-performance-map';
+import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.10-performance-map';
+import {isTypingTarget} from './controls.js?v=2026.11.10-performance-map';
+import {validCard} from './social-core.js?v=2026.11.10-performance-map';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');

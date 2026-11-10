@@ -1,6 +1,6 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION} from './discoveries-catalog.js?v=2026.11.10-performance';
-import {mapDistance} from './world-wrap.js?v=2026.11.10-performance';
-import {segmentDistance} from './voyage-core.js?v=2026.11.10-performance';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION} from './discoveries-catalog.js?v=2026.11.10-performance-map';
+import {mapDistance} from './world-wrap.js?v=2026.11.10-performance-map';
+import {segmentDistance} from './voyage-core.js?v=2026.11.10-performance-map';
 export const explorationAllowed=s=>!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{const ids=Object.keys(s.discoveries||{}).filter(id=>Object.hasOwn(DISCOVERY_BY_ID,id));return {foundCount:ids.length,fame:ids.reduce((n,id)=>n+DISCOVERY_BY_ID[id].fame,0)+(s.pirateFame||0)};};
 export const hasClues=(s,d)=>(d.rumorIds||[]).every(id=>(s.rumors||[]).includes(id));

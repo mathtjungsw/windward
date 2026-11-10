@@ -18,7 +18,7 @@ window.HTMLElement.prototype.scrollIntoView=()=>{};window.Element.prototype.getB
 globalThis.fetch=async url=>({ok:true,json:async()=>JSON.parse(await readFile(new URL('../dist/'+url.split('?')[0],import.meta.url),'utf8'))});
 await mkdir(new URL('../.qa/',import.meta.url),{recursive:true});
 let code=await readFile(new URL('../dist/app.js',import.meta.url),'utf8');code=code.replaceAll("from './","from '../dist/").replace('renderFleetStatus();showEntry();','renderFleetStatus();');
-code+='\nexport {tick,sailingClock,renderPeers,renderMinimap,state,beginPlaying,nav,renderHUD,renderPanel,expansion,business,combat,community,account,globe,fleet,rankings,selectPort,setControlMode,planDestination,startVoyage,stopForUI,heldKeys,heldPointers,heldKeyboard};\n';
+code+='\nexport {chartTerrain,camera,screen,applyCamera,renderChartLabels,tick,sailingClock,renderPeers,renderMinimap,state,beginPlaying,nav,renderHUD,renderPanel,expansion,business,combat,community,account,globe,fleet,rankings,selectPort,setControlMode,planDestination,startVoyage,stopForUI,heldKeys,heldPointers,heldKeyboard};\n';
 await writeFile(new URL('../.qa/app-ui-unit.mjs',import.meta.url),code);
 for(const name of ['style.css','upgrade.css','ux.css','expedition.css']){const style=document.createElement('style');style.textContent=(await readFile(new URL('../dist/'+name,import.meta.url),'utf8')).replace(/@import[^;]*;/g,'');document.head.append(style);}
 const app=await import('../.qa/app-ui-unit.mjs');
@@ -80,4 +80,13 @@ test('application tick keeps automatic and manual sailing consistent at low FPS,
   app.beginPlaying(initialState());$('#modal').close();app.planDestination('porto',[-8.61,41.15],false);await app.startVoyage();app.sailingClock.reset(0);app.tick(0);app.tick(200);const point=[...app.state.position];
   Object.defineProperty(document,'hidden',{value:true,configurable:true});app.tick(10000);assert.deepEqual(app.state.position,point);Object.defineProperty(document,'hidden',{value:false,configurable:true});app.tick(11000);assert.deepEqual(app.state.position,point);app.tick(11200);assert.notDeepEqual(app.state.position,point);
  }finally{delete document.hidden;app.combat.hasReserve=oldReserve;app.combat.blocked=oldBlocked;app.stopForUI();app.beginPlaying(initialState());$('#modal').close();}
+});
+
+test('static terrain has no live coast paths, fog is independent, and labels reuse their nodes during camera updates',()=>{
+ assert.equal(document.querySelectorAll('#chart-terrain path').length,0);assert.equal($('#chart-terrain #map-labels'),null);assert.equal($('#chart-terrain #exploration-fog'),null);assert.ok($('#chart-fog #exploration-fog'));assert.ok($('#terrain-tiles image'));assert.ok(!document.querySelector('#map-camera [filter="url(#paper)"]'));
+ const saved={...app.camera};app.camera.x=(-38+180)*1600/360;app.camera.y=(80-30)*800/140;app.applyCamera();app.renderChartLabels(true);const label=$('[data-place="north-atlantic"]');assert.ok(label);const image=$('#terrain-tiles image');for(let i=0;i<60;i++){app.applyCamera();app.renderChartLabels(true);}assert.equal($('[data-place="north-atlantic"]'),label);assert.equal($('#terrain-tiles image'),image);assert.ok(app.chartTerrain.nodes.size<=16);Object.assign(app.camera,saved);app.applyCamera();
+});
+
+test('geographical labels use the nearest wrapped copy across the date line without rebuilding the text',()=>{
+ const saved={...app.camera},w=app.screen.w;app.screen.w=1280;app.camera.x=1595;app.camera.y=(80+41)*800/140;app.applyCamera();app.renderChartLabels(true);const name=$('[data-place="new-zealand"]');assert.ok(name);assert.ok(Number(name.getAttribute('x'))>1500);app.camera.x=2;app.applyCamera();app.renderChartLabels(true);assert.equal($('[data-place="new-zealand"]'),name);assert.ok(Number(name.getAttribute('x'))<0);app.screen.w=w;Object.assign(app.camera,saved);app.applyCamera();
 });

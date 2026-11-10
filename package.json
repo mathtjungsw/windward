@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "node tools/serve.mjs",
-    "test": "node --test tools/game.test.mjs tools/social.test.mjs tools/exploration.test.mjs tools/account.test.mjs tools/wrap.test.mjs tools/captains.test.mjs tools/coastal.test.mjs tools/expedition.test.mjs tools/art.test.mjs tools/world-catalog.test.mjs tools/snapshot-regression.test.mjs tools/economy-combat.test.mjs tools/atomic.test.mjs tools/ui-dom.test.mjs tools/ranking-progress.test.mjs tools/combat-map.test.mjs tools/combat-ui.test.mjs tools/defense.test.mjs tools/pirate-catalog.test.mjs tools/navigation-trade-update.test.mjs tools/sale-finder.test.mjs tools/performance.test.mjs",
-    "notes:check": "node tools/build-release-notes.mjs --check && node tools/build-catalog.mjs --check && node tools/build-world-catalog.mjs --check && node tools/build-art.mjs --check && node tools/stamp-assets.mjs --check",
+    "test": "node --test tools/game.test.mjs tools/social.test.mjs tools/exploration.test.mjs tools/account.test.mjs tools/wrap.test.mjs tools/captains.test.mjs tools/coastal.test.mjs tools/expedition.test.mjs tools/art.test.mjs tools/world-catalog.test.mjs tools/snapshot-regression.test.mjs tools/economy-combat.test.mjs tools/atomic.test.mjs tools/ui-dom.test.mjs tools/ranking-progress.test.mjs tools/combat-map.test.mjs tools/combat-ui.test.mjs tools/defense.test.mjs tools/pirate-catalog.test.mjs tools/navigation-trade-update.test.mjs tools/sale-finder.test.mjs tools/performance.test.mjs tools/chart-terrain.test.mjs",
+    "notes:check": "node tools/build-release-notes.mjs --check && node tools/build-catalog.mjs --check && node tools/build-world-catalog.mjs --check && node tools/build-art.mjs --check && node tools/stamp-assets.mjs --check && node tools/check-chart-tiles.mjs",
     "test:rules": "node tools/check-social.mjs && node tools/check-worlds.mjs && node tools/check-economy.mjs && node tools/check-npc.mjs && node tools/check-ranking-rules.mjs && node tools/check-ranking-bootstrap.mjs && node tools/check-community.mjs && node tools/check-defense.mjs && node tools/check-enrollment.mjs && node tools/check-session.mjs"
   },
   "devDependencies": {

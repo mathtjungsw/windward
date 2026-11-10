@@ -1,0 +1,5 @@
+# Inputs to the decorative terrain manifest must hash equally on Windows/Linux.
+tools/build-chart-tiles.py text eol=lf
+dist/assets/*.geojson text eol=lf
+dist/assets/rivers.json text eol=lf
+dist/assets/chart-tiles/manifest.json text eol=lf
