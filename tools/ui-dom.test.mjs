@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {Window} from 'happy-dom';
 import {initialState} from '../dist/engine.js';
-import {DISCOVERIES} from '../dist/discoveries-catalog.js';
+import {DISCOVERIES,RUMORS} from '../dist/discoveries-catalog.js';
 const window=new Window({url:'http://127.0.0.1:4173/',width:1280,height:800,settings:{disableCSSFileLoading:true,disableJavaScriptFileLoading:true,disableJavaScriptEvaluation:true}});
 const document=window.document;
 document.write((await readFile(new URL('../dist/index.html',import.meta.url),'utf8')).replace(/<script[^>]*>[\s\S]*?<\/script>/g,'').replace(/<link[^>]*>/g,''));
@@ -70,7 +70,7 @@ test('application tick keeps automatic and manual sailing consistent at low FPS,
    for(const interval of [20,200,500]){
     app.beginPlaying(initialState());$('#modal').close();app.stopForUI();
     if(mode==='auto'){app.planDestination('porto',[-8.61,41.15],false);await app.startVoyage();}
-    else{app.state.controlMode='manual';app.heldKeys.add('ArrowLeft');}
+    else{app.state.port=null;app.state.position=[-10,38.7];app.state.controlMode='manual';app.heldKeys.add('ArrowLeft');}
     app.sailingClock.reset(0);app.tick(0);
     for(let t=interval;t<=1000;t+=interval)app.tick(t);
     results.push({point:[...app.state.position],day:app.state.day,food:app.state.food});
@@ -97,4 +97,124 @@ test('mobile geography is visible above all fog copies and can be disabled and r
  const children=[...$('#map-camera').children],layer=children.indexOf($('#map-labels'));for(const node of children.filter(n=>n.id==='chart-fog'||n.getAttribute('href')==='#chart-fog'))assert.ok(layer>children.indexOf(node));assert.ok(layer<children.indexOf($('#port-markers')));
  const before=JSON.stringify(app.state);for(let i=0;i<10;i++)app.renderChartLabels(true);assert.equal(JSON.stringify(app.state),before);
  $('#ux-settings').click();const box=$('#place-names');assert.ok(box.checked);box.checked=false;box.dispatchEvent(new window.Event('change',{bubbles:true}));assert.equal($('#map-labels').children.length,0);box.checked=true;box.dispatchEvent(new window.Event('change',{bubbles:true}));assert.ok($('#map-labels').children.length>0);$('#modal').close();Object.assign(app.screen,size);Object.assign(app.camera,saved);app.applyCamera();
+});
+
+test('rumor note opens on desktop and mobile and restores a hidden tavern rumor',()=>{
+  window.happyDOM.setViewport({width:1280,height:844});
+  app.beginPlaying(initialState());
+  $('#modal').close();
+  app.state.shipTier=4;
+  app.state.fleetShips[0].tier=4;
+  $('#tavern-tab').click();
+  app.renderPanel();
+  $('[data-tavern-rumor="I008"]').click();
+  assert.match($('#modal-title').textContent,/소문노트/);
+  assert.match($('#modal-content details[open]').textContent,/포르투 부두/);
+  $('[data-note-hide="I008"]').click();
+  assert.equal($('[data-note-hide="I008"]'),null);
+  $('[data-note-filter="hidden"]').click();
+  assert.ok($('[data-note-hide="I008"]'));
+  $('[data-note-hide="I008"]').click();
+  $('#close-modal').click();
+  window.happyDOM.setViewport({width:390,height:844});
+  $('#rumor-note-tab').click();
+  assert.ok($('[data-note-hide="I008"]'));
+  assert.doesNotMatch($('#modal-content').textContent,/예비 노|아이템|부선장|발견물|진행 보기/);
+  assert.equal($('[data-note-contract]'),null);
+  $('#modal').close();
+  app.state.port='porto';
+  app.renderPanel();
+  $('#tavern-tab').click();
+  $('[data-port-encounter="I008"]').click();
+  assert.match($('#modal-title').textContent,/예비 노/);
+  assert.equal($('[data-rumor-action="start"]').disabled,false);
+  $('#modal').close();
+  app.beginPlaying(initialState());
+  $('#modal').close();
+});
+
+
+test('the tavern mixes discovery and recruitment rumors with the same presentation',()=>{
+  const game=initialState();
+  game.port='colombo';
+  game.shipTier=9;
+  game.fleetShips[0].tier=9;
+  game.visited=['lisbon','porto','seville','bordeaux','dublin','london','amsterdam','marseille','venice','goa','chennai','colombo'];
+  app.beginPlaying(game);
+  $('#modal').close();
+  $('#tavern-tab').click();
+  const discovery=RUMORS.find(r=>r.portId==='colombo');
+  const entries=[...document.querySelectorAll('#tavern-content [data-tavern-rumor]')];
+  assert.ok(entries.some(x=>x.dataset.tavernRumor===discovery.id));
+  assert.ok(entries.some(x=>x.dataset.tavernRumor==='O014'));
+  assert.ok(entries.every(x=>/^소문 [0-9]+$/.test(x.textContent)));
+  entries.find(x=>x.dataset.tavernRumor===discovery.id).click();
+  assert.ok(app.state.rumors.includes(discovery.id));
+  assert.equal($('#modal-content details[open] p').textContent,discovery.text);
+  assert.doesNotMatch($('#modal-content').textContent,/탐험 소문|발견물|부선장|특수 아이템/);
+  $('#modal').close();
+  $('[data-tavern-rumor="O014"]').click();
+  assert.equal($('#modal-content').querySelectorAll('.rumor-note-row').length,2);
+  assert.doesNotMatch($('#modal-content').textContent,/쉬프랑|동행|보급 소모/);
+  $('#modal').close();
+  app.beginPlaying(initialState());
+  $('#modal').close();
+});
+
+test('equipped items appear on the assigned ship and in the item bag after a flagship change',()=>{
+  const game=initialState(), oldFlag=game.flagshipId;
+  game.fleetShips=[{id:oldFlag,tier:6},{id:'new-flag',tier:7}];
+  game.flagshipId='new-flag';
+  game.shipTier=7;
+  game.fleetCount=2;
+  game.rumorProgress={read:['I001','I023'],hidden:[],contracts:{},officers:[],items:{I001:1,I023:1},shipGear:{[oldFlag]:'I001'},tradeGear:'I023',active:null};
+  app.beginPlaying(game);
+  $('#modal').close();
+  $('#ship-view-btn').click();
+  assert.match($('.fleet-trade-gear').textContent,/접이식 화물 선반/);
+  const cards=[...document.querySelectorAll('#modal-content .growth-step')];
+  assert.match(cards[0].querySelector('.vessel-gear').textContent,/없음/);
+  assert.match(cards[1].querySelector('.vessel-gear').textContent,/강화 돛/);
+  $('#fleet-items').click();
+  assert.match($('#modal-content').textContent,/장착 중 · 동행선 1/);
+  assert.match($('#modal-content').textContent,/장착 중 · 선단 교역 장비/);
+  $('#modal').close();
+  app.beginPlaying(initialState());
+  $('#modal').close();
+});
+
+
+test('an invalid automatic destination preserves a running route and does not discard its progress',async()=>{
+  const hadReserve=app.combat.hasReserve,blocked=app.combat.blocked;
+  app.combat.hasReserve=()=>true;app.combat.blocked=()=>false;
+  const game=initialState();
+  game.knownPorts.push('london');
+  app.beginPlaying(game);
+  $('#modal').close();
+  app.planDestination('porto',[-8.61,41.15],false);
+  await app.startVoyage();
+  const old=app.state.voyage;
+  app.state.food=.01;
+  await app.selectPort('london',false);
+  assert.equal(app.state.voyage,old);
+  assert.equal(app.state.voyage.target,'porto');
+  app.combat.hasReserve=hadReserve;app.combat.blocked=blocked;
+  app.beginPlaying(initialState());
+  $('#modal').close();
+});
+
+test('a finished depot appears in the chart and the ownership directory without a visit',async()=>{
+ const a=app.account,old={ready:a.ready,uid:a.uid,name:a.name,sdk:a.sdk};
+ const harbor='depot-stjohns',registry={[harbor]:{kind:'depot',level:1,opensAt:Date.now()-10000,ownerUid:'captain',ownerShare:60}};
+ const snapshot={val:()=>registry},empty={forEach:()=>{}};
+ const sdk={ref:(_db,key)=>key,onValue:()=>()=>{},query:key=>key,orderByKey:()=>{},limitToFirst:()=>{},
+   get:async key=>key.endsWith('/harborRegistry')?snapshot:empty};
+ Object.assign(a,{ready:true,uid:'captain',name:'보급 선장',sdk});
+ try{
+   await app.business.syncPorts();
+   assert.ok($('[data-port='+harbor+']'));
+   await app.community.showOwnedPorts();
+   assert.match($('#owned-port-list').textContent,/보급 선장.*공동 보급항.*60.00%/s);
+   assert.ok(!app.state.visited.includes(harbor));
+ }finally{app.business.dispose();Object.assign(a,old);$('#modal').close();}
 });

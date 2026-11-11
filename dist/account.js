@@ -1,10 +1,10 @@
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.10-visible-place-names';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.10-visible-place-names';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.10-visible-place-names';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.10-visible-place-names';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.10-visible-place-names';
-import {applyRaftStart} from './raft-start.js?v=2026.11.10-visible-place-names';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.10-visible-place-names';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {applyRaftStart} from './raft-start.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.12-cooperative-fleet-discoveries';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
@@ -116,7 +116,7 @@ export class CaptainAccount {
       }
     } catch(error) { throw Error('기기 저장을 읽지 못했어요. 원본은 유지됩니다.'); }
     const observed = (await this.sdk.get(ref)).val();
-    if(observed?.schemaVersion>6)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
+    if(observed?.schemaVersion>7)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
     if(observed&&(observed.schemaVersion||0)<5){const backup='windward-before-expansion-v5:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('업데이트 전 원본 기록을 보관하지 못했어요. 저장 공간을 확인하세요.');}}
     if(observed&&observed.schemaVersion<4){const backup='windward-before-raft-start-v4:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('전환 전 기록을 기기에 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
     if(observed&&observed.schemaVersion<3){const backup='windward-before-world-v3:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('이관 전 기기 백업을 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
@@ -143,7 +143,7 @@ export class CaptainAccount {
       game.world = 'real';
       game.speed = 1;
       return {
-        schemaVersion:this.defenseEnabled?6:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}),
+        schemaVersion:this.defenseEnabled?7:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}),
         operationSequence: current?.operationSequence||0,
         ...(current?.lastOperation?{lastOperation:current.lastOperation}:{}),
         revision: (current?.revision || 0) + 1,
@@ -225,7 +225,7 @@ export class CaptainAccount {
       const result = await this.sdk.runTransaction(this.ref, current => {
         current ??= this.record;
         if (current?.session !== this.session || current.revision !== expected) return;
-        return {...current, schemaVersion:this.defenseEnabled?6:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}), data, revision: expected + 1, leaseUntil: Date.now()+(this.serverOffset||0) + 90000,
+        return {...current, schemaVersion:this.defenseEnabled?7:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}), data, revision: expected + 1, leaseUntil: Date.now()+(this.serverOffset||0) + 90000,
           updatedAt: this.sdk.serverTimestamp()};
       }, {applyLocally: false});
       if (!result.committed) {

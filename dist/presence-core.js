@@ -1,4 +1,4 @@
-import {wrapLatitude,wrapNumber,mapDistance} from './world-wrap.js?v=2026.11.10-visible-place-names';
+import {wrapLatitude,wrapNumber,mapDistance} from './world-wrap.js?v=2026.11.12-cooperative-fleet-discoveries';
 
 export const PRESENCE_TTL=90000;
 export const PRESENCE_COLORS=['#267b93','#b36435','#6d65a0','#37816c','#a14868','#8a742c'];

@@ -5,7 +5,7 @@ import path from 'node:path';
 import {initialState} from '../dist/engine.js';
 import {applyRaftStart} from '../dist/raft-start.js';
 import {DISCOVERIES} from '../dist/discoveries-catalog.js';
-import {PORTS} from '../dist/data.js';
+import {PORTS,DEPOT_SITES} from '../dist/data.js';
 import {previewPrefix,previewHeader,previewStyles,previewEntry,previewShipRules} from './speed-preview.mjs';
 
 const root=fileURLToPath(new URL('../dist/',import.meta.url));
@@ -47,6 +47,76 @@ async function expeditionPage(mode){
  renderHUD();renderFleetStatus();
  `;
  return (await fixturePage(game)).replace('account.seenVersion=RELEASE;beginPlaying('+JSON.stringify(game)+');',()=>`account.seenVersion=RELEASE;beginPlaying(${JSON.stringify(game)});${fixture}`);
+}
+
+async function rumorPreviewPage(porto,shore=false,beach=false,guild=false,projects=false,depot=false){
+  const game=initialState();
+  const port=PORTS.find(p=>p.id===(shore?'seville':porto?'porto':'lisbon'));
+  Object.assign(game,{shipTier:6,money:18000,food:20,port:port.id,position:[port.lon,port.lat]});
+  game.fleetShips[0].tier=game.shipTier;
+  game.visited=['lisbon','porto','seville','bordeaux','dublin','london','amsterdam','marseille'];
+  game.knownPorts=[...game.visited];
+  game.cargo={wine:{qty:5,cost:150}};
+  if(porto)game.rumorProgress={read:['I008'],hidden:[],contracts:{},officers:[],items:{},shipGear:{},tradeGear:null,active:null};
+  if(beach){
+    game.port=null;
+    game.position=[-8.8,37];
+    game.rumorProgress={read:['I039'],hidden:[],contracts:{},officers:[],items:{I039:1},shipGear:{},tradeGear:null,active:null,exploreGear:'I039'};
+  }
+  if(guild){
+    game.shipTier=9;game.fleetShips[0].tier=9;game.food=30;
+    game.cannons=[{id:'qa-gun',kind:'light',quality:0,shipId:game.flagshipId,readyAt:0}];
+    if(porto){
+      const deadline=Date.now()+1800000;
+      game.cargo.wine={qty:10,cost:300};
+      game.guild={active:[{id:'lisbon:porto:5:wine',origin:'lisbon',target:'porto',tier:5,good:'wine',qty:8,deadline,reward:180}],history:[],earned:0,lost:0,completed:0};
+    }
+  }
+  if(shore)game.rumorProgress={read:['I028','I029','I030','I031','I032'],hidden:[],contracts:{},officers:[],
+    items:{I028:2,I029:1,I030:2,I031:2,I032:1},shipGear:{},tradeGear:null,active:null,exploreGear:'I032'};
+  if(projects||depot){
+    game.money=2000000;
+    game.shipTier=13;game.fleetShips[0].tier=13;game.food=35;
+    game.cargo.wine={qty:42,cost:420};
+    game.knownPorts.push('havana');
+    game.rumorProgress={read:['I057','I052','O010'],hidden:[],contracts:{},officers:['O010'],officerXP:{O010:450},items:{I057:1,I052:1},shipGear:{},active:'O010'};
+    if(depot){
+      const site=DEPOT_SITES[0];
+      game.port=site.id;game.position=site.point;game.food=10;
+      game.visited.push(site.id);
+    }
+  }
+  const previewCode=`
+    account.ready=true;
+    account.uid='local-rumor-preview';
+    account.save=()=>{};
+    const fixtureShares=new Map();
+    ${projects||depot?`
+    const depot=PROJECT_BY_ID['depot-stjohns'],opensAt=Date.now()-3600000;
+    const {registerDevelopedPorts}=await import('./data.js?v='+RELEASE);
+    const added=registerDevelopedPorts({[depot.id]:{kind:'depot',level:1,opensAt,ownerUid:account.uid,ownerShare:100}},Date.now());
+    for(const port of added)portApproaches.set(port.id,nav.approach(port));
+    state.legacyHarbor=false;
+    fixtureShares.set('projects/'+depot.id,{revision:1,content:{readyAt:opensAt,investors:{[account.uid]:300000},registeredCapital:300000,registeredOwner:account.uid,stock:400}});
+    fixtureShares.set('projects/canal-suez',{revision:1,content:{readyAt:Date.now()-3000,investors:{[account.uid]:6000000},toll:40}});
+    renderPorts();renderPanel();
+    `:''}
+    account.readShared=async (kind,key)=>structuredClone(fixtureShares.get(kind+'/'+key)||{revision:0,content:{}});
+    account.atomicAction=async (kind,key,mutate)=>{
+      const copy=structuredClone(state);
+      const shared=await account.readShared(kind,key);
+      const result=await mutate(copy,shared.content,Date.now(),shared.revision);
+      fixtureShares.set(kind+'/'+key,{revision:shared.revision+1,content:shared.content});
+      account.applyGame(copy);
+      return result;
+    };
+    setTab(${JSON.stringify(shore||beach||guild?'ship':'tavern')});
+    const tag=document.createElement('p');
+    tag.textContent='로컬 테스트 · 새로고침하면 테스트 진행이 초기화됩니다.';
+    tag.className='modal-meta';
+    document.querySelector('#tavern-content').before(tag);
+  `;
+  return (await fixturePage(game)).replace('beginPlaying('+JSON.stringify(game)+');',match=>match+previewCode);
 }
 
 async function speedPreviewPage(){
@@ -103,6 +173,7 @@ const server=createServer(async(req,res)=>{
     if(url.pathname==='/__qa/harbor')return reply(res,'.html',await fixturePage({...manual,position:[url.searchParams.has('near')?-9.44:-10.1,41]}));
     if(url.pathname==='/__qa/trade')return reply(res,'.html',await fixturePage({...manual,position:[-9.44,41],cargo:{wine:{qty:10,cost:310}},boughtLisbonWine:true,money:2090}));
     if(url.pathname==='/__qa/wrap')return reply(res,'.html',await fixturePage({...manual,position:[0,url.searchParams.get('edge')==='south'?-59.8:79.8]}));
+    if(url.pathname==='/__qa/rumors')return reply(res,'.html',await rumorPreviewPage(url.searchParams.has('porto'),url.searchParams.has('shore'),url.searchParams.has('beach'),url.searchParams.has('guild'),url.searchParams.has('projects'),url.searchParams.has('depot')));
     if(url.pathname==='/__qa/crew')return reply(res,'.html',await fixturePage(initialState(),true));
     if(url.pathname==='/__qa/mobile')return reply(res,'.html','<!doctype html><html lang="ko"><meta charset="utf-8"><title>바람의 항로 모바일 화면 검증</title><style>body{margin:0;background:#dce8e8;text-align:center}iframe{display:block;margin:auto;width:390px;height:844px;border:0;max-width:100%}</style><iframe title="모바일 항해 게임" src="/"></iframe></html>');
     const relative=url.pathname.startsWith(previewPrefix)?'/'+url.pathname.slice(previewPrefix.length):url.pathname;
@@ -111,4 +182,5 @@ const server=createServer(async(req,res)=>{
     reply(res,path.extname(target),await readFile(target));
   }catch{res.writeHead(404);res.end('Not found');}
 });
-server.listen(4173,'127.0.0.1',()=>console.log('Local: http://127.0.0.1:4173'+(useEmulators?' (Firebase emulators)':'')));
+const previewPort=Number(process.env.WINDWARD_PREVIEW_PORT||4173);
+server.listen(previewPort,'127.0.0.1',()=>console.log('Local: http://127.0.0.1:'+previewPort+(useEmulators?' (Firebase emulators)':'')));

@@ -3,6 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {initialState} from '../dist/engine.js';
 import {invest} from '../dist/commerce.js';
 import {installAtomicAccount} from '../dist/atomic-account.js';
+import {gameStats} from '../dist/public-stats.js';
 const ns='demo-windward-ranking',stamp={'.sv':'timestamp'},enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url');
 function token(uid){const t=Math.floor(Date.now()/1000);return enc({alg:'none',typ:'JWT'})+'.'+enc({aud:ns,iss:'https://securetoken.google.com/'+ns,sub:uid,user_id:uid,iat:t,exp:t+3600,firebase:{sign_in_provider:'google.com',identities:{}}})+'.';}
 async function req(path,{uid,admin=false,method='GET',body,query={}}={}){const u=new URL(path+'.json','http://127.0.0.1:9000/');u.searchParams.set('ns',ns);if(uid)u.searchParams.set('auth',token(uid));for(const [k,v]of Object.entries(query))u.searchParams.set(k,JSON.stringify(v));const r=await fetch(u,{method,headers:{'content-type':'application/json',...(admin?{Authorization:'Bearer owner'}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});return {status:r.status,value:await r.json()};}
@@ -27,4 +28,7 @@ const races=await Promise.allSettled([investment('b','genoa',2000000),investment
 assert.equal((await req('gameV2/real/portRankings',{uid:'a'})).status,401,'unbounded owner ranking denied');assert.equal((await req('gameV2/real/portRankings',{uid:'a',query:{orderBy:'ownedPortCount',limitToLast:5}})).status,200);
 const beforeDirectory=(await req('gameV2/real/ownedPorts/genoa',{uid:'b'})).value;await investment('b','genoa',10000);const afterDirectory=(await req('gameV2/real/ownedPorts/genoa',{uid:'b'})).value;assert.ok(afterDirectory.share>beforeDirectory.share);assert.equal(await count('b'),1,'extra investment updates share without adding a second port');await accounts.b.atomicAction('ports','genoa',(_game,c)=>{c.defaultRate=7;return {ok:true};});assert.equal((await req('gameV2/real/ownedPorts/genoa',{uid:'a'})).value.defaultRate,7,'same owner policy updates public directory');
 for(const metric of ['foundCount','pirateKills','fleetDefeats','duelWins','tradedGoodCount','bestTradeProfit','islandPorts','fleetGrowth'])assert.equal((await req('gameV2/real/rankings',{uid:'a',query:{orderBy:metric,limitToLast:5}})).status,200,'top five metric '+metric);
+const summary={...gameStats(initialState()),name:'선장 c',saveRevision:1,updatedAt:stamp,foundCount:60,earnedFlag:true};
+assert.equal((await req('gameV2/real/rankings/c',{uid:'c',method:'PUT',body:summary})).status,200,'all 60 active discoveries fit a public summary');
+assert.equal((await req('gameV2/real/rankings/c',{uid:'c',method:'PUT',body:{...summary,foundCount:61}})).status,401,'the active discovery cap is enforced');
 console.log('PASS: ownership majority, offline owner counters, atomic counter requirement, concurrent ports, forged writes, and all new ranking queries');

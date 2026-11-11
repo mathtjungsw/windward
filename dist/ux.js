@@ -1,12 +1,12 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.10-visible-place-names';
-import {shipArtPath} from './art.js?v=2026.11.10-visible-place-names';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.10-visible-place-names';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.10-visible-place-names';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.10-visible-place-names';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.10-visible-place-names';
-import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.10-visible-place-names';
-import {isTypingTarget} from './controls.js?v=2026.11.10-visible-place-names';
-import {validCard} from './social-core.js?v=2026.11.10-visible-place-names';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {shipArtPath} from './art.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {isTypingTarget} from './controls.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {validCard} from './social-core.js?v=2026.11.12-cooperative-fleet-discoveries';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -74,11 +74,11 @@ export function createUX(api){
     openSheet(mode==='cargo'?'내 화물':mode==='supply'?'선박·보급':mode==='target'?'선택한 항구':'항구·보급',mode);
   }
   function openMore(){
-    restorePanel();$('#quick-content').innerHTML='<div class="quick-links"><button data-menu="suggestions">개선 제안 게시판</button><button data-menu="ownedPorts">소유 항구 현황</button><button data-menu="saleSearch">내 물품 최고가 판매처</button><button data-menu="business">항구 투자·활동</button><button data-menu="guns">대포·수리</button><button data-menu="combat">선장 전투</button><button data-menu="collection">수집 도감</button><button data-menu="ship">내 배 보기</button><button data-menu="captains">전체 선장</button><button data-menu="atlas">항구 찾기</button><button data-menu="globe">세계 지구본</button><button data-menu="rank">랭킹</button><button data-menu="mission">의뢰</button><button data-menu="chat">채팅</button><button data-menu="journal">항해일지</button><button data-menu="settings">조작·화면 설정</button><button data-menu="help">도움말</button></div>';
+    restorePanel();$('#quick-content').innerHTML='<div class="quick-links"><button data-menu="suggestions">개선 제안 게시판</button><button data-menu="ownedPorts">소유 항구 현황</button><button data-menu="guild">항구 조합</button><button data-menu="projects">공동 사업</button><button data-menu="sea">해상 활동</button><button data-menu="shore">상륙 탐사</button><button data-menu="officers">부선장 명부</button><button data-menu="items">아이템 가방</button><button data-menu="saleSearch">내 물품 최고가 판매처</button><button data-menu="business">항구 투자·활동</button><button data-menu="guns">대포·수리</button><button data-menu="combat">선장 전투</button><button data-menu="collection">수집 도감</button><button data-menu="ship">내 배 보기</button><button data-menu="captains">전체 선장</button><button data-menu="atlas">항구 찾기</button><button data-menu="globe">세계 지구본</button><button data-menu="rank">랭킹</button><button data-menu="mission">의뢰</button><button data-menu="chat">채팅</button><button data-menu="journal">항해일지</button><button data-menu="settings">조작·화면 설정</button><button data-menu="help">도움말</button></div>';
     openSheet('더보기','more');
     $('#quick-content').querySelectorAll('[data-menu]').forEach(b=>b.onclick=()=>{
       closeSheet();const key=b.dataset.menu;
-      if(key==='saleSearch')api.onSaleSearch?.();else if(key==='suggestions')api.onSuggestions?.();else if(key==='ownedPorts')api.onOwnedPorts?.();else if(key==='business')api.onBusiness?.();else if(key==='guns')api.onGuns?.();else if(key==='combat')api.onCombat?.();else if(key==='collection')api.onCollection?.();else if(key==='ship')api.onShip?.();else if(key==='captains')api.onCaptains?.();else if(key==='atlas')api.onAtlas();else if(key==='journal')api.onJournal();else if(key==='settings')showSettings();else if(key==='help')api.onHelp();else {
+      if(key==='sea')api.onSea?.();else if(key==='guild')api.onGuild?.();else if(key==='projects')api.onProjects?.();else if(key==='shore')api.onShore?.();else if(key==='officers')api.onOfficers?.();else if(key==='items')api.onItems?.();else if(key==='saleSearch')api.onSaleSearch?.();else if(key==='suggestions')api.onSuggestions?.();else if(key==='ownedPorts')api.onOwnedPorts?.();else if(key==='business')api.onBusiness?.();else if(key==='guns')api.onGuns?.();else if(key==='combat')api.onCombat?.();else if(key==='collection')api.onCollection?.();else if(key==='ship')api.onShip?.();else if(key==='captains')api.onCaptains?.();else if(key==='atlas')api.onAtlas();else if(key==='journal')api.onJournal();else if(key==='settings')showSettings();else if(key==='help')api.onHelp();else {
         if(key==='chat')api.onChat(true);
         $({globe:'.minimap-card',rank:'.rank-card',mission:'.mission-card',chat:'#chat-panel'}[key])?.scrollIntoView({block:'nearest'});
       }
@@ -108,13 +108,14 @@ export function createUX(api){
     prefs.folds[b.id==='chat-close'?'chat':b.getAttribute('aria-controls')]=b.getAttribute('aria-expanded')==='false';storePrefs();
   });
   function showSettings(){
-    api.onModal('조작·화면 설정','항해 환경','<p>PC는 방향키 또는 W 위 · S 아래 · A 왼쪽 · D 오른쪽으로 조종해요. Space는 정지·일시 정지예요.</p><p>지도에 초점이 있을 때 H 내 배 · T 교역 · B 보급 · U 업데이트를 사용할 수 있어요.</p><div class="settings-row"><strong>모바일 조작 위치</strong><button data-hand="left">왼손</button><button data-hand="right">오른손</button></div><div class="settings-row"><strong>PC 정보 영역</strong><button data-width="280">좁게</button><button data-width="315">기본</button><button data-width="420">넓게</button></div><label class="settings-row"><input id="letter-keys" type="checkbox"> WASD와 글자 단축키 사용</label><label class="settings-row"><input id="place-names" type="checkbox"> 지도 지명 표시</label><button class="service-button" id="reset-ux">화면 설정 초기화</button>');
-    const paint=()=>{modal.querySelectorAll('[data-hand]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.hand===prefs.hand)));modal.querySelectorAll('[data-width]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.width)===prefs.width)));$('#letter-keys').checked=prefs.letters;$('#place-names').checked=prefs.placeNames;};
+    api.onModal('조작·화면 설정','항해 환경','<p>PC는 방향키 또는 W 위 · S 아래 · A 왼쪽 · D 오른쪽으로 조종해요. Space는 정지·일시 정지예요.</p><p>지도에 초점이 있을 때 H 내 배 · T 교역 · B 보급 · U 업데이트를 사용할 수 있어요.</p><div class="settings-row"><strong>모바일 조작 위치</strong><button data-hand="left">왼손</button><button data-hand="right">오른손</button></div><div class="settings-row"><strong>PC 정보 영역</strong><button data-width="280">좁게</button><button data-width="315">기본</button><button data-width="420">넓게</button></div><label class="settings-row"><input id="letter-keys" type="checkbox"> WASD와 글자 단축키 사용</label><label class="settings-row"><input id="place-names" type="checkbox"> 지도 지명 표시</label><label class="settings-row"><input id="auto-supply" type="checkbox"> 항구 도착 시 자동 보급</label><button class="service-button" id="reset-ux">화면 설정 초기화</button>');
+    const paint=()=>{modal.querySelectorAll('[data-hand]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.hand===prefs.hand)));modal.querySelectorAll('[data-width]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.width)===prefs.width)));$('#letter-keys').checked=prefs.letters;$('#place-names').checked=prefs.placeNames;$('#auto-supply').checked=api.getState().autoSupply===true;};
     const update=()=>{storePrefs();applyPreferences();paint();};
     modal.querySelectorAll('[data-hand]').forEach(b=>b.onclick=()=>{prefs.hand=b.dataset.hand;update();});
     modal.querySelectorAll('[data-width]').forEach(b=>b.onclick=()=>{prefs.width=Number(b.dataset.width);update();});
     $('#letter-keys').onchange=e=>{prefs.letters=e.target.checked;update();};
     $('#place-names').onchange=e=>{prefs.placeNames=e.target.checked;update();};
+    $('#auto-supply').onchange=e=>{api.getState().autoSupply=e.target.checked;api.onSave();};
     $('#reset-ux').onclick=()=>{prefs=defaultPreferences();api.onChat(true);update();};paint();
   }
   document.addEventListener('keydown',e=>{
@@ -133,7 +134,10 @@ export function createUX(api){
   function renderShip(){
     const s=tools(),spec=ship(s),docked=!!tradingPort(s),next=SHIPS[shipTier(s)+1];
     const freeFood=Math.max(0,Math.min(spec.supply-s.food,(capacity(s)-usedCargo(s))*2/fleetCount(s)-s.food));
-    $('#ship-content').innerHTML=`<div class="ship-card"><img class="port-ship-image" src="${shipArtPath(shipTier(s))}" alt="${escape(spec.name)}"><h3>${spec.name} · ${shipTier(s)+1}/20단계 · ${fleetCount(s)}척</h3><p>해상 하루 ${spec.speed}해리 · 강 하루 ${spec.riverSpeed}해리<br>${Number.isFinite(spec.offshore)?'해안에서 '+spec.offshore+'해리 이내 · ':''}보급 ${s.food.toFixed(1)} / ${spec.supply}일분 · 적재 ${usedSpace(s)} / ${capacity(s)}칸</p><p>비현금 보급 크레딧 ${fmt(s.supplyCreditValue||0)} D 상당</p><button class="service-button" id="supply-one" ${docked&&freeFood>1e-8?'':'disabled'}>보급 +1일분 <span>${supplyCost(s,Math.min(1,freeFood))} D</span></button><button class="service-button" id="supply-btn" ${docked&&freeFood>1e-8?'':'disabled'}>가득 채우기 · +${freeFood.toFixed(1)}일분 <span>${supplyCost(s,freeFood)} D</span></button><button class="service-button" id="supply-unload" ${docked&&s.food>0?'':'disabled'}>보급 1일분 내려 보관</button><button class="service-button" id="upgrade-btn">내 배 보기 · 개량/선단 <span>${next?fmt(upgradeCost(s))+' D':'최대 개량'}</span></button><p>최대 ${fleetLimit(s)}척 보유 가능 · 구조는 방문한 항구로 귀환해요.</p></div>`;
+    $('#ship-content').innerHTML=`<div class="ship-card"><img class="port-ship-image" src="${shipArtPath(shipTier(s))}" alt="${escape(spec.name)}"><h3>${spec.name} · ${shipTier(s)+1}/20단계 · ${fleetCount(s)}척</h3><p>해상 하루 ${spec.speed}해리 · 강 하루 ${spec.riverSpeed}해리<br>${Number.isFinite(spec.offshore)?'해안에서 '+spec.offshore+'해리 이내 · ':''}보급 ${s.food.toFixed(1)} / ${spec.supply}일분 · 적재 ${usedSpace(s)} / ${capacity(s)}칸</p><p>비현금 보급 크레딧 ${fmt(s.supplyCreditValue||0)} D 상당</p><button class="service-button" id="supply-one" ${docked&&freeFood>1e-8?'':'disabled'}>보급 +1일분 <span>${supplyCost(s,Math.min(1,freeFood))} D</span></button><button class="service-button" id="supply-btn" ${docked&&freeFood>1e-8?'':'disabled'}>가득 채우기 · +${freeFood.toFixed(1)}일분 <span>${supplyCost(s,freeFood)} D</span></button><button class="service-button" id="supply-unload" ${docked&&s.food>0?'':'disabled'}>보급 1일분 내려 보관</button><button class="service-button" id="upgrade-btn">내 배 보기 · 개량/선단 <span>${next?fmt(upgradeCost(s))+' D':'최대 개량'}</span></button>${PORT_BY_ID[s.port]?.depot?'<button class="service-button" id="depot-supply-open">공동 창고에서 보급</button>':'<button class="service-button" id="guild-open">항구 조합</button>'}<button class="service-button" id="shore-open">상륙 탐사</button><p>최대 ${fleetLimit(s)}척 보유 가능 · 구조는 방문한 항구로 귀환해요.</p></div>`;
+    $('#guild-open')?.addEventListener('click',()=>api.onGuild?.());
+    $('#depot-supply-open')?.addEventListener('click',()=>api.onDepot?.(s.port));
+    $('#shore-open').onclick=()=>api.onShore?.();
     const supply=amount=>{const result=resupply(s,amount);if(!result.ok){api.onToast(result.error,'error');return;}api.onToast(`보급 ${result.amount.toFixed(1)}일분 · ${result.cost} D`);api.onSave();};
     $('#supply-one').onclick=()=>supply(1);$('#supply-btn').onclick=()=>supply(Infinity);
     $('#supply-unload').onclick=()=>{if(unloadSupply(s,1)){api.onToast('보급을 항구에 보관했어요.');api.onSave();}};
@@ -223,7 +227,7 @@ export function createUX(api){
     if(!['port','route'].includes(message.kind)||!validCard(message))return null;
     const b=document.createElement('button');b.className='chat-card-link';b.type='button';b.textContent='공유 정보 보기';b.onclick=()=>{
       const p=PORT_BY_ID[message.ref.portId||message.ref.toPortId],from=PORT_BY_ID[message.ref.fromPortId];if(!p)return;
-      const known=p.active&&tools().knownPorts.includes(p.id)&&(!from||tools().knownPorts.includes(from.id));
+      api.onShareRecord?.(message,from,p);const known=p.active&&tools().knownPorts.includes(p.id)&&(!from||tools().knownPorts.includes(from.id));
       api.onModal(p.name,from?`${from.name} → ${p.name}`:'항구 정보',`<p>${escape((NEW_PORT_HISTORY[p.id]||PORT_HISTORY[p.id])?.text||p.fact)}</p>${from?`<p>공유 선장의 관측 거리 ${fmt(message.ref.observedNm)}해리</p>`:''}${!p.active?'<p>이전 항구의 기록이에요. 현재 주요 항구 목록에서는 제외됐어요.</p>':''}${known?'<button class="primary-button" id="shared-target">내 항해 미리보기</button>':'<p>항구를 발견하면 목적지로 선택할 수 있어요.</p>'}`);
       $('#shared-target')?.addEventListener('click',()=>{api.onClose();api.onSelect(p.id);});
     };return b;

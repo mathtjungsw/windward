@@ -76,3 +76,131 @@ dialog#modal[data-size=wide]{width:min(960px,calc(100vw - 32px));max-width:calc(
 #map-labels .chart-place-name{font-family:var(--font-sans, sans-serif);font-weight:600;font-style:normal;letter-spacing:.04em;fill:#244f5b;stroke:#fffdf2;stroke-width:4px;paint-order:stroke;vector-effect:non-scaling-stroke;opacity:1;pointer-events:none;user-select:none;-webkit-user-select:none}#map-labels .chart-place-name.ocean{fill:#1f6577;letter-spacing:.12em}#map-labels .chart-place-name.peninsula,#map-labels .chart-place-name.region{fill:#67582f}
 
 .sale-search-entry{width:100%;margin:10px 0}.cargo-sale-link{display:block;padding:4px 0;text-decoration:underline;color:#286d76;font-size:12px;text-align:left}.sale-search-row{padding:16px 0;border-bottom:1px solid #d4d9c8}.sale-search-row p{margin:8px 0}.sale-search-row button{padding:9px 14px;border:1px solid #9db5a6;border-radius:6px}.sale-search-timestamp{font-size:12px;color:#526d6d}#sale-search-good{display:block;width:100%;padding:12px;margin:8px 0;font:inherit}#sale-search-results .help-tip{font-size:14px}
+
+/* Read rumors stay in the notebook without taking space on the chart. */
+.rumor-note-tabs { flex-wrap: wrap; }
+.rumor-note-tabs button,.rumor-note-row button,#rumor-note-tab { min-height:44px; }
+.rumor-note-row {
+ display:grid;
+ grid-template-columns:minmax(0,1fr) auto;
+ align-items:start;
+ gap:8px 12px;
+ padding:10px 0;
+ border-bottom:1px solid #b7bea2;
+}
+.rumor-note-row summary { min-height:44px; padding:10px 0; cursor:pointer; }
+.rumor-note-row summary small { display:block; margin-top:3px; }
+#port-panel .panel-tabs { flex-wrap:wrap; column-gap:clamp(8px,2vw,20px); }
+
+
+.sea-activity-alert { position:absolute; z-index:6; right:14px; bottom:160px; min-height:44px; padding:6px 12px; border:1px solid #779a91; border-radius:6px; background:#faf9ee; color:#2c5660; }
+
+@media(max-width:850px) {
+ .topbar {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:8px;
+ }
+ .topbar .brand { justify-self:start; }
+ .topbar .header-end {
+  margin:0;
+  min-width:0;
+  flex-wrap:wrap;
+  justify-content:flex-start;
+ }
+ .topbar .header-end button { min-height:44px; }
+ .topbar .main-nav {
+  order:0;
+  grid-row:3;
+  height:auto;
+  overflow:visible;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  align-items:stretch;
+ }
+ .topbar .main-nav .nav-item {
+  min-height:44px;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  text-align:center;
+ }
+}
+
+.chart.shore-map-open > :not(.shore-scene) { visibility:hidden; }
+.chart.shore-map-open::after { display:none; }
+.shore-scene {
+ position:absolute; inset:0; z-index:12; display:grid;
+ grid-template-rows:auto minmax(0,1fr) auto;
+ color:#284643; background:#b5c69a;
+}
+.shore-scene[hidden] { display:none; }
+.shore-heading {
+ display:flex; gap:12px; align-items:baseline; padding:8px 14px;
+ background:#f9f7eb; border-bottom:1px solid #a5af8d;
+}
+.shore-heading strong { font:700 19px var(--serif); }
+.shore-heading span { color:#496660; font-size:12px; }
+.shore-land { position:relative; min-height:0; overflow:hidden; }
+.shore-land canvas { position:absolute; inset:0; width:100%; height:100%; }
+.shore-boat,.shore-pin,.shore-person { position:absolute; left:var(--shore-x); top:var(--shore-y); }
+.shore-boat {
+ transform:translate(-50%,-82%); width:clamp(38px,12%,96px); height:auto;
+ filter:drop-shadow(0 2px 1px #384c3e65); pointer-events:none;
+}
+.shore-pin-layer { position:absolute; inset:0; }
+.shore-pin {
+ display:flex; flex-direction:column; align-items:center; gap:3px; transform:translate(-50%,-8px);
+ width:max-content; max-width:35%; min-height:44px; padding:0 3px;
+ color:#294944; font:600 12px/1.2 var(--sans); text-align:center;
+}
+.shore-pin span:last-child {
+ display:block; padding:3px 6px; background:#f8f3dd; border:1px solid #a0aa86; border-radius:4px;
+ overflow-wrap:anywhere;
+}
+.shore-pin-dot { width:12px; height:12px; border-radius:50%; background:#e5d3a7; border:2px solid #716142; }
+.shore-pin.current .shore-pin-dot { background:#2e6870; border-color:#f8f3dd; box-shadow:0 0 0 1px #2e6870; }
+button.shore-pin:not(:disabled) span:last-child { background:#265f65; color:#fff9e9; border-color:#e9e6d0; }
+button.shore-pin:focus-visible { outline:2px solid #265f65; outline-offset:2px; }
+.shore-person {
+ z-index:2; width:22px; height:31px; transform:translate(-50%,-100%);
+ filter:drop-shadow(0 1px 1px #233f37a6); pointer-events:none;
+}
+.shore-person i { position:absolute; display:block; }
+.shore-head { width:10px; height:9px; top:1px; left:7px; background:#f3c493; border-radius:50%; border-top:3px solid #705139; }
+.shore-body { width:11px; height:13px; top:9px; left:7px; background:#285e64; border-radius:4px 4px 2px 2px; }
+.shore-pack { width:6px; height:10px; top:10px; left:3px; background:#9c6a41; border:1px solid #63442f; border-radius:3px; }
+.shore-leg { width:4px; height:10px; top:21px; left:8px; background:#49463c; transform-origin:50% 0; border-radius:1px 1px 2px 2px; }
+.shore-leg:last-child { left:13px; }
+.shore-person.walking .shore-leg { animation:shore-step .48s ease-in-out infinite alternate; }
+.shore-person.walking .shore-leg:last-child { animation-direction:alternate-reverse; }
+@keyframes shore-step { from { transform:rotate(24deg); } to { transform:rotate(-24deg); } }
+.shore-footer {
+ display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px;
+ padding:5px 9px; background:#f9f7eb; border-top:1px solid #a5af8d;
+}
+.shore-actions { display:flex; flex-wrap:wrap; gap:5px; }
+.shore-actions:empty { display:none; }
+.shore-actions button { min-height:44px; padding:5px 8px; }
+.shore-status {
+ margin:0; width:max-content; max-width:100%; border:1px solid #afbc9b;
+ border-radius:6px; background:#ecf0de; font:600 12px/1.3 var(--sans);
+}
+.shore-status summary { min-height:36px; padding:9px; cursor:pointer; }
+.shore-supplies { margin:0; padding:0 9px 8px; font-weight:400; }
+@media(max-width:850px) {
+ .chart.shore-map-open { min-height:290px; }
+}
+@media(prefers-reduced-motion:reduce) {
+ .shore-person.walking .shore-leg { animation:none; }
+}
+
+.shore-journal ul { margin:0; padding:0 14px 9px 28px; max-height:110px; overflow:auto; font-weight:400; }
+.shore-journal li + li { margin-top:6px; }
+.project-actions{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-block:.6rem}
+.project-actions button[aria-pressed="true"]{background:#286673;color:#fff}
+.project-actions input{width:8rem;max-width:100%}
+.canal-line{fill:none;stroke:#b78038;stroke-width:4;stroke-dasharray:3 2}
+.surveyed-berth{fill:none;stroke:#ad632f;stroke-width:1.6;pointer-events:none}
+.earned-ship-flag{fill:#b86435;stroke:#5c3e27;stroke-width:.6}
+.officer-history{display:grid;grid-template-columns:clamp(4.25rem,17vw,7rem) minmax(0,1fr);gap:.75rem;align-items:start;margin-bottom:.6rem}
+.officer-history p{margin:.3rem 0}
+.officer-portrait{aspect-ratio:1;border-radius:.4rem;background-color:#dfd6be;background-image:url("assets/officers-2026-11-11.webp");background-size:600% 400%;background-repeat:no-repeat}

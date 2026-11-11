@@ -11,10 +11,10 @@
       "id": "develop-stjohns",
       "portId": "developed-stjohns",
       "name": "세인트존스",
-      "lon": -52.681007,
+      "lon": -52.643942,
       "lat": 47.584988,
       "point": [
-        -52.681007,
+        -52.643942,
         47.584988
       ],
       "cityLon": -52.681007,
@@ -261,11 +261,11 @@
       "id": "develop-mogadishu",
       "portId": "developed-mogadishu",
       "name": "모가디슈",
-      "lon": 45.364732,
-      "lat": 2.068627,
+      "lon": 45.37724,
+      "lat": 2.046976,
       "point": [
-        45.364732,
-        2.068627
+        45.37724,
+        2.046976
       ],
       "cityLon": 45.364732,
       "cityLat": 2.068627,
@@ -357,11 +357,11 @@
       "id": "develop-chittagong",
       "portId": "developed-chittagong",
       "name": "치타공",
-      "lon": 91.5,
-      "lat": 22.5,
+      "lon": 91.523434,
+      "lat": 22.5125,
       "point": [
-        91.5,
-        22.5
+        91.523434,
+        22.5125
       ],
       "cityLon": 91.8,
       "cityLat": 22.3,
@@ -415,11 +415,11 @@
       "id": "develop-davao",
       "portId": "developed-davao",
       "name": "다바오",
-      "lon": 125.5,
-      "lat": 6.5,
+      "lon": 125.548609,
+      "lat": 6.512941,
       "point": [
-        125.5,
-        6.5
+        125.548609,
+        6.512941
       ],
       "cityLon": 125.62805,
       "cityLat": 7.111963,
@@ -512,10 +512,10 @@
       "portId": "developed-dunedin",
       "name": "더니든",
       "lon": 170.491016,
-      "lat": -45.885423,
+      "lat": -45.935423,
       "point": [
         170.491016,
-        -45.885423
+        -45.935423
       ],
       "cityLon": 170.491016,
       "cityLat": -45.885423,

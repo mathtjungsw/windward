@@ -1,10 +1,15 @@
-import {regionalFactor} from './regional-economy.js?v=2026.11.10-visible-place-names';
-import {recordTrade} from './rank-progress.js?v=2026.11.10-visible-place-names';
-import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.10-visible-place-names';
-import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,ACTIVE_SECONDS_PER_DAY,SHIPS} from './ship-rules.js?v=2026.11.10-visible-place-names';
-import {parseState} from './save-game.js?v=2026.11.10-visible-place-names';
-import {gunWeight} from './cannons.js?v=2026.11.10-visible-place-names';
-export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.10-visible-place-names';
+import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {regionalFactor} from './regional-economy.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {recordTrade} from './rank-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
+import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,ACTIVE_SECONDS_PER_DAY,SHIPS} from './ship-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {parseState} from './save-game.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {gunWeight} from './cannons.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {charterCargo} from './guild-contracts.js?v=2026.11.12-cooperative-fleet-discoveries';
+export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
 
 export const SAVE_KEY='windward-save-v1';
 export const START_DATE=Date.UTC(1522,3,6);
@@ -28,7 +33,7 @@ export function loadState(storage){try{return parseSavedGame(storage.getItem(SAV
 export function settleSupply(s){const extra=Math.max(0,s.food-ship(s).supply);s.food-=extra;s.supplyCreditValue=(s.supplyCreditValue||0)+extra*fleetCount(s)*ship(s).supplyPrice;delete s.transitionPending;}
 export const capacity=fleetCapacity;
 export const usedCargo=s=>Object.values(s.cargo).reduce((n,c)=>n+c.qty,0);
-export const usedSpace=s=>usedCargo(s)+supplySpace(s)+gunWeight(s)+Object.values(s.battleReserve?JSON.parse(s.battleReserve.cargoJSON||'{}'):{}).reduce((n,c)=>n+c.qty,0);
+export const usedSpace=s=>usedCargo(s)+supplySpace(s)+gunWeight(s)+charterCargo(s)+Object.values(s.battleReserve?JSON.parse(s.battleReserve.cargoJSON||'{}'):{}).reduce((n,c)=>n+c.qty,0);
 export const dailySpeed=s=>ship(s).speed;
 export function price(portId,goodId,day=0){
   const p=PORT_BY_ID[portId],g=GOODS[goodId];if(!p||!g)throw Error('교역품을 확인하세요.');
@@ -41,24 +46,83 @@ export function price(portId,goodId,day=0){
   const factor=regionalFactor(p,goodId,g);
   return Math.round(g.base*factor*(1+.045*Math.sin(Math.floor(day/7)*1.7+(p.pricePhase??PORTS.indexOf(p))*2+Object.keys(GOODS).indexOf(goodId))));
 }
-export function supplyCost(s,amount){return Math.max(0,Math.ceil(amount*fleetCount(s)*ship(s).supplyPrice-(s.supplyCreditValue||0)-1e-9));}
+function supplyValue(s,amount){return amount*fleetCount(s)*ship(s).supplyPrice*(1-supplyDiscount(s));}
+const supplyNetCost=(s,amount)=>Math.max(0,Math.ceil(supplyValue(s,amount)-(s.supplyCreditValue||0)-1e-9));
+export function supplyCost(s,amount){
+ const price=supplyNetCost(s,amount);
+ return price-couponAmount(s,'supply',price);
+}
+export const supplyRoom=s=>2*(capacity(s)-usedSpace(s)+supplySpace(s))/supplyUnits(s)-s.food;
 export function resupply(s,requested){
  if(!tradingPort(s))return {ok:false,error:'항구에서 보급할 수 있어요.'};
- const amount=Math.max(0,Math.min(Number(requested)||0,ship(s).supply-s.food,2*(capacity(s)-usedCargo(s)-gunWeight(s))/fleetCount(s)-s.food));
- const cost=supplyCost(s,amount);if(amount<1e-8)return {ok:false,error:'보급 한도 또는 적재 공간을 확인하세요.'};if(cost>s.money)return {ok:false,error:'보급할 두카트가 부족해요.'};
- const credit=Math.min(amount*fleetCount(s)*ship(s).supplyPrice,s.supplyCreditValue||0);s.supplyCreditValue=Math.max(0,(s.supplyCreditValue||0)-credit);s.food+=amount;s.money-=cost;return {ok:true,amount,cost};
+ const amount=Math.max(0,Math.min(Number(requested)||0,ship(s).supply-s.food,supplyRoom(s)));
+ const base=supplyNetCost(s,amount),cost=supplyCost(s,amount);if(amount<1e-8)return {ok:false,error:'보급 한도 또는 적재 공간을 확인하세요.'};if(cost>s.money)return {ok:false,error:'보급할 두카트가 부족해요.'};
+ const credit=Math.min(supplyValue(s,amount),s.supplyCreditValue||0);s.supplyCreditValue=Math.max(0,(s.supplyCreditValue||0)-credit);s.food+=amount;s.money-=cost;if(cost<base)consumeCoupon(s,'supply');return {ok:true,amount,cost};
 }
-export function unloadSupply(s,amount){if(!tradingPort(s))return false;amount=Math.min(Math.max(0,Number(amount)||0),s.food);s.food-=amount;s.supplyCreditValue=(s.supplyCreditValue||0)+amount*fleetCount(s)*ship(s).supplyPrice;return amount>0;}
+export function autoResupply(s){
+ if(!s.autoSupply||!tradingPort(s)||s.battleId||s.npcBattle||s.raidId)return null;
+ const limit=Math.max(0,Math.min(ship(s).supply-s.food,supplyRoom(s)));
+ let amount=limit;
+ if(supplyCost(s,limit)>s.money){
+   let low=0,high=limit;
+   for(let i=0;i<40;i++){
+     const middle=(low+high)/2;
+     if(supplyCost(s,middle)<=s.money)low=middle;
+     else high=middle;
+   }
+   amount=Math.floor(low*10+1e-9)/10;
+ }
+ return amount>=.05?resupply(s,amount):null;
+}
+export function unloadSupply(s,amount){if(!tradingPort(s))return false;amount=Math.min(Math.max(0,Number(amount)||0),s.food);s.food-=amount;s.supplyCreditValue=(s.supplyCreditValue||0)+supplyValue(s,amount);return amount>0;}
 export function maxBuyQuantity(s,id,targetFood=s.food){
  if(!tradingPort(s)?.market.includes(id)||GOODS[id]?.legacy)return 0;
  const food=Math.max(s.food,Math.min(ship(s).supply,targetFood)),room=capacity(s)-usedCargo(s)-supplySpace({...s,food}),cash=s.money-supplyCost(s,Math.max(0,food-s.food));
  return Math.max(0,Math.min(room,Math.floor(cash/price(s.port,id,s.day))));
 }
-export function upgradeShip(s,id=null){const rows=fleetShips(s).map(p=>({...p})),target=id?rows.find(p=>p.id===id):rows.find(p=>p.id===s.flagshipId)||rows[0],all=!id&&rows.every(p=>p.tier===target.tier),cost=all?upgradeCost(s):SHIPS[target?.tier]?.upgrade;
- if(!tradingPort(s)||cost==null||s.money<cost)return {ok:false,error:cost==null?'최대 개량 상태예요.':'개량할 항구와 두카트를 확인하세요.'};s.money-=cost;for(const p of rows)if(all||p.id===target.id)p.tier++;syncFleet(s,rows);return {ok:true,cost};}
-export function addShip(s){const cost=additionalShipCost(s);if(!tradingPort(s)||cost===null||s.money<cost)return {ok:false,error:cost===null?'선단 단계가 오르면 배를 더 늘릴 수 있어요.':'선박을 추가할 항구와 두카트를 확인하세요.'};const rows=fleetShips(s).map(p=>({...p})),n=rows.length;s.money-=cost;s.food=s.food*n/(n+1);rows.push({id:'vessel-'+Date.now().toString(36)+'-'+n,tier:shipTier(s)});syncFleet(s,rows);return {ok:true,cost};}
+export function upgradeShip(s,id=null){
+ const rows=fleetShips(s).map(p=>({...p})),target=id?rows.find(p=>p.id===id):rows.find(p=>p.id===s.flagshipId)||rows[0],all=!id&&rows.every(p=>p.tier===target.tier),cost=all?upgradeCost(s):SHIPS[target?.tier]?.upgrade;
+ if(!tradingPort(s)||cost==null||s.money<cost)return {ok:false,error:cost==null?'최대 개량 상태예요.':'개량할 항구와 두카트를 확인하세요.'};
+ const upgrading=all?rows:[target];
+ s.money-=cost;
+ upgrading.forEach((v,i)=>{
+   v.costBasis=shipCostBasis(v)+Math.floor(cost*(i+1)/upgrading.length)-Math.floor(cost*i/upgrading.length);
+   v.tier++;
+ });
+ syncFleet(s,rows);
+ return {ok:true,cost};
+}
+export function addShip(s){const cost=additionalShipCost(s);if(!tradingPort(s)||cost===null||s.money<cost)return {ok:false,error:cost===null?'선단 단계가 오르면 배를 더 늘릴 수 있어요.':'선박을 추가할 항구와 두카트를 확인하세요.'};const rows=fleetShips(s).map(p=>({...p})),n=rows.length;s.money-=cost;s.food=s.food*n/(n+1);rows.push({id:'vessel-'+Date.now().toString(36)+'-'+n,tier:shipTier(s),costBasis:cost});syncFleet(s,rows);return {ok:true,cost};}
+export const shipResaleValue=vessel=>Math.floor(shipCostBasis(vessel)*.6);
+export function quoteShipSale(s,id){
+ const fleet=fleetShips(s),vessel=fleet.find(v=>v.id===id);
+ if(!tradingPort(s)||s.shoreTrip||s.seaJob||s.raidId||s.npcBattle||s.battleId)throw Error('활동을 마치고 조선 시설이 있는 항구에 정박하세요.');
+ if(!vessel||fleet.length<2)throw Error('마지막 배 한 척은 매각할 수 없어요.');
+ const rows=fleet.filter(v=>v.id!==id),next={...s,cannons:s.cannons?.map(g=>g.shipId===id?{...g,shipId:null}:g)};
+ if(s.rumorProgress){
+   next.rumorProgress={...s.rumorProgress,shipGear:{...s.rumorProgress.shipGear}};
+   delete next.rumorProgress.shipGear[id];
+ }
+ const flagship=s.flagshipId===id?rows.reduce((best,v)=>v.tier>best.tier?v:best).id:s.flagshipId;
+ syncFleet(next,rows,flagship);
+ next.food=0;
+ const room=capacity(next)-usedSpace(next);
+ if(room<0)throw Error('남는 배에 화물이 모두 실리지 않아요. 화물을 먼저 정리하세요.');
+ const totalFood=s.food*fleet.length;
+ next.food=Math.min(totalFood/rows.length,ship(next).supply,2*room/supplyUnits(next));
+ const credit=Math.max(0,totalFood-next.food*rows.length)*ship(next).supplyPrice;
+ next.supplyCreditValue=(s.supplyCreditValue||0)+credit;
+ next.hullHP=Math.max(0,Math.min(fleetMaxHP(next),Math.round((s.hullHP??fleetMaxHP(s))/fleetMaxHP(s)*fleetMaxHP(next))));
+ return {vessel,next,price:shipResaleValue(vessel),credit,gear:!!gearOnShip(s,id),guns:(s.cannons||[]).filter(g=>g.shipId===id).length};
+}
+export function sellShip(s,id,expectedPrice){
+ const quote=quoteShipSale(s,id);
+ if(expectedPrice!==quote.price)throw Error('배의 상태가 바뀌었어요. 매각 견적을 다시 확인하세요.');
+ Object.assign(s,quote.next,{money:s.money+quote.price});
+ return {ok:true,price:quote.price,message:SHIPS[quote.vessel.tier].name+' 매각 · '+quote.price.toLocaleString('ko-KR')+' D'};
+}
 export function sellPrice(portId,goodId,day){return Math.floor(price(portId,goodId,day)*0.88);}
-export const tradingPort=s=>s.voyage?null:PORT_BY_ID[s.port]||null;
+export const tradingPort=s=>s.voyage||PORT_BY_ID[s.port]?.depot?null:PORT_BY_ID[s.port]||null;
 export function buy(s,goodId,qty){
   qty=Math.floor(qty);
   if(GOODS[goodId]?.legacy || !tradingPort(s)?.market.includes(goodId) || !Number.isFinite(qty)||qty<=0)return {ok:false,error:'구매할 수량을 확인하세요.'};
@@ -89,13 +153,26 @@ class Heap{
 }
 
 export class Navigator{
-  constructor(grid,rivers=[]){
+  constructor(grid,rivers=[],detail=null){
+    this.detail=detail;this.berths=new Map();this.checkedEdges=new Map();this.connections=new Map();this.canalAnchors=new Map();
     this.w=grid.width;this.h=grid.height;this.step=grid.step;this.top=grid.top;this.mask=Uint8Array.from(atob(grid.land),c=>c.charCodeAt(0));const coastBytes=grid.coast16?atob(grid.coast16):null;this.coast=coastBytes?Uint16Array.from({length:coastBytes.length/2},(_,i)=>coastBytes.charCodeAt(i*2)|(coastBytes.charCodeAt(i*2+1)<<8)):grid.coast?Uint8Array.from(atob(grid.coast),c=>c.charCodeAt(0)):null;
     this.rivers=rivers.map(r=>{const route=makeRoute(r.path),xs=r.path.map(p=>p[0]),ys=r.path.map(p=>p[1]);let d=0;return {...r,...route,bounds:[Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)],segments:r.path.slice(1).map((b,i)=>{const a=r.path[i],offset=d;d+=route.lengths[i];return {a,b,offset,length:route.lengths[i]};})};});
+    if(detail){
+      this.checkedWater=new Uint8Array(this.mask.length);
+      for(const {path} of COARSE_CONNECTIONS){
+        const start=this.cell(path[0]),end=this.cell(path.at(-1));
+        if(!this.gridWater(start)||!this.gridWater(end)||path.some((p,i)=>i&&!detail.clear(path[i-1],p)))continue;
+        const total=makeRoute(path).total;
+        for(const [a,b,course] of [[start,end,path],[end,start,path.slice().reverse()]]){
+          if(!this.connections.has(a))this.connections.set(a,[]);
+          this.connections.get(a).push({end:b,path:course,total});
+        }
+      }
+    }
   }
   coord(i){return [i%this.w*this.step-180,this.top-Math.floor(i/this.w)*this.step];}
   cell([lon,lat]){const x=((Math.round((lon+180)/this.step)%this.w)+this.w)%this.w,y=Math.round((this.top-lat)/this.step);return y<0||y>=this.h?-1:y*this.w+x;}
-  isOceanLand(p){const i=this.cell(p);return i<0||!!this.mask[i];}
+  isOceanLand(p){if(this.detail)return this.detail.isLand(p);const i=this.cell(p);return i<0||!!this.mask[i];}
   isLand(p){return this.isOceanLand(p)&&!this.riverAt(p);}
   projectRiver(p,r){
     const c=Math.max(.1,Math.cos(p[1]*Math.PI/180));let best=null,bestD=Infinity;
@@ -113,7 +190,99 @@ export class Navigator{
     }
     return best;
   }
-  approach(port){const r=this.rivers.find(r=>r.id===port.river),p=[port.lon,port.lat];return r?this.projectRiver(p,r).point:this.isOceanLand(p)?this.coord(this.nearest(p)):p;}
+  approach(port){
+    const r=this.rivers.find(r=>r.id===port.river),p=[port.lon,port.lat];
+    if(!this.detail)return r?this.projectRiver(p,r).point:this.isOceanLand(p)?this.coord(this.nearest(p)):p;
+    if(this.berths.has(port.id))return this.berths.get(port.id);
+    const berth=r?this.projectRiver(p,r).point:this.berthNear(p);
+    if(berth)this.berths.set(port.id,berth);
+    return berth;
+  }
+  berthNear(p){
+    const first=this.waterNear(p);
+    if(!first||this.anchor(first,Infinity))return first;
+    const width=Math.max(.2,Math.cos(p[1]*Math.PI/180));
+    const candidates=this.anchorCandidates(p,Infinity);
+    for(let radius=.025;radius<=1.25;radius+=.025){
+      for(let k=0;k<24;k++){
+        const angle=k*Math.PI/12,lon=p[0]+Math.cos(angle)*radius/width;
+        const q=[((lon+540)%360)-180,p[1]+Math.sin(angle)*radius];
+        if(this.isOceanLand(q))continue;
+        if(candidates.some(c=>distance(c.point,q)<85&&this.clearOcean(q,c.point)))return q;
+      }
+    }
+    return first;
+  }
+  waterNear(p){
+    if(!this.isOceanLand(p))return [...p];
+    const width=Math.max(.2,Math.cos(p[1]*Math.PI/180));
+    for(let radius=.025;radius<=1.5;radius+=.025){
+      for(let k=0;k<24;k++){
+        const angle=k*Math.PI/12,lon=p[0]+Math.cos(angle)*radius/width;
+        const q=[((lon+540)%360)-180,p[1]+Math.sin(angle)*radius];
+        if(!this.isOceanLand(q))return q;
+      }
+    }
+    const nearest=this.nearest(p);
+    return nearest>=0?this.coord(nearest):null;
+  }
+  gridWater(i){
+    if(i<0||i>=this.mask.length||this.mask[i])return false;
+    if(!this.detail)return true;
+    return (this.checkedWater[i]|| (this.checkedWater[i]=this.detail.isLand(this.coord(i))?2:1))===1;
+  }
+  gridEdge(a,b){
+    if(!this.detail)return true;
+    const lo=Math.min(a,b),hi=Math.max(a,b),key=lo*this.mask.length+hi;
+    if(this.checkedEdges.has(key))return this.checkedEdges.get(key);
+    const clear=this.detail.clear(this.coord(a),this.coord(b));
+    if(this.checkedEdges.size>=100000)this.checkedEdges.clear();
+    this.checkedEdges.set(key,clear);
+    return clear;
+  }
+  anchorCandidates(p,maxOffshore){
+    const center=this.cell(p);
+    if(center<0)return [];
+    const x=center%this.w,y=Math.floor(center/this.w),candidates=[];
+    for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++){
+      const yy=y+dy,id=yy*this.w+(x+dx+this.w)%this.w;
+      if(yy<0||yy>=this.h||!this.gridWater(id)||(this.coast&&this.coast[id]>maxOffshore+25))continue;
+      const point=this.coord(id);
+      candidates.push({id,point,d:distance(p,point)});
+    }
+    return candidates.sort((a,b)=>a.d-b.d);
+  }
+  anchor(p,maxOffshore){
+    if(!this.detail)return {id:this.nearest(p),path:[p]};
+    if(this.isOceanLand(p))return null;
+    const candidates=this.anchorCandidates(p,maxOffshore);
+    if(!candidates.length)return null;
+    const direct=candidates.find(c=>this.clearOcean(p,c.point)&&this.withinCoast(p,c.point,maxOffshore));
+    if(direct)return {id:direct.id,path:[p,direct.point]};
+    // Narrow harbors can need several small turns to reach the world grid.
+    const step=.05,range=30,cols=range*2+1,count=cols*cols,root=range*cols+range;
+    const points=Array.from({length:count},(_,i)=>[p[0]+(i%cols-range)*step,p[1]+(Math.floor(i/cols)-range)*step]);
+    const checked=new Uint8Array(count),prev=new Int32Array(count),queue=[root];
+    prev.fill(-1);checked[root]=1;
+    for(let head=0;head<queue.length;head++){
+      const i=queue[head],point=points[i],cx=i%cols,cy=Math.floor(i/cols);
+      const dock=candidates.find(c=>Math.abs(((c.point[0]-point[0]+540)%360)-180)<=.06&&Math.abs(c.point[1]-point[1])<=.06&&
+        this.clearOcean(point,c.point)&&this.withinCoast(point,c.point,maxOffshore));
+      if(dock){
+        const path=[dock.point];
+        for(let at=i;at>=0;at=prev[at])path.push([((points[at][0]+540)%360)-180,points[at][1]]);
+        return {id:dock.id,path:path.reverse()};
+      }
+      for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[1,-1],[-1,1],[1,1]]){
+        const xx=cx+dx,yy=cy+dy,n=yy*cols+xx;
+        if(xx<0||xx>=cols||yy<0||yy>=cols||checked[n])continue;
+        if(this.isOceanLand(points[n])){checked[n]=1;continue;}
+        if(!this.clearOcean(point,points[n])||!this.withinCoast(point,points[n],maxOffshore))continue;
+        checked[n]=1;prev[n]=i;queue.push(n);
+      }
+    }
+    return null;
+  }
   riverSection(r,from,to){
     const start=Math.min(from,to),end=Math.max(from,to),path=[positionAlong(r,start)];let offset=0;
     r.path.slice(1).forEach((p,i)=>{offset+=r.lengths[i];if(offset>start+.001&&offset<end-.001)path.push(p);});
@@ -121,14 +290,14 @@ export class Navigator{
   }
   nearest(p){
     const center=this.cell(p);if(center<0)return -1;
-    if(!this.mask[center])return center;
+    if(this.gridWater(center))return center;
     let best=-1,bestDist=Infinity;
     const cx=center%this.w,cy=Math.floor(center/this.w);
     for(let r=1;r<=8;r++){
       for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
         if(Math.abs(dx)!==r&&Math.abs(dy)!==r)continue;
         const y=cy+dy,x=(cx+dx+this.w)%this.w,i=y*this.w+x;
-        if(y<0||y>=this.h||this.mask[i])continue;
+        if(y<0||y>=this.h||!this.gridWater(i))continue;
         const d=distance(p,this.coord(i));if(d<bestDist){bestDist=d;best=i;}
       }
       if(best>=0)return best;
@@ -141,43 +310,154 @@ export class Navigator{
     const ocean=this.routeOcean(a?a.river.path[0]:from,b?b.river.path[0]:to,options);if(!ocean)return null;
     const prefix=a?[from,...this.riverSection(a.river,a.offset,0)]:[];
     const suffix=b?[...this.riverSection(b.river,0,b.offset),to]:[];
-    return this.annotate({...makeRoute([...prefix,...ocean.path,...suffix]),waterways:[...new Set([a?.river.id,b?.river.id].filter(Boolean))]});
+    const offset=prefix.length?makeRoute(prefix).total:0;
+    const passages=ocean.passages?.map(p=>({...p,start:p.start+offset,end:p.end+offset}));
+    return this.annotate({...makeRoute([...prefix,...ocean.path,...suffix]),...(passages?.length?{passages}:{}),waterways:[...new Set([a?.river.id,b?.river.id].filter(Boolean))]});
   }
-  routeOcean(from,to,{maxOffshore=Infinity}={}){
+  routeOcean(from,to,{maxOffshore=Infinity,maxDistance=Infinity,canals=[]}={}){
+    if(distance(from,to)>maxDistance)return null;
     if(this.clearOcean(from,to)&&this.withinCoast(from,to,maxOffshore))return makeRoute([from,to]);
-    const start=this.nearest(from),goal=this.nearest(to);if(start<0||goal<0||this.coastAt(from)>maxOffshore||this.coastAt(to)>maxOffshore)return null;
+    const enter=this.anchor(from,maxOffshore),exit=this.anchor(to,maxOffshore);
+    const start=enter?.id??-1,goal=exit?.id??-1;
+    if(start<0||goal<0||!this.withinCoast(from,from,maxOffshore)||!this.withinCoast(to,to,maxOffshore))return null;
     const size=this.w*this.h,g=new Float64Array(size);g.fill(Infinity);
-    const prev=new Int32Array(size);prev.fill(-1);const closed=new Uint8Array(size),heap=new Heap();
+    const prev=new Int32Array(size);prev.fill(-1);const closed=new Uint8Array(size),heap=new Heap(),selectedBridges=new Map(),canalEdges=new Map();
+    for(const canal of canals){
+      const first=canal.path[0],last=canal.path.at(-1),key=canal.id+':'+maxOffshore;
+      if(!this.canalAnchors.has(key))this.canalAnchors.set(key,[this.anchor(first,maxOffshore),this.anchor(last,maxOffshore)]);
+      const [a,b]=this.canalAnchors.get(key);
+      if(!a||!b||a.id===b.id)continue;
+      for(const [start,end,channel] of [[a,b,canal.path],[b,a,canal.path.slice().reverse()]]){
+        const path=[...start.path.slice().reverse(),...channel.slice(1),...end.path.slice(1)];
+        const edges=canalEdges.get(start.id)||[];
+        const entry=start.id===enter.id&&distance(from,channel[0])<.00001?0:makeRoute(start.path).total;
+        const leave=end.id===exit.id&&distance(to,channel.at(-1))<.00001?0:makeRoute(end.path).total;
+        edges.push({end:end.id,path,channel,canal:canal.id,total:entry+makeRoute(channel).total+leave});
+        canalEdges.set(start.id,edges);
+      }
+    }
     g[start]=0;heap.push(start,0);
+    const goalPoint=this.coord(goal),heuristics=new Float64Array(size),edgeCosts=new Map();
+    const relax=(from,to,cost,bridge=null)=>{
+      if(cost>=g[to])return;
+      const estimate=cost+(heuristics[to]|| (heuristics[to]=distance(this.coord(to),goalPoint)));
+      if(estimate>maxDistance+1)return;
+      g[to]=cost;prev[to]=from;heap.push(to,estimate);
+      if(bridge)selectedBridges.set(to,bridge);else selectedBridges.delete(to);
+    };
     const dirs=[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[1,-1],[-1,1],[1,1]];
     while(heap.size){
       const id=heap.pop();if(closed[id])continue;if(id===goal)break;closed[id]=1;
       const x=id%this.w,y=Math.floor(id/this.w),p=this.coord(id);
       for(const [dx,dy]of dirs){
         const ny=y+dy,nx=(x+dx+this.w)%this.w,n=ny*this.w+nx;
-        if(ny<0||ny>=this.h||this.mask[n]||closed[n]||(this.coast&&this.coast[n]>maxOffshore))continue;
-        if(dx&&dy&&(this.mask[y*this.w+nx]||this.mask[ny*this.w+x]))continue;
-        const q=this.coord(n),cost=g[id]+distance(p,q);
-        if(cost>=g[n])continue;g[n]=cost;prev[n]=id;heap.push(n,cost+distance(q,this.coord(goal)));
+        if(ny<0||ny>=this.h||closed[n]||(this.coast&&this.coast[n]>maxOffshore+(this.detail?25:0))||!this.gridWater(n))continue;
+        if(this.detail&&(!this.gridEdge(id,n)||Number.isFinite(maxOffshore)&&!this.withinCoast(this.coord(n),this.coord(n),maxOffshore)))continue;
+        if(!this.detail&&dx&&dy&&(this.mask[y*this.w+nx]||this.mask[ny*this.w+x]))continue;
+        const costKey=y*9+(dy+1)*3+Math.abs(dx);
+        let stepCost=edgeCosts.get(costKey);
+        if(stepCost===undefined){stepCost=distance(p,this.coord(n));edgeCosts.set(costKey,stepCost);}
+        relax(id,n,g[id]+stepCost);
       }
+      for(const edge of this.connections.get(id)||[]){
+        if(closed[edge.end]||edge.path.some((p,i)=>i&&!this.withinCoast(edge.path[i-1],p,maxOffshore)))continue;
+        relax(id,edge.end,g[id]+edge.total,edge);
+      }
+      for(const edge of canalEdges.get(id)||[])if(!closed[edge.end])relax(id,edge.end,g[id]+edge.total,edge);
     }
     if(start!==goal&&prev[goal]<0)return null;
     let ids=[goal];while(ids.at(-1)!==start){ids.push(prev[ids.at(-1)]);if(ids.length>size)return null;}ids.reverse();
-    let path=ids.map(i=>this.coord(i));
+    const path=this.detail?enter.path.slice():[this.coord(ids[0])],channels=new Map();
+    for(const [index,id] of ids.entries()){
+      if(!index)continue;
+      const bridge=selectedBridges.get(id);
+      if(!bridge){path.push(this.coord(id));continue;}
+      let course=bridge.path.slice(1);
+      if(bridge.canal){
+        const first=bridge.channel[0],last=bridge.channel.at(-1);
+        let start=course.findIndex(p=>distance(p,first)<.00001);
+        let end=course.findIndex(p=>distance(p,last)<.00001);
+        if(index===1&&distance(from,first)<.00001){
+          path.splice(0,path.length,from);
+          course=course.slice(start+1);
+          end-=start+1;start=-1;
+        }
+        if(index===ids.length-1&&distance(to,last)<.00001)course=course.slice(0,end+1);
+        if(start<0&&distance(path.at(-1),first)>.00001)return null;
+        if(end<=start)return null;
+        channels.set(path.length+start,{end:path.length+end,id:bridge.canal});
+      }
+      path.push(...course);
+    }
+    if(this.detail&&distance(path.at(-1),to)>.00001)path.push(...exit.path.slice().reverse().slice(1));
     // Keep safe bends and smooth straight stretches without cutting across land.
-    const smooth=[path[0]];let anchor=0;
-    while(anchor<path.length-1){let next=anchor+1;for(let j=anchor+2;j<Math.min(path.length,anchor+60);j++){if(!this.clearOcean(path[anchor],path[j])||!this.withinCoast(path[anchor],path[j],maxOffshore))break;next=j;}smooth.push(path[next]);anchor=next;}
+    const smooth=[path[0]],passages=[];let anchor=0;
+    while(anchor<path.length-1){
+      const channel=channels.get(anchor);
+      if(channel){
+        passages.push({id:channel.id,first:path[anchor],last:path[channel.end],span:path.slice(anchor,channel.end+1)});
+        smooth.push(...path.slice(anchor+1,channel.end+1));anchor=channel.end;continue;
+      }
+      let next=anchor+1;
+      for(let j=anchor+2;j<Math.min(path.length,anchor+60);j++){
+        if(channels.has(j-1)||!this.clearOcean(path[anchor],path[j])||!this.withinCoast(path[anchor],path[j],maxOffshore))break;
+        next=j;
+      }
+      smooth.push(path[next]);anchor=next;
+    }
+    if(this.detail){
+      const points=smooth;
+      const inside=(a,b)=>passages.some(c=>c.span.some((p,i)=>i&&p===b&&c.span[i-1]===a));
+      if(points.some((p,i)=>i&&!inside(points[i-1],p)&&(!this.clearOcean(points[i-1],p)||!this.withinCoast(points[i-1],p,maxOffshore))))return null;
+      const route=makeRoute(points);
+      if(passages.length){
+        let offset=0;
+        const passageOffsets=new Map();
+        route.path.forEach((p,i)=>{
+          if(i)offset+=route.lengths[i-1];
+          for(const c of passages){
+            if(!passageOffsets.has(c)&&distance(p,c.first)<.00001)passageOffsets.set(c,{id:c.id,start:offset});
+            if(passageOffsets.has(c)&&distance(p,c.last)<.00001)passageOffsets.get(c).end=offset;
+          }
+        });
+        route.passages=[...passageOffsets.values()].filter(p=>p.end>p.start);
+        if(route.passages.length!==passages.length)return null;
+      }
+      return route.total<=maxDistance?route:null;
+    }
     if(distance(from,smooth[0])>0.1)smooth.unshift(from);
     if(distance(to,smooth.at(-1))>0.1)smooth.push(to);
     if(smooth.length===1)smooth.push(to);
     const lengths=smooth.slice(1).map((p,i)=>distance(smooth[i],p));
     return {path:smooth,lengths,total:lengths.reduce((a,b)=>a+b,0)};
   }
-  coastAt(p){const i=this.cell(p);return i<0?Infinity:this.coast?this.coast[i]:this.mask[i]?0:Infinity;}
-  withinCoast(a,b,limit){return !Number.isFinite(limit)||this.checkSegment(a,b,.025,p=>this.coastAt(p)>limit);}
+  coarseCoast(p){const i=this.cell(p);return i<0?Infinity:this.coast?this.coast[i]:this.mask[i]?0:Infinity;}
+  coastAt(p){
+    const coarse=this.coarseCoast(p);
+    if(!this.detail)return coarse;
+    const near=this.detail.coastWithin(p,85);
+    return Number.isFinite(near)?near:Math.max(85.001,coarse);
+  }
+  withinCoast(a,b,limit){
+    if(!Number.isFinite(limit))return true;
+    if(!this.detail)return this.checkSegment(a,b,.025,p=>this.coastAt(p)>limit);
+    return this.checkSegment(a,b,.10,p=>{
+      if(this.riverAt(p))return false;
+      const coarse=this.coarseCoast(p);
+      if(coarse<limit-25)return false;
+      if(coarse>limit+25)return true;
+      return this.detail.coastWithin(p,limit+1e-6)>limit;
+    });
+  }
   annotate(route){route.sections=routeSections(this,route);return route;}
-  clearOcean(a,b){return this.checkSegment(a,b,.025,p=>this.isOceanLand(p));}
-  clear(a,b){return this.checkSegment(a,b,.025,p=>this.isLand(p));}
+  clearOcean(a,b){return this.detail?this.detail.clear(a,b):this.checkSegment(a,b,.025,p=>this.isOceanLand(p));}
+  clear(a,b){
+    if(!this.detail)return this.checkSegment(a,b,.025,p=>this.isLand(p));
+    if(this.detail.clear(a,b))return true;
+    const x0=Math.min(a[0],b[0]),x1=Math.max(a[0],b[0]),y0=Math.min(a[1],b[1]),y1=Math.max(a[1],b[1]);
+    if(x1-x0>=180||!this.rivers.some(r=>x0<=r.bounds[2]+.6&&x1>=r.bounds[0]-.6&&y0<=r.bounds[3]+.2&&y1>=r.bounds[1]-.2))return false;
+    return this.checkSegment(a,b,.0125,p=>this.isLand(p));
+  }
   checkSegment(a,b,step,land){let dl=b[0]-a[0];if(dl>180)dl-=360;if(dl<-180)dl+=360;const steps=Math.ceil(Math.max(Math.abs(dl),Math.abs(b[1]-a[1]))/step);for(let i=0;i<=steps;i++){const t=i/Math.max(1,steps);if(land([a[0]+dl*t,a[1]+(b[1]-a[1])*t]))return false;}return true;}
 }
 export function makeRoute(points){
@@ -197,13 +477,54 @@ export function routeSections(nav,route){
   const sections=[];let offset=0;
   for(let i=0;i<route.lengths.length;i++){
     const n=Math.max(1,Math.ceil(route.lengths[i]/2));
-    for(let j=0;j<n;j++){const end=offset+route.lengths[i]/n,mid=positionAlong(route,(offset+end)/2),river=!!nav.riverAt(mid),last=sections.at(-1);if(last&&last.river===river)last.end=end;else sections.push({start:offset,end,river});offset=end;}
+    const southbound=route.path[i+1][1]<route.path[i][1];
+    for(let j=0;j<n;j++){
+      const end=offset+route.lengths[i]/n,at=(offset+end)/2,mid=positionAlong(route,at),river=!!route.passages?.some(p=>at>=p.start&&at<p.end)||!!nav.riverAt(mid),last=sections.at(-1);
+      const current=!river&&southbound&&mid[0]>=8&&mid[0]<=19&&mid[1]>=-36&&mid[1]<=-21;
+      const mediterranean=!river&&mid[0]>=-5.5&&mid[0]<=37&&mid[1]>=30&&mid[1]<=46;
+      const coastal=!river&&(nav.coarseCoast?.(mid)??Infinity)<=80;
+      if(last&&last.river===river&&!!last.current===current&&!!last.mediterranean===mediterranean&&!!last.coastal===coastal)last.end=end;
+      else sections.push({start:offset,end,river,...(current?{current:true}:{}),...(mediterranean?{mediterranean:true}:{}),...(coastal?{coastal:true}:{})});
+      offset=end;
+    }
   }return sections;
 }
+function sectionMotion(s,route,section,gear){
+  const rescue=['rescue','transition'].includes(route.kind),stats=ship(s);
+  if(route.legacy)return {speed:[360,440,520][route.legacyShipLevel??Math.min(2,s.level||0)]/(rescue?2:1),rate:.9,limit:Infinity};
+  let speed=section.river?stats.riverSpeed:stats.speed;
+  const officer=activeOfficer(s);
+  if(!section.river)speed*=1+(section.mediterranean?officer?.mediterraneanSpeed||0:0)+(charterCargo(s)>0?officer?.charterSpeed||0:0)+(!route.direct&&section.coastal?officer?.manualSpeed||0:0);
+  if(!section.river&&section.current)speed*=1+Math.min(...fleetShips(s).map(v=>gearOnShip(s,v.id)?.currentSpeed||0));
+  if(route.direct&&!section.river)speed*=route.manualMultiplier||1;
+  let rate=voyageSupplyRate(s,section.river),limit=Infinity;
+  if(!rescue)for(const [id,miles] of Object.entries(gear||{})){
+    if(miles<=1e-8)continue;
+    const item=ITEM_BY_ID[id];
+    if(!section.river&&item?.speed)speed*=1+item.speed;
+    if(item?.supply)rate*=1-item.supply;
+    limit=Math.min(limit,miles);
+  }
+  return {speed:speed/(rescue?2:1),rate,limit};
+}
+function spendGear(gear,miles){
+  for(const [id,left] of Object.entries(gear||{})){
+    if(left-miles<=1e-8)delete gear[id];
+    else gear[id]=left-miles;
+  }
+}
 export function voyageEstimate(s,route,travelled=0){
-  const v=ship(s),sections=route.sections||[{start:0,end:route.total,river:false}];
-  const days=route.legacy?Math.max(0,route.total-travelled)/[360,440,520][route.legacyShipLevel??Math.min(2,s.level||0)]:sections.reduce((sum,r)=>sum+Math.max(0,r.end-Math.max(travelled,r.start))/(r.river?v.riverSpeed:v.speed),0)*(route.kind==='rescue'||route.kind==='transition'?2:1);
-  return {days,food:days*(route.legacy?.9:1),seconds:days*ACTIVE_SECONDS_PER_DAY};
+  const sections=route.sections||[{start:0,end:route.total,river:false}],gear={...s.rumorProgress?.distanceGear};
+  let days=0,food=0;
+  for(const section of sections){
+    let remaining=Math.max(0,section.end-Math.max(travelled,section.start));
+    while(remaining>1e-8){
+      const {speed,rate,limit}=sectionMotion(s,route,section,gear);
+      const miles=Math.min(remaining,limit),time=miles/speed;
+      days+=time;food+=time*rate;remaining-=miles;spendGear(gear,miles);
+    }
+  }
+  return {days,food,seconds:days*ACTIVE_SECONDS_PER_DAY};
 }
 export function canDepart(s,route){
   if(!route)return {ok:false,error:'이 배로 갈 수 있는 연안 항로를 찾지 못했어요.'};
@@ -213,18 +534,47 @@ export function canDepart(s,route){
   if(s.food+1e-8<needed)return {ok:false,error:`보급 ${needed.toFixed(1)}일분이 필요해요. 중간 항구를 선택하세요.`};
   return {ok:true,...estimate};
 }
+function voyageSupplyRate(s,river){
+  const officer=activeOfficer(s);
+  return 1-(river?0:officer?.seaSupply||0)-(s.fleetCount>=2?officer?.fleetSupply||0:0);
+}
+export function manualHelmSpeed(s,nav,point){
+  if(nav.riverAt(point))return ship(s).riverSpeed;
+  const manualBonus=nav.coastAt(point)<=80?Math.min(...fleetShips(s).map(p=>gearOnShip(s,p.id)?.manualSpeed||0))+(activeOfficer(s)?.manualSpeed||0):0;
+  const effects=Object.entries(s.rumorProgress?.distanceGear||{}).reduce((factor,[id,miles])=>miles>0?factor*(1+(ITEM_BY_ID[id]?.speed||0)):factor,1);
+  return ship(s).speed*(1+manualBonus)*effects;
+}
+export function useEmergencySupplies(s,id){
+  const p=s.rumorProgress;
+  if(id!=='I011'||!p?.items[id]||!tradingPort(s)||s.battleId||s.npcBattle||s.raidId||s.explorationLockedUntilSailing)throw Error('꾸러미와 정상 정박 상태를 확인하세요.');
+  const amount=Math.min(2,ship(s).supply-s.food,supplyRoom(s));
+  if(amount<=1e-8)throw Error('보급 한도와 적재 공간을 확인하세요.');
+  s.food+=amount;
+  p.items[id]--;
+  return {message:'비상 식량 사용 · '+amount.toFixed(1)+'일분 보급'};
+}
 export function advanceVoyage(s,nav,seconds,intercept=null){
   const v=s.voyage;if(!v)return {miles:0,days:0};v.sections??=routeSections(nav,v);
-  let budget=Math.max(0,seconds)/ACTIVE_SECONDS_PER_DAY,miles=0,days=0,interrupted=false;const rescue=['rescue','transition'].includes(v.kind),rate=v.legacy?.9:1;
+  let budget=Math.max(0,seconds)/ACTIVE_SECONDS_PER_DAY,miles=0,days=0,interrupted=false,entry=null;const rescue=['rescue','transition'].includes(v.kind),passage=pendingCanal(v);
   while(budget>1e-10&&v.travelled<v.total-1e-8&&(rescue||s.food>1e-10)){
+    if(passage&&v.travelled+1e-7>=passage.start){entry=passage.id;break;}
     const section=v.sections.find(r=>r.end>v.travelled+1e-8)||{end:v.total,river:false};
-    const speed=(v.legacy?[360,440,520][v.legacyShipLevel??Math.min(2,s.level||0)]:section.river?ship(s).riverSpeed:ship(s).speed)/(rescue?2:1);
-    const limit=(section.end-v.travelled)/speed;let step=Math.min(budget,limit,rescue?Infinity:s.food/rate);
+    const gear=s.rumorProgress?.distanceGear,{speed,rate,limit}=sectionMotion(s,v,section,gear);
+    let step=Math.min(budget,(section.end-v.travelled)/speed,limit/speed,passage?(passage.start-v.travelled)/speed:Infinity,rescue?Infinity:s.food/rate);
     if(step<=1e-12)break;if(!rescue&&intercept){const t=Math.max(0,Math.min(1,intercept(positionAlong(v,v.travelled),positionAlong(v,Math.min(v.total,v.travelled+step*speed)))));if(t<1){step*=t;interrupted=true;}}const moved=step*speed;v.travelled=Math.min(v.total,v.travelled+moved);s.day+=step;days+=step;miles+=moved;budget-=step;
-    if(!rescue){s.food=Math.max(0,s.food-step*rate);v.foodRemaining=Math.max(0,(v.foodRemaining||0)-step*rate);}
+    if(!rescue){s.food=Math.max(0,s.food-step*rate);v.foodRemaining=Math.max(0,(v.foodRemaining||0)-step*rate);spendGear(gear,moved);}
     if(interrupted)break;
   }
-  if(!rescue&&miles>0)s.explorationLockedUntilSailing=false;s.position=positionAlong(v,v.travelled);return {miles,days,interrupted,arrived:v.travelled>=v.total-1e-7,depleted:!rescue&&s.food<=1e-8};
+  if(!rescue&&miles>0){
+    s.explorationLockedUntilSailing=false;
+    const p=s.rumorProgress;
+    if(p?.active){
+      const total=(p.officerMiles||0)+miles,experience=Math.floor(total/20);
+      p.officerMiles=total-experience*20;
+      addOfficerExperience(s,experience);
+    }
+  }
+  s.position=positionAlong(v,v.travelled);return {miles,days,interrupted,...(entry?{entry}:{}),arrived:v.travelled>=v.total-1e-7,depleted:!rescue&&s.food<=1e-8};
 }
 export function advanceManualMotion(s,nav,motion,seconds,intercept=null){
   for(const [a,b]of motion.legs){if(!nav.clear(a,b))return {miles:0,days:0,error:'해안에 닿았어요. 바다 쪽으로 조종하세요.'};if(!nav.withinCoast(a,b,ship(s).offshore))return {miles:0,days:0,error:`이 배는 해안에서 ${ship(s).offshore}해리 이내로 항해할 수 있어요.`};}
@@ -232,31 +582,40 @@ export function advanceManualMotion(s,nav,motion,seconds,intercept=null){
   for(const [a,b]of motion.legs){
     if(budget<=1e-10){finished=false;break;}
     const route=nav.annotate(makeRoute([a,b]));if(route.total<1e-10)continue;
-    const temp={...s,position:[...a],voyage:{...route,travelled:0,foodRemaining:s.food}};
+    const bonus=nav.coastAt(a)<=80?Math.min(...fleetShips(s).map(p=>gearOnShip(s,p.id)?.manualSpeed||0))+(activeOfficer(s)?.manualSpeed||0):0;
+    const temp={...s,position:[...a],voyage:{...route,travelled:0,foodRemaining:s.food,direct:true,manualMultiplier:1+bonus}};
     const result=advanceVoyage(temp,nav,budget,intercept);interrupted=result.interrupted;s.food=temp.food;s.day=temp.day;s.position=temp.position;if(result.miles>0)legs.push([[...a],[...temp.position]]);miles+=result.miles;days+=result.days;budget-=result.days*ACTIVE_SECONDS_PER_DAY;
     if(!result.arrived){finished=false;break;}
   }
   if(miles>0)s.explorationLockedUntilSailing=false;if(finished)s.position=[...motion.position];return {miles,days,legs,interrupted,depleted:s.food<=1e-8,finished};
 }
 export function nearestHarbor(s,nav,onlyVisited=false){
-  let best=null;const candidates=PORTS.filter(p=>!onlyVisited||s.visited.includes(p.id)).map(p=>({p,min:distance(s.position,[p.lon,p.lat])})).sort((a,b)=>a.min-b.min);
-  for(const {p,min}of candidates){if(best&&min>best.route.total)break;const route=nav.route(s.position,[p.lon,p.lat]);if(route&&(!best||route.total<best.route.total))best={port:p,route};}return best;
+  let best=null;const candidates=PORTS.filter(p=>!onlyVisited||s.visited.includes(p.id)).map(p=>({p,point:nav.detail?nav.approach(p):[p.lon,p.lat]})).filter(x=>x.point).map(x=>({...x,min:distance(s.position,x.point)})).sort((a,b)=>a.min-b.min);
+  for(const {p,min,point}of candidates){if(best&&min>best.route.total)break;const route=nav.route(s.position,point);if(route&&(!best||route.total<best.route.total))best={port:p,route};}return best;
 }
 export function beginRescue(s,nav,transition=false,damaged=false){
  const previous=s.voyage,replanning=!!s.rescueReplanPending&&['rescue','transition'].includes(previous?.kind);
  if(s.port||previous?.kind&&!replanning)return {ok:false,error:'항구 또는 구조 중이에요.'};
  if(!transition&&!replanning&&!damaged&&s.food>1e-8)return {ok:false,error:'보급 소진 시 자동 구조합니다.'};
  let found=nearestHarbor(s,nav,true),emergency=false;
- if(!found){const p=PORTS.find(p=>s.visited.includes(p.id));if(!p)return {ok:false,error:'방문한 보급항을 확인하고 있어요. 기록은 유지됩니다.'};const d=distance(s.position,[p.lon,p.lat]);found={port:p,route:{path:[[...s.position],[p.lon,p.lat]],lengths:[d],total:d,travelled:d}};emergency=true;}
- const cost=replanning?(previous.paidCost||0):transition?0:Math.min(s.money,Math.min(1000,Math.max(150,Math.ceil(found.route.total*.5))));
- if(!replanning)s.money-=cost;s.port=null;s.controlMode='auto';s.explorationLockedUntilSailing=true;
+ if(!found){const p=PORTS.find(p=>s.visited.includes(p.id));if(!p)return {ok:false,error:'방문한 보급항을 확인하고 있어요. 기록은 유지됩니다.'};const berth=nav.detail?nav.approach(p):[p.lon,p.lat];const d=distance(s.position,berth);found={port:p,route:{path:[[...s.position],berth],lengths:[d],total:d,travelled:d}};emergency=true;}
+ refundCanalTolls(s);
+ const rescueBase=Math.min(1000,Math.max(150,Math.ceil(found.route.total*.5)));
+ const discounted=Math.ceil(rescueBase*(1-(activeOfficer(s)?.rescueDiscount||0)));
+ const cost=replanning?(previous.paidCost||0):transition?0:Math.min(s.money,discounted-couponAmount(s,'rescue',discounted));
+ if(!replanning&&!transition&&cost>0&&couponAmount(s,'rescue',discounted)>0)consumeCoupon(s,'rescue');
+ if(!replanning)s.money-=cost;if(s.shoreTrip?.beach)delete s.shoreTrip;s.port=null;s.controlMode='auto';s.explorationLockedUntilSailing=true;
  s.voyage={...found.route,target:found.port.id,travelled:emergency?found.route.total:0,foodRemaining:0,kind:transition||previous?.kind==='transition'?'transition':'rescue',paidCost:cost,rescueId:previous?.rescueId||globalThis.crypto?.randomUUID?.()||'rescue-'+Date.now(),emergency};
  delete s.transitionPending;delete s.rescueReplanPending;return {ok:true,cost,port:found.port,emergency,arrived:emergency||found.route.total<=1e-8};
 }
 export function recordArrival(s,id,voyage){
   const p=PORT_BY_ID[id];if(!p)return;
-  if(voyage?.origin&&PORT_BY_ID[voyage.origin]&&voyage.origin!==id&&!voyage.kind)s.recentRoutes=[{from:voyage.origin,to:id,nm:voyage.total},...(s.recentRoutes||[])].slice(0,5);
+  if(voyage?.origin&&PORT_BY_ID[voyage.origin]&&voyage.origin!==id&&!voyage.kind){
+    s.recentRoutes=[{from:voyage.origin,to:id,nm:voyage.total},...(s.recentRoutes||[])].slice(0,5);
+    appendItemRecord(s,'routes',id,PORT_BY_ID[voyage.origin].name+' → '+p.name+' · '+Math.round(voyage.total)+'해리');
+  }
   s.recentPorts=[id,...(s.recentPorts||[]).filter(p=>p!==id)].slice(0,8);settleSupply(s);
+  if(!voyage?.kind)recordContractArrival(s,id);
   if(['rescue','transition'].includes(voyage?.kind)){s.food=Math.max(2,s.food);s.explorationLockedUntilSailing=true;}
 }
 

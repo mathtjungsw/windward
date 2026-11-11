@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {initialState,parseSavedGame} from '../dist/engine.js';
 import {syncFleet} from '../dist/ship-rules.js';
+import {normalizeRumorProgress} from '../dist/rumor-progress.js';
 import {reserveLoss} from '../dist/combat-core.js';
 import {defenseFromGame,openOfflineRaid,advanceOfflineRaid,mergeDefense,navigationCheckpoint} from '../dist/defense-core.js';
 import {seaSector} from '../dist/presence-core.js';
@@ -13,7 +14,7 @@ const rules=JSON.parse(fs.readFileSync(new URL('../firebase.database.rules.json'
 assert.equal((await req('.settings/rules',{admin:true,method:'PUT',body:rules})).status,200,'rules compile');
 function sailor(id,kind='precision',quality=0,hp){const g=initialState();Object.assign(g,{port:null,position:[-17,34],money:1000,cargo:{wine:{qty:20,cost:200}},cannons:[{id:id+'-gun',kind,quality,shipId:'ship',readyAt:0}]});syncFleet(g,[{id:'ship',tier:19}],'ship');if(hp!==undefined)g.hullHP=hp;reserveLoss(g,id+'-bank');return g;}
 export let fixture;
-export async function reset(options={}){const games={a:sailor('a',options.aKind,options.aQuality,options.aHP),b:sailor('b',options.bKind,options.bQuality,options.bHP),c:sailor('c')},saves={},states={};for(const uid of ['a','b','c']){if(options.docked&&uid==='b')games.b.port='lisbon';saves[uid]={schemaVersion:6,defenseSeq:0,revision:1,session:uid+'-session',leaseUntil:0,operationSequence:0,data:JSON.stringify(games[uid]),updatedAt:Date.now()};states[uid]=defenseFromGame(games[uid],{}, {name:uid.toUpperCase(),session:uid+'-session',saveRevision:1},Date.now());}
+export async function reset(options={}){const games={a:sailor('a',options.aKind,options.aQuality,options.aHP),b:sailor('b',options.bKind,options.bQuality,options.bHP),c:sailor('c')},saves={},states={};for(const uid of ['a','b','c']){if(options.docked&&uid==='b')games.b.port='lisbon';const officer=options.officers?.[uid];if(officer){const p=games[uid].rumorProgress=normalizeRumorProgress(games[uid]);p.officers=[officer];p.active=officer;p.officerXP[officer]=1600;}saves[uid]={schemaVersion:6,defenseSeq:0,revision:1,session:uid+'-session',leaseUntil:0,operationSequence:0,data:JSON.stringify(games[uid]),updatedAt:Date.now()};states[uid]=defenseFromGame(games[uid],{}, {name:uid.toUpperCase(),session:uid+'-session',saveRevision:1},Date.now());}
  const root={config:{minSchema:6},accounts:{a:{name:'A'},b:{name:'B'},c:{name:'C'}},privateSaves:saves,fleetStates:states,real:{fleetConnections:{a:{session:'a-session',online:true,at:Date.now()},b:{session:'b-session',online:!!options.bOnline,at:Date.now()},c:{session:'c-session',online:true,at:Date.now()}}}};
  assert.equal((await req('gameV2',{admin:true,method:'PUT',body:root})).status,200);fixture={games,saves,states};return fixture;}
 export function patchFor(game,room,result,uid,key,beforeSave,beforeRevision=0){const sequence=beforeSave.operationSequence+1,revision=beforeSave.revision+1,id=uid+'-session:'+sequence;room._version=1;const record={...beforeSave,revision,defenseSeq:game.defenseAck?.seq||0,data:JSON.stringify(game),leaseUntil:Date.now()+90000,updatedAt:stamp,operationSequence:sequence,lastOperation:{id,sequence,kind:'raids',key,sharedRevision:beforeRevision+1}},patch={['privateSaves/'+uid]:record,['shared/raids/'+key]:{revision:beforeRevision+1,content:room,updatedAt:stamp,lastOperation:{id,uid,sequence,saveRevision:revision}}};
@@ -23,6 +24,11 @@ const apply=(patch,uid='a')=>req('gameV2',{uid,method:'PATCH',body:patch});
 let f=await reset(),shot=first(f);
 assert.equal((await apply(shot.patch)).status,200,'first shot and automatic defense are one paired operation');
 assert.equal((await apply(shot.patch)).status,401,'duplicate receipt cannot replay');
+const skilled=first(await reset({officers:{a:'O003',b:'O010'}}),'skilled');
+assert.ok(skilled.room.events[0].damage>skilled.room.events[0].damagePotential);
+assert.ok(skilled.room.events[1].bonusReload>0);
+assert.equal((await apply(skilled.patch)).status,200,'trained attack and shortened offline counterfire pass the same atomic rules');
+f=await reset();shot=first(f);assert.equal((await apply(shot.patch)).status,200);
 assert.equal((await req('gameV2/privateSaves/b',{uid:'a'})).status,401,'attacker cannot read private target');
 assert.equal((await req('gameV2/privateSaves/b',{uid:'a',method:'PATCH',body:{data:'forged'}})).status,401,'attacker cannot overwrite target save');
 assert.equal((await req('gameV2/fleetStates',{uid:'a'})).status,401,'no whole-world fleet reads');

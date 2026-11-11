@@ -1,5 +1,5 @@
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.10-visible-place-names';
-import {ownershipRankChanges} from './port-rankings.js?v=2026.11.10-visible-place-names';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {ownershipRankChanges} from './port-rankings.js?v=2026.11.12-cooperative-fleet-discoveries';
 async function bounded(task,ms=5000){let timer;try{return await Promise.race([task,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('network-timeout')),ms))]);}finally{clearTimeout(timer);}}
 // Economic writes share the same queue as autosave. Acknowledgement precedes UI state.
 export function installAtomicAccount(Type){
@@ -18,8 +18,9 @@ export function installAtomicAccount(Type){
    if(this.dirty)await this.writeSave();if(!this.ready||this.lost||this.dirty)throw Error('항해 기록 저장을 먼저 확인하세요.');
    const s=this.sdk,root='gameV2',path=`shared/${kind}/${key}`,ref=s.ref(this.db,`${root}/${path}`),before=(await bounded(s.get(ref))).val()||{revision:0,content:{}},game=structuredClone(this.readGame()),now=Date.now()+(this.serverOffset||0),content=structuredClone(before.content||{}),result=await mutate(game,content,now,before.revision||0);
    if(result?.ok===false)throw Error(result.error||'처리할 수 없어요.');
+   if(result?.noWrite)return result;
    const sequence=(this.record.operationSequence||0)+1,id=this.session+':'+sequence,revision=this.revision+1,op={id,sequence,kind,key,sharedRevision:before.revision+1},stamp=s.serverTimestamp();
-   const record={...this.record,schemaVersion:this.defenseEnabled?6:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}),revision,session:this.session,data:JSON.stringify(game),leaseUntil:now+90000,updatedAt:stamp,operationSequence:sequence,lastOperation:op};
+   const record={...this.record,schemaVersion:this.defenseEnabled?Math.max(6,this.record.schemaVersion):5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}),revision,session:this.session,data:JSON.stringify(game),leaseUntil:now+90000,updatedAt:stamp,operationSequence:sequence,lastOperation:op};
    content._version=1;
    const shared={revision:before.revision+1,content,updatedAt:stamp,lastOperation:{id,uid:this.uid,sequence,saveRevision:revision}};
    const ownerChanges=kind==='ports'?await bounded(ownershipRankChanges(this,key,before.content||{},content,id)):{};

@@ -1,9 +1,9 @@
-import {watchSectorPages} from './sector-pages.js?v=2026.11.10-visible-place-names';
-import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.10-visible-place-names';
-import {mapDistance} from './world-wrap.js?v=2026.11.10-visible-place-names';
-import {REAL_WORLD_ROOT} from './account.js?v=2026.11.10-visible-place-names';
-import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.10-visible-place-names';
-import {CaptainRoster} from './captains.js?v=2026.11.10-visible-place-names';
+import {watchSectorPages} from './sector-pages.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {REAL_WORLD_ROOT} from './account.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {CaptainRoster} from './captains.js?v=2026.11.12-cooperative-fleet-discoveries';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{

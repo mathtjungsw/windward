@@ -1,8 +1,22 @@
-import {ship,fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.10-visible-place-names';
-import {usedSpace,capacity,usedCargo,supplyCost} from './engine.js?v=2026.11.10-visible-place-names';
-import {currentHP} from './cannons.js?v=2026.11.10-visible-place-names';
-import {mapDistance} from './world-wrap.js?v=2026.11.10-visible-place-names';
-export function repairHull(s){if(!s.port||s.voyage)throw Error('항구에서 수리하세요.');const max=fleetMaxHP(s),missing=max-currentHP(s);if(!missing)throw Error('이미 수리가 끝났어요.');const cost=Math.max(1,Math.ceil(Math.min(3000,Math.max(100,fleetAppraisal(s)*.02))*missing/max));if(s.money<cost)throw Error('수리할 두카트가 부족해요.');s.money-=cost;s.hullHP=max;return {ok:true,cost};}
+import {ship,fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {usedSpace,capacity,usedCargo,supplyCost} from './engine.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {currentHP} from './cannons.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {activeOfficer,couponAmount,consumeCoupon} from './rumor-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {PORT_BY_ID} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-cooperative-fleet-discoveries';
+export function repairHull(s){if(!s.port||s.voyage)throw Error('항구에서 수리하세요.');const max=fleetMaxHP(s),missing=max-currentHP(s);if(!missing)throw Error('이미 수리가 끝났어요.');const officer=activeOfficer(s), indian=['인도양','아라비아해','벵골만','라카디브해'].includes(PORT_BY_ID[s.port]?.sea);
+ const discount=officer?.repairDiscount||(indian?officer?.indianRepairDiscount||0:0);
+ const price=Math.max(1,Math.ceil(Math.min(3000,Math.max(100,fleetAppraisal(s)*.02))*missing/max*(1-discount)));
+ const cost=price-couponAmount(s,'repair',price);if(s.money<cost)throw Error('수리할 두카트가 부족해요.');s.money-=cost;s.hullHP=max;consumeCoupon(s,'repair');return {ok:true,cost};}
+export function useRepairKit(s,id){
+ const p=s.rumorProgress, max=fleetMaxHP(s), hp=currentHP(s);
+ if(id!=='I013'||!p?.items[id]||s.battleId||s.npcBattle||s.raidId||s.voyage?.kind||hp<=0)throw Error('전투와 구조가 끝난 뒤 수리 도구를 사용할 수 있어요.');
+ if(p.usedRepair)throw Error('정상 입항 전에는 수리 도구를 한 번만 사용할 수 있어요.');
+ const repaired=Math.min(max-hp,Math.floor(max*.1));
+ if(repaired<=0)throw Error('수리할 선박 손상이 없어요.');
+ s.hullHP=hp+repaired;p.items[id]--;p.usedRepair=true;
+ return {message:'휴대 수리 완료 · 내구도 +'+repaired};
+}
 export function coastalAction(s,site,action,now,random){if(s.voyage||s.port||s.npcBattle||s.battleId||mapDistance(s.position,site.point)>10)throw Error('해안 지점 앞 10해리 이내에서 정지하세요.');s.coastalVisits??={};const past=s.coastalVisits[site.id]||{};
  if(action==='supply'){if(past.supplyAt!==undefined&&now-past.supplyAt<86400000)throw Error('이 지점은 24시간마다 보급할 수 있어요.');const amount=Math.max(0,Math.min(2,ship(s).supply-s.food,2*(capacity(s)-usedSpace(s))/s.fleetCount));if(amount<=0)throw Error('보급 한도와 화물 공간을 확인하세요.');const cost=Math.ceil(amount*s.fleetCount*ship(s).supplyPrice*1.5);if(s.money<cost)throw Error('보급할 두카트가 부족해요.');s.money-=cost;s.food+=amount;s.coastalVisits[site.id]={...past,supplyAt:now};return {ok:true,message:`보급 ${amount.toFixed(1)}일 · ${cost} D`};}
  if(action!=='raid'||s.food<.2)throw Error('약탈에 쓸 보급 0.2일분을 확인하세요.');const day=Math.floor((now+32400000)/86400000);s.raidDaily=s.raidDaily?.day===day?s.raidDaily:{day,count:0};if(s.raidDaily.count>=3)throw Error('오늘 약탈 활동 3회를 모두 사용했어요.');s.raidDaily.count++;s.food-=.2;const success=random<.7;

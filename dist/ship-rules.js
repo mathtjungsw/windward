@@ -1,3 +1,5 @@
+import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
+
 export const ACTIVE_SECONDS_PER_DAY=2;
 const rows=[
  ['통나무 뗏목',80,20,10,80,0],['돛 달린 뗏목',84,24,11,80,600],['보강 뗏목',88,28,12,80,900],
@@ -17,13 +19,30 @@ export function fleetShips(s){
  return Array.from({length:Number.isInteger(s.fleetCount)?Math.max(1,Math.min(5,s.fleetCount)):1},(_,i)=>({id:'vessel-'+i,tier:legacyTier(s)}));
 }
 export function syncFleet(s,rows,flagshipId=s.flagshipId){s.fleetShips=rows;s.flagshipId=rows.some(p=>p.id===flagshipId)?flagshipId:rows[0].id;s.shipTier=rows.find(p=>p.id===s.flagshipId).tier;s.fleetCount=rows.length;return s;}
+export function fleetDisplayShips(game){
+ const rows=fleetShips(game), flagship=rows.find(v=>v.id===game.flagshipId)||rows[0];
+ return [flagship,...rows.filter(v=>v.id!==flagship.id)];
+}
+export function vesselSeaSpeed(game,vessel){
+ const bonus=(gearOnShip(game,vessel.id)?.seaSpeed||0)+(activeOfficer(game)?.seaSpeed||0);
+ return SHIPS[vessel.tier].speed*(1+Math.min(.2,bonus));
+}
 export const shipTier=s=>legacyTier(s);
 export const fleetCount=s=>fleetShips(s).length;
-export function ship(s){const members=fleetShips(s).map(p=>SHIPS[p.tier]),flag=SHIPS[shipTier(s)];return {...flag,speed:Math.min(...members.map(p=>p.speed)),riverSpeed:Math.min(...members.map(p=>p.riverSpeed)),supply:Math.min(...members.map(p=>p.supply)),offshore:Math.min(...members.map(p=>p.offshore)),reserve:Math.max(...members.map(p=>p.reserve)),supplyPrice:members.reduce((a,p)=>a+p.supplyPrice,0)/members.length};}
-export const fleetCapacity=s=>{const caps=fleetShips(s).map(p=>SHIPS[p.tier].capacity).sort((a,b)=>b-a);return Math.floor(caps[0]+caps.slice(1).reduce((a,n)=>a+n*.6,0)+1e-8);};
-export const supplySpace=s=>Math.ceil(Math.max(0,s.food*fleetCount(s)-1e-9)/2);
+export function ship(s){
+ const vessels=fleetShips(s),members=vessels.map(p=>SHIPS[p.tier]),flag=SHIPS[shipTier(s)];
+ const speed=Math.min(...vessels.map(p=>vesselSeaSpeed(s,p)));
+ const riverSpeed=Math.min(...vessels.map(p=>SHIPS[p.tier].riverSpeed*(1+(gearOnShip(s,p.id)?.riverSpeed||0)+(activeOfficer(s)?.riverSpeed||0))));
+ return {...flag,speed,riverSpeed,supply:Math.min(...members.map(p=>p.supply)),offshore:Math.min(...members.map(p=>p.offshore)),reserve:Math.max(...members.map(p=>p.reserve)),supplyPrice:members.reduce((a,p)=>a+p.supplyPrice,0)/members.length};}
+export const fleetCapacity=s=>{const caps=fleetShips(s).map(p=>SHIPS[p.tier].capacity).sort((a,b)=>b-a);return Math.floor(caps[0]+caps.slice(1).reduce((a,n)=>a+n*.6,0)+1e-8)+extraCapacity(s);};
+export const supplyUnits=s=>fleetShips(s).reduce((n,p)=>n+1-(gearOnShip(s,p.id)?.supplySpaceDiscount||0),0);
+export const supplySpace=s=>Math.ceil(Math.max(0,s.food*supplyUnits(s)-1e-9)/2);
 export const fleetLimit=s=>{const tier=Math.max(...fleetShips(s).map(p=>p.tier));return tier<5?1:tier<9?2:tier<13?3:tier<17?4:5;};
 export const upgradeCost=s=>ship(s).upgrade===null?null:Math.ceil(ship(s).upgrade*(100+35*(fleetCount(s)-1))/100);
 export const additionalShipCost=s=>fleetCount(s)>=fleetLimit(s)?null:[0,6000,15000,35000,75000][fleetCount(s)]+Math.floor(SHIPS.slice(0,shipTier(s)+1).reduce((n,p)=>n+p.cost,0)*.25);
-export const fleetMaxHP=s=>fleetShips(s).reduce((n,p)=>n+100+30*p.tier,0);
+export const fleetMaxHP=s=>Math.round(fleetShips(s).reduce((n,p)=>n+100+30*p.tier,0)*(1+(activeOfficer(s)?.hullBonus||0)));
 export const fleetAppraisal=s=>fleetShips(s).reduce((n,p)=>n+SHIPS.slice(0,p.tier+1).reduce((a,q)=>a+q.cost,0),0);
+export function shipCostBasis(vessel){
+ const invested=SHIPS.slice(0,vessel.tier+1).reduce((sum,s)=>sum+s.cost,0);
+ return vessel.costBasis??Math.min(invested,6000+Math.floor(invested*.25));
+}

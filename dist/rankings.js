@@ -1,5 +1,5 @@
-import {rankFleet} from './social-core.js?v=2026.11.10-visible-place-names';
-import {RANK_METRICS} from './rank-metrics.js?v=2026.11.10-visible-place-names';
+import {rankFleet} from './social-core.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {RANK_METRICS} from './rank-metrics.js?v=2026.11.12-cooperative-fleet-discoveries';
 export {RANK_METRICS};
 export class CaptainRankings{
  constructor(fleet,onChange){this.fleet=fleet;this.onChange=onChange;this.rows={};this.myRanks={};this.metric='profit';this.visible=true;}

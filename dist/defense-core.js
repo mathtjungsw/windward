@@ -1,8 +1,9 @@
-import {seaSector} from './presence-core.js?v=2026.11.10-visible-place-names';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.10-visible-place-names';
-import {fleetMaxHP} from './ship-rules.js?v=2026.11.10-visible-place-names';
-import {combatProfile,openBattle,fireCannon,settlementFor,cargoCount,addCargo} from './combat-core.js?v=2026.11.10-visible-place-names';
-import {mapDistance} from './world-wrap.js?v=2026.11.10-visible-place-names';
+import {seaSector} from './presence-core.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {fleetMaxHP} from './ship-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {combatProfile,openBattle,fireCannon,settlementFor,cargoCount,addCargo} from './combat-core.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {refundCanalTolls} from './canal-reservations.js?v=2026.11.12-cooperative-fleet-discoveries';
 const copy=o=>structuredClone(o||{}),cargo=json=>JSON.parse(json||'{}');
 export const emptyDefenseAck=()=>({seq:0,cash:0,kills:0,lootJSON:'{}',lostReserveId:''});
 function cargoDifference(total,claimed){const out={};for(const [id,c]of Object.entries(total)){const old=claimed[id]||{qty:0,cost:0},qty=c.qty-old.qty,cost=c.cost-old.cost;if(qty<0||cost<-.0001)throw Error('전투 정산 순서가 맞지 않아요.');if(qty)out[id]={qty,cost:Math.max(0,cost)};}return out;}
@@ -12,19 +13,19 @@ export function mergeDefense(game,node,now=Date.now()){
  game.money+=cash;const loot=cargoDifference((node.lootTotals||{}),cargo(ack.lootJSON));game.lootClaims??={};addCargo(game.lootClaims,loot);if(cargoCount(game.lootClaims)>50)throw Error('전리품 보관 한도를 확인하세요.');
  game.hullHP=node.hp;for(const g of game.cannons||[]){const used=Object.values(node.guns||{}).find(p=>p.id===g.id);if(used)g.readyAt=Math.max(g.readyAt,used.readyAt);}
  if(kills){game.rankProgress??={version:1,since:now,pirateKills:0,fleetDefeats:0,duelWins:0,tradedGoods:game.boughtLisbonWine?['wine']:[],bestTradeProfit:0};game.rankProgress.fleetDefeats+=kills;}
- if(node.lostReserveId&&node.lostReserveId!==ack.lostReserveId){if(game.battleReserve?.id===node.lostReserveId)delete game.battleReserve;addCargo(game.cargo,copy(node.returnedCargo));const repair=Math.min(game.money,node.repair||0);game.money-=repair;game.hullHP=fleetMaxHP(game);game.offlineRescuePending=true;game.voyage=null;game.port=null;game.defeatProtectionUntil=now+120000;}
+ if(node.lostReserveId&&node.lostReserveId!==ack.lostReserveId){if(game.battleReserve?.id===node.lostReserveId)delete game.battleReserve;addCargo(game.cargo,copy(node.returnedCargo));const repair=Math.min(game.money,node.repair||0);game.money-=repair;game.hullHP=fleetMaxHP(game);game.offlineRescuePending=true;refundCanalTolls(game);game.voyage=null;game.port=null;if(game.shoreTrip?.beach)delete game.shoreTrip;game.defeatProtectionUntil=now+120000;}
  game.defenseAck={seq:node.seq,cash:node.cashTotal,kills:node.killsTotal,lootJSON:JSON.stringify(node.lootTotals||{}),lostReserveId:node.lostReserveId||''};
  if(node.activeRaidId)game.raidId=node.activeRaidId;else delete game.raidId;
  return true;
 }
 export function defenseFromGame(game,old={},meta={},now=Date.now()){
  const ack=game.defenseAck||emptyDefenseAck();if((old.seq||0)!==ack.seq)throw Error('새 전투 결과를 먼저 반영하세요.');
- const unbound={...game,port:null,defeatProtectionUntil:0};delete unbound.raidId;const profile=combatProfile(unbound,meta.name||old.name||'선장',now),guns=Object.fromEntries(profile.guns.map((g,slot)=>[g.id,{...g,slot}]));
- return {version:1,positionSeq:old.positionSeq||0,revision:(old.revision||0)+1,seq:old.seq||0,name:profile.name,session:meta.session||old.session||'',saveRevision:meta.saveRevision||old.saveRevision||0,sector:seaSector(old.positionSeq?old.point:game.position),point:old.positionSeq?[...old.point]:[...game.position],portId:old.positionSeq?old.portId:game.port||'',hp:profile.hp,maxHP:profile.maxHP,gunCount:profile.guns.length,guns,bank:game.battleReserve?{...copy(game.battleReserve),cargo:cargo(game.battleReserve.cargoJSON)}:null,repair:profile.repair,protected:profile.protected||!!game.battleId||!!game.offlineRescuePending,protectedUntil:game.defeatProtectionUntil||0,lootRoom:Math.max(0,50-cargoCount(game.lootClaims)),pendingLootCount:cargoCount(cargoDifference(old.lootTotals||{},cargo(ack.lootJSON))),cashTotal:old.cashTotal||0,killsTotal:old.killsTotal||0,lootTotals:copy(old.lootTotals),claimedLootJSON:ack.lootJSON||'{}',lostReserveId:old.lostReserveId||'',returnedCargo:copy(old.returnedCargo),rescuePending:!!game.offlineRescuePending,lastRaidId:old.lastRaidId||'',activeRaidId:game.raidId||'',raidUntil:game.raidId?old.raidUntil||now+180000:0,at:now};
+ const unbound={...game,port:null,defeatProtectionUntil:0};delete unbound.raidId;const profile=combatProfile(unbound,meta.name||old.name||'선장',now,meta.nav),guns=Object.fromEntries(profile.guns.map((g,slot)=>[g.id,{...g,slot}]));
+ return {...(profile.skill?{skill:profile.skill}:{}),version:1,positionSeq:old.positionSeq||0,revision:(old.revision||0)+1,seq:old.seq||0,name:profile.name,session:meta.session||old.session||'',saveRevision:meta.saveRevision||old.saveRevision||0,sector:seaSector(old.positionSeq?old.point:game.position),point:old.positionSeq?[...old.point]:[...game.position],portId:old.positionSeq?old.portId:game.port||'',hp:profile.hp,maxHP:profile.maxHP,gunCount:profile.guns.length,guns,bank:game.battleReserve?{...copy(game.battleReserve),cargo:cargo(game.battleReserve.cargoJSON)}:null,repair:profile.repair,protected:profile.protected||!!game.battleId||!!game.offlineRescuePending,protectedUntil:game.defeatProtectionUntil||0,lootRoom:Math.max(0,50-cargoCount(game.lootClaims)),pendingLootCount:cargoCount(cargoDifference(old.lootTotals||{},cargo(ack.lootJSON))),cashTotal:old.cashTotal||0,killsTotal:old.killsTotal||0,lootTotals:copy(old.lootTotals),claimedLootJSON:ack.lootJSON||'{}',lostReserveId:old.lostReserveId||'',returnedCargo:copy(old.returnedCargo),rescuePending:!!game.offlineRescuePending,lastRaidId:old.lastRaidId||'',activeRaidId:game.raidId||'',raidUntil:game.raidId?old.raidUntil||now+180000:0,at:now};
 }
-export function targetProfile(node,now){const pending=node.pendingLootCount??cargoCount(cargoDifference((node.lootTotals||{}),cargo(node.claimedLootJSON)));return {name:node.name,point:[...node.point],hp:node.hp,maxHP:node.maxHP,guns:Object.values(node.guns||{}).sort((a,b)=>a.slot-b.slot),at:now,protected:node.protected||!!node.portId||node.rescuePending||now<node.protectedUntil||node.hp<=0||!node.bank,lootRoom:Math.max(0,node.lootRoom-pending),repair:node.repair};}
-export function openOfflineRaid(game,node,attacker,defender,id,now,clear=()=>true){
- if(node.activeRaidId&&node.raidUntil>now)throw Error('이 배는 이미 교전 중이에요.');const a=combatProfile(game,attacker.name,now),b=targetProfile(node,now);if(node.session!==defender.session)throw Error('상대 배의 접속 상태가 바뀌었어요.');
+export function targetProfile(node,now){const pending=node.pendingLootCount??cargoCount(cargoDifference((node.lootTotals||{}),cargo(node.claimedLootJSON)));return {...(node.skill?{skill:node.skill}:{}),name:node.name,point:[...node.point],hp:node.hp,maxHP:node.maxHP,guns:Object.values(node.guns||{}).sort((a,b)=>a.slot-b.slot),at:now,protected:node.protected||!!node.portId||node.rescuePending||now<node.protectedUntil||node.hp<=0||!node.bank,lootRoom:Math.max(0,node.lootRoom-pending),repair:node.repair};}
+export function openOfflineRaid(game,node,attacker,defender,id,now,clear=()=>true,attackerNode=null){
+ if(node.activeRaidId&&node.raidUntil>now)throw Error('이 배는 이미 교전 중이에요.');const a=combatProfile(game,attacker.name,now);if(attackerNode?.skill)a.skill=attackerNode.skill;const b=targetProfile(node,now);if(node.session!==defender.session)throw Error('상대 배의 접속 상태가 바뀌었어요.');
  const room=openBattle('free',attacker.uid,defender.uid,{[attacker.uid]:a,[defender.uid]:b},{[attacker.uid]:copy(game.battleReserve),[defender.uid]:copy(node.bank)},now,clear);Object.assign(room,{id,offline:true,defender:defender.uid,defenderSession:node.session,events:[]});game.raidId=id;
  return {room,node:{...copy(node),activeRaidId:id,raidUntil:room.deadline}};
 }
@@ -54,7 +55,15 @@ export function restoreNavigation(game,checkpoint,saveRevision){
  if(!checkpoint||checkpoint.baseRevision!==saveRevision||checkpoint.routeKey!==routeKey(game.voyage))return game;
  if(!Array.isArray(checkpoint.point)||checkpoint.point.length!==2||!checkpoint.point.every(Number.isFinite))throw Error('이동 체크포인트를 확인하세요.');
  game.position=[...checkpoint.point];game.day=checkpoint.day;game.food=checkpoint.food;game.port=checkpoint.portId||null;game.controlMode=checkpoint.controlMode||game.controlMode;
- if(game.voyage&&checkpoint.travelled!==null){game.voyage.travelled=Math.min(game.voyage.total,checkpoint.travelled);game.voyage.foodRemaining=checkpoint.foodRemaining;}
+ if(game.voyage&&checkpoint.travelled!==null){
+  const travelled=Math.min(game.voyage.total,checkpoint.travelled),delta=Math.max(0,travelled-game.voyage.travelled);
+  const gear=game.rumorProgress?.distanceGear;
+  if(!game.voyage.kind&&gear)for(const id of Object.keys(gear)){
+    if(gear[id]<=delta)delete gear[id];
+    else gear[id]-=delta;
+  }
+  game.voyage.travelled=travelled;game.voyage.foodRemaining=checkpoint.foodRemaining;
+ }
  const a=atob(game.explored||''),bytes=Array.from(a,c=>c.charCodeAt(0));for(const [i,b]of checkpoint.exploredDelta||[])bytes[i]=(bytes[i]||0)|b;game.explored=btoa(String.fromCharCode(...bytes));
  return game;
 }

@@ -1,5 +1,7 @@
-// Static discovery stories and game observation points. See docs/WORLD_CONTENT_VERIFICATION_2026-11-06.md.
-export const DISCOVERY_CATALOG_VERSION='2026.11.09-discoveries-40';
+// Static discovery stories and game observation points.
+import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.12-cooperative-fleet-discoveries';
+export const DISCOVERY_CATALOG_VERSION='2026.11.12-discoveries-60';
+export const RETIRED_DISCOVERY_FAME={'ruin-itsukushima':400};
 const source=(label,url)=>({label,url});
 const UNESCO=(id,label)=>source('UNESCO · '+label,'https://whc.unesco.org/en/list/'+id+'/');
 const rows=[
@@ -7,7 +9,6 @@ const rows=[
  {id:'ruin-carthage',kind:'ruin',name:'카르타고 유산',region:'아프리카',tier:1,point:[10.5,37],sitePoint:[10.323,36.853],description:'튀니스만의 카르타고에는 고대 도시의 흔적이 남아 있어요. 게임에서는 해안 관찰 지점에서 유산 기록을 모읍니다.',sources:[UNESCO(37,'Carthage')],hintPorts:[]},
  {id:'ruin-kilwa',kind:'ruin',name:'킬와 키시와니 유적',region:'아프리카',tier:2,point:[40,-9],sitePoint:[39.52,-8.96],description:'동아프리카 해안 앞 섬의 킬와는 인도양 교역과 연결되었던 도시예요. 석조 유적을 관찰하는 기록이며 건물을 가져오는 수집은 아니에요.',sources:[UNESCO(144,'Kilwa Kisiwani')],hintPorts:[]},
  {id:'ruin-mahabalipuram',kind:'ruin',name:'마하발리푸람 해안 사원',region:'아시아',tier:2,point:[80.5,12.5],sitePoint:[80.198,12.617],description:'인도 코로만델 해안의 유산에는 7~8세기에 만들어진 여러 사원이 있어요. 해안 사원의 경관을 그림 수첩에 기록합니다.',sources:[UNESCO(249,'Mahabalipuram')],hintPorts:[]},
- {id:'ruin-itsukushima',kind:'ruin',name:'이쓰쿠시마 신사',region:'아시아',tier:3,point:[132,33.5],sitePoint:[132.32,34.295],description:'세토 내해의 이쓰쿠시마는 산과 바다, 건축이 함께 만드는 경관으로 알려져 있어요. 단순화한 수로 때문에 게임의 관찰점은 실제 신사보다 서남쪽 세토 내해 접근 해역에 두었습니다.',sources:[UNESCO(776,'Itsukushima')],hintPorts:['nagasaki'],hints:['규슈에서 동쪽 바다로 향하면 산과 바다 사이에 세워진 신사의 이야기를 들을 수 있어요.']},
  {id:'ruin-anse',kind:'ruin',name:'랑스오메도 정착지',region:'북아메리카',tier:3,point:[-55.5,52],sitePoint:[-55.53,51.596],description:'뉴펀들랜드 북쪽에 남은 옛 북유럽인 정착지의 흔적이에요. 해안 접근 지점에서 역사 관찰 기록을 남깁니다.',sources:[UNESCO(4,'L’Anse aux Meadows')],hintPorts:['halifax'],hints:['북대서양의 큰 섬 북쪽 끝에는 먼 옛날 북유럽 항해자들이 머물렀던 흔적이 있대요.']},
  {id:'ruin-rapanui',kind:'ruin',name:'라파누이의 모아이',region:'오세아니아',tier:4,point:[-109.25,-27.15],sitePoint:[-109.275,-27.126],description:'모아이는 라파누이 섬 문화의 조각과 건축 전통을 보여 주는 석상이에요. 석상을 옮기는 대신 해안에서 관찰한 그림을 도감에 남깁니다.',sources:[UNESCO(715,'Rapa Nui')],hintPorts:['valparaiso','hangaroa'],hints:['남미 서쪽에서 대양을 건너면 석상 문화로 알려진 외딴 섬이 있어요.','항가로아에서 섬의 동쪽 해안으로 돌아가면 돌로 새긴 얼굴들의 경관을 관찰할 수 있어요.']},
  {id:'ruin-nanmadol',kind:'ruin',name:'난마돌 수로 유적',region:'오세아니아',tier:4,point:[158.36,6.83],sitePoint:[158.335,6.844],description:'폰페이섬 남동쪽의 작은 섬들에 돌로 지은 건축 유적이 남아 있어요. 실제 유적과 조작용 바다 관찰 지점은 구분합니다.',sources:[UNESCO(1503,'Nan Madol')],hintPorts:['manila','portmoresby'],hints:['필리핀 동쪽의 넓은 바다에는 작은 섬들과 돌 건축이 이어지는 유적이 있다고 해요.','뉴기니 북동쪽 바다의 폰페이섬 남동 해안을 기억해 보세요.']},
@@ -26,7 +27,7 @@ const rows=[
  {id:'animal-iguana',kind:'animal',name:'갈라파고스 바다이구아나',region:'남아메리카',tier:3,point:[-90.6,-0.75],description:'갈라파고스에는 바다이구아나를 관찰하고 보전하는 활동이 이어져요. 동물을 잡는 대신 해안에서 관찰한 그림을 수집합니다.',sources:[source('갈라파고스 국립공원 · 바다이구아나','https://galapagos.gob.ec/monitoreo-de-seguimiento-para-estado-de-salud-de-las-iguanas-marinas/')],hintPorts:['callao'],hints:['남미 서쪽 적도 부근 바다의 섬들에는 바다이구아나가 산다고 해요.']},
  {id:'animal-hector',kind:'animal',name:'헥터돌고래',region:'오세아니아',tier:3,point:[173,-44],sitePoint:[173.05,-43.9],description:'뉴질랜드의 헥터돌고래를 주제로 한 관찰 기록이에요. 작은 돌고래의 모습을 그림 수첩에 남깁니다.',sources:[source('뉴질랜드 보전부 · Banks Peninsula','https://www.doc.govt.nz/nature/habitats/marine/other-marine-protection/banks-peninsula/')],hintPorts:['auckland'],hints:['뉴질랜드 남섬 동쪽 뱅크스반도 주변에서 작은 돌고래 관찰 이야기를 들어 보세요.']},
  {id:'animal-seal-hawaii',kind:'animal',name:'하와이몽크물범',region:'오세아니아',tier:4,point:[-157.5,21.5],sitePoint:[-157.8,21.5],description:'하와이몽크물범은 하와이 지역의 해양 포유류예요. 게임의 매우 어려움 표시는 탐험 조건의 난도이며 실제 보전 상태와는 별개입니다.',sources:[source('NOAA · Hawaiian monk seal','https://www.fisheries.noaa.gov/species/hawaiian-monk-seal')],hintPorts:['sanfrancisco','honolulu'],hints:['북미에서 서쪽 대양으로 향하면 하와이 섬 해안의 물범 이야기를 들을 수 있어요.','오아후섬의 북동쪽 접근 해역을 살펴보되 실제 야생 동물과는 거리를 두어야 해요.']},
- {id:'animal-penguin-nz',kind:'animal',name:'노란눈펭귄',region:'오세아니아',tier:4,point:[170.75,-45.85],description:'뉴질랜드 남섬 오타고 등지에는 노란눈펭귄의 서식지가 있어요. 해안의 관찰 기록을 수집하며 실제 동물을 옮기지 않습니다.',sources:[source('뉴질랜드 보전부 · Hoiho','https://www.doc.govt.nz/nature/native-animals/birds/birds-a-z/penguins/yellow-eyed-penguin-hoiho/')],hintPorts:['hobart','auckland'],hints:['태즈먼해 건너 뉴질랜드에는 눈 부근의 노란 띠가 특징인 펭귄이 있어요.','남섬 오타고 동쪽 해안을 향하는 관찰 항로를 준비해 보세요.']},
+ {id:'animal-penguin-nz',kind:'animal',name:'노란눈펭귄',region:'오세아니아',tier:4,point:[170.785892,-45.85],description:'뉴질랜드 남섬 오타고 등지에는 노란눈펭귄의 서식지가 있어요. 해안의 관찰 기록을 수집하며 실제 동물을 옮기지 않습니다.',sources:[source('뉴질랜드 보전부 · Hoiho','https://www.doc.govt.nz/nature/native-animals/birds/birds-a-z/penguins/yellow-eyed-penguin-hoiho/')],hintPorts:['hobart','auckland'],hints:['태즈먼해 건너 뉴질랜드에는 눈 부근의 노란 띠가 특징인 펭귄이 있어요.','남섬 오타고 동쪽 해안을 향하는 관찰 항로를 준비해 보세요.']},
  {id:'treasure-azores',kind:'treasure',name:'아소르스의 잠긴 상자',region:'유럽',tier:1,point:[-27.8,38.2],fiction:true,description:'아소르스 바깥바다에 배치한 창작 보물 상자예요. 실제 보물 매장 위치가 아니라 항해 게임의 고정 발견 지점입니다.',sources:[],hintPorts:[]},
  {id:'treasure-gulf',kind:'treasure',name:'표류선의 동전 주머니',region:'북아메리카',tier:1,point:[-91.3,27.4],fiction:true,description:'멕시코만에 떠 있는 창작 표류물의 동전 주머니예요. 그림과 명성을 얻으며 추가 두카트로 환전하지는 않아요.',sources:[],hintPorts:[]},
  {id:'treasure-madagascar',kind:'treasure',name:'마다가스카르의 진주함',region:'아프리카',tier:2,point:[50,-17],fiction:true,description:'마다가스카르 해안의 창작 진주함이에요. 실제 진주 산지나 보물 발굴 사실을 나타내지 않아요.',sources:[],hintPorts:[]},
@@ -45,7 +46,7 @@ const rows=[
  {id:'ruin-fortjesus',kind:'ruin',name:'몸바사 포트지저스',region:'아프리카',tier:2,point:[40,-4],sitePoint:[39.679444,-4.062778],description:'케냐 몸바사의 포트지저스는 1593~1596년에 세워진 요새예요. 여러 시대의 유산을 모은 게임이므로 1522년에 이미 있었다고 소개하지 않으며 해상 관찰 기록으로 수집합니다.',sources:[UNESCO(1295,'Fort Jesus')],hintPorts:[]}
 ];
 const fame=[0,50,150,400,1000],spot=[0,100,100,100,100],inspect=[0,60,60,60,60];
-export const DISCOVERIES=rows.map(d=>({...d,lon:d.point[0],lat:d.point[1],fiction:!!d.fiction,fame:fame[d.tier],spotRadius:spot[d.tier],inspectRadius:inspect[d.tier],rumorIds:d.hintPorts.map((p,i)=>d.id+'-rumor-'+(i+1)),image:'assets/discoveries/'+d.id+'.svg'}));
+export const DISCOVERIES=[...rows,...NEW_DISCOVERIES].map(d=>({...d,lon:d.point[0],lat:d.point[1],fiction:!!d.fiction,fame:fame[d.tier],spotRadius:spot[d.tier],inspectRadius:inspect[d.tier],rumorIds:d.hintPorts.map((p,i)=>d.id+'-rumor-'+(i+1)),image:'assets/discoveries/'+d.id+'.svg'}));
 export const DISCOVERY_BY_ID=Object.fromEntries(DISCOVERIES.map(d=>[d.id,d]));
 export const RUMORS=DISCOVERIES.flatMap(d=>d.hintPorts.map((portId,i)=>({id:d.rumorIds[i],portId,discoveryId:d.id,text:d.hints[i]})));
 export const RUMOR_BY_ID=Object.fromEntries(RUMORS.map(r=>[r.id,r]));

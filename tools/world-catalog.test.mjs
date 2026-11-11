@@ -37,12 +37,13 @@ test('all 24 new game berths are water points with connected ocean routes and va
  }
 });
 
-test('40 distinct discovery records preserve old IDs and add underserved-region finds, totaling 15600 fame',()=>{
- assert.equal(DISCOVERIES.length,40);assert.equal(Object.keys(DISCOVERY_BY_ID).length,40);
- assert.equal(new Set(DISCOVERIES.map(d=>d.point.join(','))).size,40);
- for(const [kind,count] of Object.entries({ruin:10,relic:14,animal:8,treasure:8}))assert.equal(DISCOVERIES.filter(d=>d.kind===kind).length,count);
- for(const [tier,count] of Object.entries({1:8,2:12,3:11,4:9}))assert.equal(DISCOVERIES.filter(d=>d.tier===Number(tier)).length,count);
- assert.equal(DISCOVERIES.reduce((n,d)=>n+d.fame,0),15600);
+test('60 distinct active discovery records span all four kinds and award 21600 total fame',()=>{
+ assert.equal(DISCOVERIES.length,60);assert.equal(Object.keys(DISCOVERY_BY_ID).length,60);
+ assert.equal(new Set(DISCOVERIES.map(d=>d.point.join(','))).size,60);
+ for(const [kind,count] of Object.entries({ruin:15,relic:17,animal:14,treasure:14}))assert.equal(DISCOVERIES.filter(d=>d.kind===kind).length,count);
+ for(const [tier,count] of Object.entries({1:10,2:22,3:17,4:11}))assert.equal(DISCOVERIES.filter(d=>d.tier===Number(tier)).length,count);
+ assert.equal(DISCOVERIES.reduce((n,d)=>n+d.fame,0),21600);
+ assert.equal(DISCOVERY_BY_ID['ruin-itsukushima'],undefined);
  for(const d of DISCOVERIES){
   assert.equal(d.lon,d.point[0]);assert.equal(d.lat,d.point[1]);
   assert.equal(d.spotRadius,100);assert.equal(d.inspectRadius,60);assert.equal(d.image,'assets/discoveries/'+d.id+'.svg');
@@ -80,7 +81,7 @@ test('the starter wine and dried fish cycle remains profitable before the first 
 });
 
 test('hard discoveries have one rumor, legendary discoveries two distinct active port rumors',()=>{
- assert.equal(RUMORS.length,29);assert.equal(Object.keys(RUMOR_BY_ID).length,29);
+ assert.equal(RUMORS.length,39);assert.equal(Object.keys(RUMOR_BY_ID).length,39);
  for(const d of DISCOVERIES){
   assert.equal(d.rumorIds.length,d.tier===4?2:d.tier===3?1:0);
   const rumors=d.rumorIds.map(id=>RUMOR_BY_ID[id]);

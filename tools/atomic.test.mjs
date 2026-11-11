@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {installAtomicAccount} from '../dist/atomic-account.js';
+import {initialState} from '../dist/engine.js';
+import {ITEM_BY_ID} from '../dist/rumor-catalog.js';
+import {performContractAction,readContractRumor} from '../dist/rumor-progress.js';
 Object.defineProperty(globalThis.navigator,'onLine',{value:true,configurable:true});
 class Account{}
 installAtomicAccount(Account);
@@ -13,3 +16,23 @@ test('lost acknowledgement reconciles the receipt without paying or charging twi
 test('a shared revision race rejects one captain while preserving that captain money and pending save',async()=>{const f=fixture(),a=f.captain('a'),b=f.captain('b');const trade=account=>account.atomicAction('ports','porto',(game,c)=>{game.money-=50;c.boughtBy=account.uid;return {ok:true};});const results=await Promise.allSettled([trade(a),trade(b)]);assert.equal(results.filter(r=>r.status==='fulfilled').length,1);const loser=results[0].status==='rejected'?a:b;assert.equal(loser.readGame().money,100);assert.equal(loser.lost,false);assert.equal(f.db.get(loser.ref).revision,1);});
 test('failure to write the local operation journal prevents submitting the economic request',async()=>{const f=fixture(),a=f.captain('a');a.storage.setItem=()=>{throw Error('quota');};await assert.rejects(a.atomicAction('ports','porto',game=>{game.money=0;return {ok:true};}),/기기 기록/);assert.equal(f.updates,0);assert.equal(a.readGame().money,100);assert.equal(a.busy,false);});
 test('an unavailable authoritative read keeps the receipt and stops further saves despite an optimistic SDK cache',async()=>{const f=fixture(),a=f.captain('a');f.rejectAck();a.readConfirmedSave=async()=>{throw Error('offline');};await assert.rejects(a.atomicAction('ports','porto',game=>{game.money-=25;return {ok:true};}),/결과 확인/);assert.equal(a.readGame().money,100);assert.equal(JSON.parse(f.db.get(a.ref).data).money,75);assert.equal(a.economicUncertain,true);assert.equal(a.ready,false);assert.equal(f.device.size,1);await assert.rejects(a.atomicAction('ports','porto',()=>({ok:true})));assert.equal(f.updates,1);});
+
+
+test('an interrupted acknowledgement and queued retry charge the special item purchase once',async()=>{
+ const f=fixture(), account=f.captain('buyer'), game=initialState(), entry=ITEM_BY_ID.I008;
+ game.shipTier=3;
+ game.fleetShips[0].tier=3;
+ assert.ok(readContractRumor(game,entry.id));
+ game.port=entry.port;
+ game.cargo.wine={qty:entry.challenge.qty,cost:100};
+ performContractAction(game,entry.id,'start');
+ performContractAction(game,entry.id,'deliver');
+ account.applyGame(game);
+ f.rejectAck();
+ const claim=()=>account.atomicAction('personal',account.uid,g=>performContractAction(g,entry.id,'claim'));
+ const results=await Promise.allSettled([claim(),claim()]);
+ assert.deepEqual(results.map(r=>r.status),['fulfilled','rejected']);
+ assert.equal(account.readGame().money,game.money-entry.cost);
+ assert.equal(account.readGame().rumorProgress.items[entry.id],1);
+ assert.equal(f.updates,1);
+});

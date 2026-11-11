@@ -2,13 +2,62 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PORTS,PORT_BY_ID} from '../dist/data.js';
-import {initialState,buy,sell,tradingPort,sellPrice,usedCargo,capacity,loadState,SAVE_KEY,Navigator,distance,positionAlong,voyageEstimate,helmStep,helmToward} from '../dist/engine.js';
+import {initialState,buy,sell,tradingPort,sellPrice,usedCargo,capacity,loadState,SAVE_KEY,Navigator,distance,positionAlong,voyageEstimate,helmStep,helmToward,addShip,upgradeShip,quoteShipSale,sellShip,parseSavedGame} from '../dist/engine.js';
+import {syncFleet} from '../dist/ship-rules.js';
+import {discoveryStats,inspectDiscovery} from '../dist/discoveries.js';
 import {globeProject,globeUnproject} from '../dist/globe.js';
 import {captainName,validShip,interpolateShip} from '../dist/presence-core.js';
 const grid=JSON.parse(readFileSync(new URL('../dist/assets/navigation.json',import.meta.url),'utf8'));
 const waterways=JSON.parse(readFileSync(new URL('../dist/assets/rivers.json',import.meta.url),'utf8'));
 const nav=new Navigator(grid,waterways);
 const point=id=>[PORT_BY_ID[id].lon,PORT_BY_ID[id].lat];
+
+test('ship sale conserves gear and cargo, names a new flagship, and never pays more than acquisition',()=>{
+  const s=initialState();
+  s.money=2000000;syncFleet(s,[{id:'first',tier:16}],'first');
+  const before=s.money,bought=addShip(s),second=s.fleetShips[1].id;
+  assert.ok(bought.ok);
+  assert.equal(quoteShipSale(s,second).price,Math.floor(bought.cost*.6));
+  assert.ok(upgradeShip(s,second).ok);
+  s.cannons=[{id:'gun',kind:'swivel',quality:0,shipId:second,readyAt:50}];
+  s.rumorProgress={read:[],hidden:[],officers:[],items:{I001:1},contracts:{},shipGear:{[second]:'I001'}};
+  s.cargo={wine:{qty:4,cost:50}};
+  syncFleet(s,s.fleetShips,second);
+  const restored=parseSavedGame(JSON.stringify(s)),quote=quoteShipSale(restored,second);
+  assert.throws(()=>sellShip(restored,second,quote.price+1),/다시/);
+  assert.equal(restored.fleetCount,2);
+  sellShip(restored,second,quote.price);
+  assert.equal(restored.flagshipId,'first');
+  assert.equal(restored.fleetCount,1);
+  assert.ok(restored.money<before);
+  assert.equal(restored.cannons[0].shipId,null);
+  assert.equal(restored.cannons[0].readyAt,50);
+  assert.equal(restored.rumorProgress.items.I001,1);
+  assert.deepEqual(restored.rumorProgress.shipGear,{});
+  assert.deepEqual(restored.cargo,s.cargo);
+  assert.throws(()=>sellShip(restored,'first',0),/마지막/);
+});
+
+test('an overloaded post-sale fleet rejects the transaction without changing the save',()=>{
+  const s=initialState();
+  syncFleet(s,[{id:'large',tier:13},{id:'small',tier:0}],'large');
+  s.cargo={wine:{qty:50,cost:1200}};
+  const snapshot=structuredClone(s);
+  assert.throws(()=>quoteShipSale(s,'large'),/화물/);
+  assert.deepEqual(s,snapshot);
+  s.port=null;
+  assert.throws(()=>quoteShipSale(s,'small'),/정박/);
+});
+
+test('retired shrine is absent from the catalog and its already earned fame survives reloading',()=>{
+  const s=initialState(),id='ruin-itsukushima';
+  s.discoveries[id]={foundDay:30,foundAt:1000,catalogVersion:'2026.11.09-discoveries-40'};
+  s.rumors=[id+'-rumor-1'];
+  const restored=parseSavedGame(JSON.stringify(s));
+  assert.equal(restored.rumors.length,0);
+  assert.deepEqual(discoveryStats(restored),{foundCount:0,fame:400});
+  assert.equal(inspectDiscovery(restored,nav,id).ok,false);
+});
 
 test('shared sailing rejects stale, malformed and out-of-world boat positions',()=>{
   const now=1000000,ship={name:'선장',lon:179,lat:38,angle:0,color:2,status:'항해',updatedAt:now};

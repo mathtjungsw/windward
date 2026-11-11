@@ -1,8 +1,8 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.10-visible-place-names';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.10-visible-place-names';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.10-visible-place-names';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.10-visible-place-names';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.10-visible-place-names';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.12-cooperative-fleet-discoveries';
 Object.assign(GOODS,PREMIUM_GOODS);
 
 export {GOODS};
@@ -41,8 +41,31 @@ export const ALL_PORTS=[...OLD_PORTS,...NEW_PORTS.map((p,i)=>{const economy=NEW_
 export const PORTS=ALL_PORTS.filter(p=>p.active);
 export const PORT_BY_ID = Object.fromEntries(ALL_PORTS.map(p=>[p.id,p]));
 export const ACTIVE_PORT_BY_ID=Object.fromEntries(PORTS.map(p=>[p.id,p]));
+export const DEPOT_SITES=[['stjohns',.35,0],['reykjavik',-.55,0],['mogadishu',.35,0],['davao',.35,0],['cairns',.2,.15],['comodoro',.35,0]].map(([key,dx,dy])=>{
+  const site=DEVELOPMENT_SITES.find(row=>row.id==='develop-'+key);
+  const lon=Number((site.lon+dx).toFixed(6)),lat=Number((site.lat+dy).toFixed(6));
+  return {...site,id:'depot-'+key,portId:'depot-'+key,name:site.name+' 공동 보급항',lon,lat,point:[lon,lat],previousPoint:site.point};
+});
 for(const site of DEVELOPMENT_SITES)PORT_BY_ID[site.portId]={...site,id:site.portId,name:site.name,en:site.name,developable:true,active:false,market:[],economy:{stock:site.stock,demand:site.demand,demandTiers:site.demandTiers},pricePhase:200+DEVELOPMENT_SITES.indexOf(site)};
-export function registerDevelopedPorts(registry={}){const added=[];for(const site of DEVELOPMENT_SITES){const entry=registry[site.portId];if(!entry||!Number.isInteger(entry.level)||entry.level<1)continue;const p=PORT_BY_ID[site.portId];Object.assign(p,{name:String(entry.name||site.name).replace(/[<>&"'\u0000-\u001f]/g,'').slice(0,16),market:entry.level>=2?site.market:[],developmentLevel:entry.level,active:true});if(!ACTIVE_PORT_BY_ID[p.id]){PORTS.push(p);ACTIVE_PORT_BY_ID[p.id]=p;added.push(p);}}return added;}
+for(const site of DEPOT_SITES)PORT_BY_ID[site.id]={...site,en:site.name,sea:'공동 보급항',depot:true,active:false,market:[],economy:{stock:{},demand:[],demandTiers:{}},specialty:'grain',fact:'선장들이 공동으로 건설한 보급항입니다. 정박한 뒤 공동 창고에서 식량을 구입할 수 있어요.'};
+export function registerDevelopedPorts(registry={},now=Date.now()){
+  const added=[];
+  for(const site of [...DEVELOPMENT_SITES,...DEPOT_SITES]){
+    const entry=registry[site.portId],port=PORT_BY_ID[site.portId];
+    if(!entry||!Number.isInteger(entry.level)||entry.level<1)continue;
+    if(port.depot){
+      if(entry.kind!=='depot'||!Number.isSafeInteger(entry.opensAt)||entry.opensAt>now)continue;
+      port.ownerUid=entry.ownerUid||null;
+      port.ownerShare=entry.ownerShare||0;
+    }else{
+      port.name=String(entry.name||site.name).replace(/[<>&"'\u0000-\u001f]/g,'').slice(0,16);
+      port.market=entry.level>=2?site.market:[];
+    }
+    Object.assign(port,{developmentLevel:entry.level,active:true});
+    if(!ACTIVE_PORT_BY_ID[port.id]){PORTS.push(port);ACTIVE_PORT_BY_ID[port.id]=port;added.push(port);}
+  }
+  return added;
+}
 export const MISSIONS = [
   { id:'trader', name:'첫 거래의 설렘', desc:'리스본에서 와인을 사고, 다른 항구에서 판매하세요.', reward:400 },
   { id:'explorer', name:'수평선 너머로', desc:'서로 다른 항구 5곳에 기항하세요.', reward:650 },

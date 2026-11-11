@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {SHIP_ART_NAMES,DISCOVERY_ART_IDS,shipArt,shipGlyph,discoverySvg,discoveryArt,shipArtPath} from '../dist/art.js';
 
-test('twenty ship forms and forty discovery illustrations are distinct and local',async()=>{
-  assert.equal(SHIP_ART_NAMES.length,20);assert.equal(DISCOVERY_ART_IDS.length,40);
+test('twenty ship forms and sixty discovery illustrations are distinct and local',async()=>{
+  assert.equal(SHIP_ART_NAMES.length,20);assert.equal(DISCOVERY_ART_IDS.length,60);
   const allShips=SHIP_ART_NAMES.map((_,i)=>shipArt(i));
   const allDiscoveries=DISCOVERY_ART_IDS.map(discoverySvg);
-  assert.equal(new Set(allShips).size,20);assert.equal(new Set(allDiscoveries).size,40);
+  assert.equal(new Set(allShips).size,20);assert.equal(new Set(allDiscoveries).size,60);
   assert.equal(new Set(SHIP_ART_NAMES.map((_,i)=>shipGlyph(i))).size,20);
   for(const [i,svg] of allShips.entries())assert.equal((await readFile(new URL('../dist/'+shipArtPath(i),import.meta.url),'utf8')).trim(),svg);
   for(const id of DISCOVERY_ART_IDS)assert.equal((await readFile(new URL('../dist/'+discoveryArt(id),import.meta.url),'utf8')).trim(),discoverySvg(id));

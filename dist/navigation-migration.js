@@ -1,0 +1,39 @@
+import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {ship,voyageEstimate,positionAlong} from './engine.js?v=2026.11.12-cooperative-fleet-discoveries';
+
+export const NAVIGATION_VERSION=2;
+
+// Reconcile only navigation. This never calls arrival, rescue or discovery awards.
+export function reconcileNavigation(game,nav){
+  if(!nav?.detail)return null;
+  const previous=game.voyage;
+  if(previous?.canal||previous?.passages?.length){game.navigationVersion=NAVIGATION_VERSION;return null;}
+  if(game.port&&!previous){
+    const port=PORT_BY_ID[game.port],berth=port&&nav.approach(port);
+    if(berth)game.position=[...berth];
+    game.navigationVersion=NAVIGATION_VERSION;
+    return null;
+  }
+  if(game.navigationVersion===NAVIGATION_VERSION)return null;
+  game.navigationVersion=NAVIGATION_VERSION;
+  if(!nav.isLand(game.position)&&!previous)return null;
+  if(nav.isLand(game.position)){
+    const water=nav.berthNear(game.position);
+    if(water)game.position=water;
+  }
+  if(!previous)return '위치를 확인해 가까운 바다에서 이어갑니다.';
+  const safe=previous.kind==='rescue'||previous.kind==='transition', port=ACTIVE_PORT_BY_ID[previous.target];
+  const target=port?nav.approach(port):previous.target?null:previous.path.at(-1);
+  const route=target&&!nav.isLand(game.position)?nav.route(game.position,target,{maxOffshore:safe?Infinity:ship(game).offshore}):null;
+  if(!route||route.total<.0001){
+    if(safe){
+      game.rescueReplanPending=true;
+      return null;
+    }
+    game.voyage=null;
+    game.controlMode='auto';
+    return '새 해도에서 항로를 이어갈 수 없어요. 현재 위치에서 목적지를 다시 선택하세요.';
+  }
+  game.voyage={...previous,...route,travelled:0,foodRemaining:safe?0:voyageEstimate(game,{...previous,...route}).food};
+  return '현재 위치에서 새 해도에 맞춰 항로를 다시 계산했어요.';
+}

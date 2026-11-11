@@ -1,16 +1,18 @@
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.10-visible-place-names';
-import {distance,helmStep} from './engine.js?v=2026.11.10-visible-place-names';
-import {wrapPosition,mapDistance} from './world-wrap.js?v=2026.11.10-visible-place-names';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {distance,helmStep} from './engine.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {wrapPosition,mapDistance} from './world-wrap.js?v=2026.11.12-cooperative-fleet-discoveries';
 
 export const SIGHT_NM=180,DISCOVERY_NM=80,INFO_PRICE=100,INFO_RANGE=600;
+import {activeOfficer} from './rumor-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
+export const informationCost=s=>Math.ceil(INFO_PRICE*(1-(activeOfficer(s)?.infoDiscount||0)));
 export const START_PORTS=['lisbon','porto','seville'];
 export const worldId=value=>value==='real'?'real':'peace';
 export const worldSpeed=s=>worldId(s.world)==='real'?1:[1,2,4].includes(s.speed)?s.speed:1;
-export const knowsPort=(s,id)=>!!id&&s.knownPorts.includes(id);
-export function discoverPorts(s,from=s.position,to=s.position){
+export const knowsPort=(s,id)=>!!id&&(s.knownPorts.includes(id)||!!(PORT_BY_ID[id]?.depot&&PORT_BY_ID[id].active));
+export function discoverPorts(s,from=s.position,to=s.position,point=p=>[p.lon,p.lat]){
   if(s.explorationLockedUntilSailing||['rescue','transition'].includes(s.voyage?.kind))return [];
   const found=[];
-  for(const p of PORTS)if(!knowsPort(s,p.id)&&segmentDistance(from,to,[p.lon,p.lat]).distance<=DISCOVERY_NM){s.knownPorts.push(p.id);found.push(p);}
+  for(const p of PORTS)if(!knowsPort(s,p.id)&&segmentDistance(from,to,point(p)).distance<=DISCOVERY_NM){s.knownPorts.push(p.id);found.push(p);}
   return found;
 }
 export function informationCandidate(s){
@@ -20,8 +22,9 @@ export function informationCandidate(s){
 export function buyInformation(s){
   const p=informationCandidate(s);
   if(!p)return {ok:false,error:'이 근처에서 얻을 새 항구 정보가 없어요.'};
-  if(s.money<INFO_PRICE)return {ok:false,error:'정보를 얻으려면 100 D가 필요해요.'};
-  s.money-=INFO_PRICE;s.knownPorts.push(p.id);return {ok:true,port:p};
+  const cost=informationCost(s);
+  if(s.money<cost)return {ok:false,error:'정보를 얻으려면 '+cost+' D가 필요해요.'};
+  s.money-=cost;s.knownPorts.push(p.id);return {ok:true,port:p,cost};
 }
 export function segmentDistance(a,b,p){
   const short=n=>((n+540)%360)-180,c=Math.max(.1,Math.cos(p[1]*Math.PI/180));
@@ -31,7 +34,7 @@ export function segmentDistance(a,b,p){
   return {distance:distance(point,p),point,t};
 }
 // Coarse ocean navigation cells can place a berth offshore from its visible marker.
-export const dockingRadius=(port,berth)=>port.river?12:Math.max(30,distance([port.lon,port.lat],berth)+12);
+export const dockingRadius=(port,berth)=>port.depot?10:port.river?12:Math.max(30,distance([port.lon,port.lat],berth)+12);
 export const leftHarbor=(id,position,approaches)=>distance(position,approaches.get(id))>dockingRadius(PORT_BY_ID[id],approaches.get(id))+8;
 export function dockAlong(nav,from,to,approaches,departed){
   return PORTS.filter(p=>p.id!==departed).map(p=>({p,berth:approaches.get(p.id),hit:segmentDistance(from,to,approaches.get(p.id))})).filter(({p,berth,hit})=>hit.distance<=dockingRadius(p,berth)&&!PORTS.some(q=>q.id!==p.id&&distance(hit.point,approaches.get(q.id))+.05<hit.distance)&&(!p.river||nav.riverAt(hit.point)?.river.id===p.river)&&nav.clear(from,hit.point)&&nav.clear(hit.point,berth)).sort((a,b)=>a.hit.t-b.hit.t||a.hit.distance-b.hit.distance)[0]?.p||null;
