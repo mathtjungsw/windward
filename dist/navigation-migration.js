@@ -1,5 +1,5 @@
-import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
-import {ship,voyageEstimate,positionAlong,makeRoute} from './engine.js?v=2026.11.12-collections-ranks-historic-ships';
+import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {ship,voyageEstimate,positionAlong,makeRoute} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.2';
 
 export const NAVIGATION_VERSION=2;
 

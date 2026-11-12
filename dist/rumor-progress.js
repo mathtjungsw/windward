@@ -1,7 +1,7 @@
-import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
+import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
 
 export const isConsumable=entry=>['supply','repair','coupon','extension','shore-consumable','distance','trade-voucher','activity','project','facility'].includes(entry?.type);
 export const itemLimit=entry=>isConsumable(entry)?20:1;
@@ -68,8 +68,13 @@ export function rumorsAtTavern(game){
 export function rumorNote(game){
   const save=game.rumorProgress;
   const all=[...(game.rumors||[]),...(save?.read||[]),...(game.shipyard?.turtleRumor?[TURTLE_RUMOR.id]:[])];
-  return sortRumors(ids(all,validId).map(id=>({...rumorDetails(id),hidden:!!save?.hidden.includes(id),
-    complete:!!(save?.officers?.includes(id)||save?.acquiredItems?.includes(id)||save?.items?.[id]>0||id===TURTLE_RUMOR.id&&game.shipyard?.unlocked?.includes('turtle'))})));
+  return sortRumors(ids(all,validId).map(id=>{
+    const discovery=RUMOR_BY_ID[id]?.discoveryId;
+    const complete=!!(discovery&&game.discoveries?.[discovery]||save?.officers?.includes(id)||
+      save?.acquiredItems?.includes(id)||save?.items?.[id]>0||
+      id===TURTLE_RUMOR.id&&game.shipyard?.unlocked?.includes('turtle'));
+    return {...rumorDetails(id),hidden:!!save?.hidden?.includes(id),complete};
+  }));
 }
 export function portEncounters(game){
   if(!safeDock(game))return [];
@@ -271,4 +276,4 @@ export function saleBonus(game,portId,goodId){
 export function contractDescription(entry){
   return entry.challenge.ports.map(id=>PORT_BY_ID[id]?.name).join(' · ')+' 방문, '+GOODS[entry.challenge.cargo].name+' '+entry.challenge.qty+'상자 납품';
 }
-import {CANAL_IDS} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships';
+import {CANAL_IDS} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships.2';

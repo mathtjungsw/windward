@@ -1,13 +1,13 @@
-import {collectionArt} from './art.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.12-collections-ranks-historic-ships';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.12-collections-ranks-historic-ships';
-import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,tradeGear,explorationGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
+import {collectionArt} from './art.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,tradeGear,explorationGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.2';
 
-import {readRumor} from './discoveries.js?v=2026.11.12-collections-ranks-historic-ships';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships';
+import {readRumor} from './discoveries.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.2';
 
 const labels={all:'읽은 소문',hidden:'숨긴 소문'};
 const headline=text=>text.length>28?text.slice(0,28).trimEnd()+'…':text;
@@ -18,12 +18,17 @@ const fmt=n=>n.toLocaleString('ko-KR');
 
 export function createRumorUI(api){
   const get=api.getState;
-  let pending=false;
+  let pending=false,tavernOpen=null;
   function renderTavern(root){
-    const game=get(), entries=rumorsAtTavern(game), read=new Set(rumorNote(game).map(note=>note.id));
+    const game=get(),entries=rumorsAtTavern(game),notes=new Map(rumorNote(game).map(note=>[note.id,note]));
+    if(tavernOpen&&(tavernOpen.port!==game.port||!notes.has(tavernOpen.id)))tavernOpen=null;
     const section=document.createElement('section');
     section.className='rumor-panel';
-    section.innerHTML=`<h3>소문</h3>${entries.length?entries.map((entry,i)=>button(`소문 ${i+1}${read.has(entry.id)?' · 다시 보기':''}`,`data-tavern-rumor="${entry.id}"`)).join(''):'<p>지금 들을 수 있는 소문이 없어요.</p>'}`;
+    section.innerHTML='<h3>소문</h3>'+(entries.length?entries.map((entry,i)=>{
+      const note=notes.get(entry.id),open=tavernOpen?.id===entry.id;
+      return `<article class="tavern-rumor">${button(`소문 ${i+1}${note?.complete?' · 완료':note?' · 다시 보기':''}`,`data-tavern-rumor="${entry.id}" aria-expanded="${open}"`)}
+        ${open?`<p class="tavern-rumor-text">${escape(entry.text)}</p>`:''}</article>`;
+    }).join(''):'<p>지금 들을 수 있는 소문이 없어요.</p>');
     const encounters=portEncounters(game);
     if(encounters.length){
       section.insertAdjacentHTML('beforeend',`<h3>이 항구에서 만날 사람</h3>${encounters.map(entry=>button(entry.title,`data-port-encounter="${entry.id}"`)).join('')}`);
@@ -35,17 +40,23 @@ export function createRumorUI(api){
     section.querySelectorAll('[data-tavern-rumor]').forEach(el=>{
       el.onclick=()=>{
         const id=el.dataset.tavernRumor;
-        if(!readRumor(get(),id)&&!readContractRumor(get(),id))return api.toast('이 항구에 정상 정박한 뒤 소문을 들어 보세요.','error');
-        api.changed();
-        const note=entries.find(entry=>entry.id===id);
-        api.modal('주점 소문',portName(note.port),`<p class="tavern-rumor-text">${escape(note.text)}</p>`,'small');
+        const wasRead=notes.has(id);
+        if(!wasRead&&!readRumor(get(),id)&&!readContractRumor(get(),id)){
+          return api.toast('이 항구에 정상 정박한 뒤 소문을 들어 보세요.','error');
+        }
+        tavernOpen=tavernOpen?.id===id?null:{id,port:game.port};
+        if(!wasRead)api.changed();
+        if(section.isConnected){section.remove();renderTavern(root);}
+        root.querySelector(`[data-tavern-rumor="${id}"]`)?.focus({preventScroll:true});
       };
     });
   }
   function showNote(filter='all'){
     const notes=rumorNote(get()).filter(n=>filter==='hidden'?n.hidden:!n.hidden);
     const nav=Object.entries(labels).map(([id,label])=>button(label,`data-note-filter="${id}" aria-pressed="${id===filter}"`)).join('');
-    const rows=notes.map(note=>`<article class="rumor-note-row"><details><summary>${escape(headline(note.text))}<small>${escape(portName(note.port))}${note.complete?' · <strong class="rumor-complete">✓ 완료</strong>':''}</small></summary><p>${escape(note.text)}</p></details>${button(note.hidden?'다시 표시':'숨기기',`data-note-hide="${note.id}"`)}</article>`).join('');
+    const rows=notes.map(note=>`<article class="rumor-note-row" data-note-entry="${note.id}"><details><summary>${escape(headline(note.text))}
+      <small>${escape(portName(note.port))} ${note.complete?'<strong class="rumor-complete">✓ 완료</strong>':''}</small>
+      </summary><p>${escape(note.text)}</p></details>${button(note.hidden?'다시 표시':'숨기기',`data-note-hide="${note.id}"`)}</article>`).join('');
     api.modal('소문노트','주점에서 읽은 이야기',`<nav class="expansion-tabs rumor-note-tabs" aria-label="소문 표시">${nav}</nav><div class="rumor-note-list">${rows||'<p>이 목록에 표시할 소문이 없어요.</p>'}</div>`,'medium');
     const root=document.querySelector('#modal-content');
     root.querySelectorAll('[data-note-filter]').forEach(el=>{el.onclick=()=>{showNote(el.dataset.noteFilter);document.querySelector('[data-note-filter="'+el.dataset.noteFilter+'"]')?.focus();};});

@@ -1,8 +1,8 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.12-collections-ranks-historic-ships';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.12-collections-ranks-historic-ships';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.12-collections-ranks-historic-ships.2';
 Object.assign(GOODS,PREMIUM_GOODS);
 
 export {GOODS};

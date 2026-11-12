@@ -1,8 +1,8 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships';
-import {segmentDistance} from './voyage-core.js?v=2026.11.12-collections-ranks-historic-ships';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships';
-import {activeOfficer} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {segmentDistance} from './voyage-core.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {activeOfficer} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.2';
 const shipTrace=s=>s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0;
 export const explorationAllowed=s=>!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{

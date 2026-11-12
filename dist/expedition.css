@@ -90,7 +90,10 @@ dialog#modal[data-size=wide]{width:min(960px,calc(100vw - 32px));max-width:calc(
 }
 .rumor-note-row summary { min-height:44px; padding:10px 0; cursor:pointer; }
 .rumor-note-row summary small { display:block; margin-top:3px; }
-.rumor-complete { color:#286043; }
+.rumor-complete { display:inline-block;margin-inline-start:.25rem;padding:.13rem .4rem;border-radius:5px;background:#e4eed9;color:#285839;font-size:.78rem;white-space:nowrap }
+.tavern-rumor { margin:.45rem 0; }
+.tavern-rumor button { width:100%;text-align:left;min-height:44px; }
+.tavern-rumor-text { margin:.25rem 0 .7rem;padding:.7rem;border-inline-start:3px solid #699084;background:#eef3e7;line-height:1.65; }
 .owned-port-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:7px 2px; }
 .owned-port-row h3,.owned-port-row p { margin:0; }
 .owned-port-row small { display:block; }
@@ -216,3 +219,21 @@ button.shore-pin:focus-visible { outline:2px solid #265f65; outline-offset:2px; 
 .item-card-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.6rem}
 .item-card-thumb{width:clamp(3.2rem,12vw,5rem);height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:.3rem}
 .public-officer{width:min(100%,12rem);aspect-ratio:3/4;margin-inline:auto}
+.historical-photo{aspect-ratio:3/2;object-fit:cover;border-radius:6px}
+.historical-grid .growth-step p{margin:.3rem 0}
+.stored-port h3{margin:.9rem 0 .25rem}
+.stored-vessel{display:grid;grid-template-columns:clamp(3rem,16vw,6rem) minmax(0,1fr) auto;gap:.65rem;align-items:center;padding:.6rem 0;border-bottom:1px solid #c7ceba}
+.stored-vessel img{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:4px}
+.stored-vessel small{display:block;margin-top:.2rem}
+.stored-vessel button,.discovery-location button{min-height:44px}
+.discovery-photo{margin:0 0 .9rem}
+.discovery-photo .discovery-hero{width:100%;max-height:43dvh}
+.discovery-photo figcaption{margin-top:.25rem;text-align:center;font-size:.75rem;color:#536f68}
+.discovery-location{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.5rem .75rem;padding:.75rem;background:#eef2e7;border-radius:6px}
+.discovery-location dt{font-weight:700}
+.discovery-location dd{margin:0}
+.discovery-location button{display:block;margin-top:.3rem}
+.discovery-sources{display:flex;flex-wrap:wrap;gap:.55rem 1rem}
+.study-pin-label{fill:#744516;stroke:#fffbe8;stroke-width:4;paint-order:stroke;font:700 12px var(--sans)}
+.collection-card.collected img{object-fit:cover}
+@media(max-width:550px){.historical-grid{grid-template-columns:1fr}.discovery-location{grid-template-columns:1fr}.discovery-location dd{margin-bottom:.25rem}}

@@ -127,10 +127,10 @@ test('rumor note opens on desktop and mobile and restores a hidden tavern rumor'
   $('#tavern-tab').click();
   app.renderPanel();
   $('[data-tavern-rumor="I008"]').click();
-  assert.match($('#modal-title').textContent,/주점 소문/);
-  assert.match($('.tavern-rumor-text').textContent,/포르투 부두/);
-  assert.equal($('.rumor-note-row'),null);
-  $('#modal').close();
+  assert.equal($('#modal').open,false);
+  assert.equal($('#tavern-tab').classList.contains('active'),true);
+  assert.match($('#tavern-content .tavern-rumor-text').textContent,/포르투 부두/);
+  assert.equal($('[data-tavern-rumor="I008"]').getAttribute('aria-expanded'),'true');
   $('#rumor-note-tab').click();
   $('[data-note-hide="I008"]').click();
   assert.equal($('[data-note-hide="I008"]'),null);
@@ -172,18 +172,40 @@ test('the tavern mixes discovery and recruitment rumors with the same presentati
   entries.find(x=>x.dataset.tavernRumor===discovery.id).click();
   assert.ok(app.state.rumors.includes(discovery.id));
   assert.equal($('.tavern-rumor-text').textContent,discovery.text);
-  assert.doesNotMatch($('#modal-content').textContent,/탐험 소문|발견물|부선장|특수 아이템/);
-  $('#modal').close();
+  assert.equal($('#modal').open,false);
+  assert.doesNotMatch($('.tavern-rumor-text').textContent,/탐험 소문|발견물|부선장|특수 아이템/);
   $('[data-tavern-rumor="O014"]').click();
-  assert.equal($('#modal-content').querySelectorAll('.rumor-note-row').length,0);
-  assert.doesNotMatch($('#modal-content').textContent,new RegExp(discovery.text.slice(0,12)));
-  $('#modal').close();
+  assert.equal(document.querySelectorAll('#tavern-content .tavern-rumor-text').length,1);
+  assert.doesNotMatch($('.tavern-rumor-text').textContent,new RegExp(discovery.text.slice(0,12)));
+  app.state.discoveries[discovery.discoveryId]={foundDay:1,foundAt:1};
   $('#rumor-note-tab').click();
   assert.equal($('#modal-content').querySelectorAll('.rumor-note-row').length,2);
+  const completed=$('[data-note-entry="'+discovery.id+'"]');
+  assert.equal(completed.querySelector('details').open,false);
+  assert.match(completed.querySelector('.rumor-complete').textContent,/완료/);
+  completed.querySelector('summary').click();
+  assert.equal(completed.querySelector('details').open,true);
+  assert.equal($('#modal').open,true);
   assert.doesNotMatch($('#modal-content').textContent,/쉬프랑|동행|보급 소모/);
   $('#modal').close();
   app.beginPlaying(initialState());
   $('#modal').close();
+});
+
+test('opening a tavern rumor on mobile keeps the port sheet open',()=>{
+  window.happyDOM.setViewport({width:390,height:844});
+  const game=initialState();game.shipTier=4;game.fleetShips[0].tier=4;
+  app.beginPlaying(game);$('#modal').close();
+  $('#quick-port').click();$('#tavern-tab').click();
+  assert.equal($('#quick-sheet').open,true);
+  $('[data-tavern-rumor="I008"]').click();
+  assert.equal($('#quick-sheet').open,true);
+  assert.equal($('#modal').open,false);
+  assert.match($('.tavern-rumor-text').textContent,/포르투 부두/);
+  $('[data-tavern-rumor="I008"]').click();
+  assert.equal($('.tavern-rumor-text'),null);
+  assert.equal($('#quick-sheet').open,true);
+  $('#quick-close').click();
 });
 
 test('equipped items appear on the assigned ship and in the item bag after a flagship change',()=>{

@@ -1,5 +1,5 @@
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
-import {regionalFactor} from './regional-economy.js?v=2026.11.12-collections-ranks-historic-ships';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {regionalFactor} from './regional-economy.js?v=2026.11.12-collections-ranks-historic-ships.2';
 export const PREMIUM_STOCK_LIMIT=30,STOCK_PERIOD=7200000,MARKET_VERSION=2;
 // Version boundary is a fixed release epoch, never reset by a page reload.
 export const MARKET_V2_AT=1794293996252;

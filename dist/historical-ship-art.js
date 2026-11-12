@@ -15,7 +15,5 @@ export function historicalGlyph(kind,ink){
  return `<g stroke-linejoin="round"><path d="${hull}" fill="#8b5d38" stroke="#4b362a" stroke-width="1.4"/><path d="M-12 11H12" stroke="#d9a85d"/><path d="${rig}" fill="${color}" stroke="${ink}" stroke-width="1.1"/></g>`;
 }
 export function historicalArt(kind){
- const glyph=historicalGlyph(kind,'#294c4e');
- if(!glyph)return '';
- return 'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-34 -32 68 58"><rect x="-34" y="-32" width="68" height="58" rx="3" fill="#e6efdf"/><circle cx="18" cy="-15" r="8" fill="#f6dca1"/><path d="M-34 10H34V26H-34Z" fill="#a5c9c8"/><path d="M-28 20H-8M7 22h19" stroke="#f4f6e7"/>${glyph}</svg>`);
+ return Object.hasOwn(silhouettes,kind)?`assets/ship-photos/${kind}.webp`:'';
 }

@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {access,stat} from 'node:fs/promises';
-import {initialState,parseSavedGame,historicalQuote,buildHistoricalShip,quoteShipSale} from '../dist/engine.js';
-import {ship,syncFleet,vesselSpec} from '../dist/ship-rules.js';
+import {initialState,parseSavedGame,historicalQuote,buildHistoricalShip,quoteShipSale,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from '../dist/engine.js';
+import {ship,syncFleet,vesselSpec,fleetLimit,fleetMaxHP} from '../dist/ship-rules.js';
 import {HISTORICAL_SHIPS,historicalProgress,shipyardVictory,shipyardReport,turtleShipyard} from '../dist/historical-ships.js';
 import {PIRATE_BY_ID} from '../dist/pirate-catalog.js';
 import {PORT_BY_ID} from '../dist/data.js';
@@ -15,6 +15,8 @@ import {collectionProfile} from '../dist/collection-profile.js';
 import {overallRanking} from '../dist/overall-ranking.js';
 import {prepareUsage,usageDay,usageSlot} from '../dist/ui-usage.js';
 import {findMenus} from '../dist/menu-finder.js';
+import {discoveryStudy,discoveryCoordinates} from '../dist/discovery-study.js';
+import {historicalArt} from '../dist/historical-ship-art.js';
 
 test('all historical ship roles require an unlock and preserve the hull and cost on reload',()=>{
  const qualifying={
@@ -105,4 +107,60 @@ test('menu help routes normal phrases and collection art covers every item withi
   const file=new URL('../dist/'+collectionArt(id,detail),import.meta.url);await access(file);
   const info=await stat(file);assert.ok(info.size>0&&info.size<=(detail?60000:12000),id);
  })));
+});
+test('parking a full fleet opens a historical berth and a saved ship retains its type and purchase basis',()=>{
+ const game=initialState(),port=PORT_BY_ID.amsterdam;
+ Object.assign(game,{port:port.id,position:[port.lon,port.lat],food:15,money:100000,projectStats:{freight:2}});
+ syncFleet(game,[{id:'flag',tier:19},{id:'stored',tier:13,kind:'turtle',costBasis:36250},...['b','c','d'].map(id=>({id,tier:11}))],'flag');
+ game.cannons=[{id:'test-gun',kind:'swivel',quality:0,readyAt:0,shipId:'stored'}];
+ const full=historicalQuote(game,'fluyt');
+ assert.equal(full.ready,false);
+ assert.equal(full.future,null);
+ assert.equal(storeShip(game,'stored','amsterdam').ok,true);
+ assert.equal(game.fleetCount,4);
+ assert.equal(game.cannons[0].shipId,null);
+ const restored=parseSavedGame(game);
+ assert.deepEqual(restored.storedShips,[{id:'stored',tier:13,kind:'turtle',costBasis:36250,port:'amsterdam',health:1}]);
+ const vacant=historicalQuote(restored,'fluyt');
+ assert.equal(vacant.ready,true);
+ assert.equal(buildHistoricalShip(restored,'fluyt',vacant.cost).ok,true);
+ assert.equal(restored.fleetCount,5);
+ assert.throws(()=>quoteShipRecall(restored,'stored'),/빈자리/);
+});
+test('storage enforces docking, cargo capacity, single active vessel and unique ownership',()=>{
+ const game=initialState();
+ assert.throws(()=>quoteShipStorage(game,'vessel-0'),/최소 한 척/);
+ syncFleet(game,[{id:'flag',tier:19},{id:'other',tier:5}],'flag');
+ game.cargo={wine:{qty:100,cost:1000}};
+ assert.throws(()=>quoteShipStorage(game,'flag'),/화물/);
+ delete game.cargo.wine;
+ game.hullHP=317;
+ const originalHull=game.hullHP;
+ assert.equal(storeShip(game,'flag','lisbon').ok,true);
+ assert.equal(game.flagshipId,'other');
+ assert.equal(fleetLimit(game),5);
+ assert.equal(game.fleetCount,1);
+ assert.equal(fleetMaxHP(game),250);
+ assert.throws(()=>quoteShipRecall({...game,port:'porto'},'flag'),/리스본/);
+ assert.throws(()=>parseSavedGame({...game,storedShips:[...game.storedShips,...game.storedShips]}));
+ assert.throws(()=>parseSavedGame({...game,storedShips:[{...game.storedShips[0],id:'other'}]}));
+ const reloaded=parseSavedGame(game);
+ assert.equal(recallShip(reloaded,'flag','lisbon').ok,true);
+ assert.equal(reloaded.hullHP,originalHull,'parking and recall cannot heal existing hull damage');
+ assert.equal(reloaded.fleetCount,2);
+ assert.equal(reloaded.storedShips.length,0);
+ assert.throws(()=>recallShip(reloaded,'flag','lisbon'),/찾을 수 없어요/);
+});
+test('each discovery has geographic study context and all historical ships have a sized photo',async()=>{
+ for(const d of DISCOVERIES){
+  const study=discoveryStudy(d.id);
+  assert.ok(study?.place&&study.detail.length>25,d.id);
+ }
+ assert.equal(discoveryCoordinates([-27.2,38.6]),'38.60° N · 27.20° W');
+ assert.equal(findMenus('배 맡기기')[0][0],'storedShips');
+ for(const ship of HISTORICAL_SHIPS){
+  const path=historicalArt(ship.id);
+  assert.match(path,/^assets\/ship-photos\/.+\.webp$/);
+  assert.ok((await stat(new URL('../dist/'+path,import.meta.url))).size<=60000);
+ }
 });

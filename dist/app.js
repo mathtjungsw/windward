@@ -1,59 +1,59 @@
-import {createUiUsage} from './ui-usage.js?v=2026.11.12-collections-ranks-historic-ships';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.12-collections-ranks-historic-ships';
-import {reconcileNavigation} from './navigation-migration.js?v=2026.11.12-collections-ranks-historic-ships';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.12-collections-ranks-historic-ships';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.12-collections-ranks-historic-ships';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.12-collections-ranks-historic-ships';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.12-collections-ranks-historic-ships';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.12-collections-ranks-historic-ships';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.12-collections-ranks-historic-ships';
-import {createCommunity} from './community.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.12-collections-ranks-historic-ships';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.12-collections-ranks-historic-ships';
-import {createCombat} from './combat-ui.js?v=2026.11.12-collections-ranks-historic-ships';
-import {createBusiness} from './business-ui.js?v=2026.11.12-collections-ranks-historic-ships';
-import {createExpansion} from './expansion-ui.js?v=2026.11.12-collections-ranks-historic-ships';
-import {gameStats} from './public-stats.js?v=2026.11.12-collections-ranks-historic-ships';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships';
-import {shipGlyph} from './art.js?v=2026.11.12-collections-ranks-historic-ships';
-import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.12-collections-ranks-historic-ships';
-import {RELEASE} from './release-notes.js?v=2026.11.12-collections-ranks-historic-ships';
-import {createUX} from './ux.js?v=2026.11.12-collections-ranks-historic-ships';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.12-collections-ranks-historic-ships';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.12-collections-ranks-historic-ships';
-import {AtlasView} from './atlas-view.js?v=2026.11.12-collections-ranks-historic-ships';
-import {FleetPresence} from './multiplayer.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.12-collections-ranks-historic-ships';
-import {CaptainChat} from './chat.js?v=2026.11.12-collections-ranks-historic-ships';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.12-collections-ranks-historic-ships';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor} from './voyage-core.js?v=2026.11.12-collections-ranks-historic-ships';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.12-collections-ranks-historic-ships';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.12-collections-ranks-historic-ships';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.12-collections-ranks-historic-ships';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.12-collections-ranks-historic-ships';
-import {CaptainRankings} from './rankings.js?v=2026.11.12-collections-ranks-historic-ships';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships';
+import {createUiUsage} from './ui-usage.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {reconcileNavigation} from './navigation-migration.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {createCommunity} from './community.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {createCombat} from './combat-ui.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {createBusiness} from './business-ui.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {createExpansion} from './expansion-ui.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {gameStats} from './public-stats.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {shipGlyph} from './art.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {RELEASE} from './release-notes.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {createUX} from './ux.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {AtlasView} from './atlas-view.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {FleetPresence} from './multiplayer.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {CaptainChat} from './chat.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor} from './voyage-core.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {CaptainRankings} from './rankings.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.2';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.12-collections-ranks-historic-ships';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.12-collections-ranks-historic-ships';
-import {captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.12-collections-ranks-historic-ships';
-import {createGuildUI} from './guild-ui.js?v=2026.11.12-collections-ranks-historic-ships';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.12-collections-ranks-historic-ships';
-import {ownership} from './commerce.js?v=2026.11.12-collections-ranks-historic-ships';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.12-collections-ranks-historic-ships';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.12-collections-ranks-historic-ships';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships';
-import {createShoreUI} from './shore-ui.js?v=2026.11.12-collections-ranks-historic-ships';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.12-collections-ranks-historic-ships';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.12-collections-ranks-historic-ships';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
-import {useRepairKit} from './activities.js?v=2026.11.12-collections-ranks-historic-ships';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,makeRoute} from './engine.js?v=2026.11.12-collections-ranks-historic-ships';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {createGuildUI} from './guild-ui.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {ownership} from './commerce.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {createShoreUI} from './shore-ui.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {useRepairKit} from './activities.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,makeRoute} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.2';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -850,7 +850,24 @@ function showHelp(){showModal('당신만의 항로를 그려보세요','WELCOME 
 
 
 function followPosition(){const [x,y]=project(state.position),offset=innerWidth>850&&screen.w<850?80:0;camera.x=x+offset/screen.k;camera.y=y;}
-function centerShip(){followPosition();followShip=!!state.voyage||state.controlMode==='manual';globe?.home();applyCamera();}
+function showDiscoveryOnChart(discovery){
+  if(!mapReady||!state.discoveries?.[discovery.id])return;
+  modal.close();
+  followShip=false;
+  const [x,y]=project(discovery.point||[discovery.lon,discovery.lat]);
+  $('#discovery-study-pin')?.remove();
+  const root=svgEl('g',{id:'discovery-study-pin','aria-label':discovery.name});
+  root.style.pointerEvents='none';
+  for(const [dx,dy] of CHART_TILES){
+    const pin=svgEl('g',{transform:`translate(${x+dx},${y+dy}) scale(${1/FIXED_MAP_SCALE})`});
+    pin.append(svgEl('circle',{r:10,fill:'#fffbe8',stroke:'#965923','stroke-width':2}),svgEl('path',{d:'M0 -6L5 0L0 6L-5 0Z',fill:'#965923',stroke:'none'}));
+    const label=svgEl('text',{x:0,y:27,'text-anchor':'middle',class:'study-pin-label'});
+    label.textContent=discovery.name;pin.append(label);root.append(pin);
+  }
+  $('#map-camera').append(root);camera.x=x;camera.y=y;applyCamera();
+  if(innerWidth<=850)$('.chart').scrollIntoView({block:'center',behavior:'smooth'});
+}
+function centerShip(){$('#discovery-study-pin')?.remove();followPosition();followShip=!!state.voyage||state.controlMode==='manual';globe?.home();applyCamera();}
 function stopManual(){stopForUI();paused=false;renderRoutes();renderHUD();save();}
 function setControlMode(mode){
   navigationIntent++;
@@ -983,7 +1000,7 @@ function openMenuFinder(){
     sale:()=>saleFinder.open(),note:()=>rumorUI.showNote(),album:()=>expansion.showAlbum(),
     officers:()=>rumorUI.showDirectory('officer'),items:()=>rumorUI.showDirectory('item'),
     guild:()=>guildUI.open(),ports:()=>community.showOwnedPorts(),guns:()=>business.showArmory(),
-    shipyard:()=>expansion.showShipyard()
+    shipyard:()=>expansion.showShipyard(),storedShips:()=>expansion.showStoredShips()
   };
   showMenuFinder({modal:showModal,mobile:matchMedia('(max-width:850px)').matches,navigate:id=>{modal.close();open[id]?.();}});
 }
@@ -992,7 +1009,7 @@ menuFinderButton.type='button';menuFinderButton.id='menu-finder';menuFinderButto
 menuFinderButton.textContent='메뉴 찾기';menuFinderButton.onclick=openMenuFinder;
 $('.main-nav').append(menuFinderButton);
 setupInterface();ux=createUX({getState:()=>state,getAccount:()=>account,getNav:()=>nav,getSelection:()=>selected,getPlan:()=>planned,getFleet:()=>fleet,getVisibleShips:visibleShips,getChat:()=>chat,storage,onTrade:(mode,id)=>business?.trade(mode,id),onStop:stopForUI,onHome:centerShip,onSelect:selectPort,onPlan:planDestination,onSail:startVoyage,onManual:startManual,onMode:setControlMode,onSave:changed,onPanel:renderPanel,onSea:()=>seaUI?.open(),onGuild:()=>guildUI?.open(),onProjects:()=>projectsUI?.open(),onDepot:id=>projectsUI?.inspect(id),onShareRecord:(message,from,port)=>{if(appendItemRecord(state,'shares',String(message.id||((from?.id||'')+':'+port.id)),(from?from.name+' → ':'')+port.name,guildTime()))save();},onShore:()=>shoreUI?.open(),onModal:showModal,onClose:()=>modal.close(),onToast:toast,onRescue:launchRescue,onTab:setTab,onChat:toggleChat,onMapLabels:()=>renderChartLabels(true),onRankVisibility:visible=>rankings.setVisible(visible),onAtlas:showAtlas,onJournal:showJournal,onHelp:showHelp,onMenuFinder:openMenuFinder,onShip:()=>expansion?.showShip(),onCollection:()=>expansion?.showAlbum(),onBusiness:()=>business?.showHub(),onGuns:()=>business?.showArmory(),onSaleSearch:()=>saleFinder?.open(),onOfficers:()=>rumorUI?.showDirectory('officer'),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show(),onCombatTarget:uid=>combat?.attack(uid),onSuggestions:()=>community?.showSuggestions(true),onOwnedPorts:()=>community?.showOwnedPorts(),onCaptains:()=>expansion?.showCaptains('all',true)});renderHUD();renderMission();renderPanel();$('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
-expansion=createExpansion({getState:()=>state,getNav:()=>nav,getFleet:()=>fleet,getRankings:()=>rankings,getStats:()=>gameStats(state,exploration),onModal:showModal,onToast:toast,onChanged:changed,onClose:()=>modal.close(),canShowDiscovery:()=>playing&&!!nav&&!state.shoreTrip&&$('.chart')?.classList.contains('shore-map-open')===false&&!modal.open&&!state.battleId&&!state.npcBattle&&!state.raidId&&!ux?.isBlocking(),onDiscoveryPause:()=>{stopForUI();paused=!!state.voyage;},onInspect:inspectNearby,onApproach:approachDiscovery,onResumeRoute:resumeDetour,onShipAction:fn=>business?.shipAction(fn),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show()});
+expansion=createExpansion({getState:()=>state,getNav:()=>nav,getFleet:()=>fleet,getRankings:()=>rankings,getStats:()=>gameStats(state,exploration),onModal:showModal,onToast:toast,onChanged:changed,onClose:()=>modal.close(),canShowDiscovery:()=>playing&&!!nav&&!state.shoreTrip&&$('.chart')?.classList.contains('shore-map-open')===false&&!modal.open&&!state.battleId&&!state.npcBattle&&!state.raidId&&!ux?.isBlocking(),onDiscoveryPause:()=>{stopForUI();paused=!!state.voyage;},onInspect:inspectNearby,onApproach:approachDiscovery,onShowDiscoveryPoint:showDiscoveryOnChart,onResumeRoute:resumeDetour,onShipAction:fn=>business?.shipAction(fn),onStorageAction:fn=>business?.run('personal',account.uid,fn),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show()});
 rumorUI=createRumorUI({getState:()=>state,nav:()=>nav,modal:showModal,toast,changed,depart:autoToPort,onCanals:()=>projectsUI?.open('canal'),share:(text,card)=>ux?.share(text,card),action:(id,action)=>{
   if(!account.ready)return toast('로그인 뒤 이용하세요.','error');
   const port=state.port;

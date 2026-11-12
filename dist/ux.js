@@ -1,12 +1,12 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships';
-import {shipArtPath} from './art.js?v=2026.11.12-collections-ranks-historic-ships';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.12-collections-ranks-historic-ships';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.12-collections-ranks-historic-ships';
-import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.12-collections-ranks-historic-ships';
-import {isTypingTarget} from './controls.js?v=2026.11.12-collections-ranks-historic-ships';
-import {validCard} from './social-core.js?v=2026.11.12-collections-ranks-historic-ships';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {shipArtPath} from './art.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {isTypingTarget} from './controls.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {validCard} from './social-core.js?v=2026.11.12-collections-ranks-historic-ships.2';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');

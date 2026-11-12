@@ -1,17 +1,18 @@
-import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships';
-import {historicalArt} from './historical-ship-art.js?v=2026.11.12-collections-ranks-historic-ships';
-import {vesselGunLimits} from './cannons.js?v=2026.11.12-collections-ranks-historic-ships';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {gearOnShip,tradeGear} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
-import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
-import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships';
-import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip} from './engine.js?v=2026.11.12-collections-ranks-historic-ships';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.12-collections-ranks-historic-ships';
-import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.12-collections-ranks-historic-ships';
-import {lastSeenText} from './captain-time.js?v=2026.11.12-collections-ranks-historic-ships';
+import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {historicalArt} from './historical-ship-art.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {vesselGunLimits} from './cannons.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {gearOnShip,tradeGear} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,STORED_SHIP_LIMIT,storedShips} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {lastSeenText} from './captain-time.js?v=2026.11.12-collections-ranks-historic-ships.2';
 const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const KINDS={ruin:'유적',relic:'유물',animal:'동물',treasure:'보물'};
@@ -53,10 +54,13 @@ export function createExpansion(api){
   const cards=HISTORICAL_SHIPS.filter(p=>p.id!=='turtle'||s.shipyard?.turtleRumor).map(p=>{
    const q=historicalQuote(s,p.id),spec=q.ship,limits=vesselGunLimits({tier:p.stage-1,kind:p.id});
    const extras=[p.stats.coastSpeed&&'연안 속도 +12%',p.stats.supplyUse&&'보급 소모 −'+Math.round((1-p.stats.supplyUse)*100)+'%',p.stats.openSupply&&'대양 보급 소모 −12%',p.stats.hp&&'한 척 내구도 '+spec.hp,p.stats.trace&&'기함으로 지정하면 흔적 확인 거리 +10해리',p.stats.firstHit&&'기함일 때 해적전 첫 피격 피해 −25%'].filter(Boolean);
-   return `<article class="growth-step"><img src="${historicalArt(p.id)}" alt="${p.name}"><h3>${p.name} · ${p.role}</h3><p class="modal-meta">${p.history}</p><p>${p.portName} 조선소 · ${p.stage}단계 · ${fmt(q.cost)} D</p><p>${q.progress.steps.map(([n,w,label])=>label+' '+Math.min(n,w)+'/'+w).join(' · ')}</p><p>한 척: 해상 ${fmt(spec.speed)}해리/일 · 강 ${fmt(spec.riverSpeed)}해리/일 · 적재 ${spec.capacity} · 대포 ${limits[0]}문 / 무게 ${limits[1]}</p>${extras.length?'<p>'+extras.join(' · ')+'</p>':''}<p>편입 시 속도 ${fmt(q.current.speed)} → ${fmt(q.future.speed)}해리/일 · 최대 보급 ${fmt(q.current.supply)} → ${fmt(q.future.supply)}일 · 적재 ${capacity(s)} → ${q.capacity}칸</p><p>${Number.isFinite(q.future.offshore)?'해안에서 '+fmt(q.future.offshore)+'해리 이내 항해':'해안 거리 제한 없이 항해'}</p><button data-build-historical="${p.id}" ${q.ready?'':'disabled'}>건조비 확인</button></article>`;
+   const preview=q.future?`<p>편입 시 속도 ${fmt(q.current.speed)} → ${fmt(q.future.speed)}해리/일 · 최대 보급 ${fmt(q.current.supply)} → ${fmt(q.future.supply)}일 · 적재 ${capacity(s)} → ${q.capacity}칸</p>
+      <p>${Number.isFinite(q.future.offshore)?'해안에서 '+fmt(q.future.offshore)+'해리 이내 항해':'해안 거리 제한 없이 항해'}</p>`:'';
+   return `<article class="growth-step"><img class="historical-photo" src="${historicalArt(p.id)}" alt="${p.name} 실사풍 재현" loading="lazy" width="480" height="320"><h3>${p.name} · ${p.role}</h3><p class="modal-meta">${p.history}</p><p>${p.portName} 조선소 · ${p.stage}단계 · ${fmt(q.cost)} D</p><p>${q.progress.steps.map(([n,w,label])=>label+' '+Math.min(n,w)+'/'+w).join(' · ')}</p><p>한 척: 해상 ${fmt(spec.speed)}해리/일 · 강 ${fmt(spec.riverSpeed)}해리/일 · 적재 ${spec.capacity} · 대포 ${limits[0]}문 / 무게 ${limits[1]}</p>${extras.length?'<p>'+extras.join(' · ')+'</p>':''}${preview}<button data-build-historical="${p.id}" ${q.ready?'':'disabled'}>건조비 확인</button></article>`;
   }).join('');
-  api.onModal('역사 선박 조선소','선박 성장과 활동 조건을 갖추고 지정 항구에서 건조',`<div class="dialog-actions"><button id="shipyard-back">내 선단</button>${s.port==='busan'&&s.shipyard?.turtleRumor&&!turtle?.delivered?`<button id="turtle-order">${turtle?'목재 20상자·구리 10상자 납품':'부산 조선 의뢰 수락'}</button>`:''}</div><p>현재 선단 ${fleetCount(s)}/${fleetLimit(s)}척 · 배를 추가하면 보급을 나누어 싣습니다.</p>${turtle?'<p>조선 의뢰 표적 · 동중국해 해적 정찰선</p>':''}<div class="ship-growth-grid">${cards}</div>`,'wide');
+  api.onModal('역사 선박 조선소','선박 성장과 활동 조건을 갖추고 지정 항구에서 건조',`<div class="dialog-actions"><button id="shipyard-back">내 선단</button><button id="shipyard-storage">항구에 맡긴 배</button>${s.port==='busan'&&s.shipyard?.turtleRumor&&!turtle?.delivered?`<button id="turtle-order">${turtle?'목재 20상자·구리 10상자 납품':'부산 조선 의뢰 수락'}</button>`:''}</div><p>현재 선단 ${fleetCount(s)}/${fleetLimit(s)}척 · 배를 추가하면 보급을 나누어 싣습니다.</p>${fleetCount(s)>=fleetLimit(s)?'<p class="help-tip">선단이 가득 찼어요. 내 선단에서 배를 항구에 맡긴 뒤 새 배를 건조할 수 있어요.</p>':''}${turtle?'<p>조선 의뢰 표적 · 동중국해 해적 정찰선</p>':''}<p class="modal-meta">선박 그림은 실사풍으로 재현한 이미지예요.</p><div class="ship-growth-grid historical-grid">${cards}</div>`,'wide');
   $('#shipyard-back').onclick=()=>showFleet();
+  $('#shipyard-storage').onclick=showStoredShips;
   if($('#turtle-order'))$('#turtle-order').onclick=async()=>{if(await api.onShipAction(game=>turtleShipyard(game,turtle?'deliver':'accept')))showShipyard();};
   document.querySelectorAll('[data-build-historical]').forEach(b=>b.onclick=()=>{
    const id=b.dataset.buildHistorical,q=historicalQuote(get(),id);
@@ -66,18 +70,64 @@ export function createExpansion(api){
  }
  function showFleet(){
   const s=get(),rows=fleetDisplayShips(s),spec=ship(s),slow=rows.find(p=>vesselSeaSpeed(s,p)===spec.speed),trade=tradeGear(s);
-  api.onModal('내 배와 동행 선단','최대 5척 · 가장 느린 배의 속도로 함께 항해',`<p class="help-tip">선단 속도 ${fmt(spec.speed)}해리/일 · 속도 제한: ${esc(vesselSpec(slow).name)} · 보급 한도 ${spec.supply}일 · 적재 ${usedSpace(s)}/${capacity(s)}칸</p><p class="fleet-trade-gear">선단 교역 장비 · ${trade?esc(trade.name+' · '+trade.effect):'장착 없음'}</p><div class="ship-growth-grid">${rows.map((p,i)=>{const gear=gearOnShip(s,p.id);return `<article class="growth-step"><img src="${p.kind?historicalArt(p.kind):shipArtPath(p.tier)}" alt="${esc(vesselSpec(p).name)}"><h3>${i?'동행선 '+i:'⚑ 기함'} · ${esc(vesselSpec(p).name)}</h3><p>${p.tier+1}단계 · ${fmt(vesselSeaSpeed(s,p))}해리/일</p><p class="vessel-gear">장착 장비 · ${gear?esc(gear.name+' · '+gear.effect):'없음'}</p><button data-upgrade-vessel="${p.id}" ${!s.port||p.tier===19?'disabled':''}>이 배 개량 · ${fmt(SHIPS[p.tier].upgrade)} D</button><button data-flagship="${p.id}" ${!s.port?'disabled':''}>기함 지정</button><button data-sell-vessel="${p.id}" ${!s.port||rows.length<2?'disabled':''}>매각 · ${fmt(shipResaleValue(p))} D</button></article>`;}).join('')}</div><div class="dialog-actions"><button id="fleet-shipyard">역사 선박 조선소</button><button id="fleet-items">아이템 가방</button><button id="detail-add" ${!s.port||additionalShipCost(s)===null?'disabled':''}>배 추가 · ${fmt(additionalShipCost(s))} D</button><button id="fleet-growth">전체 20단계 보기</button><button id="fleet-all-upgrade" ${!s.port||!rows.every(p=>p.tier===rows[0].tier)||rows[0].tier===19?'disabled':''}>같은 단계 선단 일괄 개량 · ${fmt(upgradeCost(s))} D</button></div><p>기함을 조종하면 나머지는 지나온 길을 따라 한 줄로 이동해요. 배 추가 시 기존 식량을 나누어 사용해요. 마지막 한 척은 남겨 두어야 해요.</p>`,'wide');
+  api.onModal('내 배와 동행 선단','최대 5척 · 가장 느린 배의 속도로 함께 항해',`<p class="help-tip">선단 속도 ${fmt(spec.speed)}해리/일 · 속도 제한: ${esc(vesselSpec(slow).name)} · 보급 한도 ${spec.supply}일 · 적재 ${usedSpace(s)}/${capacity(s)}칸</p><p class="fleet-trade-gear">선단 교역 장비 · ${trade?esc(trade.name+' · '+trade.effect):'장착 없음'}</p><div class="ship-growth-grid">${rows.map((p,i)=>{const gear=gearOnShip(s,p.id);return `<article class="growth-step"><img ${p.kind?'class="historical-photo"':''} src="${p.kind?historicalArt(p.kind):shipArtPath(p.tier)}" alt="${esc(vesselSpec(p).name)}" loading="lazy"><h3>${i?'동행선 '+i:'⚑ 기함'} · ${esc(vesselSpec(p).name)}</h3><p>${p.tier+1}단계 · ${fmt(vesselSeaSpeed(s,p))}해리/일</p><p class="vessel-gear">장착 장비 · ${gear?esc(gear.name+' · '+gear.effect):'없음'}</p><button data-upgrade-vessel="${p.id}" ${!s.port||p.tier===19?'disabled':''}>이 배 개량 · ${fmt(SHIPS[p.tier].upgrade)} D</button><button data-flagship="${p.id}" ${!s.port?'disabled':''}>기함 지정</button><button data-store-vessel="${esc(p.id)}" ${!PORT_BY_ID[s.port]?.active||PORT_BY_ID[s.port]?.depot||s.voyage||rows.length<2||storedShips(s).length>=STORED_SHIP_LIMIT?'disabled':''}>이 항구에 맡기기</button><button data-sell-vessel="${p.id}" ${!s.port||rows.length<2?'disabled':''}>매각 · ${fmt(shipResaleValue(p))} D</button></article>`;}).join('')}</div><div class="dialog-actions"><button id="fleet-shipyard">역사 선박 조선소</button><button id="fleet-stored">항구에 맡긴 배 · ${storedShips(s).length}척</button><button id="fleet-items">아이템 가방</button><button id="detail-add" ${!s.port||additionalShipCost(s)===null?'disabled':''}>배 추가 · ${fmt(additionalShipCost(s))} D</button><button id="fleet-growth">전체 20단계 보기</button><button id="fleet-all-upgrade" ${!s.port||!rows.every(p=>p.tier===rows[0].tier)||rows[0].tier===19?'disabled':''}>같은 단계 선단 일괄 개량 · ${fmt(upgradeCost(s))} D</button></div><p>기함을 조종하면 나머지는 지나온 길을 따라 한 줄로 이동해요. 배를 맡기면 새 배를 편입할 자리가 생겨요. 항해 선단에는 최소 한 척을 남겨야 해요.</p>`,'wide');
   $('#fleet-shipyard').onclick=showShipyard;
+  $('#fleet-stored').onclick=showStoredShips;
+  document.querySelectorAll('[data-store-vessel]').forEach(b=>b.onclick=()=>confirmStorage(b.dataset.storeVessel,false));
   $('#fleet-items').onclick=()=>api.onItems?.();
   document.querySelectorAll('[data-sell-vessel]').forEach(b=>b.onclick=()=>confirmSale(b.dataset.sellVessel));
   $('#detail-add').onclick=()=>confirmShip('add');$('#fleet-growth').onclick=()=>showShip('growth');$('#fleet-all-upgrade').onclick=()=>confirmShip('upgrade');document.querySelectorAll('[data-flagship]').forEach(b=>b.onclick=()=>{syncFleet(s,rows,b.dataset.flagship);tierKey='';api.onChanged();showFleet();});document.querySelectorAll('[data-upgrade-vessel]').forEach(b=>b.onclick=()=>{const id=b.dataset.upgradeVessel,p=rows.find(p=>p.id===id);api.onModal('이 배를 개량할까요?','선박 개량',`<p>${esc(SHIPS[p.tier].name)} → ${esc(SHIPS[p.tier+1].name)} · ${fmt(SHIPS[p.tier].upgrade)} D</p><button id="upgrade-one">개량 확인</button>`,'small');$('#upgrade-one').onclick=async()=>{if(busy)return;busy=true;try{const r=await api.onShipAction(game=>upgradeShip(game,id));if(r){tierKey='';showFleet();}}finally{busy=false;}};});
+ }
+ function showStoredShips(){
+  const s=get(),stored=storedShips(s),here=PORT_BY_ID[s.port];
+  const byPort=new Map();
+  for(const vessel of stored){if(!byPort.has(vessel.port))byPort.set(vessel.port,[]);byPort.get(vessel.port).push(vessel);}
+  const rows=[...byPort.entries()].sort(([a],[b])=>a===s.port?-1:b===s.port?1:PORT_BY_ID[a].name.localeCompare(PORT_BY_ID[b].name,'ko'));
+  const cards=rows.map(([id,vessels])=>{
+   const title=esc(PORT_BY_ID[id].name)+(id===s.port?' · 현재 정박':'');
+   return `<section class="stored-port"><h3>${title}</h3>${vessels.map(v=>`<article class="stored-vessel">
+      <img src="${v.kind?historicalArt(v.kind):shipArtPath(v.tier)}" alt="" width="112" height="76" loading="lazy">
+      <div><strong>${esc(vesselSpec(v).name)}</strong><small>${v.tier+1}단계 · 내구도 ${Math.round(v.health*100)}%</small></div>
+      <button type="button" data-recall-vessel="${esc(v.id)}" ${id!==s.port||s.voyage?'disabled':''}>${id===s.port?'선단에 복귀':'이 항구에서 회수'}</button></article>`).join('')}</section>`;
+  }).join('');
+  api.onModal('항구에 맡긴 배',`보관 ${stored.length}/${STORED_SHIP_LIMIT}척 · 항해 ${fleetCount(s)}/${fleetLimit(s)}척`,
+    `<div class="dialog-actions"><button id="stored-back">내 선단으로</button><button id="stored-shipyard">역사 선박 조선소</button></div>
+    <p>${here&&!s.voyage?'현재 '+esc(here.name)+'에 정박 중이에요. ':'항해 중이에요. '}배를 맡긴 항구에 입항하면 회수할 수 있어요.</p>
+    ${cards||'<p>아직 맡겨 둔 배가 없어요. 항구에 정박한 뒤 내 선단에서 ‘이 항구에 맡기기’를 선택하세요.</p>'}`,'medium');
+  $('#stored-back').onclick=showFleet;
+  $('#stored-shipyard').onclick=showShipyard;
+  document.querySelectorAll('[data-recall-vessel]').forEach(b=>b.onclick=()=>confirmStorage(b.dataset.recallVessel,true));
+ }
+ function confirmStorage(id,recall){
+  const current=get(),port=current.port;
+  let quote;
+  try{quote=(recall?quoteShipRecall:quoteShipStorage)(current,id);}
+  catch(error){api.onToast(error.message,'error');return;}
+  const after=quote.next;
+  api.onModal(recall?'이 배를 다시 선단에 넣을까요?':'이 항구에 배를 맡길까요?',esc(PORT_BY_ID[port].name)+' · 무료',`
+    <p><strong>${esc(vesselSpec(quote.vessel).name)}</strong></p>
+    <p>변경 후 ${after.fleetCount}/${fleetLimit(after)}척 · 적재 ${usedSpace(after)}/${capacity(after)}칸 · 보급 ${after.food.toFixed(1)}일분</p>
+    ${!recall&&current.flagshipId===id?`<p>새 기함 · ${esc(ship(after).name)}</p>`:''}
+    ${!recall&&(quote.guns||quote.gear)?'<p>대포와 장비는 보관함으로 옮겨요. 회수 후 다시 장착할 수 있어요.</p>':''}
+    ${quote.credit>0?`<p>남는 보급 ${fmt(Math.floor(quote.credit))} D 상당은 보급 크레딧으로 옮겨요.</p>`:''}
+    ${recall?'':'<p>이 배는 항해와 전투에서 빠지며, 이 항구에서 다시 찾을 수 있어요.</p>'}
+    <div class="dialog-actions"><button class="primary-button" id="storage-confirm">${recall?'복귀 확인':'맡기기 확인'}</button><button id="storage-cancel">돌아가기</button></div><p id="business-result" role="status"></p>`,'small');
+  $('#storage-cancel').onclick=recall?showStoredShips:showFleet;
+  $('#storage-confirm').onclick=async()=>{
+   if(busy)return;
+   busy=true;$('#storage-confirm').disabled=true;
+   try{
+    const action=recall?recallShip:storeShip;
+    if(await api.onStorageAction(game=>action(game,id,port))){tierKey='';showFleet();}
+   }finally{busy=false;if($('#storage-confirm'))$('#storage-confirm').disabled=false;}
+  };
  }
  function confirmSale(id){
   let quote;
   try{quote=quoteShipSale(get(),id);}
   catch(error){api.onToast(error.message,'error');return;}
   const current=get(),after=quote.next;
-  api.onModal('이 배를 매각할까요?','선박 매각',`<p><strong>${esc(SHIPS[quote.vessel.tier].name)} · ${fmt(quote.price)} D 수령</strong></p>
+  api.onModal('이 배를 매각할까요?','선박 매각',`<p><strong>${esc(vesselSpec(quote.vessel).name)} · ${fmt(quote.price)} D 수령</strong></p>
     <p>매각 후 ${after.fleetCount}척 · 적재 ${usedSpace(after)}/${capacity(after)}칸 · 보급 ${after.food.toFixed(1)}일분</p>
     ${current.flagshipId===id?`<p>새 기함 · ${esc(ship(after).name)}</p>`:''}
     ${quote.guns||quote.gear?'<p>이 배의 대포와 장비는 보관함으로 옮겨요.</p>':''}
@@ -95,8 +145,34 @@ export function createExpansion(api){
   api.onModal(label+'할까요?','선박·선단',`<p>비용 ${fmt(cost)} D · 보유 ${fmt(s.money)} D</p><p>${kind==='add'?`현재 식량을 나누어 항해 가능 보급은 ${(s.food*fleetCount(s)/(fleetCount(s)+1)).toFixed(1)}일분이 돼요.`:'현재 화물과 보급은 그대로 유지되고 선단 전체 모양과 성능이 바뀝니다.'}</p><div class="dialog-actions"><button id="ship-confirm" class="primary-button">확인</button><button id="ship-cancel" class="service-button">돌아가기</button></div>`,'small');
   $('#ship-cancel').onclick=()=>showShip();$('#ship-confirm').onclick=async()=>{if(busy)return;busy=true;try{const r=await api.onShipAction(game=>(kind==='upgrade'?upgradeShip:addShip)(game));if(r){tierKey='';showShip();}}finally{busy=false;}};
  }
+ function discoveryCardDetail(d,withPoint){
+  const study=discoveryStudy(d.id),point=d.point||[d.lon,d.lat];
+  const sources=[...(d.sources||[]),...(study?.sources||[])];
+  return `<figure class="discovery-photo"><img class="discovery-hero" src="${collectionArt(d.id,true)}" alt="${esc(d.name)} 실사풍 재현">
+    <figcaption>학습용으로 재현한 이미지</figcaption></figure>
+    <dl class="discovery-location">
+      <dt>${d.fiction?'이야기 배경':'실제 위치·서식지'}</dt><dd>${esc(study?.place||d.region)}</dd>
+      ${withPoint?`<dt>게임 발견 지점</dt><dd>${esc(discoveryCoordinates(point))} <button type="button" data-discovery-study-map>지도에서 보기</button></dd>`:''}
+    </dl>
+    <h3>자세히 알아보기</h3><p>${esc(study?.detail||d.description)}</p>
+    <p class="modal-meta">${d.fiction?'이 물건과 발견 이야기는 게임 속 창작이에요.':'게임 속 발견 지점은 항해용 위치예요. 실제 유적의 좌표나 동물이 나타나는 위치는 자료를 확인하세요.'}</p>
+    ${sources.length?`<p class="discovery-sources">${sources.map(source=>`<a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.label||'자료 보기')}</a>`).join('')}</p>`:''}`;
+ }
+ function bindStudyMap(root,d){
+  const button=root.querySelector('[data-discovery-study-map]');
+  if(button)button.onclick=()=>api.onShowDiscoveryPoint?.(d);
+ }
  function showAlbum(detailId=null){
-  if(detailId){const d=DISCOVERY_BY_ID[detailId],record=get().discoveries?.[detailId];if(!d||!record)return;api.onModal(d.name,`${KINDS[d.kind]} · 명성 ${fmt(d.fame)}`,`<img class="discovery-hero" src="${collectionArt(d.id,true)}" alt="${esc(d.name)}"><p>${esc(d.description)}</p><p>난도 ${d.tier}/4 · 항해 ${Math.floor(record.foundDay)}일째 발견</p><p>${d.fiction?'이 발견물과 발견 위치는 게임 속 창작 설정이에요.':'실제 유산·동물의 관찰 기록을 그림으로 모아요. 조사 지점은 항해용으로 단순화했어요.'}</p>${(d.sources||[]).map(x=>`<p class="modal-meta"><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.label||'출처 보기')}</a></p>`).join('')}<button id="album-back" class="service-button">수집 목록으로</button>`,'medium');$('#album-back').onclick=()=>showAlbum();return;}
+  if(detailId){
+   const d=DISCOVERY_BY_ID[detailId],record=get().discoveries?.[detailId];
+   if(!d||!record)return;
+   api.onModal(d.name,`${KINDS[d.kind]} · 난도 ${d.tier}/4 · 명성 ${fmt(d.fame)}`,
+    `${discoveryCardDetail(d,true)}<p class="modal-meta">항해 ${Math.floor(record.foundDay)}일째 발견</p>
+    <button id="album-back" class="service-button">수집 목록으로</button>`,'medium');
+   $('#album-back').onclick=()=>showAlbum();
+   bindStudyMap($('#modal-content'),d);
+   return;
+  }
   const s=get(),stats=discoveryStats(s),items=DISCOVERIES.filter(d=>(albumKind==='all'||d.kind===albumKind)&&(albumOwned==='all'||(albumOwned==='found')===!!s.discoveries?.[d.id]));
   api.onModal('발견 수집 도감',`수집 ${stats.foundCount}/${DISCOVERIES.length} · 명성 ${fmt(stats.fame)}`,`<nav class="expansion-tabs">${[['all','전체'],...Object.entries(KINDS)].map(([id,name])=>`<button data-kind="${id}" aria-pressed="${albumKind===id}">${name}</button>`).join('')}</nav><label class="album-filter">표시 <select id="album-owned"><option value="all">전체</option><option value="found">수집한 기록</option><option value="missing">미발견</option></select></label><div class="collection-grid">${items.map(d=>{const got=!!s.discoveries?.[d.id];return `<button class="collection-card ${got?'collected':'uncollected'}" data-collection="${d.id}" ${got?'':'disabled'}><img src="${got?collectionArt(d.id):'assets/discoveries/unknown.svg'}" alt="${got?esc(d.name):'아직 발견하지 못한 '+KINDS[d.kind]}" loading="lazy" width="240" height="180"><strong>${got?esc(d.name):'미발견 · '+KINDS[d.kind]}</strong><span>난도 ${d.tier} · 명성 ${fmt(d.fame)}</span></button>`;}).join('')}</div><p class="modal-meta">미발견 장소는 항해 중 흔적과 주점에서 들은 소문으로 찾아보세요. 같은 발견은 한 번만 명성을 얻어요.</p>`,'wide');
   $('#album-owned').value=albumOwned;$('#album-owned').onchange=e=>{albumOwned=e.target.value;albumScroll=0;showAlbum();};
@@ -149,11 +225,14 @@ export function createExpansion(api){
     for(const button of root.querySelectorAll('[data-public-card]'))button.onclick=()=>{
       const entry=entries.find(value=>value.id===button.dataset.publicCard);
       const portrait=Number(entry.id.slice(1))-1;
-      root.innerHTML=`<h3>${esc(entry.name)}</h3>${officers?`<div class="officer-portrait public-officer" style="background-position:${portrait%6*20}% ${Math.floor(portrait/6)*100/3}%"></div>`:`<img class="discovery-hero" src="${collectionArt(entry.id,true)}" alt="${esc(entry.name)}">`}<p>${esc(officers?entry.effect:entry.description)}</p><button data-usage-key="action-public-card-back" data-public-back>카드 목록</button>`;
+      root.innerHTML=`<h3>${esc(entry.name)}</h3>${officers?
+        `<div class="officer-portrait public-officer" style="background-position:${portrait%6*20}% ${Math.floor(portrait/6)*100/3}%"></div><p>${esc(entry.effect)}</p>`:
+        discoveryCardDetail(entry,!!get().discoveries?.[entry.id])}<button data-usage-key="action-public-card-back" data-public-back>카드 목록</button>`;
+      if(!officers)bindStudyMap(root,entry);
       root.querySelector('[data-public-back]').onclick=paint;
     };
   }
   paint();
  }
- return {intercept:(from,to)=>api.canShowDiscovery?.()?discoveryEntry(get(),from,to,d=>!dismissed.has(d.id)||(dismissed.get(d.id).outside&&Date.now()-dismissed.get(d.id).at>300000)):1,investigate:showInvestigation,renderHUD,showShip,showShipyard,showAlbum,showCaptains,found:d=>{lastFound=d;nearKey='';renderHUD();}};
+ return {intercept:(from,to)=>api.canShowDiscovery?.()?discoveryEntry(get(),from,to,d=>!dismissed.has(d.id)||(dismissed.get(d.id).outside&&Date.now()-dismissed.get(d.id).at>300000)):1,investigate:showInvestigation,renderHUD,showShip,showShipyard,showStoredShips,showAlbum,showCaptains,found:d=>{lastFound=d;nearKey='';renderHUD();}};
 }

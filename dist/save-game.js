@@ -1,15 +1,15 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.2';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.12-collections-ranks-historic-ships';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.12-collections-ranks-historic-ships';
-import {normalizeDepotDock} from './projects.js?v=2026.11.12-collections-ranks-historic-ships';
+import {normalizeSea} from './sea-activities.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {normalizeDepotDock} from './projects.js?v=2026.11.12-collections-ranks-historic-ships.2';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
@@ -41,6 +41,18 @@ export function parseState(raw,defaults){
  delete game.supplyCreditDays;
  if(s.version===4){if(!Array.isArray(s.fleetShips)||s.fleetShips.length<1||s.fleetShips.length>5||new Set(s.fleetShips.map(p=>p?.id)).size!==s.fleetShips.length||s.fleetShips.some(p=>typeof p?.id!=='string'||!p.id.length||p.id.length>80||!Number.isInteger(p.tier)||p.tier<0||p.tier>19)||!s.fleetShips.some(p=>p.id===s.flagshipId)||s.fleetCount!==s.fleetShips.length||s.shipTier!==s.fleetShips.find(p=>p.id===s.flagshipId).tier)bad();}
  if(s.version===4)syncFleet(game,s.fleetShips.map(p=>({id:p.id,tier:p.tier,...(historicalKind(p.kind,p.tier)?{kind:p.kind}:{}),...(Number.isSafeInteger(p.costBasis)&&p.costBasis>=0&&p.costBasis<=1e8?{costBasis:p.costBasis}:{})})),s.flagshipId);else syncFleet(game,Array.from({length:game.fleetCount},(_,i)=>({id:'vessel-'+i,tier:game.shipTier})));
+ if(s.storedShips!==undefined){
+  if(!Array.isArray(s.storedShips)||s.storedShips.length>STORED_SHIP_LIMIT)bad();
+  const vesselIds=new Set(game.fleetShips.map(v=>v.id));
+  game.storedShips=s.storedShips.map(v=>{
+   if(typeof v?.id!=='string'||!v.id.length||v.id.length>80||vesselIds.has(v.id)||
+    !Number.isInteger(v.tier)||v.tier<0||v.tier>=SHIPS.length||!Object.hasOwn(PORT_BY_ID,v.port)||PORT_BY_ID[v.port].depot||
+    !finite(v.health)||v.health<0||v.health>1||(v.kind!==undefined&&!historicalKind(v.kind,v.tier))||
+    (v.costBasis!==undefined&&(!Number.isSafeInteger(v.costBasis)||v.costBasis<0||v.costBasis>1e8)))bad();
+   vesselIds.add(v.id);
+   return {id:v.id,tier:v.tier,port:v.port,health:v.health,...(v.kind?{kind:v.kind}:{}),...(v.costBasis===undefined?{}:{costBasis:v.costBasis})};
+  });
+ }
  game.version=4;
  if(s.autoSupply!==undefined)game.autoSupply=s.autoSupply===true;
  if(s.cannons!==undefined){if(!Array.isArray(s.cannons)||s.cannons.length>100||new Set(s.cannons.map(p=>p?.id)).size!==s.cannons.length||s.cannons.some(p=>typeof p?.id!=='string'||p.id.length>100||!['swivel','light','rapid','standard','long','precision','heavy','large'].includes(p.kind)||!Number.isInteger(p.quality)||p.quality<0||p.quality>4||!finite(p.readyAt)||p.readyAt<0||p.shipId!==null&&!game.fleetShips.some(v=>v.id===p.shipId)))bad();}

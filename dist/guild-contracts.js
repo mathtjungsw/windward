@@ -1,10 +1,10 @@
-import {shipyardReport} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
+import {shipyardReport} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.2';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[
