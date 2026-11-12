@@ -1,17 +1,17 @@
-import {createOfflineCombat} from './offline-combat.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {createMapCombat} from './combat-map.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {fleetMaxHP} from './ship-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {combatProfile,combatEligible,reserveLoss,returnReserve,openBattle,fireCannon,finishExpired,claimBattle,fireAtPirate,defeatNPC,npcSlotChanges,PIRATE_ZONES,cargoCount,addCargo} from './combat-core.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {usedSpace,capacity} from './engine.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {createOfflineCombat} from './offline-combat.js?v=2026.11.12-collections-ranks-historic-ships';
+import {createMapCombat} from './combat-map.js?v=2026.11.12-collections-ranks-historic-ships';
+import {fleetMaxHP} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships';
+import {combatProfile,combatEligible,reserveLoss,returnReserve,openBattle,fireCannon,finishExpired,claimBattle,fireAtPirate,defeatNPC,npcSlotChanges,PIRATE_ZONES,cargoCount,addCargo} from './combat-core.js?v=2026.11.12-collections-ranks-historic-ships';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.12-collections-ranks-historic-ships';
+import {usedSpace,capacity} from './engine.js?v=2026.11.12-collections-ranks-historic-ships';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const roll=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
 export function createCombat(api){
  const a=api.account,get=api.getState;let raids=null,selectedNPC=null,npcMessage='',slot=null,room=null,roomId=null,invites={},stops=[],positionStop=null,roomStop=null,positions={},sending=false,preparing=null,busy=false,lastProfile='',lastPos='',lastPosAt=0,lastProfileAt=0;
  const mapUI=createMapCombat({now,screenPoint:api.screenPoint,fire:id=>safe(()=>raids?.hasRoom()?raids.fire(id):selectedNPC?shootNPC(id):shoot(id))(),retreat:()=>safe(async()=>{if(raids?.hasRoom())return raids.retreat();if(selectedNPC){await commit('personal',a.uid,(game,_c,time)=>({...defeatNPC(game,time),extras:{['combatSlots/'+a.uid]:null,['combatVaults/'+a.uid]:null}}));selectedNPC=null;renderMap();}else{await end(true);paintBattle();}})(),dismiss:()=>{selectedNPC=null;mapUI.render(null);notice();}});
  raids=createOfflineCombat({...api,prepare,commit,effects:mapUI,render:renderMap});
- const cue=document.createElement('button');cue.className='combat-alert';cue.hidden=true;cue.onclick=show;$('.chart').append(cue);
+ const cue=document.createElement('button');cue.className='combat-alert';cue.dataset.usageKey='action-open-combat';cue.hidden=true;cue.onclick=show;$('.chart').append(cue);
  function now(){return Date.now()+(a.serverOffset||0);}const ref=path=>a.sdk.ref(a.db,'gameV2/'+path),read=async path=>(await a.sdk.get(ref(path))).val();
  function myPosition(){return {point:[...get().position],at:now()};}
  function peer(uid){return api.visible().find(p=>p.uid===uid);}

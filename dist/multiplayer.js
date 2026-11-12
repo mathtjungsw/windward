@@ -1,9 +1,9 @@
-import {watchSectorPages} from './sector-pages.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {REAL_WORLD_ROOT} from './account.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {CaptainRoster} from './captains.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {watchSectorPages} from './sector-pages.js?v=2026.11.12-collections-ranks-historic-ships';
+import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.12-collections-ranks-historic-ships';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships';
+import {REAL_WORLD_ROOT} from './account.js?v=2026.11.12-collections-ranks-historic-ships';
+import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.12-collections-ranks-historic-ships';
+import {CaptainRoster} from './captains.js?v=2026.11.12-collections-ranks-historic-ships';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{
@@ -100,7 +100,7 @@ export class FleetPresence{
     if(!this.active||!this.connected||this.sendPromise)return;
     const ship=this.readShip();
     const signature=JSON.stringify([this.name,...ship.position.map(n=>Number(n.toFixed(4))),
-      Math.round(ship.angle),ship.status,ship.shipTier,ship.fleetCount,ship.fleetTiers]);
+      Math.round(ship.angle),ship.status,ship.shipTier,ship.fleetCount,ship.fleetTiers,ship.fleetKinds]);
     if(!force&&(Date.now()-this.lastSent<2000||(signature===this.lastSignature&&Date.now()-this.lastSent<30000)))return;
     this.sendPromise=this.publish(ship,signature,force).finally(()=>{this.sendPromise=null;});
     return this.sendPromise;
@@ -123,7 +123,7 @@ export class FleetPresence{
       const updatedAt=sdk.serverTimestamp();
       await sdk.set(this.selfRef,{name:this.name,uid:this.uid,updatedAt,
         lon:Number(ship.position[0].toFixed(5)),lat:Number(ship.position[1].toFixed(5)),
-        angle:Math.round(ship.angle)%360,color:this.color,status:ship.status,shipTier:ship.shipTier??0,fleetCount:ship.fleetCount??1,...(ship.fleetTiers?{fleetTiers:ship.fleetTiers}:{})});
+        angle:Math.round(ship.angle)%360,color:this.color,status:ship.status,shipTier:ship.shipTier??0,fleetCount:ship.fleetCount??1,...(ship.fleetTiers?{fleetTiers:ship.fleetTiers}:{}),...(Object.keys(ship.fleetKinds||{}).length?{fleetKinds:ship.fleetKinds}:{})});
       if(!this.active)return;
       await this.publishSummary();
       await this.roster.publish(ship,force);

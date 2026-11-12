@@ -3,7 +3,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {Window} from 'happy-dom';
-import {initialState} from '../dist/engine.js';
+import {initialState,makeRoute,positionAlong} from '../dist/engine.js';
+import {NAVIGATION_VERSION} from '../dist/navigation-migration.js';
 import {DISCOVERIES,RUMORS} from '../dist/discoveries-catalog.js';
 const window=new Window({url:'http://127.0.0.1:4173/',width:1280,height:800,settings:{disableCSSFileLoading:true,disableJavaScriptFileLoading:true,disableJavaScriptEvaluation:true}});
 const document=window.document;
@@ -26,8 +27,26 @@ const $=s=>document.querySelector(s),wait=()=>new Promise(r=>setTimeout(r,5));
 app.account.save=()=>{};app.account.seenVersion='2026.11.06-all-captains';
 app.beginPlaying(initialState());$('#modal').close();
 test('application initializes new menus and both minimap choices without runtime errors',()=>{assert.ok(app.nav);assert.ok($('.atlas-toggle'));for(const text of ['항구 투자·활동','대포·수리'])assert.ok([...document.querySelectorAll('.main-nav button')].some(b=>b.textContent.includes(text)));const point=[...app.state.position];$('[data-view=flat]').click();assert.equal(app.globe.mode,'flat');assert.deepEqual(app.state.position,point);$('[data-view=globe]').click();assert.equal(app.globe.mode,'globe');});
+test('the flagship and trailing ships stay upright on a diagonal route',()=>{
+  const game=initialState(),route=makeRoute([[-103,16],[-100,16.5]]),travelled=140;
+  game.port=null;
+  game.position=positionAlong(route,travelled);
+  game.navigationVersion=NAVIGATION_VERSION;
+  game.voyage={...route,travelled,target:null};
+  game.fleetShips=[{id:game.flagshipId,tier:15},{id:'tail-one',tier:13},{id:'tail-two',tier:11}];
+  game.shipTier=15;
+  game.fleetCount=game.fleetShips.length;
+  try{
+    app.beginPlaying(game);
+    const followers=[...$('#own-followers').children];
+    assert.equal(followers.length,2);
+    assert.ok(followers.every(ship=>!ship.getAttribute('transform').includes('rotate')));
+    assert.notEqual(followers[0].getAttribute('transform'),followers[1].getAttribute('transform'));
+    assert.match($('#heading-arrow').getAttribute('transform'),/rotate\(/);
+  }finally{app.beginPlaying(initialState());$('#modal').close();}
+});
 test('flat canvas overrides globe clipping and mobile fixed height, and its click only moves the camera',()=>{const canvas=$('#minimap'),point=[...app.state.position];for(const width of [1280,390,360]){window.happyDOM.setViewport({width,height:844});$('[data-view=flat]').click();assert.equal(canvas.dataset.atlasMode,'flat');assert.equal(canvas.width,360);assert.equal(canvas.height,180);assert.equal(getComputedStyle(canvas).borderRadius,'4px');assert.notEqual(getComputedStyle(canvas).height,'180px');assert.doesNotMatch($('.minimap-caption').textContent,/회전/);canvas.dispatchEvent(new window.PointerEvent('pointerup',{clientX:450,clientY:300,bubbles:true}));assert.deepEqual(app.state.position,point);$('[data-view=globe]').click();assert.equal(getComputedStyle(canvas).borderRadius,'50%');assert.match($('.minimap-caption').textContent,/회전/);}});
-test('ranking controls expose all fourteen metrics in four groups on mobile',()=>{const ids=[];for(const button of document.querySelectorAll('[data-rank-group]')){button.click();for(const option of $('#rank-metric-select').options)ids.push(option.value);}assert.equal(new Set(ids).size,14);assert.ok(ids.includes('pirateKills'));assert.ok(ids.includes('ownedPortCount'));assert.ok(ids.includes('bestTradeProfit'));});
+test('ranking controls expose all twenty-two metrics in six groups on mobile',()=>{const ids=[];for(const button of document.querySelectorAll('[data-rank-group]')){button.click();for(const option of $('#rank-metric-select').options)ids.push(option.value);}assert.equal(new Set(ids).size,22);assert.ok(ids.includes('pirateKills'));assert.ok(ids.includes('ownedPortCount'));assert.ok(ids.includes('bestTradeProfit'));});
 test('investigation opens large actions on desktop and mobile, closes and can reopen',async()=>{const d=DISCOVERIES.find(d=>!d.rumorIds.length);app.state.port=null;app.state.position=[...d.point];app.expansion.investigate();assert.equal($('#modal').open,true);assert.ok($('[data-popup-inspect]'));assert.equal($('[data-popup-inspect]').disabled,false);$('#investigation-close').click();assert.equal($('#modal').open,false);window.happyDOM.setViewport({width:390,height:844});app.expansion.investigate();assert.equal($('#modal').dataset.investigation,'true');assert.ok($('[data-popup-approach]'));$('#investigation-close').click();app.state.position=[-9.14,38.72];app.state.port='lisbon';await wait();});
 test('all captains retain offline records and last seen time in list and detail',async()=>{app.fleet.uid='self';app.fleet.onlineCaptains=()=>[];app.rankings.page=async()=>[{id:'offline',name:'지난 선장',visited:50,statsVersion:3,explorationPercent:36.68,fame:50,shipTier:0,fleetCount:1,foundCount:1,lastSeenAt:Date.UTC(2026,10,9,0,5)}];await app.expansion.showCaptains('all',true);assert.match($('#persistent-roster').textContent,/09:05/);assert.match($('#persistent-roster').textContent,/오프라인/);$('.captain-directory-row').click();await wait();assert.match($('#modal-content').textContent,/09:05/);assert.match($('#modal-content').textContent,/한국 시간/);$('#close-modal').click();});
 test('manual port selection immediately switches to auto, clears held inputs, and sail button still starts a planned route',async()=>{
@@ -108,8 +127,11 @@ test('rumor note opens on desktop and mobile and restores a hidden tavern rumor'
   $('#tavern-tab').click();
   app.renderPanel();
   $('[data-tavern-rumor="I008"]').click();
-  assert.match($('#modal-title').textContent,/소문노트/);
-  assert.match($('#modal-content details[open]').textContent,/포르투 부두/);
+  assert.match($('#modal-title').textContent,/주점 소문/);
+  assert.match($('.tavern-rumor-text').textContent,/포르투 부두/);
+  assert.equal($('.rumor-note-row'),null);
+  $('#modal').close();
+  $('#rumor-note-tab').click();
   $('[data-note-hide="I008"]').click();
   assert.equal($('[data-note-hide="I008"]'),null);
   $('[data-note-filter="hidden"]').click();
@@ -122,8 +144,7 @@ test('rumor note opens on desktop and mobile and restores a hidden tavern rumor'
   assert.doesNotMatch($('#modal-content').textContent,/예비 노|아이템|부선장|발견물|진행 보기/);
   assert.equal($('[data-note-contract]'),null);
   $('#modal').close();
-  app.state.port='porto';
-  app.renderPanel();
+  app.beginPlaying({...app.state,port:'porto'});
   $('#tavern-tab').click();
   $('[data-port-encounter="I008"]').click();
   assert.match($('#modal-title').textContent,/예비 노/);
@@ -150,10 +171,14 @@ test('the tavern mixes discovery and recruitment rumors with the same presentati
   assert.ok(entries.every(x=>/^소문 [0-9]+$/.test(x.textContent)));
   entries.find(x=>x.dataset.tavernRumor===discovery.id).click();
   assert.ok(app.state.rumors.includes(discovery.id));
-  assert.equal($('#modal-content details[open] p').textContent,discovery.text);
+  assert.equal($('.tavern-rumor-text').textContent,discovery.text);
   assert.doesNotMatch($('#modal-content').textContent,/탐험 소문|발견물|부선장|특수 아이템/);
   $('#modal').close();
   $('[data-tavern-rumor="O014"]').click();
+  assert.equal($('#modal-content').querySelectorAll('.rumor-note-row').length,0);
+  assert.doesNotMatch($('#modal-content').textContent,new RegExp(discovery.text.slice(0,12)));
+  $('#modal').close();
+  $('#rumor-note-tab').click();
   assert.equal($('#modal-content').querySelectorAll('.rumor-note-row').length,2);
   assert.doesNotMatch($('#modal-content').textContent,/쉬프랑|동행|보급 소모/);
   $('#modal').close();

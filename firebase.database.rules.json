@@ -3,6 +3,31 @@
     ".read": false,
     ".write": false,
     "gameV2": {
+      "operations": {
+        "uiUsageDaily": {".read": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true", ".write": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true"},
+        "uiUsage": {
+          ".read": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true",
+          ".write": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true",
+          "$day": {
+            "$uid": {
+              "$batch": {
+                ".read": "auth != null && auth.uid == $uid",
+                ".write": "auth != null && auth.uid == $uid && !data.exists() && newData.exists() && $batch.matches(/^[0-9]{4,9}-[a-f0-9]{32}$/)",
+                ".validate": "newData.hasChildren(['day','events'])",
+                "day": {
+                  ".validate": "newData.isString() && newData.val() == $day && $day.matches(/^20[0-9]{2}-[0-1][0-9]-[0-3][0-9]$/)"
+                },
+                "events": {
+                  ".validate": "newData.isString() && newData.val().length <= 8000 && newData.val().matches(/^([mp]-([0-3][0-9]{2}|4[0-4][0-9]|45[0-3]):[0-9]{1,5},[0-9]{1,5},[0-9]{1,5})(;[mp]-([0-3][0-9]{2}|4[0-4][0-9]|45[0-3]):[0-9]{1,5},[0-9]{1,5},[0-9]{1,5}){0,84}$/)"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              }
+            }
+          }
+        }
+      },
       "accounts": {
         "$uid": {
           ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid",
@@ -25,7 +50,7 @@
       "privateSaves": {
         "$uid": {
           ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid",
-          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && (((newData.child('schemaVersion').val() == 7 || (newData.child('schemaVersion').val() == 6 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 6) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 6))) && newData.child('defenseSeq').val() == (newData.parent().parent().child('fleetStates').child($uid).child('seq').exists()?newData.parent().parent().child('fleetStates').child($uid).child('seq').val():0)) || (!root.child('gameV2/config/minSchema').exists() && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 5) && (newData.child('schemaVersion').val() == 5 || (newData.child('schemaVersion').val() == 4 && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 4)))))",
+          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && (((newData.child('schemaVersion').val() == 8 || (newData.child('schemaVersion').val() == 7 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 7) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 7)) || (newData.child('schemaVersion').val() == 6 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 6) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 6))) && newData.child('defenseSeq').val() == (newData.parent().parent().child('fleetStates').child($uid).child('seq').exists()?newData.parent().parent().child('fleetStates').child($uid).child('seq').val():0)) || (!root.child('gameV2/config/minSchema').exists() && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 5) && (newData.child('schemaVersion').val() == 5 || (newData.child('schemaVersion').val() == 4 && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 4)))))",
           ".validate": "newData.hasChildren(['revision','data','session','leaseUntil','updatedAt']) && newData.child('revision').val() == (data.child('revision').exists() ? data.child('revision').val() : 0) + 1 && (!newData.child('operationSequence').exists() || (newData.child('operationSequence').val() == (data.child('operationSequence').exists()?data.child('operationSequence').val():0) ? newData.child('lastOperation/id').val() == data.child('lastOperation/id').val() : (newData.child('session').val() == data.child('session').val() && newData.parent().parent().child('shared').child(newData.child('lastOperation/kind').val()).child(newData.child('lastOperation/key').val()).child('lastOperation/id').val() == newData.child('lastOperation/id').val() && newData.parent().parent().child('shared').child(newData.child('lastOperation/kind').val()).child(newData.child('lastOperation/key').val()).child('lastOperation/saveRevision').val() == newData.child('revision').val() && newData.parent().parent().child('shared').child(newData.child('lastOperation/kind').val()).child(newData.child('lastOperation/key').val()).child('revision').val() == newData.child('lastOperation/sharedRevision').val())))",
           "revision": {
             ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() % 1 == 0"
@@ -46,7 +71,7 @@
             ".validate": false
           },
           "schemaVersion": {
-            ".validate": "newData.val() == 4 || newData.val() == 5 || newData.val() == 6 || newData.val() == 7"
+            ".validate": "newData.val() == 4 || newData.val() == 5 || newData.val() == 6 || newData.val() == 7 || newData.val() == 8"
           },
           "operationSequence": {
             ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() % 1 == 0 && newData.val() >= (data.exists()?data.val():0) && newData.val() <= (data.exists()?data.val():0)+1"
@@ -64,7 +89,7 @@
       },
       "real": {
         "rankings": {
-          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && (((query.orderByChild == 'money' || query.orderByChild == 'profit' || query.orderByChild == 'visited' || query.orderByChild == 'explorationScore' || query.orderByChild == 'fame' || query.orderByChild == 'pirateKills' || query.orderByChild == 'fleetDefeats' || query.orderByChild == 'duelWins' || query.orderByChild == 'tradedGoodCount' || query.orderByChild == 'bestTradeProfit' || query.orderByChild == 'islandPorts' || query.orderByChild == 'fleetGrowth' || query.orderByChild == 'foundCount') && query.limitToLast != null && (query.limitToLast <= 5 || (query.limitToLast <= 1000 && query.startAt != null))) || (query.orderByKey == true && query.limitToFirst != null && query.limitToFirst <= 20))",
+          ".read": "(auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true) || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && (((query.orderByChild == 'money' || query.orderByChild == 'profit' || query.orderByChild == 'visited' || query.orderByChild == 'explorationScore' || query.orderByChild == 'fame' || query.orderByChild == 'pirateKills' || query.orderByChild == 'fleetDefeats' || query.orderByChild == 'duelWins' || query.orderByChild == 'tradedGoodCount' || query.orderByChild == 'bestTradeProfit' || query.orderByChild == 'islandPorts' || query.orderByChild == 'fleetGrowth' || query.orderByChild == 'foundCount' || query.orderByChild == 'shoreCompleted' || query.orderByChild == 'rareFinds' || query.orderByChild == 'officerCount' || query.orderByChild == 'itemCount' || query.orderByChild == 'guildCompleted' || query.orderByChild == 'freightCompleted' || query.orderByChild == 'seaRescues') && query.limitToLast != null && (query.limitToLast <= 5 || (query.limitToLast <= 1000 && query.startAt != null))) || (query.orderByKey == true && query.limitToFirst != null && query.limitToFirst <= 20)))",
           ".indexOn": [
             "money",
             "profit",
@@ -78,7 +103,14 @@
             "bestTradeProfit",
             "islandPorts",
             "fleetGrowth",
-            "foundCount"
+            "foundCount",
+            "shoreCompleted",
+            "rareFinds",
+            "officerCount",
+            "itemCount",
+            "guildCompleted",
+            "freightCompleted",
+            "seaRescues"
           ],
           "$uid": {
             ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists()",
@@ -156,10 +188,35 @@
             "rankProgressVersion": {
               ".validate": "newData.val() == 1"
             },
+            "shoreCompleted": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 100000"},
+            "rareFinds": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 60"},
+            "officerCount": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 24"},
+            "itemCount": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 64"},
+            "guildCompleted": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000"},
+            "freightCompleted": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000"},
+            "seaRescues": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000"},
             "earnedFlag": {
               ".validate": "newData.val() == true"
             }
           }
+        },
+        "collections": {
+          "$uid": {
+            ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
+            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && newData.child('revision').val() == root.child('gameV2/privateSaves').child($uid).child('revision').val() && (!data.exists() || newData.child('revision').val() >= data.child('revision').val())",
+            ".validate": "newData.hasChildren(['revision','updatedAt'])",
+            "revision": {".validate": "newData.isNumber() && newData.val() >= 1 && newData.val()%1 == 0"},
+            "updatedAt": {".validate": "newData.val() == now"},
+            "discoveries": {".validate":"newData.hasChildren()", "$id": {".validate": "$id.matches(/^(ruin-azores|ruin-carthage|ruin-kilwa|ruin-mahabalipuram|ruin-anse|ruin-rapanui|ruin-nanmadol|relic-compass|relic-chart|relic-astrolabe|relic-amphora|relic-seal|relic-bell|relic-carving|relic-pendant|animal-penguin-africa|animal-seal-med|animal-otter|animal-whaleshark|animal-iguana|animal-hector|animal-seal-hawaii|animal-penguin-nz|treasure-azores|treasure-gulf|treasure-madagascar|treasure-malacca|treasure-namib|treasure-atacama|treasure-andaman|treasure-pacific|relic-alaska-token|relic-pacific-chart|relic-amazon-weight|relic-andean-pottery|relic-timor-tool|relic-micronesia-marker|ruin-sganggwaay|ruin-fortjesus|ruin-skellig|ruin-butrint|ruin-galle|ruin-mozambique-island|ruin-portobelo|ruin-goree|animal-gray-whale|animal-manatee|animal-dugong|animal-green-turtle|animal-humboldt|animal-orca|treasure-faroe|treasure-socotra|treasure-mozambique-current|treasure-tasman|treasure-hudson|treasure-falklands|relic-kuril|relic-red-sea|relic-suriname)$/) && newData.val() == true"}},
+            "officers": {".validate":"newData.hasChildren()", "$id": {".validate": "$id.matches(/^O0(0[1-9]|1[0-9]|2[0-4])$/) && newData.val() == true"}},
+            "$other": {".validate": false}
+          }
+        },
+        "overallRanking": {
+          ".read": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true",
+          ".write": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true",
+          "public": {".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'"},
+          "captains": {"$uid": {".read": "auth != null && auth.uid == $uid"}}
         },
         "chat": {
           ".validate": "newData.hasChildren(['sequence','messages','lastSent']) && newData.child('sequence').val() == (data.child('sequence').exists() ? data.child('sequence').val() : 0) + 1 && newData.child('lastSent').child(auth.uid).val() == now && (!data.child('lastSent').child(auth.uid).exists() || now - data.child('lastSent').child(auth.uid).val() >= 3000) && newData.child('messages').child('' + (newData.child('sequence').val() % 50)).child('seq').val() == newData.child('sequence').val() && newData.child('messages').child('' + (newData.child('sequence').val() % 50)).child('uid').val() == auth.uid && newData.child('messages').child('' + (newData.child('sequence').val() % 50)).child('at').val() == now",
@@ -291,6 +348,7 @@
               "fleetCount": {
                 ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5 && newData.val() % 1 == 0"
               },
+              "fleetKinds": {"$index":{".validate":"$index.matches(/^[0-4]$/) && newData.isString() && newData.val().matches(/^(felucca|galley|fluyt|fujian|baghlah|waka|panok|endeavour|turtle)$/)"}},
               "fleetTiers": {
                 "$index": {
                   ".validate": "$index.matches(/^[0-4]$/) && newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 19"
@@ -331,7 +389,7 @@
           ".indexOn": [
             "ownedPortCount"
           ],
-          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && query.orderByChild == 'ownedPortCount' && query.limitToLast != null && (query.limitToLast <= 5 || (query.limitToLast <= 1000 && query.startAt != null))",
+          ".read": "(auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true) || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && query.orderByChild == 'ownedPortCount' && query.limitToLast != null && (query.limitToLast <= 5 || (query.limitToLast <= 1000 && query.startAt != null)))",
           "$uid": {
             ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
             ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && ((auth.uid == $uid && !data.exists() && newData.child('ownedPortCount').val() == 0 && newData.child('revision').val() == 1 && !newData.child('lastPort').exists() && !newData.child('operationId').exists()) || (auth.uid == $uid && data.exists() && newData.child('ownedPortCount').val() == data.child('ownedPortCount').val() && newData.child('revision').val() == data.child('revision').val() && newData.child('lastPort').val() == data.child('lastPort').val() && newData.child('operationId').val() == data.child('operationId').val()) || (newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('revision').val() == root.child('gameV2/privateSaves').child(auth.uid).child('revision').val()+1 && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'ports' && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == newData.child('lastPort').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.child('operationId').val() && newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('lastOperation/id').val() == newData.child('operationId').val() && (root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val()) != (newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val()) && ($uid == (root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val()) || $uid == (newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val())) && newData.child('revision').val() == (data.child('revision').exists()?data.child('revision').val():0)+1 && newData.child('ownedPortCount').val() == (data.child('ownedPortCount').exists()?data.child('ownedPortCount').val():0) + ($uid == (newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val())?1:0) - ($uid == (root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val())?1:0)))",
@@ -450,7 +508,8 @@
             ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && query.orderByKey == true && query.limitToFirst != null && query.limitToFirst <= 100",
             "$uid": {
               ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && ((auth.uid == $uid && (!newData.exists() || newData.child('session').val() == newData.parent().parent().parent().parent().child('privateSaves').child($uid).child('session').val())) || (!newData.exists() && newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('rescuePending').val() == true && newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('seq').val() == root.child('gameV2').child('fleetStates').child($uid).child('seq').val()+1 && newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('lastRaidId').val() == newData.parent().parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() && newData.parent().parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'raids'))",
-              ".validate": "newData.hasChildren(['uid','name','session','persistent','offline','lon','lat','angle','color','status','updatedAt','positionSeq']) && newData.child('uid').val() == $uid && newData.child('persistent').val() == true && newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('rescuePending').val() == false && newData.child('offline').isBoolean() && newData.child('positionSeq').val() == newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('positionSeq').val() && $sector == newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('sector').val() && newData.child('lon').val() >= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/0').val()-0.00001 && newData.child('lon').val() <= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/0').val()+0.00001 && newData.child('lat').val() >= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/1').val()-0.00001 && newData.child('lat').val() <= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/1').val()+0.00001 && (newData.child('updatedAt').val() == now || (newData.child('offline').val() == true && newData.child('updatedAt').val() == data.child('updatedAt').val()))"
+              "fleetKinds": {"$index":{".validate":"$index.matches(/^[0-4]$/) && newData.isString() && newData.val().matches(/^(felucca|galley|fluyt|fujian|baghlah|waka|panok|endeavour|turtle)$/)"}},
+            ".validate": "newData.hasChildren(['uid','name','session','persistent','offline','lon','lat','angle','color','status','updatedAt','positionSeq']) && newData.child('uid').val() == $uid && newData.child('persistent').val() == true && newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('rescuePending').val() == false && newData.child('offline').isBoolean() && newData.child('positionSeq').val() == newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('positionSeq').val() && $sector == newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('sector').val() && newData.child('lon').val() >= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/0').val()-0.00001 && newData.child('lon').val() <= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/0').val()+0.00001 && newData.child('lat').val() >= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/1').val()-0.00001 && newData.child('lat').val() <= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/1').val()+0.00001 && (newData.child('updatedAt').val() == now || (newData.child('offline').val() == true && newData.child('updatedAt').val() == data.child('updatedAt').val()))"
             }
           }
         }

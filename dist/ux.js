@@ -1,12 +1,12 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {shipArtPath} from './art.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {isTypingTarget} from './controls.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {validCard} from './social-core.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships';
+import {shipArtPath} from './art.js?v=2026.11.12-collections-ranks-historic-ships';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.12-collections-ranks-historic-ships';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.12-collections-ranks-historic-ships';
+import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.12-collections-ranks-historic-ships';
+import {isTypingTarget} from './controls.js?v=2026.11.12-collections-ranks-historic-ships';
+import {validCard} from './social-core.js?v=2026.11.12-collections-ranks-historic-ships';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -74,11 +74,11 @@ export function createUX(api){
     openSheet(mode==='cargo'?'내 화물':mode==='supply'?'선박·보급':mode==='target'?'선택한 항구':'항구·보급',mode);
   }
   function openMore(){
-    restorePanel();$('#quick-content').innerHTML='<div class="quick-links"><button data-menu="suggestions">개선 제안 게시판</button><button data-menu="ownedPorts">소유 항구 현황</button><button data-menu="guild">항구 조합</button><button data-menu="projects">공동 사업</button><button data-menu="sea">해상 활동</button><button data-menu="shore">상륙 탐사</button><button data-menu="officers">부선장 명부</button><button data-menu="items">아이템 가방</button><button data-menu="saleSearch">내 물품 최고가 판매처</button><button data-menu="business">항구 투자·활동</button><button data-menu="guns">대포·수리</button><button data-menu="combat">선장 전투</button><button data-menu="collection">수집 도감</button><button data-menu="ship">내 배 보기</button><button data-menu="captains">전체 선장</button><button data-menu="atlas">항구 찾기</button><button data-menu="globe">세계 지구본</button><button data-menu="rank">랭킹</button><button data-menu="mission">의뢰</button><button data-menu="chat">채팅</button><button data-menu="journal">항해일지</button><button data-menu="settings">조작·화면 설정</button><button data-menu="help">도움말</button></div>';
+    restorePanel();$('#quick-content').innerHTML='<div class="quick-links"><button data-menu="menuFinder">메뉴 찾기</button><button data-menu="suggestions">개선 제안 게시판</button><button data-menu="ownedPorts">소유 항구 현황</button><button data-menu="guild">항구 조합</button><button data-menu="projects">공동 사업</button><button data-menu="sea">해상 활동</button><button data-menu="shore">상륙 탐사</button><button data-menu="officers">부선장 명부</button><button data-menu="items">아이템 가방</button><button data-menu="saleSearch">내 물품 최고가 판매처</button><button data-menu="business">항구 투자·활동</button><button data-menu="guns">대포·수리</button><button data-menu="combat">선장 전투</button><button data-menu="collection">수집 도감</button><button data-menu="ship">내 배 보기</button><button data-menu="captains">전체 선장</button><button data-menu="atlas">항구 찾기</button><button data-menu="globe">세계 지구본</button><button data-menu="rank">랭킹</button><button data-menu="mission">의뢰</button><button data-menu="chat">채팅</button><button data-menu="journal">항해일지</button><button data-menu="settings">조작·화면 설정</button><button data-menu="help">도움말</button></div>';
     openSheet('더보기','more');
     $('#quick-content').querySelectorAll('[data-menu]').forEach(b=>b.onclick=()=>{
       closeSheet();const key=b.dataset.menu;
-      if(key==='sea')api.onSea?.();else if(key==='guild')api.onGuild?.();else if(key==='projects')api.onProjects?.();else if(key==='shore')api.onShore?.();else if(key==='officers')api.onOfficers?.();else if(key==='items')api.onItems?.();else if(key==='saleSearch')api.onSaleSearch?.();else if(key==='suggestions')api.onSuggestions?.();else if(key==='ownedPorts')api.onOwnedPorts?.();else if(key==='business')api.onBusiness?.();else if(key==='guns')api.onGuns?.();else if(key==='combat')api.onCombat?.();else if(key==='collection')api.onCollection?.();else if(key==='ship')api.onShip?.();else if(key==='captains')api.onCaptains?.();else if(key==='atlas')api.onAtlas();else if(key==='journal')api.onJournal();else if(key==='settings')showSettings();else if(key==='help')api.onHelp();else {
+      if(key==='menuFinder')api.onMenuFinder?.();else if(key==='sea')api.onSea?.();else if(key==='guild')api.onGuild?.();else if(key==='projects')api.onProjects?.();else if(key==='shore')api.onShore?.();else if(key==='officers')api.onOfficers?.();else if(key==='items')api.onItems?.();else if(key==='saleSearch')api.onSaleSearch?.();else if(key==='suggestions')api.onSuggestions?.();else if(key==='ownedPorts')api.onOwnedPorts?.();else if(key==='business')api.onBusiness?.();else if(key==='guns')api.onGuns?.();else if(key==='combat')api.onCombat?.();else if(key==='collection')api.onCollection?.();else if(key==='ship')api.onShip?.();else if(key==='captains')api.onCaptains?.();else if(key==='atlas')api.onAtlas();else if(key==='journal')api.onJournal();else if(key==='settings')showSettings();else if(key==='help')api.onHelp();else {
         if(key==='chat')api.onChat(true);
         $({globe:'.minimap-card',rank:'.rank-card',mission:'.mission-card',chat:'#chat-panel'}[key])?.scrollIntoView({block:'nearest'});
       }
@@ -225,7 +225,7 @@ export function createUX(api){
   }
   function card(message){
     if(!['port','route'].includes(message.kind)||!validCard(message))return null;
-    const b=document.createElement('button');b.className='chat-card-link';b.type='button';b.textContent='공유 정보 보기';b.onclick=()=>{
+    const b=document.createElement('button');b.className='chat-card-link';b.dataset.usageKey='action-chat-card';b.type='button';b.textContent='공유 정보 보기';b.onclick=()=>{
       const p=PORT_BY_ID[message.ref.portId||message.ref.toPortId],from=PORT_BY_ID[message.ref.fromPortId];if(!p)return;
       api.onShareRecord?.(message,from,p);const known=p.active&&tools().knownPorts.includes(p.id)&&(!from||tools().knownPorts.includes(from.id));
       api.onModal(p.name,from?`${from.name} → ${p.name}`:'항구 정보',`<p>${escape((NEW_PORT_HISTORY[p.id]||PORT_HISTORY[p.id])?.text||p.fact)}</p>${from?`<p>공유 선장의 관측 거리 ${fmt(message.ref.observedNm)}해리</p>`:''}${!p.active?'<p>이전 항구의 기록이에요. 현재 주요 항구 목록에서는 제외됐어요.</p>':''}${known?'<button class="primary-button" id="shared-target">내 항해 미리보기</button>':'<p>항구를 발견하면 목적지로 선택할 수 있어요.</p>'}`);

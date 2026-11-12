@@ -13,7 +13,7 @@ function fixture(){
  fleet.sdk=sdk;const rankings=new CaptainRankings(fleet,()=>{});rankings.connect();return {fleet,rankings,receive:rows=>receive(snapshot(rows)),get stops(){return stops;},get filters(){return lastFilters;}};
 }
 test('each top-five subscription reads all five rows before sorting, including the highest visited count',()=>{
- const f=fixture();for(const metric of RANK_METRICS){f.rankings.select(metric);const rows=[...profiles].sort((a,b)=>a[1][metric]-b[1][metric]).slice(-5);f.receive(rows);assert.equal(f.rankings.rows[metric].length,5);assert.equal(f.rankings.rows[metric][0][metric],Math.max(...profiles.map(([,p])=>p[metric])));}
+ const f=fixture();for(const metric of RANK_METRICS.filter(id=>id!=='overallScore')){f.rankings.select(metric);const rows=[...profiles].sort((a,b)=>a[1][metric]-b[1][metric]).slice(-5);f.receive(rows);assert.equal(f.rankings.rows[metric].length,5);assert.equal(f.rankings.rows[metric][0][metric],Math.max(...profiles.map(([,p])=>p[metric])));}
  assert.equal(f.rankings.rows.visited[0].visited,16);f.rankings.setVisible(false);assert.equal(f.rankings.visible,false);assert.ok(f.stops>=5);
 });
 test('all captains paginate through twenty plus seven persistent profiles without losing offline entries',async()=>{

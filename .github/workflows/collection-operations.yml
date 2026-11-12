@@ -1,0 +1,45 @@
+name: Windward rankings and usage totals
+
+on:
+  schedule:
+    - cron: '17 0,12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: windward-collection-operations
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: ${{ vars.WINDWARD_OPERATIONS_PROVIDER != '' && vars.WINDWARD_OPERATIONS_ACCOUNT != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - uses: google-github-actions/auth@v3
+        id: auth
+        with:
+          project_id: windward-voyage
+          workload_identity_provider: ${{ vars.WINDWARD_OPERATIONS_PROVIDER }}
+          service_account: ${{ vars.WINDWARD_OPERATIONS_ACCOUNT }}
+          token_format: access_token
+          access_token_lifetime: '600s'
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+          create_credentials_file: false
+      - name: Update rankings
+        env:
+          WINDWARD_OPERATIONS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          WINDWARD_OPERATIONS_ACCOUNT: ${{ vars.WINDWARD_OPERATIONS_ACCOUNT }}
+        run: node tools/update-collection-operations.mjs ranking --project=windward-voyage --scheduled --apply
+      - name: Update usage totals and retention
+        env:
+          WINDWARD_OPERATIONS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          WINDWARD_OPERATIONS_ACCOUNT: ${{ vars.WINDWARD_OPERATIONS_ACCOUNT }}
+        run: node tools/update-collection-operations.mjs usage --project=windward-voyage --scheduled --apply

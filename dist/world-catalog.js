@@ -264,12 +264,16 @@ export const NEW_PORTS = [
     "country": "멕시코",
     "cityLon": -99.915979,
     "cityLat": 16.849991,
-    "lon": -100,
-    "lat": 16.5,
+    "lon": -99.917,
+    "lat": 16.837,
     "sea": "태평양",
     "fact": "멕시코 남쪽 태평양 연안의 항구. 대양을 건너온 물품의 중계 역할을 게임 속 교역으로 표현합니다.",
     "economyNote": "멕시코 은의 지역 공급과 마닐라에서 들어오는 비단·자기를 구분합니다. 아카풀코는 은광이나 자기 생산지가 아닌 태평양 교역항입니다.",
     "sources": [
+      {
+        "label": "멕시코 해군 · 산타루시아만과 아카풀코 항구 위치",
+        "url": "https://diredimoat.semar.gob.mx/cuestionarios/cnarioAcapulco.pdf"
+      },
       {
         "label": "Met · Manila Galleon Trade · 소장 유물과 교역 설명",
         "url": "https://www.metmuseum.org/essays/the-manila-galleon-trade-1565-1815"
@@ -1375,6 +1379,10 @@ export const NEW_PORT_HISTORY = {
       {
         "label": "Natural Earth · 도시 위치",
         "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_populated_places_simple.geojson"
+      },
+      {
+        "label": "멕시코 해군 · 산타루시아만과 아카풀코 항구 위치",
+        "url": "https://diredimoat.semar.gob.mx/cuestionarios/cnarioAcapulco.pdf"
       },
       {
         "label": "Met · Manila Galleon Trade · 소장 유물과 교역 설명",

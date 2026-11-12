@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {Navigator,distance,price,sellPrice} from '../dist/engine.js';
+import {createChartDetail} from '../dist/chart-waterways.js';
 import {PORT_BY_ID} from '../dist/data.js';
 import {GOODS} from '../dist/port-economy.js';
 import {ACTIVE_PORT_IDS,RETIRED_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,NEW_PORT_HISTORY,PORT_REGIONS,ISLAND_COAST_POINTS} from '../dist/world-catalog.js';
@@ -24,11 +25,15 @@ test('the world catalog keeps 54 old active ports, retires 34 and adds 24 across
 });
 
 test('all 24 new game berths are water points with connected ocean routes and valid economy stories',()=>{
+ const features=[...read('dist/assets/world-land.geojson').features,...read('dist/assets/islands.geojson').features];
+ const detailedNav=new Navigator(read('dist/assets/navigation.json'),read('dist/assets/rivers.json'),createChartDetail(features));
+ const origin=detailedNav.approach(PORT_BY_ID.lisbon);
  for(const p of NEW_PORTS){
-  assert.ok(!nav.isLand([p.lon,p.lat]),p.id+' berth is land');
+  const berth=detailedNav.approach(p);
+  assert.ok(berth&&!detailedNav.isLand(berth),p.id+' berth is land');
   assert.ok(Number.isFinite(p.cityLon)&&Number.isFinite(p.cityLat));
-  const route=nav.route(start,[p.lon,p.lat]);assert.ok(route&&route.total>0,p.id+' lacks route');
-  for(let i=1;i<route.path.length;i++)assert.ok(nav.clear(route.path[i-1],route.path[i]),p.id+' route crosses land');
+  const route=detailedNav.route(origin,berth);assert.ok(route&&route.total>0,p.id+' lacks route');
+  for(let i=1;i<route.path.length;i++)assert.ok(detailedNav.clear(route.path[i-1],route.path[i]),p.id+' route crosses land');
   assert.ok(route.total<192*85,p.id+' exceeds the final ship sea range from Lisbon');
   const e=NEW_PORT_ECONOMY[p.id];assert.ok(e&&Object.keys(e.stock).length>=3);
   for(const [good,role]of Object.entries(e.stock)){assert.ok(GOODS[good]&&!GOODS[good].legacy,p.id+'/'+good);assert.ok(['producer','local','import'].includes(role));}

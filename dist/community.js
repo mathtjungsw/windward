@@ -1,4 +1,4 @@
-import {PORT_BY_ID,PORTS} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {PORT_BY_ID,PORTS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function suggestionDraft(title,body){title=String(title||'').trim();body=String(body||'').trim();if(!title||title.length>50||!body||body.length>1200||/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(title+body))throw Error('제목 1~50자, 내용 1~1,200자로 작성하세요.');return {title,body};}
 export function createCommunity(api){
@@ -21,6 +21,48 @@ export function createCommunity(api){
    return {id:p.id,portName:p.name,ownerUid:p.ownerUid,ownerName:ownerName||'소유 선장',share:p.ownerShare,defaultRate:0,kind:'depot'};
   }));
  }
- async function showOwnedPorts(){if(!ready())return;const gen=++generation;api.modal('현재 소유 항구','과반 지분 소유 · 개발 항구 포함',header('owned')+'<p>현재 소유자가 있는 항구만 표시해요. 일반 항구는 지분 50% 초과가 기준이며, 리스본·포르투는 중립입니다. 미발견 항구도 소유 현황으로 확인할 수 있지만 입항·탐험 점수는 얻지 않아요.</p><button id="owned-refresh">소유 현황 새로고침</button><div id="owned-port-list">불러오는 중…</div>','wide');bind();$('#owned-refresh').onclick=showOwnedPorts;try{const s=a.sdk,snap=await s.get(s.query(ref('ownedPorts'),s.orderByKey(),s.limitToFirst(124))),rows=[];snap.forEach(c=>{rows.push({id:c.key,...c.val()});});if(gen!==generation||!$('#owned-port-list'))return;rows.push(...await depotSummaries(s));if(gen!==generation||!$('#owned-port-list'))return;rows.sort((a,b)=>a.portName.localeCompare(b.portName,'ko'));$('#owned-port-list').replaceChildren();for(const p of rows){const row=document.createElement('article');row.className='owned-port-row';const name=document.createElement('h3');name.textContent=p.portName;const detail=document.createElement('p');detail.textContent=p.ownerName+(p.ownerUid===a.uid?' (나)':'')+' · '+(p.kind==='developed'?'개발 항구':(p.kind==='depot'?'공동 보급항 · ':'')+'지분 '+Number(p.share).toFixed(2)+'%')+' · 기본 세율 '+p.defaultRate+'%';const b=document.createElement('button');b.textContent='지도에서 보기';b.onclick=()=>{const port=PORT_BY_ID[p.id];if(port)api.look(api.portPoint?.(port)||[port.lon,port.lat]);};row.append(name,detail,b);$('#owned-port-list').append(row);}if(!rows.length)$('#owned-port-list').textContent='현재 소유자가 있는 항구가 없어요.';}catch{if(gen===generation&&$('#owned-port-list'))$('#owned-port-list').textContent='소유 현황을 불러오지 못했어요. 새로고침해 주세요.';}}
- return {showSuggestions,showOwnedPorts};
+ let ownershipRows=new Map(),ownershipRead=null,ownershipUid=null,ownershipAt=0;
+ async function syncOwnership(force=false){
+  if(!a.ready||!a.sdk){ownershipUid=null;ownershipAt=0;ownershipRows.clear();return [];}
+  if(ownershipUid!==a.uid){ownershipRows=new Map();ownershipAt=0;ownershipRead=null;ownershipUid=a.uid;}
+  if(ownershipRead)return ownershipRead;
+  if(!force&&Date.now()-ownershipAt<60000)return [...ownershipRows.values()];
+  const uid=a.uid,s=a.sdk;
+  ownershipRead=(async()=>{
+   const snap=await s.get(s.query(ref('ownedPorts'),s.orderByKey(),s.limitToFirst(124))),rows=[];
+   snap.forEach(c=>{const row=c.val();if(row?.ownerName&&row.ownerUid)rows.push({id:c.key,...row});});
+   const known=new Set(rows.map(row=>row.id));
+   rows.push(...(await depotSummaries(s)).filter(row=>!known.has(row.id)));
+   if(a.uid===uid&&a.ready){
+    const labels=rows.map(row=>[row.id,row.ownerName]).sort();
+    const previous=[...ownershipRows.values()].map(row=>[row.id,row.ownerName]).sort();
+    ownershipRows=new Map(rows.map(row=>[row.id,row]));ownershipAt=Date.now();
+    if(JSON.stringify(labels)!==JSON.stringify(previous))api.onOwnership?.();
+   }
+   return rows;
+  })();
+  const request=ownershipRead;
+  try{return await request;}finally{if(ownershipRead===request)ownershipRead=null;}
+ }
+ async function showOwnedPorts(force=false){
+  if(!ready())return;
+  const gen=++generation;
+  api.modal('현재 소유 항구','과반 지분 소유 · 개발 항구 포함',header('owned')+
+    '<div class="dialog-actions"><button id="owned-refresh">새로고침</button><small>현재 소유자가 있는 항구</small></div><div id="owned-port-list">불러오는 중…</div>','wide');
+  bind();$('#owned-refresh').onclick=()=>showOwnedPorts(true);
+  try{
+   const rows=await syncOwnership(force===true),list=$('#owned-port-list');
+   if(gen!==generation||!list)return;
+   list.replaceChildren();
+   for(const p of [...rows].sort((a,b)=>a.portName.localeCompare(b.portName,'ko'))){
+    const row=document.createElement('article'),summary=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small'),button=document.createElement('button');
+    row.className='owned-port-row';summary.className='owned-port-summary';name.textContent=p.portName;
+    detail.textContent=p.ownerName+(p.ownerUid===a.uid?' (나)':'')+' · '+(p.kind==='developed'?'개발 항구':(p.kind==='depot'?'공동 보급항 · ':'')+'지분 '+Number(p.share).toFixed(2)+'%')+' · 기본 세율 '+p.defaultRate+'%';
+    button.textContent='지도에서 보기';button.onclick=()=>{const port=PORT_BY_ID[p.id];if(port)api.look(api.portPoint?.(port)||[port.lon,port.lat]);};
+    summary.append(name,detail);row.append(summary,button);list.append(row);
+   }
+   if(!rows.length)list.textContent='현재 소유자가 있는 항구가 없어요.';
+  }catch{if(gen===generation&&$('#owned-port-list'))$('#owned-port-list').textContent='소유 현황을 불러오지 못했어요. 새로고침해 주세요.';}
+ }
+ return {showSuggestions,showOwnedPorts,syncOwnership,ownerName:id=>a.uid===ownershipUid?ownershipRows.get(id)?.ownerName:null};
 }

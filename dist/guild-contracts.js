@@ -1,9 +1,10 @@
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {shipyardReport} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[
@@ -172,7 +173,7 @@ export function charterAction(game,action,id,now,{findRoute,room,baseFame,findPo
   if(itemBonus>0)consumeCoupon(game,'guild');
   book.completed=Math.min(1e9,(book.completed||0)+1);
   const proofs=book.proofs??={},credit=key=>{proofs[key]=Math.min(1e9,(proofs[key]||0)+1);};
-  credit(type.kind||'freight');
+  credit(type.kind||'freight');if(type.kind==='pirate')shipyardReport(game,row.objective);
   if(!type.kind){
     const port=PORT_BY_ID[row.target];
     if(game.fleetCount>=3)credit('multiFleet');

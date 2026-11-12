@@ -1,15 +1,16 @@
-import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {regionalFactor} from './regional-economy.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {recordTrade} from './rank-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
-import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,ACTIVE_SECONDS_PER_DAY,SHIPS} from './ship-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {parseState} from './save-game.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {gunWeight} from './cannons.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {charterCargo} from './guild-contracts.js?v=2026.11.12-cooperative-fleet-discoveries';
-export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships';
+import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.12-collections-ranks-historic-ships';
+import {regionalFactor} from './regional-economy.js?v=2026.11.12-collections-ranks-historic-ships';
+import {recordTrade} from './rank-progress.js?v=2026.11.12-collections-ranks-historic-ships';
+import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.12-collections-ranks-historic-ships';
+import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships';
+import {parseState} from './save-game.js?v=2026.11.12-collections-ranks-historic-ships';
+import {gunWeight} from './cannons.js?v=2026.11.12-collections-ranks-historic-ships';
+import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
+import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships';
+import {charterCargo} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships';
+export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships';
 
 export const SAVE_KEY='windward-save-v1';
 export const START_DATE=Date.UTC(1522,3,6);
@@ -93,6 +94,24 @@ export function upgradeShip(s,id=null){
  return {ok:true,cost};
 }
 export function addShip(s){const cost=additionalShipCost(s);if(!tradingPort(s)||cost===null||s.money<cost)return {ok:false,error:cost===null?'선단 단계가 오르면 배를 더 늘릴 수 있어요.':'선박을 추가할 항구와 두카트를 확인하세요.'};const rows=fleetShips(s).map(p=>({...p})),n=rows.length;s.money-=cost;s.food=s.food*n/(n+1);rows.push({id:'vessel-'+Date.now().toString(36)+'-'+n,tier:shipTier(s),costBasis:cost});syncFleet(s,rows);return {ok:true,cost};}
+export function historicalQuote(s,id){
+ const row=HISTORICAL_BY_ID[id];if(!row)throw Error('선종을 확인하세요.');
+ const fleet=fleetShips(s),tier=row.stage-1,progress=historicalProgress(s,id);
+ const cost=Math.ceil(SHIPS[tier].cost*row.price),stage=Math.max(...fleet.map(p=>p.tier))+1;
+ const candidate={id:'preview-ship',tier,kind:id,costBasis:cost},next={...s};
+ syncFleet(next,[...fleet,candidate]);next.food=Math.min(ship(next).supply,s.food*fleet.length/(fleet.length+1));
+ const ready=s.port===row.port&&!s.voyage&&!s.depotDock&&!s.shoreTrip&&!s.seaJob&&!s.raidId&&!s.npcBattle&&!s.battleId&&!s.explorationLockedUntilSailing&&stage>=row.stage&&progress.earned&&fleet.length<fleetLimit(s)&&s.money>=cost&&usedSpace(next)<=capacity(next);
+ return {row,stage,cost,ready,progress,ship:vesselSpec(candidate),current:ship(s),future:ship(next),capacity:capacity(next),slots:fleetLimit(s)-fleet.length};
+}
+export function buildHistoricalShip(s,id,expectedCost){
+ const q=historicalQuote(s,id);
+ if(!q.ready||q.cost!==expectedCost)return {ok:false,error:'건조 항구, 해금 조건, 빈 선단 자리와 두카트를 확인하세요.'};
+ const rows=fleetShips(s),oldMax=fleetMaxHP(s),candidate={id:'vessel-'+crypto.randomUUID(),tier:q.row.stage-1,kind:id,costBasis:q.cost};
+ s.money-=q.cost;s.food=Math.min(q.future.supply,s.food*rows.length/(rows.length+1));syncFleet(s,[...rows,candidate]);
+ if(Number.isFinite(s.hullHP))s.hullHP=Math.min(fleetMaxHP(s),s.hullHP+fleetMaxHP(s)-oldMax);
+ const y=shipyardRecord(s);if(!y.unlocked.includes(id))y.unlocked.push(id);
+ return {ok:true,cost:q.cost};
+}
 export const shipResaleValue=vessel=>Math.floor(shipCostBasis(vessel)*.6);
 export function quoteShipSale(s,id){
  const fleet=fleetShips(s),vessel=fleet.find(v=>v.id===id);
@@ -132,7 +151,7 @@ export function buy(s,goodId,qty){
   const c=s.cargo[goodId]||{qty:0,cost:0};
   s.cargo[goodId]={qty:c.qty+qty,cost:c.cost+total};s.money-=total;s.trades++;
   if(s.port==='lisbon'&&goodId==='wine')s.boughtLisbonWine=true;
-  recordTrade(s,goodId,'buy');return {ok:true,total,qty,unit};
+  if(!s.explorationLockedUntilSailing)shipyardTrade(s,goodId);recordTrade(s,goodId,'buy');return {ok:true,total,qty,unit};
 }
 export function sell(s,goodId,qty){
   qty=Math.floor(qty);const c=s.cargo[goodId];
@@ -142,7 +161,7 @@ export function sell(s,goodId,qty){
   c.qty-=qty;c.cost-=cost;s.money+=total;s.profit+=total-cost;s.trades++;
   if(!c.qty)delete s.cargo[goodId];
   if(s.port!=='lisbon'&&goodId==='wine'&&s.boughtLisbonWine)s.soldAway=true;
-  recordTrade(s,goodId,'sell',total-cost);return {ok:true,total,qty,unit,profit:Math.round(total-cost)};
+  if(!s.explorationLockedUntilSailing)shipyardTrade(s,goodId);recordTrade(s,goodId,'sell',total-cost);return {ok:true,total,qty,unit,profit:Math.round(total-cost)};
 }
 
 class Heap{
@@ -492,12 +511,12 @@ export function routeSections(nav,route){
 function sectionMotion(s,route,section,gear){
   const rescue=['rescue','transition'].includes(route.kind),stats=ship(s);
   if(route.legacy)return {speed:[360,440,520][route.legacyShipLevel??Math.min(2,s.level||0)]/(rescue?2:1),rate:.9,limit:Infinity};
-  let speed=section.river?stats.riverSpeed:stats.speed;
+  let speed=section.river?stats.riverSpeed:section.coastal?Math.min(...fleetShips(s).map(p=>vesselSeaSpeed(s,p,true))):stats.speed;
   const officer=activeOfficer(s);
   if(!section.river)speed*=1+(section.mediterranean?officer?.mediterraneanSpeed||0:0)+(charterCargo(s)>0?officer?.charterSpeed||0:0)+(!route.direct&&section.coastal?officer?.manualSpeed||0:0);
   if(!section.river&&section.current)speed*=1+Math.min(...fleetShips(s).map(v=>gearOnShip(s,v.id)?.currentSpeed||0));
   if(route.direct&&!section.river)speed*=route.manualMultiplier||1;
-  let rate=voyageSupplyRate(s,section.river),limit=Infinity;
+  let rate=voyageSupplyRate(s,section.river,section.coastal),limit=Infinity;
   if(!rescue)for(const [id,miles] of Object.entries(gear||{})){
     if(miles<=1e-8)continue;
     const item=ITEM_BY_ID[id];
@@ -534,15 +553,17 @@ export function canDepart(s,route){
   if(s.food+1e-8<needed)return {ok:false,error:`보급 ${needed.toFixed(1)}일분이 필요해요. 중간 항구를 선택하세요.`};
   return {ok:true,...estimate};
 }
-function voyageSupplyRate(s,river){
+function voyageSupplyRate(s,river,coastal){
   const officer=activeOfficer(s);
-  return 1-(river?0:officer?.seaSupply||0)-(s.fleetCount>=2?officer?.fleetSupply||0:0);
+  const members=fleetShips(s);
+  const consumption=members.reduce((sum,v)=>{const p=vesselSpec(v);return sum+p.supplyUse*(!river&&!coastal?p.openSupply:1);},0)/members.length;
+  return (1-(river?0:officer?.seaSupply||0)-(s.fleetCount>=2?officer?.fleetSupply||0:0))*consumption;
 }
 export function manualHelmSpeed(s,nav,point){
   if(nav.riverAt(point))return ship(s).riverSpeed;
   const manualBonus=nav.coastAt(point)<=80?Math.min(...fleetShips(s).map(p=>gearOnShip(s,p.id)?.manualSpeed||0))+(activeOfficer(s)?.manualSpeed||0):0;
   const effects=Object.entries(s.rumorProgress?.distanceGear||{}).reduce((factor,[id,miles])=>miles>0?factor*(1+(ITEM_BY_ID[id]?.speed||0)):factor,1);
-  return ship(s).speed*(1+manualBonus)*effects;
+  return Math.min(...fleetShips(s).map(v=>vesselSeaSpeed(s,v,nav.coastAt(point)<=80)))*(1+manualBonus)*effects;
 }
 export function useEmergencySupplies(s,id){
   const p=s.rumorProgress;

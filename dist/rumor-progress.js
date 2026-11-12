@@ -1,17 +1,18 @@
-import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships';
+import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
+import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
 
 export const isConsumable=entry=>['supply','repair','coupon','extension','shore-consumable','distance','trade-voucher','activity','project','facility'].includes(entry?.type);
 export const itemLimit=entry=>isConsumable(entry)?20:1;
 export const CONTRACTS = [...OFFICERS,...ITEMS];
 const byId = Object.fromEntries(CONTRACTS.map(entry=>[entry.id,entry]));
-const validId = id=>Object.hasOwn(byId,id)||Object.hasOwn(RUMOR_BY_ID,id);
+const validId = id=>id===TURTLE_RUMOR.id||Object.hasOwn(byId,id)||Object.hasOwn(RUMOR_BY_ID,id);
 const ids = (values, check)=>[...new Set(Array.isArray(values)?values.filter(check):[])];
 const object = value=>value&&typeof value==='object'&&!Array.isArray(value)?value:{};
 
 export function normalizeRumorProgress(game){
-  const src=object(game.rumorProgress), read=ids(src.read,id=>Object.hasOwn(byId,id));
+  const src=object(game.rumorProgress), read=ids(src.read,id=>Object.hasOwn(byId,id)||id===TURTLE_RUMOR.id);
   const hidden=ids(src.hidden,id=>validId(id)&&(read.includes(id)||(game.rumors||[]).includes(id)));
   const officers=ids(src.officers,id=>Object.hasOwn(OFFICER_BY_ID,id));
   const items={};
@@ -36,7 +37,12 @@ export function normalizeRumorProgress(game){
     const old=src.records?.[entry.record];
     if(items[entry.id]&&Array.isArray(old))records[entry.record]=old.filter(row=>typeof row?.key==='string'&&row.key.length<=96&&typeof row.text==='string'&&row.text.length<=300&&Number.isSafeInteger(row.at)&&row.at>=0).slice(0,entry.limit);
   }
-  return {read,hidden,officers,items,contracts,shipGear,canalPass:CANAL_IDS.includes(src.canalPass)?src.canalPass:null,
+  const acquiredItems=ids([
+    ...(Array.isArray(src.acquiredItems)?src.acquiredItems:[]),
+    ...Object.keys(items).filter(id=>items[id]>0),...Object.keys(distanceGear),
+    ...Object.values(vouchers),...Object.values(object(src.coupons))
+  ],id=>Object.hasOwn(ITEM_BY_ID,id));
+  return {read,hidden,officers,items,acquiredItems,contracts,shipGear,canalPass:CANAL_IDS.includes(src.canalPass)?src.canalPass:null,
     active:officers.includes(src.active)?src.active:null,
     exploreGear:items[src.exploreGear]>0&&ITEM_BY_ID[src.exploreGear]?.type==='explore'?src.exploreGear:null,
     tradeGear:items[src.tradeGear]>0&&ITEM_BY_ID[src.tradeGear]?.type==='trade'?src.tradeGear:null,
@@ -47,6 +53,7 @@ export function normalizeRumorProgress(game){
 }
 function progress(game){return game.rumorProgress??=normalizeRumorProgress(game);}
 function rumorDetails(id){
+  if(id===TURTLE_RUMOR.id)return TURTLE_RUMOR;
   const entry=byId[id];
   if(entry)return {id,text:entry.story,port:entry.tavern};
   const old=RUMOR_BY_ID[id];
@@ -56,12 +63,13 @@ const sortRumors=entries=>entries.sort((a,b)=>a.text.localeCompare(b.text,'ko'))
 export function rumorsAtTavern(game){
   if(!safeDock(game))return [];
   const discoveries=Object.values(RUMOR_BY_ID).filter(r=>r.portId===game.port);
-  return sortRumors([...discoveries,...tavernRumors(game)].map(r=>rumorDetails(r.id)));
+  return sortRumors([...discoveries,...tavernRumors(game),...(game.port==='busan'?[TURTLE_RUMOR]:[])].map(r=>rumorDetails(r.id)));
 }
 export function rumorNote(game){
   const save=game.rumorProgress;
-  const all=[...(game.rumors||[]),...(save?.read||[])];
-  return sortRumors(ids(all,validId).map(id=>({...rumorDetails(id),hidden:!!save?.hidden.includes(id)})));
+  const all=[...(game.rumors||[]),...(save?.read||[]),...(game.shipyard?.turtleRumor?[TURTLE_RUMOR.id]:[])];
+  return sortRumors(ids(all,validId).map(id=>({...rumorDetails(id),hidden:!!save?.hidden.includes(id),
+    complete:!!(save?.officers?.includes(id)||save?.acquiredItems?.includes(id)||save?.items?.[id]>0||id===TURTLE_RUMOR.id&&game.shipyard?.unlocked?.includes('turtle'))})));
 }
 export function portEncounters(game){
   if(!safeDock(game))return [];
@@ -83,7 +91,8 @@ export function tavernRumors(game){
   return safeDock(game)?CONTRACTS.filter(entry=>entry.tavern===game.port&&rumorRequirement(game,entry).met):[];
 }
 export function readContractRumor(game,id){
-  if(!tavernRumors(game).some(entry=>entry.id===id))return false;
+  if(id===TURTLE_RUMOR.id){if(!safeDock(game)||game.port!=='busan')return false;turtleShipyard(game,'rumor');}
+  else if(!tavernRumors(game).some(entry=>entry.id===id))return false;
   const p=progress(game);
   if(!p.read.includes(id))p.read.push(id);
   return true;
@@ -159,7 +168,11 @@ export function performContractAction(game,id,action){
   if(status.owned>=itemLimit(entry))throw Error('이미 보유 한도에 도달했어요.');
   if(game.money<entry.cost)throw Error('두카트가 부족해요.');
   game.money-=entry.cost;
-  if(entry.type)p.items[id]=status.owned+1;
+  if(entry.type){
+    p.items[id]=status.owned+1;
+    p.acquiredItems??=[];
+    if(!p.acquiredItems.includes(id))p.acquiredItems.push(id);
+  }
   else p.officers.push(id);
   return {message:entry.name+(entry.type?' 획득':' 고용 완료')};
 }
@@ -258,4 +271,4 @@ export function saleBonus(game,portId,goodId){
 export function contractDescription(entry){
   return entry.challenge.ports.map(id=>PORT_BY_ID[id]?.name).join(' · ')+' 방문, '+GOODS[entry.challenge.cargo].name+' '+entry.challenge.qty+'상자 납품';
 }
-import {CANAL_IDS} from './canal-reservations.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {CANAL_IDS} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships';

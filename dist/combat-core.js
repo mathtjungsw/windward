@@ -1,15 +1,16 @@
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {currentCanal} from './canal-reservations.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {shipyardVictory} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships';
+import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.12-collections-ranks-historic-ships';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
+import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.12-collections-ranks-historic-ships';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.12-collections-ranks-historic-ships';
+import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships';
+import {currentCanal} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships';
 export const COMBAT_RANGE=180,COMBAT_TIMEOUT=180000,PROTECTION_MS=120000;
 export function npcSlotChanges(game,uid,currentSlot){currentSlot??=null;const expected='npc:'+uid;if(currentSlot&&currentSlot!==expected)throw Error('선장 간 전투를 먼저 마치세요.');const next=game.npcBattle?expected:null;return currentSlot===next?{}:{['combatSlots/'+uid]:next};}
-export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
+export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
 const copy=o=>structuredClone(o||{});
 export function splitCargo(cargo,limit){const taken={},rest={};for(const [id,c]of Object.entries(cargo||{}).sort(([a],[b])=>a.localeCompare(b))){const qty=Math.min(c.qty,Math.max(0,limit)),cost=c.qty?c.cost*qty/c.qty:0;if(qty)taken[id]={qty,cost};if(qty<c.qty)rest[id]={qty:c.qty-qty,cost:c.cost-cost};limit-=qty;}return {taken,rest};}
 export const cargoCount=c=>Object.values(c||{}).reduce((n,c)=>n+c.qty,0);
@@ -61,10 +62,11 @@ export function fireAtPirate(game,zoneId,gunId,now,rolls,clear=()=>true,coastDis
  const hit=rolls[0]*100<accuracy,damage=hit?Math.min(battle.hp,Math.round(stats.damage*(1+effect.damage))):0;
  gun.readyAt=now+Math.round(stats.reload*1000*(1-effect.reload));
  battle.hp-=damage;battle.shots=(battle.shots??1)+1;battle.hits=(battle.hits??1)+Number(hit);
- if(battle.hp<=0){const fame=Math.round([50,150,400][zone.tier]*(1+(officer?.pirateFame||0)));recordPirateKill(game,now);recordGuildObjective(game,'pirate',zoneId,now);addOfficerExperience(game,30+20*zone.tier);game.pirateFame=(game.pirateFame||0)+fame;game.pirateRespawns??={};game.pirateRespawns[zone.id]=now+1800000;delete game.npcBattle;return {ok:true,hit,damage,retaliation:{fired:false,damage:0},message:'해적 토벌! 명성 +'+fame,victory:true};}
+ if(battle.hp<=0){const fame=Math.round([50,150,400][zone.tier]*(1+(officer?.pirateFame||0)));recordPirateKill(game,now);shipyardVictory(game,coastDistance(zone.point)<=180,zone);recordGuildObjective(game,'pirate',zoneId,now);addOfficerExperience(game,30+20*zone.tier);game.pirateFame=(game.pirateFame||0)+fame;game.pirateRespawns??={};game.pirateRespawns[zone.id]=now+1800000;delete game.npcBattle;return {ok:true,hit,damage,retaliation:{fired:false,damage:0},message:'해적 토벌! 명성 +'+fame,victory:true};}
  const retaliation={fired:now>=battle.readyAt,damage:0};
  if(retaliation.fired){
- retaliation.damage=rolls[1]<.65?Math.min(currentHP(game),Math.floor([12,24,40][zone.tier]*(1-effect.defense))):0;game.hullHP=Math.max(0,currentHP(game)-retaliation.damage);battle.readyAt=now+8000;}
+ const guard=!battle.turtleGuard&&fleetShips(game).some(v=>v.id===game.flagshipId&&v.kind==='turtle')?.25:0;
+ retaliation.damage=rolls[1]<.65?Math.min(currentHP(game),Math.floor([12,24,40][zone.tier]*(1-effect.defense)*(1-guard))):0;if(guard&&retaliation.damage)battle.turtleGuard=true;game.hullHP=Math.max(0,currentHP(game)-retaliation.damage);battle.readyAt=now+8000;}
  if(currentHP(game)<=0)return {...defeatNPC(game,now),hit,damage,retaliation};
  return {ok:true,hit,damage,retaliation,message:(hit?'명중 · '+damage+' 피해':'빗나감')+(retaliation.damage?' / 해적 반격 '+retaliation.damage+' 피해':'')};
 }

@@ -1,4 +1,4 @@
-import {CHAT_LIMIT,CHAT_MAX_LENGTH,CHAT_INTERVAL,chatText,recentChat,validChat,validCard} from './social-core.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {CHAT_LIMIT,CHAT_MAX_LENGTH,CHAT_INTERVAL,chatText,recentChat,validChat,validCard} from './social-core.js?v=2026.11.12-collections-ranks-historic-ships';
 
 // Fifty reusable slots overwrite old text in the database, not merely on screen.
 export class CaptainChat{

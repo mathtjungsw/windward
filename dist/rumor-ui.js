@@ -1,12 +1,13 @@
-import {PORT_BY_ID} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,tradeGear,explorationGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {collectionArt} from './art.js?v=2026.11.12-collections-ranks-historic-ships';
+import {PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.12-collections-ranks-historic-ships';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.12-collections-ranks-historic-ships';
+import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,tradeGear,explorationGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
 
-import {readRumor} from './discoveries.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {fleetDisplayShips,SHIPS,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {readRumor} from './discoveries.js?v=2026.11.12-collections-ranks-historic-ships';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships';
 
 const labels={all:'읽은 소문',hidden:'숨긴 소문'};
 const headline=text=>text.length>28?text.slice(0,28).trimEnd()+'…':text;
@@ -36,14 +37,15 @@ export function createRumorUI(api){
         const id=el.dataset.tavernRumor;
         if(!readRumor(get(),id)&&!readContractRumor(get(),id))return api.toast('이 항구에 정상 정박한 뒤 소문을 들어 보세요.','error');
         api.changed();
-        showNote('all',id);
+        const note=entries.find(entry=>entry.id===id);
+        api.modal('주점 소문',portName(note.port),`<p class="tavern-rumor-text">${escape(note.text)}</p>`,'small');
       };
     });
   }
-  function showNote(filter='all',openId=null){
+  function showNote(filter='all'){
     const notes=rumorNote(get()).filter(n=>filter==='hidden'?n.hidden:!n.hidden);
     const nav=Object.entries(labels).map(([id,label])=>button(label,`data-note-filter="${id}" aria-pressed="${id===filter}"`)).join('');
-    const rows=notes.map(note=>`<article class="rumor-note-row"><details ${note.id===openId?'open':''}><summary>${escape(headline(note.text))}<small>${escape(portName(note.port))}</small></summary><p>${escape(note.text)}</p></details>${button(note.hidden?'다시 표시':'숨기기',`data-note-hide="${note.id}"`)}</article>`).join('');
+    const rows=notes.map(note=>`<article class="rumor-note-row"><details><summary>${escape(headline(note.text))}<small>${escape(portName(note.port))}${note.complete?' · <strong class="rumor-complete">✓ 완료</strong>':''}</small></summary><p>${escape(note.text)}</p></details>${button(note.hidden?'다시 표시':'숨기기',`data-note-hide="${note.id}"`)}</article>`).join('');
     api.modal('소문노트','주점에서 읽은 이야기',`<nav class="expansion-tabs rumor-note-tabs" aria-label="소문 표시">${nav}</nav><div class="rumor-note-list">${rows||'<p>이 목록에 표시할 소문이 없어요.</p>'}</div>`,'medium');
     const root=document.querySelector('#modal-content');
     root.querySelectorAll('[data-note-filter]').forEach(el=>{el.onclick=()=>{showNote(el.dataset.noteFilter);document.querySelector('[data-note-filter="'+el.dataset.noteFilter+'"]')?.focus();};});
@@ -61,7 +63,7 @@ export function createRumorUI(api){
     if(index===-1)return '보유 '+contractStatus(game,entry).owned+'개';
     const vessel=vessels[index];
     const label=index?'동행선 '+index:'기함';
-    return '장착 중 · '+label+' ('+SHIPS[vessel.tier].name+')';
+    return '장착 중 · '+label+' ('+vesselSpec(vessel).name+')';
   }
   function showDirectory(category){
     const entries=category==='officer'?OFFICERS:ITEMS, officer=category==='officer';
@@ -69,7 +71,7 @@ export function createRumorUI(api){
       const status=contractStatus(get(),entry);
       if(!status.started&&!status.owned)return '';
       const active=officer&&get().rumorProgress?.active===entry.id;
-      return `<article class="rumor-note-row"><strong>${escape(entry.name)}</strong><p>${escape(status.owned?(officer?(active?'동행 중':'고용 완료'):itemLocation(get(),entry)):status.done?'획득 가능':status.started?'의뢰 진행 중':'소문 확인')}</p>${button('자세히',`data-directory-entry="${entry.id}"`)}</article>`;
+      return `<article class="rumor-note-row ${!officer&&status.owned?'item-card-row':''}">${!officer&&status.owned?`<img class="item-card-thumb" src="${collectionArt(entry.id)}" loading="lazy" width="80" height="60" alt="">`: ''}<div><strong>${escape(entry.name)}</strong><p>${escape(status.owned?(officer?(active?'동행 중':'고용 완료'):itemLocation(get(),entry)):status.done?'획득 가능':status.started?'의뢰 진행 중':'소문 확인')}</p>${status.owned?`<small>${escape(entry.effect)}</small>`:''}</div>${button('자세히',`data-directory-entry="${entry.id}"`)}</article>`;
     }).join('');
     api.modal(officer?'부선장 명부':'특수 아이템 가방',officer?'고용과 동행 기록':'보유 물품과 장착 위치',
       `${rows||'<p>표시할 기록이 없어요.</p>'}`,'medium');
@@ -106,7 +108,7 @@ export function createRumorUI(api){
     const itemActions=!status.owned?'':entry.record?button('기록 펼치기','id="item-record-open"'):entry.id==='I052'&&api.onCanals?button('운하 지정하기','id="item-designate-canal"'):location?`<p>${escape(location)}에서 적용돼요.</p>`:inBag?button('사용 · '+status.owned+'개 보유',`data-rumor-action="use" ${canUse&&!pending?'':'disabled'}`):button(equipped?'해제':entry.type==='ship'?'기함에 장착':entry.type?'장착':'동행',`data-rumor-action="equip" ${s.port&&!pending?'':'disabled'}`);
     const active=s.rumorProgress?.distanceGear?.[entry.id],voucher=s.rumorProgress?.vouchers?.[entry.tradeMode]===entry.id;
     api.modal(entry.name,entry.type?'특수 아이템':'부선장 합류',
-      `${history}<p><strong>${escape(entry.effect)}</strong></p>${statusLine}${preview}<p>첫 소문 · ${escape(portName(entry.tavern))} · 선박 ${req.stage}단계${req.ports?' · 방문 '+req.ports+'곳':''}</p><p>담당자 · ${escape(portName(entry.port))}</p><p>${escape(contractDescription(entry))}</p>${entry.minStage?'<p>이 의뢰에 필요한 선박 · '+entry.minStage+'단계 이상</p>':''}${step}${status.requirements.map(req=>`<p>${escape(req.text)} · ${Math.min(req.current,req.total)}/${req.total}</p>`).join('')}${entry.coupon&&activeCoupon(s,entry.coupon)?.id===entry.id||voucher?'<p>다음 해당 행동에 적용 대기 중</p>':''}${active?`<p>적용 중 · 남은 ${Math.ceil(active)}해리</p>`:''}<div class="dialog-actions">${button(actionText[action],`data-rumor-action="${action}" ${canAdvance?'':'disabled'}`)}${itemActions}${!entry.type&&api.depart&&s.knownPorts?.includes(entry.port)&&s.port!==entry.port?button('관련 항구로 항해','id="officer-depart"'):''}</div>`,'medium');
+      `${history}${entry.type&&status.owned?`<img class="discovery-hero" src="${collectionArt(entry.id,true)}" alt="${escape(entry.name)}">`: ''}<p><strong>${escape(entry.effect)}</strong></p>${statusLine}${preview}<p>첫 소문 · ${escape(portName(entry.tavern))} · 선박 ${req.stage}단계${req.ports?' · 방문 '+req.ports+'곳':''}</p><p>담당자 · ${escape(portName(entry.port))}</p><p>${escape(contractDescription(entry))}</p>${entry.minStage?'<p>이 의뢰에 필요한 선박 · '+entry.minStage+'단계 이상</p>':''}${step}${status.requirements.map(req=>`<p>${escape(req.text)} · ${Math.min(req.current,req.total)}/${req.total}</p>`).join('')}${entry.coupon&&activeCoupon(s,entry.coupon)?.id===entry.id||voucher?'<p>다음 해당 행동에 적용 대기 중</p>':''}${active?`<p>적용 중 · 남은 ${Math.ceil(active)}해리</p>`:''}<div class="dialog-actions">${button(actionText[action],`data-rumor-action="${action}" ${canAdvance?'':'disabled'}`)}${itemActions}${!entry.type&&api.depart&&s.knownPorts?.includes(entry.port)&&s.port!==entry.port?button('관련 항구로 항해','id="officer-depart"'):''}</div>`,'medium');
     const root=document.querySelector('#modal-content');
     root.querySelector('#item-designate-canal')?.addEventListener('click',()=>api.onCanals());
     root.querySelector('#item-record-open')?.addEventListener('click',()=>showRecord(entry));
@@ -134,7 +136,7 @@ export function createRumorUI(api){
       rows=Object.entries(Object.groupBy(discovered,d=>d.kind)).map(([name,list])=>({text:(kinds[name]||name)+' · '+list.map(d=>d.name).join(', ')}));
       if(api.share&&ports.length)extras=`<label>공유할 확인 항구 <select id="item-record-port">${ports.map(p=>`<option value="${p.id}">${escape(p.name)}</option>`).join('')}</select></label>${button('확인 항구 카드 공유','id="item-record-share"')}`;
     }
-    if(kind==='notes')extras='<form id="item-record-note"><label>지명·거점 메모 <input maxlength="240" required name="note"></label><button type="submit">메모 남기기</button></form>';
+    if(kind==='notes')extras='<form id="item-record-note"><label>지명·거점 메모 <input maxlength="240" required name="note"></label><button type="submit" data-usage-key="action-note-submit">메모 남기기</button></form>';
     api.modal(entry.name,'항해 기록',`<ul>${rows.map(row=>`<li>${escape(row.text)}${row.at?` <small>${new Date(row.at).toLocaleString('ko-KR')}</small>`:''}${kind==='routes'&&api.depart&&PORT_BY_ID[row.key]?.active&&game.knownPorts?.includes(row.key)&&game.port!==row.key?button('현재 위치에서 다시 출항',`data-record-route="${escape(row.key)}"`):''}</li>`).join('')||'<li>아직 기록이 없어요.</li>'}</ul>${extras}${button('아이템으로 돌아가기','id="item-record-back"')}`,'medium');
     const root=document.querySelector('#modal-content');
     root.querySelector('#item-record-back').onclick=()=>showContract(entry);

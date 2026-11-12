@@ -1,11 +1,24 @@
-import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {ship,voyageEstimate,positionAlong} from './engine.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
+import {ship,voyageEstimate,positionAlong,makeRoute} from './engine.js?v=2026.11.12-collections-ranks-historic-ships';
 
 export const NAVIGATION_VERSION=2;
+
+function extendAcapulcoVoyage(game,nav,voyage){
+  const end=voyage.path.at(-1);
+  if(end[0]!==-100||end[1]!==16.5)return;
+  const berth=nav.approach(PORT_BY_ID.acapulco);
+  if(!berth||!nav.clearOcean(end,berth))return;
+  const route=nav.annotate({...voyage,...makeRoute([...voyage.path,berth])});
+  if(voyage.kind!=='rescue'&&voyage.kind!=='transition'){
+    route.foodRemaining=voyageEstimate(game,route,route.travelled).food;
+  }
+  game.voyage=route;
+}
 
 // Reconcile only navigation. This never calls arrival, rescue or discovery awards.
 export function reconcileNavigation(game,nav){
   if(!nav?.detail)return null;
+  if(game.voyage?.target==='acapulco')extendAcapulcoVoyage(game,nav,game.voyage);
   const previous=game.voyage;
   if(previous?.canal||previous?.passages?.length){game.navigationVersion=NAVIGATION_VERSION;return null;}
   if(game.port&&!previous){

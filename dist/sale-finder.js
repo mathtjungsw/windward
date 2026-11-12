@@ -1,5 +1,5 @@
-import {PORTS,GOODS} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {taxRate,permitted,captainTradeQuote} from './commerce.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {PORTS,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
+import {taxRate,permitted,captainTradeQuote} from './commerce.js?v=2026.11.12-collections-ranks-historic-ships';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const SALE_SEARCH_NOTICE='지금 검색한 시점에 조회한 시세 기준 최고가입니다. 시세와 세금은 실제 판매할 때 달라질 수 있어요.';
 export function ownedTradeGoods(game){const result={};for(const cargo of [game.cargo,JSON.parse(game.battleReserve?.cargoJSON||'{}')])for(const [id,c]of Object.entries(cargo||{}))if(GOODS[id]&&c.qty>0)result[id]=(result[id]||0)+c.qty;return result;}
@@ -30,7 +30,7 @@ export function createSaleFinder(api){
     const notice=document.createElement('p');notice.className='help-tip';notice.textContent=failed.length?`미조회 ${failed.length}곳이 있어 전체 최고가를 확정할 수 없어요. 조회에 성공한 항구 중의 결과입니다. ${SALE_SEARCH_NOTICE}`:SALE_SEARCH_NOTICE;target.append(notice);
     const heading=document.createElement('h3');heading.textContent='예상 실수령액 상위 5곳';target.append(heading);
     api.record?.(goodId,qty,ranked[0],at);
-    for(const [index,row]of ranked.slice(0,5).entries()){const article=document.createElement('article');article.className='sale-search-row';const name=document.createElement('strong');name.textContent=`${index+1}. ${row.port.name}${known.has(row.port.id)?'':' · 미발견'}`;const detail=document.createElement('p');detail.textContent=`판매가 ${fmt(row.quote.unit)} D/상자 · 세율 ${row.rate}%${row.quote.bonus?' · 보너스 +'+fmt(row.quote.bonus)+' D':''} · ${qty}상자 수령 ${fmt(row.quote.total)} D`;const look=document.createElement('button');look.type='button';look.textContent='지도에서 보기';look.onclick=()=>api.look(api.portPoint?.(row.port)||[row.port.lon,row.port.lat]);const depart=document.createElement('button');depart.type='button';depart.textContent='항구로 이동';
+    for(const [index,row]of ranked.slice(0,5).entries()){const article=document.createElement('article');article.className='sale-search-row';const name=document.createElement('strong');name.textContent=`${index+1}. ${row.port.name}${known.has(row.port.id)?'':' · 미발견'}`;const detail=document.createElement('p');detail.textContent=`판매가 ${fmt(row.quote.unit)} D/상자 · 세율 ${row.rate}%${row.quote.bonus?' · 보너스 +'+fmt(row.quote.bonus)+' D':''} · ${qty}상자 수령 ${fmt(row.quote.total)} D`;const look=document.createElement('button');look.type='button';look.dataset.usageKey='action-sale-look';look.textContent='지도에서 보기';look.onclick=()=>api.look(api.portPoint?.(row.port)||[row.port.lon,row.port.lat]);const depart=document.createElement('button');depart.type='button';depart.dataset.usageKey='action-sale-depart';depart.textContent='항구로 이동';
      depart.disabled=!known.has(row.port.id)||row.port.id===api.getState().port;
      depart.onclick=async()=>{depart.disabled=true;try{await api.depart(row.port.id);}finally{if(depart.isConnected)depart.disabled=false;}};
      article.append(name,detail,look,depart);target.append(article);}

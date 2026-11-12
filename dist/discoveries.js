@@ -1,8 +1,9 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {segmentDistance} from './voyage-core.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {activeOfficer} from './rumor-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships';
+import {segmentDistance} from './voyage-core.js?v=2026.11.12-collections-ranks-historic-ships';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships';
+import {activeOfficer} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
+const shipTrace=s=>s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0;
 export const explorationAllowed=s=>!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{
  const ids=Object.keys(s.discoveries||{}),active=ids.filter(id=>Object.hasOwn(DISCOVERY_BY_ID,id));
@@ -10,8 +11,8 @@ export const discoveryStats=s=>{
  return {foundCount:active.length,fame:Math.max(0,earned+(s.pirateFame||0)+(s.seaLog?.fame||0)+(s.guild?.earned||0)-(s.guild?.lost||0))};
 };
 export const hasClues=(s,d)=>(d.rumorIds||[]).every(id=>(s.rumors||[]).includes(id));
-export function nearbyDiscoveries(s){if(!explorationAllowed(s))return [];return DISCOVERIES.filter(d=>!s.discoveries?.[d.id]&&hasClues(s,d)&&mapDistance(s.position,d.point||[d.lon,d.lat])<=d.spotRadius+(activeOfficer(s)?.spotBonus||0)+.01).sort((a,b)=>mapDistance(s.position,a.point)-mapDistance(s.position,b.point)||a.id.localeCompare(b.id));}
-export function discoveryEntry(s,from,to,allowed=()=>true){if(!explorationAllowed(s))return 1;let earliest=1;for(const d of DISCOVERIES){if(s.discoveries?.[d.id]||!hasClues(s,d)||!allowed(d))continue;const radius=d.spotRadius+(activeOfficer(s)?.spotBonus||0),hit=segmentDistance(from,to,d.point);if(hit.distance>radius)continue;if(mapDistance(from,d.point)<=radius){earliest=0;continue;}let low=0,high=hit.t;for(let i=0;i<26;i++){const t=(low+high)/2,lon=from[0]+(((to[0]-from[0]+540)%360)-180)*t,p=[lon,from[1]+(to[1]-from[1])*t];if(mapDistance(p,d.point)<=radius)high=t;else low=t;}earliest=Math.min(earliest,Math.min(1,high+1e-7));}return earliest;}
+export function nearbyDiscoveries(s){if(!explorationAllowed(s))return [];return DISCOVERIES.filter(d=>!s.discoveries?.[d.id]&&hasClues(s,d)&&mapDistance(s.position,d.point||[d.lon,d.lat])<=d.spotRadius+(activeOfficer(s)?.spotBonus||0)+shipTrace(s)+.01).sort((a,b)=>mapDistance(s.position,a.point)-mapDistance(s.position,b.point)||a.id.localeCompare(b.id));}
+export function discoveryEntry(s,from,to,allowed=()=>true){if(!explorationAllowed(s))return 1;let earliest=1;for(const d of DISCOVERIES){if(s.discoveries?.[d.id]||!hasClues(s,d)||!allowed(d))continue;const radius=d.spotRadius+(activeOfficer(s)?.spotBonus||0)+shipTrace(s),hit=segmentDistance(from,to,d.point);if(hit.distance>radius)continue;if(mapDistance(from,d.point)<=radius){earliest=0;continue;}let low=0,high=hit.t;for(let i=0;i<26;i++){const t=(low+high)/2,lon=from[0]+(((to[0]-from[0]+540)%360)-180)*t,p=[lon,from[1]+(to[1]-from[1])*t];if(mapDistance(p,d.point)<=radius)high=t;else low=t;}earliest=Math.min(earliest,Math.min(1,high+1e-7));}return earliest;}
 export function inspectDiscovery(s,nav,id,now=Date.now()){
  const d=DISCOVERY_BY_ID[id];if(!d)return {ok:false,error:'발견물을 확인할 수 없어요.'};
  if(!explorationAllowed(s))return {ok:false,error:'구조가 끝난 뒤 정상 항해를 시작하면 조사할 수 있어요.'};

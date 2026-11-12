@@ -5,7 +5,8 @@ import {initialState,parseSavedGame,Navigator,makeRoute,voyageEstimate,advanceVo
 import {createChartDetail} from '../dist/chart-waterways.js';
 import {CANALS,PROJECT_BY_ID,projectAction,projectView} from '../dist/projects.js';
 import {ITEMS,OFFICERS} from '../dist/rumor-catalog.js';
-import {PORTS,GOODS,ACTIVE_PORT_BY_ID,registerDevelopedPorts,DEPOT_SITES} from '../dist/data.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {RELEASE} from '../dist/release-notes.js';
+const {PORTS,GOODS,ACTIVE_PORT_BY_ID,registerDevelopedPorts,DEPOT_SITES}=await import('../dist/data.js?v='+RELEASE);
 import {DISCOVERIES} from '../dist/discoveries-catalog.js';
 import {syncFleet} from '../dist/ship-rules.js';
 import {activateDistanceGear,activateTradeVoucher,addOfficerExperience,activeOfficer,appendItemRecord,normalizeRumorProgress,performContractAction,readContractRumor,recordContractArrival} from '../dist/rumor-progress.js';

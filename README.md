@@ -4,6 +4,12 @@
 
 ## 2026-11-12 · 로컬 개발
 
+- PC 상단과 모바일 더보기의 **메뉴 찾기**, **선장 목록 → 선장 상세 → 발견 도감·부선장**, **내 배 보기 → 역사 선박 조선소**에서 신규 화면을 확인합니다. 지도는 소유 항구에 `항구(선장)`을 표시합니다.
+- 수집 그림은 `dist/assets/collection/`의 정적 WebP 248개입니다. 필요할 때 Chrome이 있는 개발 환경에서 `node tools/build-collection-art.mjs`로 다시 생성합니다.
+- 순위·카드 이관·버튼 통계는 `node tools/update-collection-operations.mjs <ranking|backfill|usage> --emulator`로 격리 환경에서 확인합니다. 기본 실행은 변경 건수만 계산합니다. `--apply`를 추가하면 선택한 환경에 결과를 저장합니다. 이관 작업은 기존 개인 저장을 읽어 공개 요약만 보완합니다.
+- 예약 작업은 한국 시각 09:17·21:17에 종합 랭킹과 버튼 사용 합계를 처리합니다. GitHub Actions는 저장소와 메인 브랜치의 집계 워크플로로 제한된 단기 인증을 사용합니다. 집계 계정의 Firebase 권한은 공개 랭킹 읽기, 종합 결과 쓰기, 버튼 통계 관리에 한정됩니다. 원본 버튼 집계는 30일, 일별 합계는 90일 보관합니다. [Google Cloud 연결 설정](https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines)
+- 이번 배포에서 최소 저장 형식은 8입니다. 기존 저장은 새 버전에서 접속할 때 이어지며, 오래 열린 탭에서 저장 오류가 나면 새로고침해야 합니다.
+
 - 항구의 **내 배 보기**에서 배를 매각할 수 있습니다. 새 유적 6곳·동물 6종·보물 6곳·유물 3곳을 더해 현재 로컬 도감은 60종입니다.
 - 공동 수송·보급소·운하, 아이템 64종, 부선장 24명, 항구·해변 상륙을 로컬에서 체험할 수 있습니다. [로컬 실행과 검증 기록](docs/LOCAL_PREVIEW_2026-11-11_RUMORS.md)
 
@@ -64,6 +70,13 @@
 - 저장소: https://github.com/mathtjungsw/windward
 - 원본 소스는 이 저장소의 `dist/`입니다. `main`에 변경을 push하면 `.github/workflows/pages.yml`이 `npm test`를 통과한 후 `dist/`만 GitHub Pages에 자동 배포합니다. GitHub 저장소 Settings → Pages의 Source는 **GitHub Actions**입니다. Node 24와 `npm ci`로 검증 의존성을 설치합니다. 게임 파일을 새로 번들하는 단계는 없습니다.
 - 데이터베이스 규칙 배포는 `npx firebase-tools deploy --only database --project windward-voyage`를 사용합니다. GitHub Pages 배포와는 별도입니다.
+
+### 운영 업데이트 점검 절차
+
+1. 배포 전 새 버전을 검증하고, 운영 Firebase 규칙과 점검 설정을 복구할 수 있도록 보관합니다. `dist/maintenance.html`의 안내문을 이번 업데이트에 맞게 갱신합니다. 제목은 ‘업데이트를 위해 서버를 잠시 닫습니다’로 두고, 이번에 개선한 기능과 사용자가 체감할 변경점을 적습니다.
+2. 같은 안내문을 `.github/maintenance.html`에 두고 GitHub Pages로 게시합니다. 배포 작업이 게임 소스를 검증한 뒤 안내문을 대문으로 올립니다. 공개 대문에서 안내문이 보이는 것을 확인한 후 Firebase의 `releaseStatus.maintenance`를 켜고, 점검 중에는 운영 게임 접속을 막습니다. 이전에 열어 둔 탭도 게임 데이터를 계속 읽거나 쓰지 못하도록 서버에서 접속을 차단합니다.
+3. 점검 중 새 버전과 필요한 데이터 변경을 적용합니다. 새 버전에서는 `.github/maintenance.html`을 제거해 정상 대문을 게시하며, 서버가 점검 중일 때는 게임이 점검 안내를 표시합니다. 공개 주소에서 새 버전 파일과 적용 대상 변경을 확인합니다.
+4. 운영 Firebase 규칙을 적용하고 `releaseStatus.maintenance`를 끕니다. 공개 대문에서 게임 입장 화면이 다시 표시되는지와 서버 접속이 열린 상태인지 확인합니다. 배포 실패를 바로 해결할 수 없으면 이전 정상 버전과 운영 설정으로 복구하고 서버를 다시 엽니다.
 - Firebase Authentication에서 Google 제공자를 사용하고 `mathtjungsw.github.io`를 허용 도메인에 등록합니다.
 
 ## 시작과 저장

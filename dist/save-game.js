@@ -1,14 +1,15 @@
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {normalizeDepotDock} from './projects.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {normalizeSea} from './sea-activities.js?v=2026.11.12-collections-ranks-historic-ships';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.12-collections-ranks-historic-ships';
+import {normalizeDepotDock} from './projects.js?v=2026.11.12-collections-ranks-historic-ships';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
@@ -39,7 +40,7 @@ export function parseState(raw,defaults){
  for(const [id,d]of Object.entries(s.discoveries||{}))if(Object.hasOwn(DISCOVERY_BY_ID,id)||Object.hasOwn(RETIRED_DISCOVERY_FAME,id)){if(!d||!finite(d.foundDay)||d.foundDay<0||!finite(d.foundAt)||d.foundAt<0)bad();game.discoveries[id]={foundDay:d.foundDay,foundAt:d.foundAt,catalogVersion:String(d.catalogVersion||'2026.11.06')};}
  delete game.supplyCreditDays;
  if(s.version===4){if(!Array.isArray(s.fleetShips)||s.fleetShips.length<1||s.fleetShips.length>5||new Set(s.fleetShips.map(p=>p?.id)).size!==s.fleetShips.length||s.fleetShips.some(p=>typeof p?.id!=='string'||!p.id.length||p.id.length>80||!Number.isInteger(p.tier)||p.tier<0||p.tier>19)||!s.fleetShips.some(p=>p.id===s.flagshipId)||s.fleetCount!==s.fleetShips.length||s.shipTier!==s.fleetShips.find(p=>p.id===s.flagshipId).tier)bad();}
- if(s.version===4)syncFleet(game,s.fleetShips.map(p=>({id:p.id,tier:p.tier,...(Number.isSafeInteger(p.costBasis)&&p.costBasis>=0&&p.costBasis<=1e8?{costBasis:p.costBasis}:{})})),s.flagshipId);else syncFleet(game,Array.from({length:game.fleetCount},(_,i)=>({id:'vessel-'+i,tier:game.shipTier})));
+ if(s.version===4)syncFleet(game,s.fleetShips.map(p=>({id:p.id,tier:p.tier,...(historicalKind(p.kind,p.tier)?{kind:p.kind}:{}),...(Number.isSafeInteger(p.costBasis)&&p.costBasis>=0&&p.costBasis<=1e8?{costBasis:p.costBasis}:{})})),s.flagshipId);else syncFleet(game,Array.from({length:game.fleetCount},(_,i)=>({id:'vessel-'+i,tier:game.shipTier})));
  game.version=4;
  if(s.autoSupply!==undefined)game.autoSupply=s.autoSupply===true;
  if(s.cannons!==undefined){if(!Array.isArray(s.cannons)||s.cannons.length>100||new Set(s.cannons.map(p=>p?.id)).size!==s.cannons.length||s.cannons.some(p=>typeof p?.id!=='string'||p.id.length>100||!['swivel','light','rapid','standard','long','precision','heavy','large'].includes(p.kind)||!Number.isInteger(p.quality)||p.quality<0||p.quality>4||!finite(p.readyAt)||p.readyAt<0||p.shipId!==null&&!game.fleetShips.some(v=>v.id===p.shipId)))bad();}
@@ -48,7 +49,7 @@ export function parseState(raw,defaults){
  if(s.pirateFame!==undefined&&(!Number.isSafeInteger(s.pirateFame)||s.pirateFame<0||s.pirateFame>1e12))bad();
  for(const key of ['lootClaims'])if(s[key]!==undefined){const c=s[key];if(!c||typeof c!=='object'||Array.isArray(c)||Object.entries(c).some(([id,v])=>!Object.hasOwn(GOODS,id)||!Number.isInteger(v.qty)||v.qty<0||!finite(v.cost)||v.cost<0)||Object.values(c).reduce((n,v)=>n+v.qty,0)>50)bad();}
  if(s.battleReserve!==undefined){const r=s.battleReserve;let c;try{c=JSON.parse(r.cargoJSON);}catch{bad();}if(typeof r.id!=='string'||r.id.length>80||!Number.isInteger(r.money)||r.money<0||r.money>2000||!c||typeof c!=='object'||Array.isArray(c)||Object.entries(c).some(([id,v])=>!Object.hasOwn(GOODS,id)||!Number.isInteger(v.qty)||v.qty<0||!finite(v.cost)||v.cost<0)||Object.values(c).reduce((n,v)=>n+v.qty,0)>5)bad();}
- if(s.npcBattle!==undefined&&(!PIRATE_IDS.has(s.npcBattle?.zoneId)||!finite(s.npcBattle.hp)||s.npcBattle.hp<0||s.npcBattle.hp>500||!finite(s.npcBattle.readyAt)||['shots','hits'].some(key=>s.npcBattle[key]!==undefined&&(!Number.isSafeInteger(s.npcBattle[key])||s.npcBattle[key]<0))))bad();
+ if(s.npcBattle!==undefined&&(!PIRATE_IDS.has(s.npcBattle?.zoneId)||!finite(s.npcBattle.hp)||s.npcBattle.hp<0||s.npcBattle.hp>500||!finite(s.npcBattle.readyAt)||(s.npcBattle.turtleGuard!==undefined&&typeof s.npcBattle.turtleGuard!=='boolean')||['shots','hits'].some(key=>s.npcBattle[key]!==undefined&&(!Number.isSafeInteger(s.npcBattle[key])||s.npcBattle[key]<0))))bad();
  if(s.rankProgress!==undefined){const p=s.rankProgress;if(!p||p.version!==1||!finite(p.since)||p.since<0||!Array.isArray(p.tradedGoods)||p.tradedGoods.length>128||p.tradedGoods.some(id=>!Object.hasOwn(GOODS,id))||['pirateKills','fleetDefeats','duelWins','bestTradeProfit'].some(k=>!Number.isSafeInteger(p[k])||p[k]<0||p[k]>1e12))bad();game.rankProgress={...p,tradedGoods:[...new Set(p.tradedGoods)]};}
  if(s.defenseAck!==undefined){const a=s.defenseAck;let loot;try{loot=JSON.parse(a.lootJSON);}catch{bad();}if(!a||['seq','cash','kills'].some(k=>!Number.isSafeInteger(a[k])||a[k]<0||a[k]>1e12)||typeof a.lostReserveId!=='string'||a.lostReserveId.length>80||!loot||Object.entries(loot).some(([id,c])=>!Object.hasOwn(GOODS,id)||!Number.isSafeInteger(c.qty)||c.qty<0||!finite(c.cost)||c.cost<0))bad();}
  if(s.raidId!==undefined&&(typeof s.raidId!=='string'||s.raidId.length>80))bad();
@@ -61,6 +62,7 @@ export function parseState(raw,defaults){
  if(game.port&&!game.voyage){if(game.navigationVersion!==2)game.position=[PORT_BY_ID[game.port].lon,PORT_BY_ID[game.port].lat];game.legacyHarbor=!ACTIVE_PORT_BY_ID[game.port];}
  if(game.voyage?.target&&!ACTIVE_PORT_BY_ID[game.voyage.target]&&!game.voyage.kind)game.voyage.legacyArrival=true;
  if(s.rumorProgress!==undefined)game.rumorProgress=normalizeRumorProgress(game);
+ if(s.shipyard!==undefined)normalizeShipyard(game);
  normalizeShore(game);
  normalizeGuild(game);
  normalizeSea(game);

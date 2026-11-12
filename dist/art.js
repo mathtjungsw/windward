@@ -1,4 +1,5 @@
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {historicalGlyph} from './historical-ship-art.js?v=2026.11.12-collections-ranks-historic-ships';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships';
 // Original vector illustrations for Windward. No external images or runtime requests.
 export const SHIP_ART_NAMES=Object.freeze(['통나무 뗏목','돛 달린 뗏목','보강 뗏목','소형 노젓는 배','소형 교역 돛배','단돛 교역선','연안 교역선','개량 연안선','쌍돛 연안선','항해 캐러벨','개량 캐러벨','대형 캐러벨','소형 카락','교역 카락','대형 카락','원양 교역선','교역 갤리온','대형 갤리온','원양 대형 범선','명장의 교역 범선']);
 export const DISCOVERY_ART_IDS=Object.freeze(DISCOVERIES.map(d=>d.id));
@@ -65,8 +66,13 @@ function shipBody(t){
 export function shipArt(tier){const t=tierIndex(tier);return svg('ship-'+t,SHIP_ART_NAMES[t],setting('ship-'+t)+path('M110 392Q290 366 531 391L519 408Q305 432 128 410Z','#e5f5ed','none')+shipBody(t)+wave(418,520)+wave(446,430));}
 export function shipArtPath(tier){return `assets/ships/ship-${String(tierIndex(tier)+1).padStart(2,'0')}.svg`;}
 export function discoveryArt(id){return `assets/discoveries/${DISCOVERY_ART_IDS.includes(id)?id:'unknown'}.svg`;}
-export function shipGlyph(tier,color=P.ink){
+export function collectionArt(id,detail=false){
+ if(!DISCOVERY_ART_IDS.includes(id)&&!/^I0(0[1-9]|[1-5][0-9]|6[0-4])$/.test(id))return 'assets/discoveries/unknown.svg';
+ return `assets/collection/${id}-${detail?'detail':'thumb'}.webp`;
+}
+export function shipGlyph(tier,color=P.ink,kind){
   const t=tierIndex(tier),ink=/^#[\da-f]{3,8}$/i.test(color)?color:P.ink;
+  if(kind){const historical=historicalGlyph(kind,ink);if(historical)return historical;}
   if(t<3){let g='';for(let i=0;i<5+(t===2?1:0);i++)g+=`<rect x="${-13+i*5}" y="-2" width="5" height="20" rx="2" fill="#b68c56" stroke="#654a36" stroke-width="1"/>`;g+=`<path d="M-14 3H15M-14 12H15" stroke="#ead5a5" stroke-width="2"/><path d="M-14 19L13-5" stroke="#654a36" stroke-width="2"/>`;if(t>0)g+=`<path d="M0-23V5" stroke="#654a36" stroke-width="2"/><path d="M-1-21L-13-2H-1Z" fill="#fff5da" stroke="${ink}" stroke-width=".7"/>`;return `<g>${g}</g>`;}
   const beam=+(14+t*.22).toFixed(2),depth=+(16+t*.14).toFixed(2);
   let g=`<path d="M${-beam} 7L${beam} 7L10 ${depth}H-10Z" fill="${t>=12?'#795839':'#aa8051'}" stroke="#493d28" stroke-width="1.3"/><path d="M${-beam+2} 10H${beam-2}" stroke="#d9bc83" stroke-width="1"/>`;

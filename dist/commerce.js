@@ -1,9 +1,10 @@
-import {recordTrade} from './rank-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {tradeQuote} from './market-rules.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.12-cooperative-fleet-discoveries';
-import {saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.12-cooperative-fleet-discoveries';
+import {shipyardTrade} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships';
+import {recordTrade} from './rank-progress.js?v=2026.11.12-collections-ranks-historic-ships';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships';
+import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.12-collections-ranks-historic-ships';
+import {tradeQuote} from './market-rules.js?v=2026.11.12-collections-ranks-historic-ships';
+import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.12-collections-ranks-historic-ships';
+import {saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships';
 export function captainTradeQuote(game,portId,goodId,qty,mode,item,now,rate){
  const quote=tradeQuote(portId,goodId,qty,mode,item,now,rate);
  const bonus=mode==='sell'&&game?Math.floor(quote.total*saleBonus(game,portId,goodId)+1e-9):0;
@@ -24,7 +25,7 @@ export function executeTrade(game,content,uid,portId,goodId,qty,mode,quote,now,r
  else{if(old.qty<qty)throw Error('판매할 화물이 부족해요.');const cost=old.cost*qty/old.qty;game.money+=actual.total;game.profit+=actual.total-cost;if(old.qty===qty)delete game.cargo[goodId];else game.cargo[goodId]={qty:old.qty-qty,cost:old.cost-cost};if(portId!=='lisbon'&&goodId==='wine'&&game.boughtLisbonWine)game.soldAway=true;}
  const owner=ownership(content).ownerUid;if(owner&&!content.basicIncome?.period)advanceBasicIncome(content,portId,owner,now);if(owner&&actual.tax){content.treasury??={};content.treasury[owner]=(content.treasury[owner]||0)+actual.tax;}
  if(actual.voucher)delete game.rumorProgress.vouchers[mode];
- content.markets??={};content.markets[goodId]=actual.next;game.trades++;recordTrade(game,goodId,mode,mode==='sell'?actual.total-old.cost*qty/old.qty:0,now);return {ok:true,...actual};
+ content.markets??={};content.markets[goodId]=actual.next;game.trades++;if(!game.explorationLockedUntilSailing)shipyardTrade(game,goodId);recordTrade(game,goodId,mode,mode==='sell'?actual.total-old.cost*qty/old.qty:0,now);return {ok:true,...actual};
 }
 export function changePortPolicy(content,uid,defaultRate,rates,blacklist){if(ownership(content).ownerUid!==uid)throw Error('현재 소유자만 변경할 수 있어요.');if(!Number.isFinite(defaultRate)||defaultRate<0||defaultRate>10||Object.keys(rates).length>100||Object.values(rates).some(n=>!Number.isFinite(n)||n<0||n>10)||blacklist.length>20)throw Error('세율 0~10%, 제한 선장 최대 20명을 확인하세요.');content.defaultRate=defaultRate;content.rates=rates;content.blacklist=blacklist;return {ok:true};}
 export function withdrawBasicIncome(game,content,uid,portId,now){

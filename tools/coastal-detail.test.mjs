@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {CoastalDetail} from '../dist/coastal-detail.js';
 import {createChartDetail,COARSE_CONNECTIONS} from '../dist/chart-waterways.js';
-import {Navigator,initialState,distance} from '../dist/engine.js';
+import {Navigator,initialState,distance,positionAlong} from '../dist/engine.js';
 import {DISCOVERIES} from '../dist/discoveries-catalog.js';
 import {COASTAL_ACTIVITY_SITES,DEVELOPMENT_SITES} from '../dist/coastal-sites.js';
 import {PIRATE_ZONES} from '../dist/combat-core.js';
@@ -18,6 +18,27 @@ const berth=id=>nav.approach(PORT_BY_ID[id]);
 const safePath=route=>route?.path.every((point,index)=>!index||nav.clear(route.path[index-1],point));
 const polygon=(outer,holes=[])=>({geometry:{type:'Polygon',coordinates:[outer,...holes]}});
 const box=(l,b,r,t)=>[[l,b],[r,b],[r,t],[l,t],[l,b]];
+
+test('Acapulco has a navigable coastal berth and an existing voyage continues to it',()=>{
+  const point=berth('acapulco'),old=[-100,16.5],from=[-102.5,16.6];
+  assert.ok(nav.coastAt(point)<2);
+  const route=nav.route(from,point,{maxOffshore:100});
+  assert.ok(safePath(route));
+  assert.deepEqual(route.path.at(-1),point);
+  const approaches=new Map(PORTS.map(port=>[port.id,berth(port.id)]));
+  assert.equal(dockAlong(nav,point,point,approaches)?.id,'acapulco');
+  const previous=nav.route(from,old,{maxOffshore:100}),travelled=previous.total/2;
+  const game={...initialState(),port:null,navigationVersion:NAVIGATION_VERSION,
+    position:positionAlong(previous,travelled),voyage:{...previous,target:'acapulco',travelled}};
+  reconcileNavigation(game,nav);
+  assert.equal(game.voyage.travelled,travelled);
+  assert.deepEqual(positionAlong(game.voyage,travelled),game.position);
+  assert.deepEqual(game.voyage.path.at(-1),point);
+  assert.ok(safePath(game.voyage));
+  const adjusted=game.voyage;
+  reconcileNavigation(game,nav);
+  assert.equal(game.voyage,adjusted);
+});
 
 test('detail preserves islands smaller than a world grid cell, holes and the date line',()=>{
   const coast=new CoastalDetail([
