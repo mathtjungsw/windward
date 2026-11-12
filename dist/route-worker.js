@@ -1,5 +1,5 @@
-import {Navigator} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {Navigator} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.12-collections-ranks-historic-ships.3';
 
 let nav;
 self.onmessage=({data})=>{

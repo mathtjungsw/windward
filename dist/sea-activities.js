@@ -1,7 +1,7 @@
-import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {explorationGear,activeOfficer,appendItemRecord,addOfficerExperience} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {explorationGear,activeOfficer,appendItemRecord,addOfficerExperience} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
 
 export const SEA_TYPES={
   fishing:{label:'어장',wait:20000,cooldown:1800000,good:'driedfish',qty:2},

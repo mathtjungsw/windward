@@ -49,6 +49,34 @@ test('flat canvas overrides globe clipping and mobile fixed height, and its clic
 test('ranking controls expose all twenty-two metrics in six groups on mobile',()=>{const ids=[];for(const button of document.querySelectorAll('[data-rank-group]')){button.click();for(const option of $('#rank-metric-select').options)ids.push(option.value);}assert.equal(new Set(ids).size,22);assert.ok(ids.includes('pirateKills'));assert.ok(ids.includes('ownedPortCount'));assert.ok(ids.includes('bestTradeProfit'));});
 test('investigation opens large actions on desktop and mobile, closes and can reopen',async()=>{const d=DISCOVERIES.find(d=>!d.rumorIds.length);app.state.port=null;app.state.position=[...d.point];app.expansion.investigate();assert.equal($('#modal').open,true);assert.ok($('[data-popup-inspect]'));assert.equal($('[data-popup-inspect]').disabled,false);$('#investigation-close').click();assert.equal($('#modal').open,false);window.happyDOM.setViewport({width:390,height:844});app.expansion.investigate();assert.equal($('#modal').dataset.investigation,'true');assert.ok($('[data-popup-approach]'));$('#investigation-close').click();app.state.position=[-9.14,38.72];app.state.port='lisbon';await wait();});
 test('all captains retain offline records and last seen time in list and detail',async()=>{app.fleet.uid='self';app.fleet.onlineCaptains=()=>[];app.rankings.page=async()=>[{id:'offline',name:'지난 선장',visited:50,statsVersion:3,explorationPercent:36.68,fame:50,shipTier:0,fleetCount:1,foundCount:1,lastSeenAt:Date.UTC(2026,10,9,0,5)}];await app.expansion.showCaptains('all',true);assert.match($('#persistent-roster').textContent,/09:05/);assert.match($('#persistent-roster').textContent,/오프라인/);$('.captain-directory-row').click();await wait();assert.match($('#modal-content').textContent,/09:05/);assert.match($('#modal-content').textContent,/한국 시간/);$('#close-modal').click();});
+test('only the personal album shows the game discovery point even when both captains discovered it',async()=>{
+ const discovery=DISCOVERIES[0],game=initialState();
+ game.discoveries[discovery.id]={foundDay:2,foundAt:1000};
+ const other={id:'other',name:'다른 선장',visited:2};
+ const original={page:app.rankings.page,captain:app.rankings.captain,collection:app.rankings.collection};
+ try{
+  app.beginPlaying(game);$('#modal').close();
+  Object.assign(app.rankings,{page:async()=>[other],captain:async()=>other,collection:async()=>({discoveries:{[discovery.id]:true}})});
+  await app.expansion.showCaptains('all',true);
+  $('.captain-directory-row').click();await wait();
+  $('#captain-collections').click();await wait();
+  $('[data-public-card="'+discovery.id+'"]').click();
+  assert.match($('#captain-collection').textContent,/테르세이라섬/);
+  assert.doesNotMatch($('#captain-collection').textContent,/게임 발견 지점|지도에서 보기|38\.60/);
+  assert.equal($('[data-discovery-study-map]'),null);
+
+  app.expansion.showAlbum();
+  $('[data-collection="'+discovery.id+'"]').click();
+  assert.match($('#modal-content').textContent,/게임 발견 지점/);
+  const position=[...app.state.position];
+  $('[data-discovery-study-map]').click();
+  assert.equal($('#discovery-study-pin').getAttribute('aria-label'),discovery.name);
+  assert.deepEqual(app.state.position,position);
+ }finally{
+  Object.assign(app.rankings,original);
+  app.beginPlaying(initialState());$('#modal').close();
+ }
+});
 test('manual port selection immediately switches to auto, clears held inputs, and sail button still starts a planned route',async()=>{
  const originalReserve=app.combat.hasReserve,originalBlocked=app.combat.blocked;app.combat.hasReserve=()=>true;app.combat.blocked=()=>false;
  app.beginPlaying(initialState());$('#modal').close();app.state.controlMode='manual';app.heldKeys.add('ArrowRight');app.heldKeyboard.set('KeyD','ArrowRight');app.heldPointers.set(4,'ArrowUp');await app.selectPort('porto',false);assert.equal(app.state.controlMode,'auto');assert.equal(app.state.voyage.target,'porto');assert.equal(app.heldKeys.size,0);assert.equal(app.heldPointers.size,0);assert.equal(app.heldKeyboard.size,0);

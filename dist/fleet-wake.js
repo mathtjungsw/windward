@@ -1,3 +1,3 @@
-import {mapDistance,mapToward,wrapPosition} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {mapDistance,mapToward,wrapPosition} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.3';
 export function wakeFollowers(points,count,spacing=30){const out=[];for(let i=1;i<count;i++){let remaining=i*spacing;for(let j=points.length-1;j>0;j--){const back=points[j-1],front=points[j],length=mapDistance(front,back);if(length<1e-8)continue;if(remaining<=length){out.push({index:i,point:wrapPosition(mapToward(front,back,remaining))});break;}remaining-=length;}}return out;}
 export const orderedFleet=s=>{const rows=s.fleetShips||[];return [...rows.filter(p=>p.id===s.flagshipId),...rows.filter(p=>p.id!==s.flagshipId)];};

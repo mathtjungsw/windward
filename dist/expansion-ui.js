@@ -1,18 +1,18 @@
-import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {historicalArt} from './historical-ship-art.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {vesselGunLimits} from './cannons.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {gearOnShip,tradeGear} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,STORED_SHIP_LIMIT,storedShips} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {lastSeenText} from './captain-time.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {historicalArt} from './historical-ship-art.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {vesselGunLimits} from './cannons.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {gearOnShip,tradeGear} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,STORED_SHIP_LIMIT,storedShips} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {lastSeenText} from './captain-time.js?v=2026.11.12-collections-ranks-historic-ships.3';
 const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const KINDS={ruin:'유적',relic:'유물',animal:'동물',treasure:'보물'};
@@ -145,7 +145,7 @@ export function createExpansion(api){
   api.onModal(label+'할까요?','선박·선단',`<p>비용 ${fmt(cost)} D · 보유 ${fmt(s.money)} D</p><p>${kind==='add'?`현재 식량을 나누어 항해 가능 보급은 ${(s.food*fleetCount(s)/(fleetCount(s)+1)).toFixed(1)}일분이 돼요.`:'현재 화물과 보급은 그대로 유지되고 선단 전체 모양과 성능이 바뀝니다.'}</p><div class="dialog-actions"><button id="ship-confirm" class="primary-button">확인</button><button id="ship-cancel" class="service-button">돌아가기</button></div>`,'small');
   $('#ship-cancel').onclick=()=>showShip();$('#ship-confirm').onclick=async()=>{if(busy)return;busy=true;try{const r=await api.onShipAction(game=>(kind==='upgrade'?upgradeShip:addShip)(game));if(r){tierKey='';showShip();}}finally{busy=false;}};
  }
- function discoveryCardDetail(d,withPoint){
+ function discoveryCardDetail(d,withPoint=false){
   const study=discoveryStudy(d.id),point=d.point||[d.lon,d.lat];
   const sources=[...(d.sources||[]),...(study?.sources||[])];
   return `<figure class="discovery-photo"><img class="discovery-hero" src="${collectionArt(d.id,true)}" alt="${esc(d.name)} 실사풍 재현">
@@ -155,7 +155,8 @@ export function createExpansion(api){
       ${withPoint?`<dt>게임 발견 지점</dt><dd>${esc(discoveryCoordinates(point))} <button type="button" data-discovery-study-map>지도에서 보기</button></dd>`:''}
     </dl>
     <h3>자세히 알아보기</h3><p>${esc(study?.detail||d.description)}</p>
-    <p class="modal-meta">${d.fiction?'이 물건과 발견 이야기는 게임 속 창작이에요.':'게임 속 발견 지점은 항해용 위치예요. 실제 유적의 좌표나 동물이 나타나는 위치는 자료를 확인하세요.'}</p>
+    ${d.fiction?'<p class="modal-meta">이 물건과 발견 이야기는 게임 속 창작이에요.</p>':
+      withPoint?'<p class="modal-meta">게임 속 발견 지점은 항해용 위치예요. 실제 유적의 좌표나 동물이 나타나는 위치는 자료를 확인하세요.</p>':''}
     ${sources.length?`<p class="discovery-sources">${sources.map(source=>`<a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.label||'자료 보기')}</a>`).join('')}</p>`:''}`;
  }
  function bindStudyMap(root,d){
@@ -227,8 +228,7 @@ export function createExpansion(api){
       const portrait=Number(entry.id.slice(1))-1;
       root.innerHTML=`<h3>${esc(entry.name)}</h3>${officers?
         `<div class="officer-portrait public-officer" style="background-position:${portrait%6*20}% ${Math.floor(portrait/6)*100/3}%"></div><p>${esc(entry.effect)}</p>`:
-        discoveryCardDetail(entry,!!get().discoveries?.[entry.id])}<button data-usage-key="action-public-card-back" data-public-back>카드 목록</button>`;
-      if(!officers)bindStudyMap(root,entry);
+        discoveryCardDetail(entry)}<button data-usage-key="action-public-card-back" data-public-back>카드 목록</button>`;
       root.querySelector('[data-public-back]').onclick=paint;
     };
   }

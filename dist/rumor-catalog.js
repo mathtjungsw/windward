@@ -200,4 +200,4 @@ Object.assign(OFFICERS.find(x=>x.id==='O019'),{hullBonus:.04,effect:'선단 최�
 export const OFFICER_BY_ID = Object.fromEntries(OFFICERS.map(x=>[x.id,x]));
 export const ITEM_BY_ID = Object.fromEntries(ITEMS.map(x=>[x.id,x]));
 export const MEDITERRANEAN_PORTS = new Set(['marseille','venice','athens','istanbul','alexandria']);
-import {EXTRA_ITEMS} from './item-catalog-extra.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {EXTRA_ITEMS} from './item-catalog-extra.js?v=2026.11.12-collections-ranks-historic-ships.3';

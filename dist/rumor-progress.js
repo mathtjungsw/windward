@@ -1,7 +1,7 @@
-import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
 
 export const isConsumable=entry=>['supply','repair','coupon','extension','shore-consumable','distance','trade-voucher','activity','project','facility'].includes(entry?.type);
 export const itemLimit=entry=>isConsumable(entry)?20:1;
@@ -276,4 +276,4 @@ export function saleBonus(game,portId,goodId){
 export function contractDescription(entry){
   return entry.challenge.ports.map(id=>PORT_BY_ID[id]?.name).join(' · ')+' 방문, '+GOODS[entry.challenge.cargo].name+' '+entry.challenge.qty+'상자 납품';
 }
-import {CANAL_IDS} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {CANAL_IDS} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships.3';

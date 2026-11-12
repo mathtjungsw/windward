@@ -1,4 +1,4 @@
-import {mergeDefense,defenseFromGame} from './defense-core.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {mergeDefense,defenseFromGame} from './defense-core.js?v=2026.11.12-collections-ranks-historic-ships.3';
 export async function readDefense(account,uid=account.uid){return (await account.sdk.get(account.sdk.ref(account.db,'gameV2/fleetStates/'+uid))).val();}
 export async function refreshDefense(account){if(!account.defenseEnabled||!account.uid||!account.readGame?.())return;const node=await readDefense(account);account.defenseState=node;const game=structuredClone(account.readGame());if(mergeDefense(game,node,Date.now()+(account.serverOffset||0))){account.applyGame?.(game);account.dirty=true;account.cache(game,true);account.onDefense?.(node);}}
 export async function publishDefense(account,suppliedGame){if(!account.defenseEnabled||!account.ready)return;try{const s=account.sdk,game=structuredClone(suppliedGame||account.readGame()),meta={name:account.name,session:account.session,saveRevision:account.revision,nav:account.getNavigation?.()};

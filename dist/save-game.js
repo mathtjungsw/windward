@@ -1,15 +1,15 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {normalizeDepotDock} from './projects.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {normalizeSea} from './sea-activities.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {normalizeDepotDock} from './projects.js?v=2026.11.12-collections-ranks-historic-ships.3';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;

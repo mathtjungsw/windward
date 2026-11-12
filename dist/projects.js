@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {supplyRoom,tradingPort} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships.2';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.12-collections-ranks-historic-ships.2';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {supplyRoom,tradingPort} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.12-collections-ranks-historic-ships.3';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));
