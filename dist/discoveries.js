@@ -1,8 +1,8 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.13-canal-routes';
-import {mapDistance} from './world-wrap.js?v=2026.11.13-canal-routes';
-import {segmentDistance} from './voyage-core.js?v=2026.11.13-canal-routes';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.13-canal-routes';
-import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.13-canal-routes';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.13-discovery-move';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-discovery-move';
+import {segmentDistance} from './voyage-core.js?v=2026.11.13-discovery-move';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.13-discovery-move';
+import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.13-discovery-move';
 const shipTrace=s=>(s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0)+(explorationGear(s)?.spotBonus||0);
 export const explorationAllowed=s=>!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{

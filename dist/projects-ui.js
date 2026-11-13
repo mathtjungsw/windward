@@ -1,7 +1,7 @@
-import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.13-canal-routes';
-import {fleetCount} from './ship-rules.js?v=2026.11.13-canal-routes';
-import {PROJECTS,canalAccess,depotAccess,projectView} from './projects.js?v=2026.11.13-canal-routes';
-import {canalPassDiscount} from './canal-reservations.js?v=2026.11.13-canal-routes';
+import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.13-discovery-move';
+import {fleetCount} from './ship-rules.js?v=2026.11.13-discovery-move';
+import {PROJECTS,canalAccess,depotAccess,projectView} from './projects.js?v=2026.11.13-discovery-move';
+import {canalPassDiscount} from './canal-reservations.js?v=2026.11.13-discovery-move';
 
 const $=s=>document.querySelector(s), fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const time=at=>at?new Date(at).toLocaleString('ko-KR',{dateStyle:'short',timeStyle:'short'}):'';

@@ -1,10 +1,10 @@
-import {createOfflineCombat} from './offline-combat.js?v=2026.11.13-canal-routes';
-import {createMapCombat} from './combat-map.js?v=2026.11.13-canal-routes';
-import {fleetMaxHP} from './ship-rules.js?v=2026.11.13-canal-routes';
-import {combatProfile,combatEligible,reserveLoss,returnReserve,openBattle,fireCannon,finishExpired,claimBattle,fireAtPirate,defeatNPC,npcSlotChanges,PIRATE_ZONES,cargoCount,addCargo} from './combat-core.js?v=2026.11.13-canal-routes';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.13-canal-routes';
-import {usedSpace,capacity} from './engine.js?v=2026.11.13-canal-routes';
-import {mapDistance} from './world-wrap.js?v=2026.11.13-canal-routes';
+import {createOfflineCombat} from './offline-combat.js?v=2026.11.13-discovery-move';
+import {createMapCombat} from './combat-map.js?v=2026.11.13-discovery-move';
+import {fleetMaxHP} from './ship-rules.js?v=2026.11.13-discovery-move';
+import {combatProfile,combatEligible,reserveLoss,returnReserve,openBattle,fireCannon,finishExpired,claimBattle,fireAtPirate,defeatNPC,npcSlotChanges,PIRATE_ZONES,cargoCount,addCargo} from './combat-core.js?v=2026.11.13-discovery-move';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.13-discovery-move';
+import {usedSpace,capacity} from './engine.js?v=2026.11.13-discovery-move';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-discovery-move';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const roll=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
 export function createCombat(api){

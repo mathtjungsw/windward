@@ -1,4 +1,4 @@
-import {RANK_DEFINITIONS,RANK_GROUPS} from './rank-metrics.js?v=2026.11.13-canal-routes';
+import {RANK_DEFINITIONS,RANK_GROUPS} from './rank-metrics.js?v=2026.11.13-discovery-move';
 
 const baseline={money:2400,visited:1,fleetGrowth:1};
 const groups=RANK_GROUPS.filter(([id])=>id!=='overall');

@@ -26,6 +26,39 @@ const app=await import('../.qa/app-ui-unit.mjs');
 const $=s=>document.querySelector(s),wait=()=>new Promise(r=>setTimeout(r,5));
 app.account.save=()=>{};app.account.seenVersion='2026.11.06-all-captains';
 app.beginPlaying(initialState());$('#modal').close();
+test('investigation move reports an active canal and detours before its entrance',async()=>{
+ const d=DISCOVERIES.find(item=>item.id==='relic-compass');
+ const from=[-9.85,38.7],destination=[-12,38];
+ const route=makeRoute([from,destination]);
+ const game=initialState();
+ Object.assign(game,{port:null,position:from,food:10,navigationVersion:NAVIGATION_VERSION,
+  voyage:{...route,target:null,travelled:0,foodRemaining:1,passages:[
+   {id:'canal-suez',start:0,end:route.total,amount:80,paid:true}
+  ]}});
+ const previousReserve=app.combat.hasReserve;
+ app.combat.hasReserve=()=>true;
+ try{
+  app.beginPlaying(game);$('#modal').close();await wait();
+  app.expansion.investigate();
+  const button=$('[data-popup-approach="'+d.id+'"]');
+  assert.ok(button);
+  button.click();
+  assert.match($('#investigation-move-status').textContent,/운하 구간/);
+  const balance=app.state.money;
+  app.state.voyage.passages[0].paid=false;
+  app.state.food=.1;
+  button.click();
+  assert.match($('#investigation-move-status').textContent,/보급/);
+  assert.equal(app.state.voyage.passages[0].paid,false);
+  assert.equal(app.state.money,balance);
+  app.state.food=10;
+  button.click();await wait();
+  assert.equal(app.state.investigationTarget,d.id,$('#investigation-move-status')?.textContent);
+  assert.equal(app.state.money,balance+80);
+  assert.deepEqual(app.state.detourTarget.point,destination);
+  assert.equal($('#modal').open,false);
+ }finally{app.combat.hasReserve=previousReserve;app.beginPlaying(initialState());$('#modal').close();}
+});
 test('application initializes new menus and both minimap choices without runtime errors',()=>{assert.ok(app.nav);assert.ok($('.atlas-toggle'));for(const text of ['항구 투자·활동','대포·수리'])assert.ok([...document.querySelectorAll('.main-nav button')].some(b=>b.textContent.includes(text)));const point=[...app.state.position];$('[data-view=flat]').click();assert.equal(app.globe.mode,'flat');assert.deepEqual(app.state.position,point);$('[data-view=globe]').click();assert.equal(app.globe.mode,'globe');});
 test('the flagship and trailing ships stay upright on a diagonal route',()=>{
   const game=initialState(),route=makeRoute([[-103,16],[-100,16.5]]),travelled=140;

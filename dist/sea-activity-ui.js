@@ -1,4 +1,4 @@
-import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.13-canal-routes';
+import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.13-discovery-move';
 
 export function createSeaActivityUI(api){
   let pending=false, timer, signature='';

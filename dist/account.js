@@ -1,10 +1,10 @@
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.13-canal-routes';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.13-canal-routes';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.13-canal-routes';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.13-canal-routes';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.13-canal-routes';
-import {applyRaftStart} from './raft-start.js?v=2026.11.13-canal-routes';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.13-canal-routes';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.13-discovery-move';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.13-discovery-move';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.13-discovery-move';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.13-discovery-move';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.13-discovery-move';
+import {applyRaftStart} from './raft-start.js?v=2026.11.13-discovery-move';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.13-discovery-move';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
