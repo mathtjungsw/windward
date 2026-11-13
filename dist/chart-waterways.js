@@ -1,4 +1,4 @@
-import {CoastalDetail} from './coastal-detail.js?v=2026.11.13-discovery-move';
+import {CoastalDetail} from './coastal-detail.js?v=2026.11.14-supply-storage';
 
 // Connect world-grid cells through narrow waters using shore-checked waypoints.
 export const COARSE_CONNECTIONS=[

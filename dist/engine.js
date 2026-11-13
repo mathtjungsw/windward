@@ -1,16 +1,16 @@
-import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.13-discovery-move';
-import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.13-discovery-move';
-import {regionalFactor} from './regional-economy.js?v=2026.11.13-discovery-move';
-import {recordTrade} from './rank-progress.js?v=2026.11.13-discovery-move';
-import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.13-discovery-move';
-import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,STORED_SHIP_LIMIT,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.13-discovery-move';
-import {parseState} from './save-game.js?v=2026.11.13-discovery-move';
-import {gunWeight} from './cannons.js?v=2026.11.13-discovery-move';
-import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.13-discovery-move';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.13-discovery-move';
-import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.13-discovery-move';
-import {charterCargo} from './guild-contracts.js?v=2026.11.13-discovery-move';
-export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.13-discovery-move';
+import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.14-supply-storage';
+import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.14-supply-storage';
+import {regionalFactor} from './regional-economy.js?v=2026.11.14-supply-storage';
+import {recordTrade} from './rank-progress.js?v=2026.11.14-supply-storage';
+import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.14-supply-storage';
+import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,STORED_SHIP_LIMIT,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.14-supply-storage';
+import {parseState} from './save-game.js?v=2026.11.14-supply-storage';
+import {gunWeight} from './cannons.js?v=2026.11.14-supply-storage';
+import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.14-supply-storage';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.14-supply-storage';
+import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.14-supply-storage';
+import {charterCargo} from './guild-contracts.js?v=2026.11.14-supply-storage';
+export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.14-supply-storage';
 
 export const SAVE_KEY='windward-save-v1';
 export const START_DATE=Date.UTC(1522,3,6);
@@ -61,9 +61,15 @@ export function resupply(s,requested){
  const base=supplyNetCost(s,amount),cost=supplyCost(s,amount);if(amount<1e-8)return {ok:false,error:'보급 한도 또는 적재 공간을 확인하세요.'};if(cost>s.money)return {ok:false,error:'보급할 두카트가 부족해요.'};
  const credit=Math.min(supplyValue(s,amount),s.supplyCreditValue||0);s.supplyCreditValue=Math.max(0,(s.supplyCreditValue||0)-credit);s.food+=amount;s.money-=cost;if(cost<base)consumeCoupon(s,'supply');return {ok:true,amount,cost};
 }
+export const autoSupplyDays=value=>Number.isSafeInteger(value)&&value>0?value:null;
+
+export function autoSupplyShortfall(s){
+ return s.autoSupply?Math.max(0,Math.min(autoSupplyDays(s.autoSupplyTarget)||Infinity,ship(s).supply)-s.food):0;
+}
+
 export function autoResupply(s){
  if(!s.autoSupply||!tradingPort(s)||s.battleId||s.npcBattle||s.raidId)return null;
- const limit=Math.max(0,Math.min(ship(s).supply-s.food,supplyRoom(s)));
+ const limit=Math.max(0,Math.min(autoSupplyShortfall(s),supplyRoom(s)));
  let amount=limit;
  if(supplyCost(s,limit)>s.money){
    let low=0,high=limit;

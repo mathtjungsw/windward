@@ -190,6 +190,12 @@ test('depot buys and credits individual ship-days without exceeding cargo or dep
   assert.equal(game.food,4);
   assert.equal(content.stock,11);
   assert.equal(content.dividends.a,16);
+  game.autoSupply=true;
+  game.autoSupplyTarget=6;
+  assert.equal(run('auto-supply',1000).days,2);
+  assert.equal(game.food,6);
+  assert.equal(content.stock,9);
+  assert.equal(run('auto-supply',1000).noWrite,true);
 });
 
 test('distance gear expires at the exact mileage used by preview and runtime',()=>{

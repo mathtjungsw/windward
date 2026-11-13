@@ -1,4 +1,4 @@
-import {PRESENCE_TTL,PRESENCE_COLORS} from './presence-core.js?v=2026.11.13-discovery-move';
+import {PRESENCE_TTL,PRESENCE_COLORS} from './presence-core.js?v=2026.11.14-supply-storage';
 
 // Global membership contains no coordinates, cargo, scores or account secrets.
 export function validCaptain(value,now=Date.now()){

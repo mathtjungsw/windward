@@ -1,6 +1,6 @@
-import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.13-discovery-move';
-import {ship,voyageEstimate,positionAlong,makeRoute,canDepart} from './engine.js?v=2026.11.13-discovery-move';
-import {currentCanal,refundCanalTolls,RETIRED_CANAL} from './canal-reservations.js?v=2026.11.13-discovery-move';
+import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.14-supply-storage';
+import {ship,voyageEstimate,positionAlong,makeRoute,canDepart} from './engine.js?v=2026.11.14-supply-storage';
+import {currentCanal,refundCanalTolls,RETIRED_CANAL} from './canal-reservations.js?v=2026.11.14-supply-storage';
 
 export const NAVIGATION_VERSION=3;
 

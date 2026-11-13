@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.13-discovery-move';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.13-discovery-move';
-import {mapDistance} from './world-wrap.js?v=2026.11.13-discovery-move';
-import {supplyRoom,tradingPort} from './engine.js?v=2026.11.13-discovery-move';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-discovery-move';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.13-discovery-move';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.13-discovery-move';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.14-supply-storage';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.14-supply-storage';
+import {mapDistance} from './world-wrap.js?v=2026.11.14-supply-storage';
+import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.14-supply-storage';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.14-supply-storage';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.14-supply-storage';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.14-supply-storage';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));
@@ -240,14 +240,14 @@ export function projectAction(game,content,uid,id,action,requested,now,nav){
       return {message:'창고에 한 척의 보급 10일분을 더했어요.'};
     }
     const ships=fleetCount(game),automatic=action==='auto-supply',affordable=automatic?Math.floor(game.money/(ships*4)):Infinity;
-    const days=Math.min(requested,affordable,Math.floor(supplyRoom(game)),Math.floor(ship(game).supply-game.food),Math.floor(view.stock/ships)),units=days*ships,cost=units*4;
+    const days=Math.min(requested,automatic?Math.floor(autoSupplyShortfall(game)):Infinity,affordable,Math.floor(supplyRoom(game)),Math.floor(ship(game).supply-game.food),Math.floor(view.stock/ships)),units=days*ships,cost=units*4;
     if(automatic&&days<=0)return {quiet:true,noWrite:true};
     if(!Number.isSafeInteger(days)||days<=0||game.money<cost)throw Error('보급 공간과 재고, 두카트를 확인하세요.');
     game.money-=cost;
     game.food+=days;
     content.stock=view.stock-units;
     addDividend(content,cost);
-    return {message:'선단 보급 '+days+'일분을 채웠어요.',days,cost};
+    return {message:'선단 보급 '+days+'일분 · '+cost+' D',days,cost};
   }
   if(action==='transit'){
     if(project.kind!=='canal'||!nav)throw Error('운하 입구를 확인하세요.');

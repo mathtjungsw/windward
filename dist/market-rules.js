@@ -1,5 +1,5 @@
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-discovery-move';
-import {regionalFactor} from './regional-economy.js?v=2026.11.13-discovery-move';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.14-supply-storage';
+import {regionalFactor} from './regional-economy.js?v=2026.11.14-supply-storage';
 export const PREMIUM_STOCK_LIMIT=30,STOCK_PERIOD=7200000,MARKET_VERSION=3;
 // Version boundary is a fixed release epoch, never reset by a page reload.
 export const MARKET_V2_AT=1794293996252;

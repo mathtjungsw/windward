@@ -1,5 +1,5 @@
-import {Navigator} from './engine.js?v=2026.11.13-discovery-move';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.13-discovery-move';
+import {Navigator} from './engine.js?v=2026.11.14-supply-storage';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.14-supply-storage';
 
 let nav;
 self.onmessage=({data})=>{

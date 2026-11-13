@@ -69,6 +69,18 @@ test('arrival supply tops up as far as funds allow and consumes a coupon only on
   assert.ok(parseSavedGame(JSON.stringify(game)).autoSupply);
 });
 
+test('automatic supply retains and respects the captain’s target after reload',()=>{
+  const game=parseSavedGame({...initialState(),autoSupply:true,autoSupplyTarget:8,food:6,money:1000});
+  assert.equal(autoResupply(game).amount,2);
+  assert.equal(game.food,8);
+  assert.equal(autoResupply(game),null);
+  game.food=9;
+  assert.equal(autoResupply(game),null);
+  game.autoSupplyTarget=200;
+  assert.equal(autoResupply(game).amount,1);
+  assert.equal(game.autoSupplyTarget,200);
+});
+
 test('a charter is freight, settles on a single deadline, and restores after reload',()=>{
   let game=initialState();game.pirateFame=10;
   const opts={findRoute:()=>({total:200}),room:15,baseFame:10};

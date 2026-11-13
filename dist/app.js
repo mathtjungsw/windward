@@ -1,62 +1,62 @@
-import {createUiUsage} from './ui-usage.js?v=2026.11.13-discovery-move';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.13-discovery-move';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.13-discovery-move';
-import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.13-discovery-move';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.13-discovery-move';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.13-discovery-move';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.13-discovery-move';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.13-discovery-move';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.13-discovery-move';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.13-discovery-move';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.13-discovery-move';
-import {createCommunity} from './community.js?v=2026.11.13-discovery-move';
-import {createTaxCollector} from './tax-collector.js?v=2026.11.13-discovery-move';
-import {createStoryUI} from './story-ui.js?v=2026.11.13-discovery-move';
-import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.13-discovery-move';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.13-discovery-move';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.13-discovery-move';
-import {createCombat} from './combat-ui.js?v=2026.11.13-discovery-move';
-import {createBusiness} from './business-ui.js?v=2026.11.13-discovery-move';
-import {createExpansion} from './expansion-ui.js?v=2026.11.13-discovery-move';
-import {gameStats} from './public-stats.js?v=2026.11.13-discovery-move';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.13-discovery-move';
-import {shipGlyph} from './art.js?v=2026.11.13-discovery-move';
-import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.13-discovery-move';
-import {RELEASE} from './release-notes.js?v=2026.11.13-discovery-move';
-import {createUX} from './ux.js?v=2026.11.13-discovery-move';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.13-discovery-move';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.13-discovery-move';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.13-discovery-move';
-import {AtlasView} from './atlas-view.js?v=2026.11.13-discovery-move';
-import {FleetPresence} from './multiplayer.js?v=2026.11.13-discovery-move';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.13-discovery-move';
-import {CaptainChat} from './chat.js?v=2026.11.13-discovery-move';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.13-discovery-move';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.13-discovery-move';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.13-discovery-move';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.13-discovery-move';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.13-discovery-move';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.13-discovery-move';
-import {CaptainRankings} from './rankings.js?v=2026.11.13-discovery-move';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.13-discovery-move';
+import {createUiUsage} from './ui-usage.js?v=2026.11.14-supply-storage';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.14-supply-storage';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.14-supply-storage';
+import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.14-supply-storage';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.14-supply-storage';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.14-supply-storage';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.14-supply-storage';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.14-supply-storage';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.14-supply-storage';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.14-supply-storage';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.14-supply-storage';
+import {createCommunity} from './community.js?v=2026.11.14-supply-storage';
+import {createTaxCollector} from './tax-collector.js?v=2026.11.14-supply-storage';
+import {createStoryUI} from './story-ui.js?v=2026.11.14-supply-storage';
+import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.14-supply-storage';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.14-supply-storage';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.14-supply-storage';
+import {createCombat} from './combat-ui.js?v=2026.11.14-supply-storage';
+import {createBusiness} from './business-ui.js?v=2026.11.14-supply-storage';
+import {createExpansion} from './expansion-ui.js?v=2026.11.14-supply-storage';
+import {gameStats} from './public-stats.js?v=2026.11.14-supply-storage';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.14-supply-storage';
+import {shipGlyph} from './art.js?v=2026.11.14-supply-storage';
+import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.14-supply-storage';
+import {RELEASE} from './release-notes.js?v=2026.11.14-supply-storage';
+import {createUX} from './ux.js?v=2026.11.14-supply-storage';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.14-supply-storage';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.14-supply-storage';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.14-supply-storage';
+import {AtlasView} from './atlas-view.js?v=2026.11.14-supply-storage';
+import {FleetPresence} from './multiplayer.js?v=2026.11.14-supply-storage';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.14-supply-storage';
+import {CaptainChat} from './chat.js?v=2026.11.14-supply-storage';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.14-supply-storage';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.14-supply-storage';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.14-supply-storage';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.14-supply-storage';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.14-supply-storage';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.14-supply-storage';
+import {CaptainRankings} from './rankings.js?v=2026.11.14-supply-storage';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.14-supply-storage';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.13-discovery-move';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.13-discovery-move';
-import {captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.13-discovery-move';
-import {createGuildUI} from './guild-ui.js?v=2026.11.13-discovery-move';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.13-discovery-move';
-import {ownership} from './commerce.js?v=2026.11.13-discovery-move';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.13-discovery-move';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.13-discovery-move';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.13-discovery-move';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.13-discovery-move';
-import {createShoreUI} from './shore-ui.js?v=2026.11.13-discovery-move';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.13-discovery-move';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.13-discovery-move';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.13-discovery-move';
-import {useRepairKit} from './activities.js?v=2026.11.13-discovery-move';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.13-discovery-move';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,makeRoute} from './engine.js?v=2026.11.13-discovery-move';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.14-supply-storage';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.14-supply-storage';
+import {captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.14-supply-storage';
+import {createGuildUI} from './guild-ui.js?v=2026.11.14-supply-storage';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.14-supply-storage';
+import {ownership} from './commerce.js?v=2026.11.14-supply-storage';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.14-supply-storage';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.14-supply-storage';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.14-supply-storage';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.14-supply-storage';
+import {createShoreUI} from './shore-ui.js?v=2026.11.14-supply-storage';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.14-supply-storage';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.14-supply-storage';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.14-supply-storage';
+import {useRepairKit} from './activities.js?v=2026.11.14-supply-storage';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.14-supply-storage';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.14-supply-storage';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -877,15 +877,25 @@ function arrive(manualPort=null){
   if(v.target&&!safeReturn&&!knowsPort(state,v.target))state.knownPorts.push(v.target);exploration.frozen=!explorationAllowed(state);if(!safeReturn)exploration.reveal(state.position);renderFog(true);changed();renderRoutes();
   if(v.target){
     const arrival=combat?.onArrival();
-    if(PORT_BY_ID[v.target]?.depot&&state.autoSupply&&state.food<=ship(state).supply-1&&account.ready){
-      Promise.resolve(arrival).then(()=>{
-        if(state.port===v.target&&!state.voyage)return business.run('projects',v.target,(game,shared,now)=>projectAction(game,shared,account.uid,v.target,'auto-supply',1000,now,nav));
-      });
-    }
+    if(PORT_BY_ID[v.target]?.depot)void refillDepotOnArrival(v.target,arrival);
   }
-  if(v.depot&&account.ready&&!safeReturn)business.run('projects',v.depot,(game,shared,now)=>projectAction(game,shared,account.uid,v.depot,'dock',0,now,nav),()=>projectsUI?.inspect(v.depot));
+  if(v.depot&&account.ready&&!safeReturn)void dockAtDepot(v.depot);
   if(!v.target&&state.investigationTarget){delete state.investigationTarget;expansion?.investigate();}
   if(discovery){const p=PORT_BY_ID[v.target];showModal(`${p.name}, 새로운 발견`,'A NEW PAGE IN YOUR ATLAS',`<p style="color:var(--gold);font-size:11px">${p.country} · ${p.region} · ${coordinates(p)}</p><p>${p.fact}</p><p class="help-tip">지리 수첩에 새로운 항구가 기록됐어요.<br>발견 보상 <strong>+${120+Math.floor(120*(activeOfficer(state)?.firstVisit||0))} D</strong></p><button class="primary-button" id="discovery-quiz">지리 퀴즈에 도전 · +100 D</button><button class="service-button" id="discovery-close">항구 둘러보기 <span>→</span></button>`);$('#discovery-close').onclick=()=>modal.close();$('#discovery-quiz').onclick=()=>quiz(p);}
+}
+
+async function dockAtDepot(id){
+  const docked=await business.run('projects',id,(game,shared,now)=>projectAction(game,shared,account.uid,id,'dock',0,now,nav));
+  if(!docked)return;
+  await refillDepotOnArrival(id);
+  if(!state.voyage&&(state.port===id||state.depotDock===id))await projectsUI?.inspect(id);
+}
+
+async function refillDepotOnArrival(id,arrival){
+  if(!account.ready||autoSupplyShortfall(state)<1)return;
+  await arrival;
+  if(state.voyage||state.port!==id&&state.depotDock!==id||autoSupplyShortfall(state)<1)return;
+  await business.run('projects',id,(game,shared,now)=>projectAction(game,shared,account.uid,id,'auto-supply',1000,now,nav));
 }
 
 function quiz(p){

@@ -1,4 +1,4 @@
-import {PLACE_REGIONS} from './place-regions.js?v=2026.11.13-discovery-move';
+import {PLACE_REGIONS} from './place-regions.js?v=2026.11.14-supply-storage';
 // Geographic coverage is simplified display data, never navigation or discovery.
 export function placeRegionContains(regions,[lon,lat]){
  const inside=ring=>{let hit=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const a=ring[i],b=ring[j];if((a[1]>lat)!==(b[1]>lat)&&lon<(b[0]-a[0])*(lat-a[1])/(b[1]-a[1])+a[0])hit=!hit;}return hit;};
