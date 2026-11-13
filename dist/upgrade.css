@@ -53,3 +53,27 @@ button,input,textarea,select{font-family:var(--sans)}
 .cargo-trade-context{font-size:11px;line-height:1.7;color:#345f62;margin:8px 0;word-break:keep-all}.cargo-port-button{font-size:11px;color:#346c73;text-decoration:underline;margin-bottom:10px}.cargo-port-button[hidden]{display:none}
 
 .entry-card h2{margin-top:8px}.entry-card .entry-reset-note{background:#f5eddb;border-radius:5px;padding:10px 12px;line-height:1.65;color:#685631;margin:16px 0}#captain-start{margin-top:12px}#entry-retry{margin-top:0}
+
+/* Navigation, collection and story panels share the existing light palette. */
+.fleet-display{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(220px,1fr);align-items:center;gap:24px;margin:16px 0 22px}
+.fleet-display-image{display:block;width:100%;height:300px;object-fit:contain;border-radius:8px;background:#eef2e8}
+.fleet-display h3{font-size:22px;margin:8px 0}.fleet-display label{display:grid;gap:6px;margin-top:16px}
+.fleet-display select{width:100%;padding:12px;border:1px solid #adbeaa;background:#fffdf4;border-radius:5px;font:inherit;color:#315e62}
+.fleet-management-list .growth-step img{display:none}.fleet-overview-mode .fleet-management-list .growth-step button{display:none}
+.fleet-overview-mode .fleet-management-list .growth-step{padding:12px}.fleet-overview-mode .fleet-management-list{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.canal-preference{display:flex;align-items:center;gap:12px;padding:16px 0;font-size:16px}.canal-preference input{width:22px;height:22px;accent-color:#2a6c76}
+.tax-receipts article{padding:12px 0;border-bottom:1px solid #d5d8c6}.tax-receipts small{display:block;margin-top:5px}
+.harbor-arrival-range{fill:none;stroke:#4d8178;stroke-width:1.2;stroke-dasharray:6 5;opacity:.65;pointer-events:none}
+.story-catalog{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.story-catalog article{border:1px solid #c8d0bc;padding:18px;border-radius:7px}
+.story-catalog h3{font-size:19px;margin:8px 0}.story-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(240px,1fr);gap:25px}
+.story-dialogue{border-left:3px solid #b39757;padding:8px 15px;line-height:1.9}.story-objective,.story-reward{padding:14px;background:#eaf0e2;border-radius:6px;line-height:1.8}
+.story-chapters details{padding:12px 0;border-bottom:1px solid #d3d6c5}.story-chapters summary{min-height:32px}.story-chapters p,.story-chapters li{font-size:13px;line-height:1.8}
+.story-menu-links{display:grid;gap:10px;margin:14px 0}.story-menu-links button{padding:13px;min-height:44px}
+.suggestion-row.is-completed{padding:8px 10px;opacity:.65;background:#edf0e7;border-radius:4px;margin:6px 0;font-size:12px}
+.suggestion-row.is-completed summary{font-size:12px;line-height:1.6;min-height:28px}.suggestion-row.is-completed h3{font-size:13px;margin:4px 0}
+#toast-container{pointer-events:none;max-width:min(420px,calc(100vw - 24px))}.toast{min-height:0!important;height:auto!important;max-height:none!important;flex:none!important}
+@media(max-width:850px){
+ .fleet-display{grid-template-columns:1fr;gap:15px}.fleet-display-image{height:auto;max-height:280px;aspect-ratio:4/3}.fleet-display h3{font-size:19px}
+ .story-layout{grid-template-columns:1fr}.story-catalog{grid-template-columns:1fr}.story-chapters{border-top:1px solid #d3d6c5;padding-top:12px}
+ #toast-container{top:80px;bottom:auto;left:12px;right:12px;margin:auto;z-index:100}.toast{padding:11px 14px!important;font-size:12px!important}
+}

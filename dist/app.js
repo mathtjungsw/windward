@@ -1,66 +1,69 @@
-import {createUiUsage} from './ui-usage.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {reconcileNavigation} from './navigation-migration.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {createCommunity} from './community.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {createCombat} from './combat-ui.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {createBusiness} from './business-ui.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {createExpansion} from './expansion-ui.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {gameStats} from './public-stats.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {shipGlyph} from './art.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {RELEASE} from './release-notes.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {createUX} from './ux.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {AtlasView} from './atlas-view.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {FleetPresence} from './multiplayer.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {CaptainChat} from './chat.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor} from './voyage-core.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {CaptainRankings} from './rankings.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {createUiUsage} from './ui-usage.js?v=2026.11.13-stories-harbors-tax';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.13-stories-harbors-tax';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.13-stories-harbors-tax';
+import {reconcileNavigation} from './navigation-migration.js?v=2026.11.13-stories-harbors-tax';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.13-stories-harbors-tax';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.13-stories-harbors-tax';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.13-stories-harbors-tax';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.13-stories-harbors-tax';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.13-stories-harbors-tax';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.13-stories-harbors-tax';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.13-stories-harbors-tax';
+import {createCommunity} from './community.js?v=2026.11.13-stories-harbors-tax';
+import {createTaxCollector} from './tax-collector.js?v=2026.11.13-stories-harbors-tax';
+import {createStoryUI} from './story-ui.js?v=2026.11.13-stories-harbors-tax';
+import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.13-stories-harbors-tax';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.13-stories-harbors-tax';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.13-stories-harbors-tax';
+import {createCombat} from './combat-ui.js?v=2026.11.13-stories-harbors-tax';
+import {createBusiness} from './business-ui.js?v=2026.11.13-stories-harbors-tax';
+import {createExpansion} from './expansion-ui.js?v=2026.11.13-stories-harbors-tax';
+import {gameStats} from './public-stats.js?v=2026.11.13-stories-harbors-tax';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.13-stories-harbors-tax';
+import {shipGlyph} from './art.js?v=2026.11.13-stories-harbors-tax';
+import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.13-stories-harbors-tax';
+import {RELEASE} from './release-notes.js?v=2026.11.13-stories-harbors-tax';
+import {createUX} from './ux.js?v=2026.11.13-stories-harbors-tax';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.13-stories-harbors-tax';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.13-stories-harbors-tax';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.13-stories-harbors-tax';
+import {AtlasView} from './atlas-view.js?v=2026.11.13-stories-harbors-tax';
+import {FleetPresence} from './multiplayer.js?v=2026.11.13-stories-harbors-tax';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.13-stories-harbors-tax';
+import {CaptainChat} from './chat.js?v=2026.11.13-stories-harbors-tax';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.13-stories-harbors-tax';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.13-stories-harbors-tax';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.13-stories-harbors-tax';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.13-stories-harbors-tax';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.13-stories-harbors-tax';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.13-stories-harbors-tax';
+import {CaptainRankings} from './rankings.js?v=2026.11.13-stories-harbors-tax';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {createGuildUI} from './guild-ui.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {ownership} from './commerce.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {createShoreUI} from './shore-ui.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {useRepairKit} from './activities.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,makeRoute} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.13-stories-harbors-tax';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.13-stories-harbors-tax';
+import {captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.13-stories-harbors-tax';
+import {createGuildUI} from './guild-ui.js?v=2026.11.13-stories-harbors-tax';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.13-stories-harbors-tax';
+import {ownership} from './commerce.js?v=2026.11.13-stories-harbors-tax';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.13-stories-harbors-tax';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.13-stories-harbors-tax';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.13-stories-harbors-tax';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.13-stories-harbors-tax';
+import {createShoreUI} from './shore-ui.js?v=2026.11.13-stories-harbors-tax';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.13-stories-harbors-tax';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.13-stories-harbors-tax';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax';
+import {useRepairKit} from './activities.js?v=2026.11.13-stories-harbors-tax';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.13-stories-harbors-tax';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,makeRoute} from './engine.js?v=2026.11.13-stories-harbors-tax';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
 const toward=name=>{const final=(name.charCodeAt(name.length-1)-0xac00)%28;return name+(final>0&&final!==8?'으로':'로');};
 const icon=(name,cls='')=>`<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
 let storage;try{storage=localStorage;}catch{storage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};}
-let ux,expansion,business,combat,community,saleFinder,rumorUI,shoreUI,guildUI,seaUI,projectsUI,committedStats=null;
+let ux,expansion,business,combat,community,saleFinder,rumorUI,shoreUI,guildUI,seaUI,projectsUI,taxCollector,storyUI,committedStats=null;
 const surveyedCanals=new Map();
 let settlingCanal=false;
 let longRoutePlanner=null;
@@ -145,6 +148,7 @@ function renderFog(force=false){
   $('#exploration-fog').setAttribute('href',canvas.toDataURL());$('#sight-boundary').setAttribute('d',explorationAllowed(state)?routePath(exploration.boundary(state.position)):'');renderMinimap();
 }
 function exploreMove(from,to){
+  recordStorySailing(state,from,to);
   exploration.frozen=!explorationAllowed(state);if(exploration.frozen)return;exploration.travel(from,to);const found=discoverPorts(state,from,to,portPoint);if(found.length){for(const p of found){log(`${p.name}의 항구를 찾았습니다. 자동 항해 목적지가 열렸어요.`,'discovery');toast(`새 항구 정보 · ${p.name}`,'discovery');}renderPorts();renderPanel();save();}renderFog();
 }
 function showAccount(){
@@ -173,7 +177,7 @@ const uiUsage=createUiUsage({account,enabled:()=>playing&&!sessionBlocked});
 function beginPlaying(game){
   sailingClock.reset(performance.now());
   manualTrail=[];state=game;normalizeDepotDock(state);const navigationNotice=reconcileNavigation(state,nav);if(navigationNotice)toast(navigationNotice);if(state.port&&ACTIVE_PORT_BY_ID[state.port])state.legacyHarbor=false;exploration=new Exploration(state.explored);exploration.seed(state);selected=state.port||state.voyage?.target||'lisbon';planned=null;paused=!!game.offlinePaused&&!!game.voyage;delete game.offlinePaused;playing=true;sessionBlocked=false;lastPanelPort=null;manualActive=false;manualTarget=null;manualChannel=null;departedPort=null;heldKeys.clear();
-  settleGuildDeadlines();uiUsage.entered?.();
+  settleGuildDeadlines();uiUsage.entered?.();setTimeout(()=>taxCollector?.tick(true),100);
   $('#entry-screen')?.remove();$$('.topbar,.statusbar,.game-layout,.bottom-bar').forEach(el=>el.inert=false);setTab('trade');checkMissions();renderHUD();renderPanel();renderPorts();renderRoutes();renderShip();renderFog(true);centerShip();save();ux?.loadPreferences();if(state.offlineRescuePending){delete state.offlineRescuePending;launchRescue(false,true);}else if(state.rescueReplanPending)launchRescue(state.voyage?.kind==='transition');else showPatchNotes();if(state.transitionPending)ux?.migration();
 }
 function showEntry(){
@@ -330,7 +334,7 @@ function renderChat(messages){
   $('#chat-unread').textContent=chatUnread>99?'99+':String(chatUnread);$('#chat-unread').hidden=!chatUnread;
   const preview=$('#chat-preview');if(preview){preview.replaceChildren();for(const m of messages.slice(-5)){const line=document.createElement('p');line.textContent=m.name+' · '+m.text;preview.append(line);}preview.hidden=chatOpen||!messages.length;}
 }
-function toggleChat(open=!chatOpen){
+function toggleChat(open=!chatOpen){if(open&&playing)recordStoryView(state,'chat');
   chatOpen=open;$('#chat-panel').hidden=false;$('#chat-panel').classList.toggle('is-collapsed',!open);$('#chat-body').hidden=!open;$('#chat-close').textContent=open?'− 접기':'+ 펼치기';$('#chat-close').setAttribute('aria-expanded',String(open));$('#chat-toggle').setAttribute('aria-expanded',String(open));$('#chat-preview').hidden=open||!chat.list().length;
   if(open){chatUnread=0;$('#chat-unread').hidden=true;$('#chat-messages').scrollTop=$('#chat-messages').scrollHeight;if(!$('#chat-input').disabled)$('#chat-input').focus();}
   else $('#chat-toggle').focus();
@@ -383,9 +387,17 @@ function save(){
   account.save(state);
 }
 function log(text,type='info'){state.log.unshift({day:state.day,text,type});state.log=state.log.slice(0,50);$('#latest-log').textContent=text;}
-function toast(text,type=''){const div=document.createElement('div');div.className='toast '+type;div.textContent=text;$('#toast-container').append(div);setTimeout(()=>div.remove(),4300);}
+const toastTimers=new WeakMap();
+function toast(text,type=''){
+ const container=$('#toast-container');
+ const key=/^보급 .*일분이 필요해요/.test(text)?'supply':type+':'+text;
+ let div=[...container.children].find(node=>node.dataset.noticeKey===key);
+ if(!div){div=document.createElement('div');div.className='toast '+type;div.dataset.noticeKey=key;container.append(div);}
+ div.textContent=text;clearTimeout(toastTimers.get(div));
+ toastTimers.set(div,setTimeout(()=>div.remove(),4300));
+}
 function bell(){if(!sound)return;try{audio??=new (window.AudioContext||window.webkitAudioContext)();audio.resume();const now=audio.currentTime;[523.25,659.25,783.99].forEach((freq,i)=>{const osc=audio.createOscillator(),gain=audio.createGain();osc.type='sine';osc.frequency.value=freq;gain.gain.setValueAtTime(0,now+i*.13);gain.gain.linearRampToValueAtTime(.08,now+i*.13+.015);gain.gain.exponentialRampToValueAtTime(.001,now+i*.13+.9);osc.connect(gain).connect(audio.destination);osc.start(now+i*.13);osc.stop(now+i*.13+1);});}catch{}}
-function showModal(title,eyebrow,content,size=null){sailingClock.reset(performance.now());if(!modal.open)modalFocus=document.activeElement;ux?.closeSheet();ux?.beforeDialog();delete modal.dataset.investigation;modal.dataset.size=size||(content.includes('atlas-grid')||content.includes('patch-history')?'wide':content.length<600?'small':'medium');$('#modal-title').textContent=title;$('#modal-eyebrow').textContent=eyebrow;$('#modal-content').innerHTML=content;if(!modal.open)modal.showModal();}
+function showModal(title,eyebrow,content,size=null){storyUI?.onModal(title);sailingClock.reset(performance.now());if(!modal.open)modalFocus=document.activeElement;ux?.closeSheet();ux?.beforeDialog();delete modal.dataset.investigation;modal.dataset.size=size||(content.includes('atlas-grid')||content.includes('patch-history')?'wide':content.length<600?'small':'medium');$('#modal-title').textContent=title;$('#modal-eyebrow').textContent=eyebrow;$('#modal-content').innerHTML=content;if(!modal.open)modal.showModal();}
 function dateText(day,short=false){const date=new Date(START_DATE+Math.floor(day)*86400000);return short?`${date.getUTCFullYear()} · ${date.getUTCMonth()+1}.${String(date.getUTCDate()).padStart(2,'0')}`:`${date.getUTCFullYear()}년 ${date.getUTCMonth()+1}월 ${date.getUTCDate()}일`;}
 function coordinates(p){return `${Math.abs(p.lat).toFixed(1)}° ${p.lat>=0?'N':'S'}  /  ${Math.abs(p.lon).toFixed(1)}° ${p.lon>=0?'E':'W'}`;}
 
@@ -423,6 +435,7 @@ function renderHUD(){
 }
 
 function renderMission(){
+  if(storyUI?.renderPanel())return;
   const current=MISSIONS.find(m=>!state.missions.includes(m.id));
   if(!current){$('#mission-index').textContent='04 / 04';$('#mission-title').textContent='전설이 된 항해사';$('#mission-desc').textContent='모든 의뢰를 달성했어요. 나머지 항구를 찾아 당신만의 항로를 완성하세요.';$('#mission-steps').innerHTML=`<div class="mission-step done"><i>✓</i>모든 의뢰 달성</div>`;$('#mission-reward').textContent='COMPLETE';return;}
   const index=MISSIONS.indexOf(current);$('#mission-index').textContent=`0${index+1} / 04`;$('#mission-title').textContent=current.name;$('#mission-desc').textContent=current.desc;$('#mission-reward').textContent=`+${fmt(current.reward)} D`;
@@ -431,6 +444,7 @@ function renderMission(){
   $('#mission-steps').innerHTML=steps.map(([done,text])=>`<div class="mission-step ${done?'done':''}"><i>${done?'✓':''}</i>${text}</div>`).join('');
 }
 function checkMissions(){
+  refreshStories(state);
   if(!explorationAllowed(state)){renderMission();return;}
   const continents=new Set(state.visited.map(id=>PORT_BY_ID[id].region));
   const complete=[state.soldAway,state.visited.length>=5,['유럽','아프리카','아시아'].every(c=>continents.has(c)),state.profit>=3000];
@@ -452,6 +466,10 @@ function renderPanel(){
   $('#port-quiz')?.addEventListener('click',()=>quiz(p));
   $('#port-badge').textContent=atPort?'정박 중':visited?'방문한 항구':p?'정보를 얻은 항구':'항해 가능';
   $('#port-badge').classList.toggle('unknown',!atPort&&!visited);
+  let arrivalNote=$('#harbor-arrival-note');
+  if(!arrivalNote){arrivalNote=document.createElement('p');arrivalNote.id='harbor-arrival-note';arrivalNote.className='modal-meta';$('#sail-hint').after(arrivalNote);}
+  arrivalNote.hidden=!p||atPort||distance(state.position,portPoint(p))>SIGHT_NM;
+  if(p)arrivalNote.textContent=`입항 범위 ${Math.round(dockingRadius(p,portPoint(p)))}해리 · 같은 물길에서 접근하면 정박해요.`;
   $('#scene-label').textContent=p?'PORT OF '+p.en.toUpperCase():'THE OPEN SEA';
   $('#trade-heading').textContent=atPort?'이 항구의 교역품':'현지 시세 · 도착 후 거래 가능';
   $('#market').innerHTML=p?p.market.map(id=>{
@@ -529,7 +547,7 @@ async function resumeDetour(){const d=state.detourTarget;if(!d||state.voyage)ret
 
 function tradeDialog(mode,id){business?business.trade(mode,id):ux?.trade(mode,id);}
 
-function setTab(tab){activeTab=tab;for(const id of ['trade','ship','tavern']){$('#'+id+'-tab')?.classList.toggle('active',tab===id);$('#'+id+'-content')?.classList.toggle('hidden',tab!==id);}}
+function setTab(tab){if(playing)recordStoryView(state,tab==='tavern'?'tavern':tab==='ship'?'supply':'trade');activeTab=tab;for(const id of ['trade','ship','tavern']){$('#'+id+'-tab')?.classList.toggle('active',tab===id);$('#'+id+'-content')?.classList.toggle('hidden',tab!==id);}}
 
 function svgEl(name,attrs={}){const el=document.createElementNS('http://www.w3.org/2000/svg',name);for(const [key,value]of Object.entries(attrs))el.setAttribute(key,value);return el;}
 function setupChartWrapping(manifest){
@@ -590,6 +608,10 @@ function renderPorts(){
     if(tileX||tileY){g.setAttribute('aria-hidden','true');g.setAttribute('tabindex','-1');}
     g.append(svgEl('circle',{r:17,class:'marker-hit'}));
     if(chosen)g.append(svgEl('circle',{r:13,class:'selection-ring'}));
+    if(chosen&&!state.port){
+      const radius=dockingRadius(p,portPoint(p)),longitudeScale=Math.max(.1,Math.cos(portPoint(p)[1]*Math.PI/180));
+      g.prepend(svgEl('ellipse',{rx:radius/60/longitudeScale*1600/360*screen.k,ry:radius/60*800/140*screen.k,class:'harbor-arrival-range'}));
+    }
     g.append(svgEl('circle',{r:5,class:'marker-outer'}),svgEl('circle',{r:1.8,class:'marker-inner'}));if(p.river)g.append(svgEl('path',{d:'M-3 0q1.5-3 3 0t3 0',class:'river-marker'}));
     if(explorationGear(state)?.berthChart){
       const [cx,cy]=project([p.cityLon??p.lon,p.cityLat??p.lat]),dx=(cx-px)*screen.k,dy=(cy-py)*screen.k;
@@ -667,6 +689,9 @@ async function autoToPort(id){
  if(state.voyage?.kind||combat?.blocked()){toast('구조·전투를 마친 뒤 항구를 선택하세요.');return false;}
  const port=ACTIVE_PORT_BY_ID[id];
  if(!port||!knowsPort(state,id)){toast('항구 정보를 먼저 얻으세요.');return false;}
+ if(!state.port&&!state.voyage&&dockAlong(nav,state.position,state.position,portApproaches,null)?.id===id){
+  stopForUI();state.controlMode='auto';arrive(id);return true;
+ }
  const intent=++navigationIntent;
  if(state.port===id){stopForUI();state.controlMode='auto';planned=null;renderPanel();renderRoutes();save();return false;}
  const point=portPoint(port),routeTo=async()=>{
@@ -709,10 +734,29 @@ function quoteCanalRoute(game,route){
   }
   return route;
 }
+let canalSurveyAt=0,canalSurveyRequest=null;
+async function surveyCanals(){
+ if(!account.ready||Date.now()-canalSurveyAt<60000)return;
+ if(canalSurveyRequest)return canalSurveyRequest;
+ canalSurveyRequest=Promise.allSettled(CANALS.map(async canal=>{
+  const record=await account.readShared('projects',canal.id);
+  const view=projectView(PROJECT_BY_ID[canal.id],record.content,account.uid,guildTime());
+  if(view.status==='open')surveyedCanals.set(canal.id,{toll:view.toll,at:guildTime()});
+  else surveyedCanals.delete(canal.id);
+ })).then(results=>{
+  if(results.every(result=>result.status==='fulfilled'))canalSurveyAt=Date.now();
+  else throw Error('운하 상태를 확인하지 못했어요. 연결 후 다시 항로를 선택하세요.');
+ }).finally(()=>{canalSurveyRequest=null;});
+ return canalSurveyRequest;
+}
 function findPortRoute(game,point){
-  const options={maxOffshore:ship(game).offshore,canals:CANALS.filter(c=>surveyedCanals.has(c.id))};
+ const calculate=()=>{
+  const options={maxOffshore:ship(game).offshore,canals:game.useCanals===false?[]:CANALS.filter(c=>surveyedCanals.has(c.id))};
   if(longRoutePlanner&&distance(game.position,point)>3200)return longRoutePlanner([...game.position],point,options).then(route=>quoteCanalRoute(game,route));
   return quoteCanalRoute(game,nav.route(game.position,point,options));
+ };
+ if(game.useCanals!==false&&account.ready&&Date.now()-canalSurveyAt>=60000)return surveyCanals().then(calculate).catch(error=>{toast(error.message,'error');return null;});
+ return calculate();
 }
 function planDestination(target,point,scroll=true,depot=null){
   if(!nav||state.voyage)return;
@@ -736,7 +780,7 @@ function applyDestination(target,point,route,scroll,depot){
     for(const p of candidates){if(distance(point,portPoint(p))/dailySpeed(state)>Math.min(back,state.food))break;const r=nav.route(point,portPoint(p),{maxOffshore:ship(state).offshore});if(r)back=Math.min(back,voyageEstimate(state,r).food);}
     route.returnFood=back;
   }
-  planned={target,point,route,depot:depot?.id||null};renderRoutes();renderPanel();renderPorts();
+  planned={target,point,route,depot:depot?.id||null};recordStoryView(state,'route');if(target==='porto')recordStoryView(state,'porto-route');renderRoutes();renderPanel();renderPorts();
   if(target&&state.rumorProgress?.items?.I007){
     const calculate=r=>Math.round(r.total)+'해리 / 보급 '+voyageEstimate(state,r).food.toFixed(1)+'일분';
     const straight=route.passages?nav.route(state.position,point,{maxOffshore:ship(state).offshore}):route;
@@ -886,7 +930,7 @@ function beginManual(){
   if(!playing||sessionBlocked||account.busy||account.economicUncertain||!nav||state.food<=0||state.transitionPending||state.voyage?.kind||currentCanal(state.voyage))return false;
   if(usedSpace(state)>capacity(state)){toast('보급과 화물의 적재 공간을 먼저 정리하세요.','error');return false;}
   if(state.port){departedPort=state.port;state.position=[...portPoint(PORT_BY_ID[state.port])];state.port=null;log('직접 조종으로 출항했습니다. 방향키나 바다 클릭으로 이동하세요.','sailing');renderPanel();}
-  delete state.depotDock;manualActive=true;paused=false;followShip=true;return true;
+  delete state.depotDock;manualActive=true;paused=false;followShip=true;if(!state.storyBook)normalizeStories(state);state.storyBook.manual=true;refreshStories(state);return true;
 }
 function startManual(point){
   if(!point||!nav)return;
@@ -977,7 +1021,7 @@ new ResizeObserver(()=>{if(mapReady)resizeMap();}).observe($('.chart'));
 let lastHud=0,lastSave=0;
 let ownershipCheckAt=0;
 function tick(now){
- if(now>=ownershipCheckAt&&playing&&account.ready&&!document.hidden){ownershipCheckAt=now+60000;uiUsage.tick?.();community?.syncOwnership().catch(()=>{});}
+ if(now>=ownershipCheckAt&&playing&&account.ready&&!document.hidden){ownershipCheckAt=now+60000;uiUsage.tick?.();community?.syncOwnership().catch(()=>{});taxCollector?.tick();}
  const allowed=playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!combat?.blocked()&&!paused&&!modal.open&&!ux?.isBlocking()&&!document.hidden;
  const mode=allowed?(state.voyage?'auto':state.controlMode==='manual'&&(manualActive||heldKeys.size||manualTarget)?'manual':null):null;
  const before=[...state.position];
@@ -1000,7 +1044,7 @@ function openMenuFinder(){
     sale:()=>saleFinder.open(),note:()=>rumorUI.showNote(),album:()=>expansion.showAlbum(),
     officers:()=>rumorUI.showDirectory('officer'),items:()=>rumorUI.showDirectory('item'),
     guild:()=>guildUI.open(),ports:()=>community.showOwnedPorts(),guns:()=>business.showArmory(),
-    shipyard:()=>expansion.showShipyard(),storedShips:()=>expansion.showStoredShips()
+    shipyard:()=>expansion.showShipyard(),storedShips:()=>expansion.showStoredShips(),stories:()=>storyUI.open(),taxCollector:()=>taxCollector.open(),canals:()=>projectsUI.open('canal')
   };
   showMenuFinder({modal:showModal,mobile:matchMedia('(max-width:850px)').matches,navigate:id=>{modal.close();open[id]?.();}});
 }
@@ -1008,7 +1052,7 @@ const menuFinderButton=document.createElement('button');
 menuFinderButton.type='button';menuFinderButton.id='menu-finder';menuFinderButton.className='nav-item';
 menuFinderButton.textContent='메뉴 찾기';menuFinderButton.onclick=openMenuFinder;
 $('.main-nav').append(menuFinderButton);
-setupInterface();ux=createUX({getState:()=>state,getAccount:()=>account,getNav:()=>nav,getSelection:()=>selected,getPlan:()=>planned,getFleet:()=>fleet,getVisibleShips:visibleShips,getChat:()=>chat,storage,onTrade:(mode,id)=>business?.trade(mode,id),onStop:stopForUI,onHome:centerShip,onSelect:selectPort,onPlan:planDestination,onSail:startVoyage,onManual:startManual,onMode:setControlMode,onSave:changed,onPanel:renderPanel,onSea:()=>seaUI?.open(),onGuild:()=>guildUI?.open(),onProjects:()=>projectsUI?.open(),onDepot:id=>projectsUI?.inspect(id),onShareRecord:(message,from,port)=>{if(appendItemRecord(state,'shares',String(message.id||((from?.id||'')+':'+port.id)),(from?from.name+' → ':'')+port.name,guildTime()))save();},onShore:()=>shoreUI?.open(),onModal:showModal,onClose:()=>modal.close(),onToast:toast,onRescue:launchRescue,onTab:setTab,onChat:toggleChat,onMapLabels:()=>renderChartLabels(true),onRankVisibility:visible=>rankings.setVisible(visible),onAtlas:showAtlas,onJournal:showJournal,onHelp:showHelp,onMenuFinder:openMenuFinder,onShip:()=>expansion?.showShip(),onCollection:()=>expansion?.showAlbum(),onBusiness:()=>business?.showHub(),onGuns:()=>business?.showArmory(),onSaleSearch:()=>saleFinder?.open(),onOfficers:()=>rumorUI?.showDirectory('officer'),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show(),onCombatTarget:uid=>combat?.attack(uid),onSuggestions:()=>community?.showSuggestions(true),onOwnedPorts:()=>community?.showOwnedPorts(),onCaptains:()=>expansion?.showCaptains('all',true)});renderHUD();renderMission();renderPanel();$('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
+setupInterface();ux=createUX({getState:()=>state,getAccount:()=>account,getNav:()=>nav,getSelection:()=>selected,getPlan:()=>planned,getFleet:()=>fleet,getVisibleShips:visibleShips,getChat:()=>chat,storage,onTrade:(mode,id)=>business?.trade(mode,id),onStop:stopForUI,onHome:centerShip,onSelect:selectPort,onPlan:planDestination,onSail:startVoyage,onManual:startManual,onMode:setControlMode,onSave:changed,onPanel:renderPanel,onSea:()=>seaUI?.open(),onGuild:()=>guildUI?.open(),onProjects:()=>projectsUI?.open(),onDepot:id=>projectsUI?.inspect(id),onShareRecord:(message,from,port)=>{if(appendItemRecord(state,'shares',String(message.id||((from?.id||'')+':'+port.id)),(from?from.name+' → ':'')+port.name,guildTime()))save();},onShore:()=>shoreUI?.open(),onModal:showModal,onClose:()=>modal.close(),onToast:toast,onRescue:launchRescue,onTab:setTab,onChat:toggleChat,onMapLabels:()=>renderChartLabels(true),onRankVisibility:visible=>rankings.setVisible(visible),onAtlas:showAtlas,onJournal:showJournal,onHelp:showHelp,onMenuFinder:openMenuFinder,onStory:()=>storyUI?.open(),onShip:()=>expansion?.showShip(),onCollection:()=>expansion?.showAlbum(),onBusiness:()=>business?.showHub(),onGuns:()=>business?.showArmory(),onSaleSearch:()=>saleFinder?.open(),onOfficers:()=>rumorUI?.showDirectory('officer'),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show(),onCombatTarget:uid=>combat?.attack(uid),onSuggestions:()=>community?.showSuggestions(true),onOwnedPorts:()=>community?.showOwnedPorts(),onCaptains:()=>expansion?.showCaptains('all',true)});renderHUD();renderMission();renderPanel();$('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
 expansion=createExpansion({getState:()=>state,getNav:()=>nav,getFleet:()=>fleet,getRankings:()=>rankings,getStats:()=>gameStats(state,exploration),onModal:showModal,onToast:toast,onChanged:changed,onClose:()=>modal.close(),canShowDiscovery:()=>playing&&!!nav&&!state.shoreTrip&&$('.chart')?.classList.contains('shore-map-open')===false&&!modal.open&&!state.battleId&&!state.npcBattle&&!state.raidId&&!ux?.isBlocking(),onDiscoveryPause:()=>{stopForUI();paused=!!state.voyage;},onInspect:inspectNearby,onApproach:approachDiscovery,onShowDiscoveryPoint:showDiscoveryOnChart,onResumeRoute:resumeDetour,onShipAction:fn=>business?.shipAction(fn),onStorageAction:fn=>business?.run('personal',account.uid,fn),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show()});
 rumorUI=createRumorUI({getState:()=>state,nav:()=>nav,modal:showModal,toast,changed,depart:autoToPort,onCanals:()=>projectsUI?.open('canal'),share:(text,card)=>ux?.share(text,card),action:(id,action)=>{
   if(!account.ready)return toast('로그인 뒤 이용하세요.','error');
@@ -1058,12 +1102,13 @@ guildUI=createGuildUI({getState:()=>state,now:guildTime,modal:showModal,offers:(
     }),()=>{if(action==='deliver'||action==='report')uiUsage.complete('action-guild');});
 }});
 projectsUI=createProjectsUI({game:()=>state,uid:()=>account.uid,now:guildTime,nav:()=>nav,modal:showModal,close:()=>{modal.close();paused=false;centerShip();},
+  setCanals:enabled=>{state.useCanals=enabled;save();toast(enabled?'자동 항해에 운하를 이용해요. 통행료는 항로에 표시돼요.':'자동 항해에서 운하를 제외해요.');if(planned&&!state.voyage)planDestination(planned.target,planned.point,false);},
   read:async id=>{
     const record=await account.readShared('projects',id),project=PROJECT_BY_ID[id];
     if(project?.kind==='canal'&&projectView(project,record.content,account.uid,guildTime()).status==='open'){
       surveyedCanals.set(id,{toll:projectView(project,record.content,account.uid,guildTime()).toll,at:guildTime()});
       if(mapReady)renderRoutes();
-    }
+    }else if(project?.kind==='canal')surveyedCanals.delete(id);
     if(project?.kind==='canal'&&nav&&state.rumorProgress?.items?.I050){
       const route=makeRoute(project.path),open=nav.route(project.path[0],project.path.at(-1),{maxDistance:20000});
       const text=project.name+' · 운하 '+Math.round(route.total)+'해리 · 보급 '+voyageEstimate(state,{...route,sections:[{start:0,end:route.total,river:true}]}).food.toFixed(1)+'일분 · 우회 '+(open?Math.round(open.total)+'해리':'경로 없음')+' · 척당 '+projectView(project,record.content,account.uid,guildTime()).toll+' D';
@@ -1129,7 +1174,24 @@ seaUI=createSeaActivityUI({getState:()=>state,now:guildTime,modal:showModal,go:s
 saleFinder=createSaleFinder({account,getState:()=>state,modal:showModal,toast,syncPorts:()=>business.syncPorts(),depart:autoToPort,portPoint,record:(good,qty,row,at)=>{
   if(row&&appendItemRecord(state,'prices',good+':'+at,GOODS[good].name+' '+qty+'상자 · '+row.port.name+' · '+row.quote.total+' D',at))save();
 },look:point=>{modal.close();followShip=false;[camera.x,camera.y]=project(wrapPosition(point));applyCamera();}});
-community=createCommunity({account,modal:showModal,toast,portPoint,onOwnership:()=>{if(!mapReady)return;renderPorts();const p=PORT_BY_ID[selected],name=$('#port-name');if(p&&name){const owner=community.ownerName(p.id);name.textContent=owner?p.name+'('+owner+')':p.name;}},look:point=>{modal.close();followShip=false;[camera.x,camera.y]=project(wrapPosition(point));applyCamera();}});
+community=createCommunity({account,modal:showModal,toast,portPoint,taxCollector:()=>taxCollector?.open(),onOwnership:()=>{if(!mapReady)return;renderPorts();const p=PORT_BY_ID[selected],name=$('#port-name');if(p&&name){const owner=community.ownerName(p.id);name.textContent=owner?p.name+'('+owner+')':p.name;}},look:point=>{modal.close();followShip=false;[camera.x,camera.y]=project(wrapPosition(point));applyCamera();}});
+taxCollector=createTaxCollector({account,game:()=>state,now:guildTime,owned:()=>community.syncOwnership(),modal:showModal,toast});
+storyUI=createStoryUI({game:()=>state,modal:showModal,close:()=>modal.close(),toast,changed,port:id=>{modal.close();selectPort(id);},
+ action:mutate=>business.run('personal',account.uid,(game,_shared,now)=>mutate(game,now)),
+ open:{ship:()=>expansion.showShip(),cargo:()=>ux.openPort('cargo'),route:showAtlas,
+  'porto-route':()=>{modal.close();selectPort('porto');},supply:()=>ux.openPort('supply'),trade:()=>ux.openPort('port'),sale:()=>saleFinder.open(),
+  'auto-route':()=>{showModal('자동 항해 전환','항해 안내','<p>직접 조종 중 항구를 선택하면 해당 항구로 자동 항해가 시작됩니다. 출항 전에 항로·식량·운하 이용료를 확인하세요.</p>','small');},
+  favorites:()=>{showAtlas();$('#atlas-sort').value='favorites';$('#atlas-sort').dispatchEvent(new Event('change'));},
+  minimap:()=>{$('.minimap-card').scrollIntoView({block:'nearest'});},journal:showJournal,tavern:()=>{setTab('tavern');ux.openPort('port');setTab('tavern');},
+  note:()=>rumorUI.showNote(),album:()=>expansion.showAlbum(),guild:()=>guildUI.open(),shipyard:()=>expansion.showShipyard(),stored:()=>expansion.showStoredShips(),
+  guns:()=>business.showArmory(),items:()=>rumorUI.showDirectory('item'),officers:()=>rumorUI.showDirectory('officer'),captains:()=>expansion.showCaptains('all'),
+  ranks:()=>{$('.rank-card').scrollIntoView({block:'nearest'});},chat:()=>{modal.close();toggleChat(true);},projects:()=>projectsUI.open(),settings:()=>ux.settings(),finder:openMenuFinder}});
+document.addEventListener('click',event=>{
+ const target=event.target.closest('button');if(!target||!playing)return;
+ if(target.id==='port-favorite')storyUI?.view('favorites');
+ if(target.dataset.noteHide)storyUI?.view(target.textContent.includes('숨기기')?'note-hide':'note-restore');
+ if(target.dataset.view)storyUI?.view('minimap');
+});
 $('#fleet-btn').onclick=()=>expansion.showCaptains('online');
 $$('[data-rank]').forEach(button=>button.onclick=()=>{rankMetric=button.dataset.rank;rankings.select(rankMetric);renderRanks();});
 $('#chat-toggle').onclick=()=>toggleChat();$('#chat-close').onclick=()=>toggleChat();

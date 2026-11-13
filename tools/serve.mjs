@@ -133,6 +133,29 @@ async function speedPreviewPage(){
     .replace(/<script type="module" src="app\.js(?:\?[^"]*)?"><\/script>/,()=>'<script type="module">'+code.replace(/<\/script/gi,'<\\/script')+'</script>');
 }
 
+async function developmentPreviewPage(){
+ const html=await rumorPreviewPage(true,false,false,false,true);
+ const fixture=`
+    fixtureShares.set('ports/seville',{revision:1,content:{ownerUid:account.uid,ownerSince:Date.now()-7200000,investors:{[account.uid]:200000},treasury:{[account.uid]:1000},basicIncome:{period:{owner:account.uid,rate:1000,at:Date.now()-7200000,units:0},previous:{}}}});
+    const previewPosts=Object.fromEntries(['획득 아이템, 부선장 완료 표시 제안','내 배 보기 ui 개선','운하 사용 확인'].map((title,index)=>['qa-post-'+index,{title,name:'김부장',body:'개발 검증용 의견 원문입니다.',at:Date.now(),status:'completed'}]));
+    const previewOwners=[{id:'seville',portName:'세비야',ownerUid:account.uid,ownerName:'검증 선장',share:100,defaultRate:0,kind:'general'}];
+    const snapshot=value=>({val:()=>value,forEach:fn=>Object.entries(value||{}).forEach(([key,row])=>fn({key,val:()=>row}))});
+    account.name='검증 선장';account.flush=async()=>{};
+    account.sdk={ref:(_db,key)=>key,orderByKey:()=>({}),limitToLast:()=>({}),limitToFirst:()=>({}),endBefore:()=>({}),query:key=>key,serverTimestamp:()=>Date.now(),
+      get:async key=>snapshot(key.includes('suggestions/posts')?previewPosts:{}),onValue:(key,callback)=>{callback(snapshot({revision:1,content:{}}));return ()=>{};}};
+    community.syncOwnership=async()=>previewOwners;
+    window.__windwardQA={
+      game:()=>structuredClone(state),
+      openStory:()=>storyUI.open(),
+      openCollector:()=>taxCollector.open(),
+      collectorDue:()=>{state.taxCollector.routeAt-=3600000;return taxCollector.tick(true);},
+      openCanals:()=>projectsUI.open('canal'),
+      openSuggestions:()=>community.showSuggestions(true)
+    };
+  `;
+ return html.replace("const tag=document.createElement('p');",fixture+"const tag=document.createElement('p');");
+}
+
 async function emulatorAccount(){
   let account= (await read('account.js'))
     .replace("appSdk.initializeApp(FIREBASE_CONFIG, 'windward-google')",
@@ -169,6 +192,7 @@ const server=createServer(async(req,res)=>{
     if(url.pathname===previewPrefix+'ship-rules.js')return reply(res,'.js',previewShipRules(await read('ship-rules.js')));
     if(useEmulators&&url.pathname==='/account.js')return reply(res,'.js',await emulatorAccount());
     const manual={...initialState(),port:null,controlMode:'manual'};
+    if(url.pathname==='/__qa/development')return reply(res,'.html',await developmentPreviewPage());
     if(url.pathname==='/__qa/expedition')return reply(res,'.html',await expeditionPage(url.searchParams.get('mode')));
     if(url.pathname==='/__qa/harbor')return reply(res,'.html',await fixturePage({...manual,position:[url.searchParams.has('near')?-9.44:-10.1,41]}));
     if(url.pathname==='/__qa/trade')return reply(res,'.html',await fixturePage({...manual,position:[-9.44,41],cargo:{wine:{qty:10,cost:310}},boughtLisbonWine:true,money:2090}));

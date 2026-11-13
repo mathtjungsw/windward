@@ -1,5 +1,5 @@
-import {ownership} from './commerce.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {ownership} from './commerce.js?v=2026.11.13-stories-harbors-tax';
+import {PORT_BY_ID} from './data.js?v=2026.11.13-stories-harbors-tax';
 export function ownedPortSummary(portId,content,ownerName){const o=ownership(content);if(!o.ownerUid)return null;return {ownerUid:o.ownerUid,ownerName:content.investorNames?.[o.ownerUid]||content.developerName||ownerName,portName:content.development?.name||PORT_BY_ID[portId]?.name||portId,share:content.developedOwner?100:content.investors[o.ownerUid]/o.total*100,defaultRate:content.defaultRate||0,kind:content.developedOwner?'developed':'general'};}
 // Counters are independent of personal summaries: another investor may change
 // an offline captain's ownership, without ever writing that captain's save.

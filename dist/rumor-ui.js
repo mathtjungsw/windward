@@ -1,13 +1,13 @@
-import {collectionArt} from './art.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,tradeGear,explorationGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {collectionArt} from './art.js?v=2026.11.13-stories-harbors-tax';
+import {PORT_BY_ID} from './data.js?v=2026.11.13-stories-harbors-tax';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.13-stories-harbors-tax';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.13-stories-harbors-tax';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.13-stories-harbors-tax';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.13-stories-harbors-tax';
+import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,tradeGear,explorationGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax';
 
-import {readRumor} from './discoveries.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {readRumor} from './discoveries.js?v=2026.11.13-stories-harbors-tax';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.13-stories-harbors-tax';
 
 const labels={all:'읽은 소문',hidden:'숨긴 소문'};
 const headline=text=>text.length>28?text.slice(0,28).trimEnd()+'…':text;
@@ -31,7 +31,7 @@ export function createRumorUI(api){
     }).join(''):'<p>지금 들을 수 있는 소문이 없어요.</p>');
     const encounters=portEncounters(game);
     if(encounters.length){
-      section.insertAdjacentHTML('beforeend',`<h3>이 항구에서 만날 사람</h3>${encounters.map(entry=>button(entry.title,`data-port-encounter="${entry.id}"`)).join('')}`);
+      section.insertAdjacentHTML('beforeend',`<h3>이 항구에서 만날 사람</h3>${encounters.map(entry=>button(entry.title+(notes.get(entry.id)?.complete?' · ✓ 완료':''),`data-port-encounter="${entry.id}"`)).join('')}`);
     }
     root.append(section);
     section.querySelectorAll('[data-port-encounter]').forEach(el=>{el.onclick=()=>{
@@ -98,7 +98,7 @@ export function createRumorUI(api){
     const step=status.started?`<p>${status.done?'납품을 마쳤어요.':status.remaining.length?'남은 방문 · '+escape(status.remaining.map(portName).join(', ')):'필요한 항구에 모두 들렀어요.'}</p><p>보유 화물 ${status.cargo} / ${entry.challenge.qty}상자</p>`:'';
     const action=!status.started?'start':!status.done?'deliver':'claim';
     const actionText={start:'담당자 만나고 의뢰 시작',deliver:'화물 납품',claim:fmt(entry.cost)+' D · '+(entry.type?'구입':'고용')};
-    const canAdvance=atTarget&&status.known&&!pending&&
+    const canAdvance=!entry.scenario&&atTarget&&status.known&&!pending&&
       (action!=='start'||!entry.minStage||s.shipTier+1>=entry.minStage)&&
       (action!=='deliver'||!status.remaining.length&&status.cargo>=entry.challenge.qty&&status.ready)&&
       (action!=='claim'||status.owned<itemLimit(entry));

@@ -1,5 +1,5 @@
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.13-stories-harbors-tax';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.13-stories-harbors-tax';
 
 export function collectionProfile(game){
   const hires=new Set(game.rumorProgress?.officers||[]);

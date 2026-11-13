@@ -9,7 +9,7 @@ const ns='demo-windward-session',uid='session-captain',stamp={'.sv':'timestamp'}
 async function req(path,{admin=false,method='GET',body,query={}}={}){const u=new URL(path+'.json','http://127.0.0.1:9000/');u.searchParams.set('ns',ns);if(!admin)u.searchParams.set('auth',token);for(const[k,v]of Object.entries(query))u.searchParams.set(k,JSON.stringify(v));const r=await fetch(u,{method,headers:{'content-type':'application/json',...(admin?{Authorization:'Bearer owner'}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});return {status:r.status,value:await r.json()};}
 assert.equal((await req('.settings/rules',{admin:true,method:'PUT',body:JSON.parse(fs.readFileSync(new URL('../firebase.database.rules.json',import.meta.url)))})).status,200);
 const original=initialState(),record={schemaVersion:6,defenseSeq:0,revision:10,session:'old',operationSequence:3,lastOperation:{id:'old:3',sequence:3,kind:'ports',key:'lisbon',sharedRevision:5},data:JSON.stringify(original),leaseUntil:0,updatedAt:Date.now()},node=defenseFromGame(original,{}, {name:'검증',session:'old',saveRevision:10});
-await req('gameV2',{admin:true,method:'PUT',body:{config:{minSchema:8},accounts:{[uid]:{name:'검증',updatedAt:Date.now()}},privateSaves:{[uid]:record},fleetStates:{[uid]:node}}});
+await req('gameV2',{admin:true,method:'PUT',body:{config:{minSchema:9},accounts:{[uid]:{name:'검증',updatedAt:Date.now()}},privateSaves:{[uid]:record},fleetStates:{[uid]:node}}});
 assert.equal((await req('gameV2/config/minSchema',{admin:true,method:'PUT',body:7})).status,200);
 const staleSave=await req('gameV2/privateSaves/'+uid,{method:'PUT',body:{...record,revision:11,updatedAt:stamp}});
 assert.equal(staleSave.status,401,'the previous client cannot overwrite a save during rollout');
@@ -18,5 +18,5 @@ Object.defineProperty(navigator,'onLine',{value:true,configurable:true});const c
 // Permanent map key is UID. Membership key must still include the session.
 const f={account:a,uid,shipKey:uid,root:'gameV2/real',sdk,active:true,connected:true,color:0,name:a.name,onChange:()=>{}},roster=new CaptainRoster(f);roster.connect();assert.equal(roster.selfRef,'gameV2/real/captains/'+uid+'_new-session');await roster.prepareDisconnect();await roster.publish({status:'정박'},true);const members=await req('gameV2/real/captains',{query:{orderBy:'updatedAt',limitToLast:100}});assert.equal(members.status,200);assert.ok(members.value[uid+'_new-session']);
 await sdk.set('gameV2/real/rankings/'+uid,{...gameStats(game),name:a.name,saveRevision:a.revision,updatedAt:stamp,lastSeenAt:stamp});const ranks=await req('gameV2/real/rankings',{query:{orderBy:'profit',startAt:-1e12,limitToLast:5}});assert.equal(ranks.status,200);assert.ok(ranks.value[uid]);
-assert.equal((await req('gameV2/privateSaves/'+uid)).value.schemaVersion,8);
-console.log('PASS: previous saves migrate to schema 8, outdated writes are rejected, and cloud save, online roster and rankings work.');
+assert.equal((await req('gameV2/privateSaves/'+uid)).value.schemaVersion,9);
+console.log('PASS: previous saves migrate to schema 9, outdated writes are rejected, and cloud save, online roster and rankings work.');

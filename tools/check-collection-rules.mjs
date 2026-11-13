@@ -29,6 +29,7 @@ const uid='qa-collections-captain',other='qa-other',captain='gameV2/real/collect
 await expect('gameV2/privateSaves/'+uid,200,{owner:true,method:'PUT',body:{revision:14}});
 const stamp={'.sv':'timestamp'},body={revision:14,updatedAt:stamp,discoveries:{[DISCOVERIES[0].id]:true},officers:{O001:true}};
 await expect(captain,200,{uid,method:'PUT',body});
+await expect(captain,200,{uid,method:'PUT',body:{...body,officers:{O001:true,OS01:true,OS02:true}}});
 assert.equal((await expect(captain,200,{uid:other})).officers.O001,true);
 await expect(captain,401);
 await expect('gameV2/real/collections',401,{uid});

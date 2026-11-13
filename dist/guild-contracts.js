@@ -1,10 +1,10 @@
-import {shipyardReport} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {shipyardReport} from './historical-ships.js?v=2026.11.13-stories-harbors-tax';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.13-stories-harbors-tax';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.13-stories-harbors-tax';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-stories-harbors-tax';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[
@@ -42,6 +42,7 @@ export function normalizeGuild(game){
     if(!Number.isSafeInteger(row.deadline)||row.deadline<0||row.deadline>8640000000000000||!Number.isSafeInteger(row.reward)||row.reward<100||row.reward>4000)continue;
     if(active.length>=3||active.some(x=>x.id===row.id))continue;
     const clean={id:row.id,origin:row.origin,target:row.target,tier:row.tier,deadline:row.deadline,reward:row.reward,extended:row.extended===true};
+    if(Number.isSafeInteger(row.storyBonus)&&row.storyBonus>=0&&row.storyBonus<=200)clean.storyBonus=row.storyBonus;
     if(!type.kind&&['I041','I043','I061'].includes(row.variant))clean.variant=row.variant;
     if(delivery)Object.assign(clean,{good:row.good,qty:row.qty});
     if(report){
@@ -141,7 +142,9 @@ export function charterAction(game,action,id,now,{findRoute,room,baseFame,findPo
     const duration=GUILD_TYPES[offer.tier].hours*HOUR*(item==='I043'?.5:1);
     const reward=Math.min(4000,Math.floor(offer.reward*(item==='I043'?1.3:item?1.15:1)));
     if(item)game.rumorProgress.items[item]--;
-    book.active.push({...offer,reward,deadline:now+duration,...(offer.objective?{acceptedAt:now}:{}),...(item?{variant:item}:{})});
+    const indianPorts=['zanzibar','maputo','muscat','goa','aden','colombo'];
+    const storyBonus=indianPorts.includes(offer.target)?Math.floor(reward*Math.min(.05,activeOfficer(game)?.indianGuildBonus||0)):0;
+    book.active.push({...offer,reward,storyBonus,deadline:now+duration,...(offer.objective?{acceptedAt:now}:{}),...(item?{variant:item}:{})});
     return {message:item==='I061'?'수집가의 편지 · 항구 사이의 여행 기록을 전하는 수송을 맡았어요.':'조합 의뢰를 수락했어요.'};
   }
   const row=book.active.find(x=>x.id===id);
@@ -168,7 +171,7 @@ export function charterAction(game,action,id,now,{findRoute,room,baseFame,findPo
   const sale=type.kind==='delivery'?(typeof trade==='function'?trade(row):null):null;
   if(type.kind==='delivery'&&!sale?.ok)throw Error('조합 납품의 현재 판매 견적을 확인하세요.');
   const base=row.reward, officerBonus=type.kind?0:Math.floor(base*(activeOfficer(game)?.guildBonus||0));
-  const itemBonus=type.kind?0:couponAmount(game,'guild',base), reward=base+officerBonus+itemBonus;
+  const itemBonus=type.kind?0:couponAmount(game,'guild',base), reward=base+officerBonus+itemBonus+(row.storyBonus||0);
   game.money+=reward;
   if(itemBonus>0)consumeCoupon(game,'guild');
   book.completed=Math.min(1e9,(book.completed||0)+1);

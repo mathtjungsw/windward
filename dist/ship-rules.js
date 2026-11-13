@@ -1,5 +1,5 @@
-import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.13-stories-harbors-tax';
+import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax';
 
 export const ACTIVE_SECONDS_PER_DAY=2;
 const rows=[

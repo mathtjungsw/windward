@@ -1,4 +1,4 @@
-import {wrapLatitude,wrapNumber,mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {wrapLatitude,wrapNumber,mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax';
 
 export const PRESENCE_TTL=90000;
 export const PRESENCE_COLORS=['#267b93','#b36435','#6d65a0','#37816c','#a14868','#8a742c'];

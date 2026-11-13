@@ -197,7 +197,23 @@ export const ITEMS = [
 
 Object.assign(OFFICERS.find(x=>x.id==='O005'),{cooperativeBonus:.08,effect:'공동 수송 기여 보수 +8% · 다척 선단 보급 소모 3% 감소'});
 Object.assign(OFFICERS.find(x=>x.id==='O019'),{hullBonus:.04,effect:'선단 최대 내구도 +4% · 항구 수리비 5% 할인'});
+OFFICERS.push(
+ {id:'OS01',name:'아미나',port:'zanzibar',tavern:'zanzibar',cost:0,stage:6,scenario:true,
+  title:'낡은 교역 장부',story:'흩어진 장부의 빈 페이지를 채워 줄 선장을 찾는 사람이 잔지바르에 있대요.',
+  challenge:{ports:[],cargo:'grain',qty:0},effect:'인도양 지정 항구의 개인 조합 납품 보수 +5% · 창작 인물',indianGuildBonus:.05},
+ {id:'OS02',name:'이네스',port:'manila',tavern:'manila',cost:0,stage:12,scenario:true,
+  title:'바다 건너 돌아온 기록',story:'마닐라에서 태평양을 건너고 돌아올 항해를 기록할 사람을 기다린대요.',
+  challenge:{ports:[],cargo:'grain',qty:0},effect:'원양 구간 식량 소모 5% 감소 · 창작 인물',openSeaSupply:.05}
+);
+ITEMS.push(
+ {id:'IS01',name:'해협 상인의 인장',port:'malacca',tavern:'malacca',cost:0,stage:6,type:'trade',scenario:true,
+  title:'두 장의 인수증',story:'서쪽과 동쪽의 장부가 이어지면 상인이 작은 표식을 건넨다더군요.',
+  challenge:{ports:[],cargo:'grain',qty:0},effect:'말라카·자카르타 판매 수령액 +2%',sellBonus:.02,sellPorts:['malacca','batavia']},
+ {id:'IS02',name:'빅토리아 항해록',port:'seville',tavern:'seville',cost:0,stage:12,type:'explore',scenario:true,
+  title:'마지막 페이지가 빈 항해록',story:'세비야의 기록관이 세 바다를 지나 돌아온 배의 마지막 이야기를 기다린대요.',
+  challenge:{ports:[],cargo:'grain',qty:0},effect:'발견물 흔적 확인 거리 +10해리',spotBonus:10}
+);
 export const OFFICER_BY_ID = Object.fromEntries(OFFICERS.map(x=>[x.id,x]));
 export const ITEM_BY_ID = Object.fromEntries(ITEMS.map(x=>[x.id,x]));
 export const MEDITERRANEAN_PORTS = new Set(['marseille','venice','athens','istanbul','alexandria']);
-import {EXTRA_ITEMS} from './item-catalog-extra.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {EXTRA_ITEMS} from './item-catalog-extra.js?v=2026.11.13-stories-harbors-tax';

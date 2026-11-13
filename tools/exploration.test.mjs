@@ -46,7 +46,7 @@ test('nearby docking still rejects land shortcuts, another river and premature r
  assert.equal(nav.isLand(acrossShore),false);assert.equal(nav.clear(acrossShore,berth),false);assert.notEqual(dockAlong(nav,acrossShore,acrossShore,approaches,null)?.id,'lisbon');
  const riverBerth=approaches.get('london'),wrongRiver={clear:()=>true,riverAt:()=>({river:{id:'wrong-river'}})};
  assert.notEqual(dockAlong(wrongRiver,riverBerth,riverBerth,approaches,null)?.id,'london');
- const near=helmStep(berth,-1,0,20),far=helmStep(berth,-1,0,dockingRadius(PORT_BY_ID.lisbon,berth)+9);
+ const near=helmStep(berth,-1,0,20),far=helmStep(berth,-1,0,dockingRadius(PORT_BY_ID.lisbon,berth)+13);
  assert.equal(leftHarbor('lisbon',near,approaches),false);assert.notEqual(dockAlong(nav,near,near,approaches,'lisbon')?.id,'lisbon');
  assert.equal(leftHarbor('lisbon',far,approaches),true);assert.equal(dockAlong(nav,near,near,approaches,null)?.id,'lisbon');
 });

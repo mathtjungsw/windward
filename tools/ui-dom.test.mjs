@@ -89,7 +89,7 @@ test('pirate combat stays on the map with hull labels, dock guns and a persisten
 test('suggestion board confirms a lost acknowledgement without creating a duplicate and escapes text',async()=>{const a=app.account,old={ready:a.ready,uid:a.uid,name:a.name,sdk:a.sdk};const posts={},owned={seville:{portName:'세비야',ownerName:'선장 B',ownerUid:'b',share:60,defaultRate:0,kind:'general'}};let writes=0;
  const snap=value=>({val:()=>value,forEach:fn=>Object.entries(value||{}).sort(([a],[b])=>a.localeCompare(b)).forEach(([key,value])=>fn({key,val:()=>value}))});
  Object.assign(a,{ready:true,uid:'self',name:'검사 선장',sdk:{ref:(_db,path)=>path,push:()=>({key:'-T000000000000000001'}),orderByKey:()=>({}),limitToLast:n=>({limit:n}),limitToFirst:n=>({limit:n}),endBefore:key=>({before:key}),query:(path,...filters)=>({path,filters}),serverTimestamp:()=>Date.now(),get:async ref=>{const path=ref.path||ref;return snap(path.endsWith('ownedPorts')?owned:path.includes('/posts/')?posts[path.split('/').at(-1)]||null:posts);},update:async(_ref,changes)=>{writes++;for(const [path,value]of Object.entries(changes))if(path.startsWith('posts/'))posts[path.slice(6)]=value;if(writes===1)throw Error('lost acknowledgement');}}});
- try{await app.community.showSuggestions(true);$('#suggestion-title').value='<img src=x onerror=alert(1)>';$('#suggestion-body').value='테스트 제안';await $('#suggestion-form').onsubmit({preventDefault(){}});assert.equal(writes,1);assert.match($('#suggestion-status').textContent,/중복 여부/);await $('#suggestion-form').onsubmit({preventDefault(){}});assert.equal(writes,1,'existing post acknowledges retry');assert.match($('#suggestion-list').textContent,/<img/);assert.equal($('#suggestion-list img'),null);assert.equal($('#suggestion-title').value,'');const known=[...app.state.knownPorts];await app.community.showOwnedPorts();assert.match($('#owned-port-list').textContent,/세비야/);assert.match($('#owned-port-list').textContent,/60.00%/);$('#owned-port-list button').click();assert.deepEqual(app.state.knownPorts,known,'looking never discovers a port');$('#quick-more').click();for(const id of ['suggestions','ownedPorts'])assert.ok($('[data-menu='+id+']'));$('#quick-close').click();}finally{Object.assign(a,old);$('#modal').close();}
+ try{await app.community.showSuggestions(true);$('#suggestion-title').value='<img src=x onerror=alert(1)>';$('#suggestion-body').value='테스트 제안';await $('#suggestion-form').onsubmit({preventDefault(){}});assert.equal(writes,1);assert.match($('#suggestion-status').textContent,/중복 여부/);await $('#suggestion-form').onsubmit({preventDefault(){}});assert.equal(writes,1,'existing post acknowledges retry');assert.match($('#suggestion-list').textContent,/<img/);assert.equal($('#suggestion-list img'),null);assert.equal($('#suggestion-title').value,'');posts['-T000000000000000002']={name:'김부장',title:'완료된 의견',body:'원문 보존',at:Date.now(),status:'completed'};await app.community.showSuggestions(true);assert.equal($('.suggestion-row.is-completed details').open,false);assert.match($('.suggestion-row.is-completed summary').textContent,/완료/);const known=[...app.state.knownPorts];await app.community.showOwnedPorts();assert.match($('#owned-port-list').textContent,/세비야/);assert.match($('#owned-port-list').textContent,/60.00%/);$('#owned-port-list button').click();assert.deepEqual(app.state.knownPorts,known,'looking never discovers a port');$('#quick-more').click();for(const id of ['suggestions','ownedPorts'])assert.ok($('[data-menu='+id+']'));$('#quick-close').click();}finally{Object.assign(a,old);$('#modal').close();}
 });
 test.after(async()=>{app.combat.dispose();await window.happyDOM.close();});
 
@@ -117,7 +117,7 @@ test('application tick keeps automatic and manual sailing consistent at low FPS,
    for(const interval of [20,200,500]){
     app.beginPlaying(initialState());$('#modal').close();app.stopForUI();
     if(mode==='auto'){app.planDestination('porto',[-8.61,41.15],false);await app.startVoyage();}
-    else{app.state.port=null;app.state.position=[-10,38.7];app.state.controlMode='manual';app.heldKeys.add('ArrowLeft');}
+    else{app.state.port=null;app.state.position=[-10.6,38.7];app.state.controlMode='manual';app.heldKeys.add('ArrowLeft');}
     app.sailingClock.reset(0);app.tick(0);
     for(let t=interval;t<=1000;t+=interval)app.tick(t);
     results.push({point:[...app.state.position],day:app.state.day,food:app.state.food});
@@ -292,4 +292,34 @@ test('a finished depot appears in the chart and the ownership directory without 
    assert.match($('#owned-port-list').textContent,/보급 선장.*공동 보급항.*60.00%/s);
    assert.ok(!app.state.visited.includes(harbor));
  }finally{app.business.dispose();Object.assign(a,old);$('#modal').close();}
+});
+
+
+test('ship hero, story menus, and canal checkbox are reachable through normal UI entry points',()=>{
+ app.beginPlaying(initialState());$('#modal').close();
+ $('#ship-view-btn').click();assert.ok($('.fleet-display-image'));assert.ok($('[data-fleet-view="gear"]'));
+ $('[data-fleet-view="gear"]').click();assert.equal($('#fleet-equipment').hidden,false);$('#modal').close();
+ $('#story-open').click();assert.equal(document.querySelectorAll('[data-story]').length,5);$('#modal').close();
+ $('#quick-more').click();$('[data-menu="projects"]').click();$('[data-project-type="canal"]').click();
+ assert.equal($('#auto-canal-toggle').checked,true);$('#auto-canal-toggle').click();assert.equal(app.state.useCanals,false);
+ $('#auto-canal-toggle').click();assert.equal(app.state.useCanals,true);$('#modal').close();
+});
+
+
+test('an acquired tavern item keeps a completed encounter badge after reconnect',()=>{
+ const game=initialState();game.port='porto';
+ game.rumorProgress={read:['I008'],hidden:[],contracts:{},officers:[],items:{I008:1},acquiredItems:['I008'],shipGear:{},tradeGear:null,active:null};
+ app.beginPlaying(game);$('#modal').close();$('#tavern-tab').click();
+ assert.match($('[data-port-encounter="I008"]').textContent,/완료/);
+ app.beginPlaying(initialState());$('#modal').close();
+});
+
+
+test('selecting a harbor already within docking range docks before the outbound food check',async()=>{
+ const {PORT_BY_ID}=await import('../dist/data.js');
+ app.beginPlaying(initialState());$('#modal').close();
+ app.state.port=null;app.state.position=app.nav.approach(PORT_BY_ID.porto);app.state.food=.1;app.state.controlMode='manual';
+ await app.selectPort('porto',false);
+ assert.equal(app.state.port,'porto');assert.equal(app.state.voyage,null);assert.equal(app.state.controlMode,'auto');
+ app.beginPlaying(initialState());$('#modal').close();
 });

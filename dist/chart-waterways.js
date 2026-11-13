@@ -1,4 +1,4 @@
-import {CoastalDetail} from './coastal-detail.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {CoastalDetail} from './coastal-detail.js?v=2026.11.13-stories-harbors-tax';
 
 // Both straits lie on the visible shore data. These are navigable connections
 // between cells of the world grid, with waypoints checked against that shore.

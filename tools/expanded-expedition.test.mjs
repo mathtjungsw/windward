@@ -24,9 +24,9 @@ function progressed(){
 const emptyProgress=()=>({read:[],hidden:[],officers:[],items:{},contracts:{},shipGear:{},active:null,tradeGear:null,coupons:{}});
 
 test('every officer has a valid port, cargo and a persistent recruitment path',()=>{
-  assert.equal(OFFICERS.length,24);
-  assert.equal(new Set(OFFICERS.map(o=>o.id)).size,24);
-  for(const officer of OFFICERS){
+  assert.equal(OFFICERS.filter(row=>!row.scenario).length,24);
+  assert.equal(new Set(OFFICERS.map(o=>o.id)).size,26);
+  for(const officer of OFFICERS.filter(row=>!row.scenario)){
     const game=progressed();
     game.money=100000;game.port=officer.tavern;
     assert.ok(readContractRumor(game,officer.id),officer.id);
@@ -272,7 +272,7 @@ test('ordinary goods delivery uses one sale, market pressure and a separate miss
     executeTrade(game,book,'local',order.target,order.good,order.qty,'sell',quote,now+1000,0)});
   assert.equal(game.cargo[row.good].qty,3);
   assert.equal(game.money,before+quote.total+row.reward);
-  assert.ok(book.markets[row.good].pressure<0);
+  assert.ok(book.markets[row.good].sellPressure<0);
   assert.throws(()=>charterAction(game,'deliver',row.id,now+1001,options),/진행 중/);
 });
 

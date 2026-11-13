@@ -1,15 +1,15 @@
-import {returnReserve,reserveLoss} from './combat-core.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {PORTS,PORT_BY_ID,GOODS,registerDevelopedPorts} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {ship,fleetMaxHP,fleetShips} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {capacity,usedSpace,tradingPort} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {tradeQuote,stockAt} from './market-rules.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {invest,ownership,taxRate,permitted,executeTrade,captainTradeQuote,changePortPolicy,withdrawTax,withdrawBasicIncome,investmentBase,NEUTRAL_PORTS} from './commerce.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {CANNONS,QUALITIES,cannonStats,buyCannon,equipCannon,upgradeCannon,sellCannon,gunWeight,currentHP} from './cannons.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {repairHull,coastalAction,playDice} from './activities.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {advanceBasicIncome,estimateBasicIncome,setIncomeOfficer} from './port-income.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {activeOfficer} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {returnReserve,reserveLoss} from './combat-core.js?v=2026.11.13-stories-harbors-tax';
+import {PORTS,PORT_BY_ID,GOODS,registerDevelopedPorts} from './data.js?v=2026.11.13-stories-harbors-tax';
+import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.13-stories-harbors-tax';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax';
+import {ship,fleetMaxHP,fleetShips} from './ship-rules.js?v=2026.11.13-stories-harbors-tax';
+import {capacity,usedSpace,tradingPort} from './engine.js?v=2026.11.13-stories-harbors-tax';
+import {tradeQuote,stockAt} from './market-rules.js?v=2026.11.13-stories-harbors-tax';
+import {invest,ownership,taxRate,permitted,executeTrade,captainTradeQuote,changePortPolicy,withdrawTax,withdrawBasicIncome,investmentBase,NEUTRAL_PORTS} from './commerce.js?v=2026.11.13-stories-harbors-tax';
+import {CANNONS,QUALITIES,cannonStats,buyCannon,equipCannon,upgradeCannon,sellCannon,gunWeight,currentHP} from './cannons.js?v=2026.11.13-stories-harbors-tax';
+import {repairHull,coastalAction,playDice} from './activities.js?v=2026.11.13-stories-harbors-tax';
+import {advanceBasicIncome,estimateBasicIncome,setIncomeOfficer} from './port-income.js?v=2026.11.13-stories-harbors-tax';
+import {activeOfficer} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax';
 const developmentCost=(game,level)=>Math.ceil([400000,200000,300000,160000][level]*(1-(activeOfficer(game)?.developmentDiscount||0)))-(level>0&&game.rumorProgress?.items?.I054?300:0);
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const random=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
@@ -38,7 +38,7 @@ export function createBusiness(api){const account=api.account,get=api.getState,c
  async function readPort(id){const c=await account.readShared('ports',id);caches.set(id,c);return c;}
  async function trade(mode,id){if(pending)return;const p=tradingPort(get());if(!p)return api.toast('항구에 입항하세요.');api.pause();tradeState={mode,id,port:p.id,qty:1};try{await readPort(p.id);paintTrade();}catch(e){api.toast(e.message,'error');}}
  function paintTrade(){const t=tradeState;if(!t)return;const s=get(),p=PORT_BY_ID[t.port],c=content(t.port),g=GOODS[t.id],max=t.mode==='sell'?s.cargo[t.id]?.qty||0:Math.max(0,Math.min(1000,capacity(s)-usedSpace(s),g.premium?stockAt(c.content.markets?.[t.id],g,now()):Infinity));let q,error='';try{q=captainTradeQuote(s,p.id,t.id,t.qty,t.mode,{...c.content.markets?.[t.id],revision:c.revision},now(),taxRate(c.content,account.uid,p.id));}catch(e){error=e.message;}
- api.modal(`${g.name} ${t.mode==='sell'?'판매':'구매'}`,`${p.name} · 현실 시간 공동 시세`,`<p>${t.mode==='sell'?'이번 판매는 전량 같은 단가로 정산합니다.':'구매는 물량에 따라 상자별 가격이 올라갑니다.'}</p><label>수량 <input id="market-qty" type="number" min="1" max="${max}" value="${t.qty}" inputmode="numeric"></label><div class="dialog-actions">${[1,5,10,max].map(n=>`<button data-market-qty="${n}">${n===max?'최대':n}</button>`).join('')}</div><div id="market-quote">${q?`<p>현재 단가 ${fmt(q.unit)} D · ${t.qty}상자</p><p>상품 총액 ${fmt(q.gross)} D · 세금 ${fmt(q.tax)} D${q.bonus?' · 선장 보너스 +'+fmt(q.bonus)+' D':''}</p><h3>${t.mode==='sell'?'받는':'지불할'} 금액 ${fmt(q.total)} D</h3><p>거래 뒤 ${fmt(q.afterUnit)} D/상자 · 가격 압력은 현실 시간으로 회복</p>`:esc(error)}</div><button id="market-confirm" data-trade-mode="${t.mode}" class="primary-button" ${q&&max?'':'disabled'}>표시 금액으로 ${t.mode==='sell'?'판매':'구매'}</button><p id="business-result" role="status">견적 유효 5초 · 시세가 달라지면 재확인합니다.</p>`,'small');
+ api.modal(`${g.name} ${t.mode==='sell'?'판매':'구매'}`,`${p.name} · 현실 시간 공동 시세`,`<p>${t.mode==='sell'?'이번 판매는 전량 같은 단가로 정산합니다.':'이번 구매는 전량 같은 단가로 정산합니다.'}</p><label>수량 <input id="market-qty" type="number" min="1" max="${max}" value="${t.qty}" inputmode="numeric"></label><div class="dialog-actions">${[1,5,10,max].map(n=>`<button data-market-qty="${n}">${n===max?'최대':n}</button>`).join('')}</div><div id="market-quote">${q?`<p>현재 단가 ${fmt(q.unit)} D · ${t.qty}상자</p><p>상품 총액 ${fmt(q.gross)} D · 세금 ${fmt(q.tax)} D${q.bonus?' · 선장 보너스 +'+fmt(q.bonus)+' D':''}</p><h3>${t.mode==='sell'?'받는':'지불할'} 금액 ${fmt(q.total)} D</h3><p>다음 ${t.mode==='sell'?'판매':'구매'} 예상 단가 ${fmt(q.afterUnit)} D/상자 · 구매·판매 시세는 따로 변하고 현실 시간으로 회복</p>`:esc(error)}</div><button id="market-confirm" data-trade-mode="${t.mode}" class="primary-button" ${q&&max?'':'disabled'}>표시 금액으로 ${t.mode==='sell'?'판매':'구매'}</button><p id="business-result" role="status">견적 유효 5초 · 시세가 달라지면 재확인합니다.</p>`,'small');
  const update=n=>{t.qty=Math.max(1,Math.min(max,Math.floor(n)||1));paintTrade();};$('#market-qty').onchange=e=>update(Number(e.target.value));document.querySelectorAll('[data-market-qty]').forEach(b=>b.onclick=()=>update(Number(b.dataset.marketQty)));
  $('#market-confirm').onclick=async()=>{const result=await run('ports',p.id,(game,c,time,revision)=>executeTrade(game,c,account.uid,p.id,t.id,t.qty,t.mode,q,time,revision));if(result){api.onTradeComplete?.(t.mode);await readPort(p.id);paintTrade();$('#business-result').textContent='거래 완료 · '+fmt(result.total)+' D';}else{try{await readPort(p.id);paintTrade();$('#business-result').textContent='새 견적을 확인한 뒤 다시 확정하세요.';}catch{}}};
  }

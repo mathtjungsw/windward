@@ -1,7 +1,7 @@
-import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {ship,voyageEstimate,positionAlong,makeRoute} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.13-stories-harbors-tax';
+import {ship,voyageEstimate,positionAlong,makeRoute} from './engine.js?v=2026.11.13-stories-harbors-tax';
 
-export const NAVIGATION_VERSION=2;
+export const NAVIGATION_VERSION=3;
 
 function extendAcapulcoVoyage(game,nav,voyage){
   const end=voyage.path.at(-1);
@@ -20,7 +20,15 @@ export function reconcileNavigation(game,nav){
   if(!nav?.detail)return null;
   if(game.voyage?.target==='acapulco')extendAcapulcoVoyage(game,nav,game.voyage);
   const previous=game.voyage;
-  if(previous?.canal||previous?.passages?.length){game.navigationVersion=NAVIGATION_VERSION;return null;}
+  if(previous?.canal||previous?.passages?.length){
+    const port=PORT_BY_ID[previous.target],berth=port&&nav.approach(port),end=previous.path.at(-1);
+    if(berth&&(Math.abs(end[0]-berth[0])>1e-7||Math.abs(end[1]-berth[1])>1e-7)&&nav.clear(end,berth)){
+      const route=nav.annotate({...previous,...makeRoute([...previous.path,berth])});
+      route.foodRemaining=voyageEstimate(game,route,route.travelled).food;
+      game.voyage=route;
+    }
+    game.navigationVersion=NAVIGATION_VERSION;return null;
+  }
   if(game.port&&!previous){
     const port=PORT_BY_ID[game.port],berth=port&&nav.approach(port);
     if(berth)game.position=[...berth];

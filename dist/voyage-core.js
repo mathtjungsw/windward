@@ -1,9 +1,9 @@
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {distance,helmStep} from './engine.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {wrapPosition,mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.13-stories-harbors-tax';
+import {distance,helmStep} from './engine.js?v=2026.11.13-stories-harbors-tax';
+import {wrapPosition,mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax';
 
 export const SIGHT_NM=180,DISCOVERY_NM=80,INFO_PRICE=100,INFO_RANGE=600;
-import {activeOfficer} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {activeOfficer} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax';
 export const informationCost=s=>Math.ceil(INFO_PRICE*(1-(activeOfficer(s)?.infoDiscount||0)));
 export const START_PORTS=['lisbon','porto','seville'];
 export const worldId=value=>value==='real'?'real':'peace';
@@ -34,10 +34,25 @@ export function segmentDistance(a,b,p){
   return {distance:distance(point,p),point,t};
 }
 // Coarse ocean navigation cells can place a berth offshore from its visible marker.
-export const dockingRadius=(port,berth)=>port.depot?10:port.river?12:Math.max(30,distance([port.lon,port.lat],berth)+12);
-export const leftHarbor=(id,position,approaches)=>distance(position,approaches.get(id))>dockingRadius(PORT_BY_ID[id],approaches.get(id))+8;
+export const dockingRadius=(port,berth)=>port.depot?12:port.river?18:Math.min(60,Math.max(45,distance([port.lon,port.lat],berth)+12));
+export const leftHarbor=(id,position,approaches)=>!approaches.has(id)||distance(position,approaches.get(id))>dockingRadius(PORT_BY_ID[id],approaches.get(id))+12;
+const berthConnections=new WeakMap();
+function canReachBerth(nav,point,berth,port){
+ if(nav.clear(point,berth))return true;
+ const limit=port.river?24:60;
+ let cache=berthConnections.get(nav);
+ if(!cache){cache=new Map();berthConnections.set(nav,cache);}
+ const key=port.id+':'+point.map(n=>n.toFixed(4)).join(',');
+ if(cache.has(key))return cache.get(key);
+ const route=nav.route?.(point,berth,{maxDistance:limit});
+ const valid=!!route&&route.total<=Math.min(limit,distance(point,berth)*1.5+3)&&route.path.every((p,i)=>!i||nav.clear(route.path[i-1],p));
+ if(cache.size>=256)cache.clear();
+ cache.set(key,valid);
+ return valid;
+}
 export function dockAlong(nav,from,to,approaches,departed){
-  return PORTS.filter(p=>p.id!==departed).map(p=>({p,berth:approaches.get(p.id),hit:segmentDistance(from,to,approaches.get(p.id))})).filter(({p,berth,hit})=>hit.distance<=dockingRadius(p,berth)&&!PORTS.some(q=>q.id!==p.id&&distance(hit.point,approaches.get(q.id))+.05<hit.distance)&&(!p.river||nav.riverAt(hit.point)?.river.id===p.river)&&nav.clear(from,hit.point)&&nav.clear(hit.point,berth)).sort((a,b)=>a.hit.t-b.hit.t||a.hit.distance-b.hit.distance)[0]?.p||null;
+  const candidates=PORTS.filter(p=>p.id!==departed&&approaches.has(p.id)).map(p=>({p,berth:approaches.get(p.id),hit:segmentDistance(from,to,approaches.get(p.id))}));
+  return candidates.filter(({p,berth,hit})=>hit.distance<=dockingRadius(p,berth)&&(!p.river||nav.riverAt(hit.point)?.river.id===p.river)&&nav.clear(from,hit.point)&&canReachBerth(nav,hit.point,berth,p)).sort((a,b)=>a.hit.t-b.hit.t||a.hit.distance-b.hit.distance)[0]?.p||null;
 }
 
 const EXP_W=720,EXP_H=280,EXP_BYTES=Math.ceil(EXP_W*EXP_H/8);

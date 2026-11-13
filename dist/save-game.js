@@ -1,15 +1,17 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.13-stories-harbors-tax';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.13-stories-harbors-tax';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-stories-harbors-tax';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.13-stories-harbors-tax';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.13-stories-harbors-tax';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {normalizeDepotDock} from './projects.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {normalizeSea} from './sea-activities.js?v=2026.11.13-stories-harbors-tax';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.13-stories-harbors-tax';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.13-stories-harbors-tax';
+import {normalizeDepotDock} from './projects.js?v=2026.11.13-stories-harbors-tax';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.13-stories-harbors-tax';
+import {normalizeStories} from './story-core.js?v=2026.11.13-stories-harbors-tax';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
@@ -30,7 +32,7 @@ export function parseState(raw,defaults){
  const game={...defaults(),...s,version:3,world:'real',speed:1,shipTier:s.version>=3?s.shipTier:LEGACY_TIER[s.level],fleetCount:s.version>=3?s.fleetCount:1,
   visited:ids(s.visited),knownPorts:ids([...(s.knownPorts||defaults().knownPorts),...s.visited,s.port,v?.kind?null:v?.target]),
   controlMode:v?'auto':s.controlMode==='manual'?'manual':'auto',explored:typeof s.explored==='string'&&s.explored.length<40000?s.explored:'',
-  missions:Array.isArray(s.missions)?s.missions.slice(0,20):[],quiz:ids(s.quiz),log:Array.isArray(s.log)?s.log.slice(0,50):[],favorites:ids(s.favorites,20),recentPorts:ids(s.recentPorts||[s.port],8),
+  missions:Array.isArray(s.missions)?s.missions.slice(0,20):[],quiz:ids(s.quiz),log:Array.isArray(s.log)?s.log.slice(0,50):[],favorites:ids(s.favorites,20),recentPorts:ids(s.recentPorts||[s.port],8),useCanals:s.useCanals!==false,
   recentRoutes:(s.recentRoutes||[]).filter(r=>PORT_BY_ID[r.from]&&PORT_BY_ID[r.to]&&finite(r.nm)&&r.nm>0).slice(0,5),
   discoveries:{},rumors:[...new Set((s.rumors||[]).filter(id=>Object.hasOwn(RUMOR_BY_ID,id)))],
   supplyCreditValue:s.version>=3&&finite(s.supplyCreditValue)&&s.supplyCreditValue>=0?s.supplyCreditValue:Math.max(0,Number(s.supplyCreditDays)||0)*[3,6,12][s.level||0],
@@ -79,5 +81,7 @@ export function parseState(raw,defaults){
  normalizeGuild(game);
  normalizeSea(game);
  normalizeDepotDock(game);
+ if(s.taxCollector)game.taxCollector=normalizeCollector(s.taxCollector);
+ normalizeStories(game);
  return game;
 }

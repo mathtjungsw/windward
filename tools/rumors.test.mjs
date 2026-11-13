@@ -35,7 +35,7 @@ test('new rumors require normal docking, the right tavern, and growth for every 
     assert.ok(entry.challenge.ports.every(id=>PORT_BY_ID[id]?.active));
     assert.ok(GOODS[entry.challenge.cargo]);
   }
-  for(const entry of OFFICERS){
+  for(const entry of OFFICERS.filter(entry=>!entry.scenario)){
     const fresh=initialState();
     fresh.port=entry.tavern;
     assert.equal(readContractRumor(fresh,entry.id),false);

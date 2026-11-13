@@ -1,9 +1,9 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {segmentDistance} from './voyage-core.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {activeOfficer} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
-const shipTrace=s=>s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0;
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.13-stories-harbors-tax';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax';
+import {segmentDistance} from './voyage-core.js?v=2026.11.13-stories-harbors-tax';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.13-stories-harbors-tax';
+import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax';
+const shipTrace=s=>(s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0)+(explorationGear(s)?.spotBonus||0);
 export const explorationAllowed=s=>!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{
  const ids=Object.keys(s.discoveries||{}),active=ids.filter(id=>Object.hasOwn(DISCOVERY_BY_ID,id));

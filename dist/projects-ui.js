@@ -1,7 +1,7 @@
-import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {fleetCount} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {PROJECTS,canalAccess,depotAccess,projectView} from './projects.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {canalPassDiscount} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.13-stories-harbors-tax';
+import {fleetCount} from './ship-rules.js?v=2026.11.13-stories-harbors-tax';
+import {PROJECTS,canalAccess,depotAccess,projectView} from './projects.js?v=2026.11.13-stories-harbors-tax';
+import {canalPassDiscount} from './canal-reservations.js?v=2026.11.13-stories-harbors-tax';
 
 const $=s=>document.querySelector(s), fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const time=at=>at?new Date(at).toLocaleString('ko-KR',{dateStyle:'short',timeStyle:'short'}):'';
@@ -15,7 +15,9 @@ export function createProjectsUI(api){
     const token=++sequence;
     show(`<div class="project-actions">${Object.entries(labels).map(([key,label])=>`<button data-project-type="${key}" aria-pressed="${key===kind}">${label}</button>`).join('')}</div>
       <div class="ship-growth-grid">${PROJECTS.filter(p=>p.kind===kind).map(p=>`<button data-project-id="${p.id}">${p.name}</button>`).join('')}</div>
+      ${kind==='canal'?`<label class="canal-preference"><input id="auto-canal-toggle" type="checkbox" ${api.game().useCanals!==false?'checked':''}> 자동 항해 시 운하 이용</label><p class="modal-meta">켜 두면 목적지에 맞는 운하를 자동 경유하고 사용료를 정산해요. 다음 접속에도 유지됩니다.</p>`:''}
       <p id="project-list-note">사업을 선택하면 현재 기록을 조회해요.</p>`);
+    if($('#auto-canal-toggle'))$('#auto-canal-toggle').onchange=e=>api.setCanals?.(e.target.checked);
     document.querySelectorAll('[data-project-type]').forEach(b=>b.onclick=()=>open(b.dataset.projectType));
     document.querySelectorAll('[data-project-id]').forEach(b=>b.onclick=()=>inspect(b.dataset.projectId));
     if(kind==='canal'){

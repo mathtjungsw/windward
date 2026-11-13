@@ -1,16 +1,16 @@
-import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {regionalFactor} from './regional-economy.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {recordTrade} from './rank-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,STORED_SHIP_LIMIT,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {parseState} from './save-game.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {gunWeight} from './cannons.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {charterCargo} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships.3';
-export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.13-stories-harbors-tax';
+import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.13-stories-harbors-tax';
+import {regionalFactor} from './regional-economy.js?v=2026.11.13-stories-harbors-tax';
+import {recordTrade} from './rank-progress.js?v=2026.11.13-stories-harbors-tax';
+import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.13-stories-harbors-tax';
+import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,STORED_SHIP_LIMIT,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.13-stories-harbors-tax';
+import {parseState} from './save-game.js?v=2026.11.13-stories-harbors-tax';
+import {gunWeight} from './cannons.js?v=2026.11.13-stories-harbors-tax';
+import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.13-stories-harbors-tax';
+import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.13-stories-harbors-tax';
+import {charterCargo} from './guild-contracts.js?v=2026.11.13-stories-harbors-tax';
+export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.13-stories-harbors-tax';
 
 export const SAVE_KEY='windward-save-v1';
 export const START_DATE=Date.UTC(1522,3,6);
@@ -26,7 +26,8 @@ export function initialState(){return {
   raftStart:{id:'raft-start-2026-11-06',fromTier:0,fromFleetCount:1,refund:0},
   version:4,legacyHarbor:false,shipTier:0,fleetCount:1,fleetShips:[{id:"vessel-0",tier:0}],flagshipId:"vessel-0",discoveries:{},rumors:[],supplyCreditValue:0,worldCatalogVersion:'2026.11.09-world-78',explorationMaskVersion:1,world:'real',knownPorts:[...INITIAL_PORTS],explored:'',money:2400,food:10,day:0,cargo:{},visited:['lisbon'],port:'lisbon',
   position:[-9.14,38.72],voyage:null,controlMode:'auto',profit:0,trades:0,soldAway:false,level:0,speed:1,
-  favorites:[],recentPorts:['lisbon'],recentRoutes:[],missions:[],quiz:[],boughtLisbonWine:false,
+  favorites:[],recentPorts:['lisbon'],recentRoutes:[],missions:[],quiz:[],boughtLisbonWine:false,useCanals:true,
+  storyBook:{version:1,entries:{},views:{},trades:{},manual:false,tracked:'first-route'},
   log:[{day:0,text:'리스본에서 뗏목 항해를 시작합니다. 보급과 화물 공간을 함께 확인하세요.',type:'discovery'}]
 };}
 export const parseSavedGame=raw=>parseState(raw,initialState);
@@ -283,7 +284,7 @@ export class Navigator{
   waterNear(p){
     if(!this.isOceanLand(p))return [...p];
     const width=Math.max(.2,Math.cos(p[1]*Math.PI/180));
-    for(let radius=.025;radius<=1.5;radius+=.025){
+    for(let radius=.005;radius<=1.5;radius+=.005){
       for(let k=0;k<24;k++){
         const angle=k*Math.PI/12,lon=p[0]+Math.cos(angle)*radius/width;
         const q=[((lon+540)%360)-180,p[1]+Math.sin(angle)*radius];
@@ -605,7 +606,7 @@ function voyageSupplyRate(s,river,coastal){
   const officer=activeOfficer(s);
   const members=fleetShips(s);
   const consumption=members.reduce((sum,v)=>{const p=vesselSpec(v);return sum+p.supplyUse*(!river&&!coastal?p.openSupply:1);},0)/members.length;
-  return (1-(river?0:officer?.seaSupply||0)-(s.fleetCount>=2?officer?.fleetSupply||0:0))*consumption;
+  return (1-(river?0:officer?.seaSupply||0)-(s.fleetCount>=2?officer?.fleetSupply||0:0)-(!river&&!coastal?officer?.openSeaSupply||0:0))*consumption;
 }
 export function manualHelmSpeed(s,nav,point){
   if(nav.riverAt(point))return ship(s).riverSpeed;

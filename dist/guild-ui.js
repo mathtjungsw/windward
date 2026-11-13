@@ -1,5 +1,5 @@
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {GUILD_TYPES,guildObjective,isGuildReport} from './guild-contracts.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-stories-harbors-tax';
+import {GUILD_TYPES,guildObjective,isGuildReport} from './guild-contracts.js?v=2026.11.13-stories-harbors-tax';
 
 const escape=text=>String(text).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const clock=new Intl.DateTimeFormat('ko-KR',{dateStyle:'short',timeStyle:'short',timeZone:'Asia/Seoul'});
@@ -17,7 +17,7 @@ export function createGuildUI(api){
       const task=objective?'보고 항구 · '+PORT_BY_ID[row.target].name:row.good?GOODS[row.good].name+' '+row.qty+'상자':'위탁 화물 '+type.qty+'상자';
       const deadline=proof?'목표 완료 · 귀항 후 보고 가능':overdue?'기한 초과':'남은 시간 약 '+Math.ceil((row.deadline-now)/60000)+'분';
       const settle=isGuildReport(row.tier)?proof?actionButton('조합에 보고','report',row.id):'':row.good?actionButton('납품 견적 확인','quote',row.id):actionButton('납품하기','deliver',row.id);
-      return `<article class="investigation-row"><strong>${type.label} · ${escape(subject)}</strong><p>${escape(task)} · 보수 ${row.reward.toLocaleString('ko-KR')} D · 명성 +${type.fame}</p><p>마감 ${clock.format(row.deadline)} (한국 시간) · ${deadline}</p><div class="dialog-actions">${!overdue&&game.port===row.target?settle:''}${actionButton(overdue?'만료 정산':'포기 · 명성 최대 '+type.fame+' 차감',overdue?'expire':'cancel',row.id)}${!overdue&&!proof&&!row.extended&&game.rumorProgress?.items.I044?actionButton('기한 25% 연장','extend',row.id):''}</div></article>`;
+      return `<article class="investigation-row"><strong>${type.label} · ${escape(subject)}</strong><p>${escape(task)} · 보수 ${(row.reward+(row.storyBonus||0)).toLocaleString('ko-KR')} D · 명성 +${type.fame}</p><p>마감 ${clock.format(row.deadline)} (한국 시간) · ${deadline}</p><div class="dialog-actions">${!overdue&&game.port===row.target?settle:''}${actionButton(overdue?'만료 정산':'포기 · 명성 최대 '+type.fame+' 차감',overdue?'expire':'cancel',row.id)}${!overdue&&!proof&&!row.extended&&game.rumorProgress?.items.I044?actionButton('기한 25% 연장','extend',row.id):''}</div></article>`;
     }).join('');
     const choices=offers.map(row=>{
       const type=GUILD_TYPES[row.tier], objective=guildObjective(row);

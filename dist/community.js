@@ -1,4 +1,4 @@
-import {PORT_BY_ID,PORTS} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {PORT_BY_ID,PORTS} from './data.js?v=2026.11.13-stories-harbors-tax';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function suggestionDraft(title,body){title=String(title||'').trim();body=String(body||'').trim();if(!title||title.length>50||!body||body.length>1200||/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(title+body))throw Error('제목 1~50자, 내용 1~1,200자로 작성하세요.');return {title,body};}
 export function createCommunity(api){
@@ -12,7 +12,13 @@ export function createCommunity(api){
   const remember=()=>draft={title:$('#suggestion-title').value,body:$('#suggestion-body').value};$('#suggestion-title').oninput=remember;$('#suggestion-body').oninput=remember;
   $('#suggestion-form').onsubmit=async e=>{e.preventDefault();if(sending)return;remember();let value;try{value=suggestionDraft(draft.title,draft.body);}catch(error){$('#suggestion-status').textContent=error.message;return;}sending=true;const button=$('#suggestion-submit'),status=$('#suggestion-status');button.disabled=true;status.textContent='등록 확인 중…';try{if(!pending||JSON.stringify(pending.value)!==JSON.stringify(value))pending={key:a.sdk.push(ref('suggestions/posts')).key,value};const {key}=pending;const existing=(await a.sdk.get(ref('suggestions/posts/'+key))).val();if(!existing)await a.sdk.update(ref('suggestions'),{['posts/'+key]:{...value,uid:a.uid,name:a.name,at:a.sdk.serverTimestamp()},['lastSent/'+a.uid]:{postId:key,at:a.sdk.serverTimestamp()}});pending=null;draft={title:'',body:''};api.toast('제안을 등록했어요.');if(gen===generation&&$('#suggestion-form'))await showSuggestions(true);}catch{status.textContent='등록을 확인하지 못했어요. 같은 글로 다시 누르면 중복 여부를 확인합니다. 1분 간격과 연결 상태도 확인하세요.';}finally{sending=false;button.disabled=false;}};
   $('#suggestion-prev').onclick=()=>{remember();page--;showSuggestions();};$('#suggestion-refresh').onclick=()=>{remember();showSuggestions(true);};
-  try{const s=a.sdk,filters=[s.orderByKey(),s.limitToLast(20)];if(history[page])filters.push(s.endBefore(history[page]));const snap=await s.get(s.query(ref('suggestions/posts'),...filters)),rows=[];snap.forEach(c=>{rows.push({id:c.key,...c.val()});});if(gen!==generation||!$('#suggestion-list'))return;cursor=rows[0]?.id;$('#suggestion-list').replaceChildren();for(const p of rows.reverse()){const row=document.createElement('article');row.className='suggestion-row';const h=document.createElement('h3');h.textContent=p.title;const meta=document.createElement('small');meta.textContent=p.name+' · '+new Date(p.at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+' KST';const body=document.createElement('p');body.textContent=p.body;row.append(h,meta,body);if(p.reply){const reply=document.createElement('p');reply.className='operator-reply';reply.textContent='운영자 답변: '+p.reply;row.append(reply);}$('#suggestion-list').append(row);}if(!rows.length)$('#suggestion-list').textContent='아직 제안이 없어요. 첫 의견을 남겨 주세요.';$('#suggestion-next').disabled=rows.length<20;$('#suggestion-next').onclick=()=>{remember();history[++page]=cursor;showSuggestions();};}catch{if(gen===generation&&$('#suggestion-list'))$('#suggestion-list').textContent='게시판을 불러오지 못했어요. 새로고침해 주세요.';}
+  try{const s=a.sdk,filters=[s.orderByKey(),s.limitToLast(20)];if(history[page])filters.push(s.endBefore(history[page]));const snap=await s.get(s.query(ref('suggestions/posts'),...filters)),rows=[];snap.forEach(c=>{rows.push({id:c.key,...c.val()});});if(gen!==generation||!$('#suggestion-list'))return;cursor=rows[0]?.id;$('#suggestion-list').replaceChildren();for(const p of rows.reverse()){const row=document.createElement('article');row.className='suggestion-row';const h=document.createElement('h3');h.textContent=p.title;const meta=document.createElement('small');meta.textContent=p.name+' · '+new Date(p.at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+' KST';const body=document.createElement('p');body.textContent=p.body;row.append(h,meta,body);if(p.reply){const reply=document.createElement('p');reply.className='operator-reply';reply.textContent='운영자 답변: '+p.reply;row.append(reply);}if(p.status==='completed'){
+ const details=document.createElement('details'),summary=document.createElement('summary');
+ summary.textContent='✓ '+p.title+' · 완료';
+ details.append(summary,...row.childNodes);
+ row.replaceChildren(details);row.classList.add('is-completed');row.dataset.status='completed';
+ row.setAttribute('aria-label',p.title+' · 완료된 제안');
+}$('#suggestion-list').append(row);}if(!rows.length)$('#suggestion-list').textContent='아직 제안이 없어요. 첫 의견을 남겨 주세요.';$('#suggestion-next').disabled=rows.length<20;$('#suggestion-next').onclick=()=>{remember();history[++page]=cursor;showSuggestions();};}catch{if(gen===generation&&$('#suggestion-list'))$('#suggestion-list').textContent='게시판을 불러오지 못했어요. 새로고침해 주세요.';}
  }
  async function depotSummaries(s){
   return Promise.all(PORTS.filter(p=>p.depot&&p.ownerUid).map(async p=>{
@@ -48,8 +54,8 @@ export function createCommunity(api){
   if(!ready())return;
   const gen=++generation;
   api.modal('현재 소유 항구','과반 지분 소유 · 개발 항구 포함',header('owned')+
-    '<div class="dialog-actions"><button id="owned-refresh">새로고침</button><small>현재 소유자가 있는 항구</small></div><div id="owned-port-list">불러오는 중…</div>','wide');
-  bind();$('#owned-refresh').onclick=()=>showOwnedPorts(true);
+    '<div class="dialog-actions"><button id="owned-refresh">새로고침</button><button id="owned-tax-collector">세금 징수선</button><small>현재 소유자가 있는 항구</small></div><div id="owned-port-list">불러오는 중…</div>','wide');
+  bind();$('#owned-refresh').onclick=()=>showOwnedPorts(true);$('#owned-tax-collector').onclick=()=>api.taxCollector?.();
   try{
    const rows=await syncOwnership(force===true),list=$('#owned-port-list');
    if(gen!==generation||!list)return;

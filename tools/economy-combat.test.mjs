@@ -18,7 +18,7 @@ import {lastSeenText} from '../dist/captain-time.js';
 const now=1800000000000;
 test('one sale uses its starting unit for every box; quantity affects the next price; real time recovers pressure',()=>{
  const item={pressure:400000,at:now,revision:1},a=tradeQuote('porto','wine',50,'sell',item,now),b=tradeQuote('porto','wine',100,'sell',item,now);
- assert.equal(a.gross,a.unit*50);assert.equal(b.gross,b.unit*100);assert.equal(a.unit,b.unit);assert.equal(b.next.pressure,a.next.pressure-200000);assert.equal(pressureAt(b.next,now+300001),0);
+ assert.equal(a.gross,a.unit*50);assert.equal(b.gross,b.unit*100);assert.equal(a.unit,b.unit);assert.equal(b.next.sellPressure,a.next.sellPressure-200000);assert.equal(pressureAt(b.next,now+400001),0);
  const buy=tradeQuote('lisbon','wine',100,'buy',{},now);assert.ok(buy.gross>=buy.unit*100);assert.ok(buy.afterUnit>buy.unit);
 });
 test('premium stock refills lazily without resetting the partial two-hour interval',()=>{const g=Object.values(GOODS).find(g=>g.premium);assert.equal(stockAt({stock:0,stockAt:now},g,now+7200000),1);assert.equal(stockAt({stock:0,stockAt:now},g,now+100*7200000),30);});

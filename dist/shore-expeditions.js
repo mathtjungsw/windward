@@ -1,7 +1,7 @@
-import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {mapDistance} from './world-wrap.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.12-collections-ranks-historic-ships.3';
-import {activeOfficer,explorationGear,addOfficerExperience} from './rumor-progress.js?v=2026.11.12-collections-ranks-historic-ships.3';
+import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.13-stories-harbors-tax';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.13-stories-harbors-tax';
+import {activeOfficer,explorationGear,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax';
 
 export const SHORE_SITES={
   porto:{market:'강가 마을',site:'언덕의 옛 창고',ridge:'소나무 고갯길',good:'wine',theme:'green'},
