@@ -1,5 +1,5 @@
 // Static discovery stories and game observation points.
-import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.13-stories-harbors-tax';
+import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.13-stories-harbors-tax.1';
 export const DISCOVERY_CATALOG_VERSION='2026.11.12-discoveries-60';
 export const RETIRED_DISCOVERY_FAME={'ruin-itsukushima':400};
 const source=(label,url)=>({label,url});

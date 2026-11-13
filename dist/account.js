@@ -1,10 +1,10 @@
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.13-stories-harbors-tax';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.13-stories-harbors-tax';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.13-stories-harbors-tax';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.13-stories-harbors-tax';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.13-stories-harbors-tax';
-import {applyRaftStart} from './raft-start.js?v=2026.11.13-stories-harbors-tax';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.13-stories-harbors-tax';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.13-stories-harbors-tax.1';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.13-stories-harbors-tax.1';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.13-stories-harbors-tax.1';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.13-stories-harbors-tax.1';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.13-stories-harbors-tax.1';
+import {applyRaftStart} from './raft-start.js?v=2026.11.13-stories-harbors-tax.1';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.13-stories-harbors-tax.1';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';

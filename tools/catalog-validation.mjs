@@ -11,7 +11,7 @@ export function validateEconomy(id,economy,goods,{active=false}={}){
   if(!economy?.stock||!Array.isArray(economy.demand)||!economy.demandTiers||Array.isArray(economy.demandTiers))throw Error(`공급·수요 명세 누락: ${id}`);
   const stock=Object.entries(economy.stock),demand=economy.demand,tiers=Object.entries(economy.demandTiers);
   if(new Set(demand).size!==demand.length)throw Error(`수요 중복: ${id}`);
-  if(active&&(stock.length<3||stock.length>6||demand.length<2||demand.length>6))throw Error(`항구 상품/수요 수 불일치: ${id}`);
+  if(active&&(stock.length<3||stock.length>7||demand.length<2||demand.length>6))throw Error(`항구 상품/수요 수 불일치: ${id}`);
   const validGood=g=>goods[g]&&!goods[g].legacy;
   for(const [good,role] of stock)if(!validGood(good)||!['producer','local','import'].includes(role))throw Error(`잘못된 공급: ${id}/${good}/${role}`);
   for(const [good,tier] of tiers){

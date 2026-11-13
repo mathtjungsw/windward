@@ -1,9 +1,9 @@
-import {watchSectorPages} from './sector-pages.js?v=2026.11.13-stories-harbors-tax';
-import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.13-stories-harbors-tax';
-import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax';
-import {REAL_WORLD_ROOT} from './account.js?v=2026.11.13-stories-harbors-tax';
-import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.13-stories-harbors-tax';
-import {CaptainRoster} from './captains.js?v=2026.11.13-stories-harbors-tax';
+import {watchSectorPages} from './sector-pages.js?v=2026.11.13-stories-harbors-tax.1';
+import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.13-stories-harbors-tax.1';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax.1';
+import {REAL_WORLD_ROOT} from './account.js?v=2026.11.13-stories-harbors-tax.1';
+import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.13-stories-harbors-tax.1';
+import {CaptainRoster} from './captains.js?v=2026.11.13-stories-harbors-tax.1';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{

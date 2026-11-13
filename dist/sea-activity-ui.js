@@ -1,4 +1,4 @@
-import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.13-stories-harbors-tax';
+import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.13-stories-harbors-tax.1';
 
 export function createSeaActivityUI(api){
   let pending=false, timer, signature='';

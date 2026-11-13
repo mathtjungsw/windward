@@ -1,5 +1,5 @@
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-stories-harbors-tax';
-import {GUILD_TYPES,guildObjective,isGuildReport} from './guild-contracts.js?v=2026.11.13-stories-harbors-tax';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-stories-harbors-tax.1';
+import {GUILD_TYPES,guildObjective,isGuildReport} from './guild-contracts.js?v=2026.11.13-stories-harbors-tax.1';
 
 const escape=text=>String(text).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const clock=new Intl.DateTimeFormat('ko-KR',{dateStyle:'short',timeStyle:'short',timeZone:'Asia/Seoul'});

@@ -11,6 +11,14 @@ import {initializeBasicIncome} from '../dist/port-income.js';
 import {performContractAction,saleBonus} from '../dist/rumor-progress.js';
 
 const now=1794500000000;
+test('every story purchase can be bought at its required port',()=>{
+ for(const story of STORIES)for(const step of story.steps.filter(step=>step.kind==='buy')){
+  const port=PORT_BY_ID[step.port];
+  assert.ok(port?.active,story.id+': unavailable port '+step.port);
+  assert.ok(port.market.includes(step.good),story.id+': '+step.port+' does not sell '+step.good);
+ }
+ assert.equal(PORT_BY_ID.batavia.economy.stock.cloves,'import');
+});
 test('bulk purchase and resale use one unit each and cannot move the opposite quote',()=>{
  for(const legacy of [-1200000,-400000,0,400000,1200000]){
   const state={pressure:legacy,at:now};

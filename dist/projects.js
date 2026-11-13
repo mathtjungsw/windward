@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.13-stories-harbors-tax';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.13-stories-harbors-tax';
-import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax';
-import {supplyRoom,tradingPort} from './engine.js?v=2026.11.13-stories-harbors-tax';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.13-stories-harbors-tax';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.13-stories-harbors-tax';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.13-stories-harbors-tax.1';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.13-stories-harbors-tax.1';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax.1';
+import {supplyRoom,tradingPort} from './engine.js?v=2026.11.13-stories-harbors-tax.1';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax.1';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.13-stories-harbors-tax.1';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.13-stories-harbors-tax.1';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));

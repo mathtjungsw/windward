@@ -1,12 +1,12 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.13-stories-harbors-tax';
-import {shipArtPath} from './art.js?v=2026.11.13-stories-harbors-tax';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.13-stories-harbors-tax';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-stories-harbors-tax';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.13-stories-harbors-tax';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.13-stories-harbors-tax';
-import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.13-stories-harbors-tax';
-import {isTypingTarget} from './controls.js?v=2026.11.13-stories-harbors-tax';
-import {validCard} from './social-core.js?v=2026.11.13-stories-harbors-tax';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.13-stories-harbors-tax.1';
+import {shipArtPath} from './art.js?v=2026.11.13-stories-harbors-tax.1';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.13-stories-harbors-tax.1';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-stories-harbors-tax.1';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.13-stories-harbors-tax.1';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.13-stories-harbors-tax.1';
+import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.13-stories-harbors-tax.1';
+import {isTypingTarget} from './controls.js?v=2026.11.13-stories-harbors-tax.1';
+import {validCard} from './social-core.js?v=2026.11.13-stories-harbors-tax.1';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');

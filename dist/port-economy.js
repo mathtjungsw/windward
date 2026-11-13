@@ -825,6 +825,7 @@ export const PORT_ECONOMY = {
       "ginger": "local",
       "dyewood": "local",
       "pepper": "import",
+      "cloves": "import",
       "cotton": "import"
     },
     "demand": [
