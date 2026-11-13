@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.13-gear-corinth';
-import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.13-gear-corinth';
-import {PORT_BY_ID} from './data.js?v=2026.11.13-gear-corinth';
+import {ownership} from './commerce.js?v=2026.11.13-canal-routes';
+import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.13-canal-routes';
+import {PORT_BY_ID} from './data.js?v=2026.11.13-canal-routes';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;

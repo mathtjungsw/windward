@@ -1,5 +1,5 @@
-import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.13-gear-corinth';
-import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.13-gear-corinth';
+import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.13-canal-routes';
+import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.13-canal-routes';
 
 export const ACTIVE_SECONDS_PER_DAY=2;
 const rows=[

@@ -1,12 +1,12 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.13-gear-corinth';
-import {shipArtPath} from './art.js?v=2026.11.13-gear-corinth';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.13-gear-corinth';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-gear-corinth';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.13-gear-corinth';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.13-gear-corinth';
-import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.13-gear-corinth';
-import {isTypingTarget} from './controls.js?v=2026.11.13-gear-corinth';
-import {validCard} from './social-core.js?v=2026.11.13-gear-corinth';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.13-canal-routes';
+import {shipArtPath} from './art.js?v=2026.11.13-canal-routes';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.13-canal-routes';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-canal-routes';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.13-canal-routes';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.13-canal-routes';
+import {ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.13-canal-routes';
+import {isTypingTarget} from './controls.js?v=2026.11.13-canal-routes';
+import {validCard} from './social-core.js?v=2026.11.13-canal-routes';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');

@@ -1,4 +1,4 @@
-import {CHAT_LIMIT,CHAT_MAX_LENGTH,CHAT_INTERVAL,chatText,recentChat,validChat,validCard} from './social-core.js?v=2026.11.13-gear-corinth';
+import {CHAT_LIMIT,CHAT_MAX_LENGTH,CHAT_INTERVAL,chatText,recentChat,validChat,validCard} from './social-core.js?v=2026.11.13-canal-routes';
 
 // Fifty reusable slots overwrite old text in the database, not merely on screen.
 export class CaptainChat{

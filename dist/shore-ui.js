@@ -1,8 +1,8 @@
-import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.13-gear-corinth';
-import {GOODS} from './data.js?v=2026.11.13-gear-corinth';
-import {explorationGear} from './rumor-progress.js?v=2026.11.13-gear-corinth';
-import {shipGlyph} from './art.js?v=2026.11.13-gear-corinth';
-import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.13-gear-corinth';
+import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.13-canal-routes';
+import {GOODS} from './data.js?v=2026.11.13-canal-routes';
+import {explorationGear} from './rumor-progress.js?v=2026.11.13-canal-routes';
+import {shipGlyph} from './art.js?v=2026.11.13-canal-routes';
+import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.13-canal-routes';
 
 const button=(title,action,target='')=>`<button type="button" class="service-button" data-shore-action="${action}" data-shore-target="${target}">${title}</button>`;
 const nodes=['harbor','market','site','ridge'];

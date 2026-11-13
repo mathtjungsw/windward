@@ -1,5 +1,5 @@
-import {RANK_METRICS} from './rank-metrics.js?v=2026.11.13-gear-corinth';
-import {PORT_BY_ID,ALL_PORTS} from './data.js?v=2026.11.13-gear-corinth';
+import {RANK_METRICS} from './rank-metrics.js?v=2026.11.13-canal-routes';
+import {PORT_BY_ID,ALL_PORTS} from './data.js?v=2026.11.13-canal-routes';
 export const CHAT_LIMIT=50,CHAT_MAX_LENGTH=200,CHAT_INTERVAL=3000;
 export function validCard(card){
   if(!card||!card.ref||typeof card.ref!=='object')return false;

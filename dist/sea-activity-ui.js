@@ -1,4 +1,4 @@
-import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.13-gear-corinth';
+import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.13-canal-routes';
 
 export function createSeaActivityUI(api){
   let pending=false, timer, signature='';

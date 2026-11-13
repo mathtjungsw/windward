@@ -19,6 +19,34 @@ const safePath=route=>route?.path.every((point,index)=>!index||nav.clear(route.p
 const polygon=(outer,holes=[])=>({geometry:{type:'Polygon',coordinates:[outer,...holes]}});
 const box=(l,b,r,t)=>[[l,b],[r,b],[r,t],[l,t],[l,b]];
 
+test('Alexandria and Jeddah can sail through Suez in both directions',async()=>{
+  const {CANALS}=await import('../dist/projects.js');
+  const alexandria=berth('alexandria'),jeddah=berth('jeddah');
+  for(const [from,to] of [[alexandria,jeddah],[jeddah,alexandria]]){
+    const route=nav.route(from,to,{canals:CANALS,maxOffshore:80});
+    assert.deepEqual(route?.passages?.map(p=>p.id),['canal-suez']);
+    assert.ok(route.total<1000);
+    const withoutCanal=nav.route(from,to,{canals:[],maxOffshore:Infinity});
+    assert.ok(withoutCanal.total>10000);
+  }
+});
+
+test('Panama connects Caribbean and Pacific ports only when available for routing',async()=>{
+  const {CANALS}=await import('../dist/projects.js');
+  const panama=CANALS.filter(canal=>canal.id==='canal-panama');
+  for(const [east,west] of [['havana','acapulco'],['cartagena','callao']]){
+    for(const [from,to] of [[east,west],[west,east]]){
+      const open=nav.route(berth(from),berth(to),{canals:panama});
+      assert.deepEqual(open?.passages?.map(p=>p.id),['canal-panama']);
+      const passage=open.passages[0];
+      assert.ok(passage.start>0&&passage.end<open.total);
+      const closed=nav.route(berth(from),berth(to),{canals:[]});
+      assert.ok(!closed?.passages?.length);
+      assert.ok(!closed||open.total<closed.total);
+    }
+  }
+});
+
 test('Acapulco has a navigable coastal berth and an existing voyage continues to it',()=>{
   const point=berth('acapulco'),old=[-100,16.5],from=[-102.5,16.6];
   assert.ok(nav.coastAt(point)<2);
