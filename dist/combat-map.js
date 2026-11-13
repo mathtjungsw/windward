@@ -1,15 +1,16 @@
 const NS='http://www.w3.org/2000/svg',el=(name,attrs={})=>{const n=document.createElementNS(NS,name);for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);return n;};
 export function createMapCombat(api){
  const chart=document.querySelector('.chart'),deck=document.createElement('section');deck.id='combat-deck';deck.className='combat-deck';deck.hidden=true;deck.setAttribute('aria-label','지도 전투 조작');chart.after(deck);
- const overlay=el('svg',{class:'combat-map-overlay','aria-label':'선박 내구도와 포격 효과'}),labels=el('g'),effects=el('g');overlay.append(labels,effects);chart.append(overlay);let key='',model=null,confirmRetreat=false,labelNodes=new Map();const timers=new Set(),seen=new Set();
+ const overlay=el('svg',{class:'combat-map-overlay','aria-label':'선박 내구도와 포격 효과'}),labels=el('g'),effects=el('g');overlay.append(labels,effects);chart.append(overlay);let key='',actionHandlers=[],model=null,confirmRetreat=false,labelNodes=new Map();const timers=new Set(),seen=new Set();
  function set(node,name,value){value=String(value);if(node.getAttribute(name)!==value)node.setAttribute(name,value);}
  function later(fn,ms){const t=setTimeout(()=>{timers.delete(t);fn();},ms);timers.add(t);}
- function render(next){if(next?.key!==model?.key||next?.closed)confirmRetreat=false;model=next;if(!next){deck.hidden=true;if(labelNodes.size){labelNodes.clear();labels.replaceChildren();}return;}deck.hidden=false;
-  const signature=JSON.stringify([next.key,next.title,next.closed,next.winner,next.guns.map(g=>g.id),next.canRetreat,next.allowClose]);
+ function render(next){if(next?.key!==model?.key||next?.closed)confirmRetreat=false;model=next;if(!next){if(!deck.hidden)deck.hidden=true;if(labelNodes.size){labelNodes.clear();labels.replaceChildren();}return;}if(deck.hidden)deck.hidden=false;
+  actionHandlers=next.actions||[];
+  const signature=JSON.stringify([next.key,next.title,next.closed,next.winner,next.guns.map(g=>g.id),next.canRetreat,next.allowClose,actionHandlers.map(([label])=>label)]);
   if(key!==signature){key=signature;deck.replaceChildren();const header=document.createElement('header'),title=document.createElement('strong');title.textContent=next.title;const fold=document.createElement('button');fold.textContent='− 접기';fold.setAttribute('aria-expanded','true');header.append(title,fold);deck.append(header);const body=document.createElement('div');body.className='combat-deck-body';deck.append(body);fold.onclick=()=>{body.hidden=!body.hidden;fold.textContent=body.hidden?'+ 전투 조작 펼치기':'− 접기';fold.setAttribute('aria-expanded',String(!body.hidden));};const status=document.createElement('p');status.id='combat-map-status';status.setAttribute('role','status');status.textContent=next.message||'대포를 눌러 포격하세요. 명중과 빗나감에도 재장전합니다.';body.append(status);
    const guns=document.createElement('div');guns.className='map-cannons';for(const gun of next.guns){const b=document.createElement('button');b.dataset.mapGun=gun.id;b.onclick=()=>api.fire(gun.id);guns.append(b);}body.append(guns);
    const actions=document.createElement('div');actions.className='map-combat-actions';body.append(actions);
-   for(const [label,action]of next.actions||[]){const b=document.createElement('button');b.textContent=label;b.onclick=action;actions.append(b);}
+   for(const [index,[label]] of actionHandlers.entries()){const b=document.createElement('button');b.textContent=label;b.onclick=()=>actionHandlers[index]?.[1]();actions.append(b);}
    if(next.canRetreat){const b=document.createElement('button');b.id='map-retreat';b.textContent=confirmRetreat?'정말 후퇴 · 패전 손실 확정':'후퇴·패전 구조';b.onclick=()=>{if(confirmRetreat){confirmRetreat=false;api.retreat();}else{confirmRetreat=true;b.textContent='정말 후퇴 · 패전 손실 확정';status.textContent='후퇴하면 패전 손실과 구조비를 적용합니다. 다시 누르면 확정합니다.';}};actions.append(b);}
    if(next.allowClose){const b=document.createElement('button');b.textContent='표적 해제';b.onclick=()=>{confirmRetreat=false;api.dismiss();};actions.append(b);}
   }

@@ -9,12 +9,42 @@ import {RELEASE} from '../dist/release-notes.js';
 const {PORTS,GOODS,ACTIVE_PORT_BY_ID,registerDevelopedPorts,DEPOT_SITES}=await import('../dist/data.js?v='+RELEASE);
 import {DISCOVERIES} from '../dist/discoveries-catalog.js';
 import {syncFleet} from '../dist/ship-rules.js';
-import {activateDistanceGear,activateTradeVoucher,addOfficerExperience,activeOfficer,appendItemRecord,normalizeRumorProgress,performContractAction,readContractRumor,recordContractArrival} from '../dist/rumor-progress.js';
+import {activateDistanceGear,activateTradeVoucher,addOfficerExperience,activeOfficer,appendItemRecord,normalizeRumorProgress,equippedGear,explorationGear,saleBonus,extraCapacity,performContractAction,readContractRumor,recordContractArrival} from '../dist/rumor-progress.js';
 import {captainTradeQuote,executeTrade} from '../dist/commerce.js';
 import {reserveCanalTolls,refundCanalTolls,designateCanalPass} from '../dist/canal-reservations.js';
 import {planPortIncome} from './port-income-backfill.mjs';
 
 const start=Date.UTC(2026,10,11);
+test('equipment migrates old slots and applies three pieces of each type together',()=>{
+  const game=asCaptain('malacca');
+  game.rumorProgress={items:{I017:1,I019:1,I020:1,I023:1,IS01:1,I025:1,I026:1,I027:1,IS02:1},tradeGear:'IS01',exploreGear:'I025'};
+  game.rumorProgress=normalizeRumorProgress(game);
+  assert.deepEqual(game.rumorProgress.tradeGear,['IS01']);
+  assert.deepEqual(game.rumorProgress.exploreGear,['I025']);
+  for(const id of ['I017','I023','I026','IS02'])performContractAction(game,id,'equip');
+  assert.equal(equippedGear(game,'trade').length,3);
+  assert.equal(equippedGear(game,'explore').length,3);
+  assert.equal(saleBonus(game,'malacca','wine'),.03);
+  assert.equal(saleBonus(game,'porto','wine'),.01);
+  assert.equal(extraCapacity(game),3);
+  assert.equal(explorationGear(game).shoreShortcut,true);
+  assert.equal(explorationGear(game).shoreSpeed,.10);
+  assert.equal(explorationGear(game).spotBonus,10);
+  assert.throws(()=>performContractAction(game,'I019','equip'),/교체/);
+  performContractAction(game,'I019','equip','I017');
+  const restored=parseSavedGame(game);
+  assert.deepEqual(restored.rumorProgress.tradeGear,['IS01','I019','I023']);
+  assert.equal(saleBonus(restored,'porto','silk'),.015);
+});
+test('all development ports define a valid specialty before activation',async()=>{
+ const {DEVELOPMENT_SITES}=await import('../dist/coastal-sites.js');
+ const {PORT_BY_ID}=await import('../dist/data.js?v='+RELEASE);
+ for(const site of DEVELOPMENT_SITES){
+  const port=PORT_BY_ID[site.portId];
+  assert.ok(GOODS[port.specialty],site.portId+' has no map specialty');
+  assert.ok(Object.hasOwn(port.economy.stock,port.specialty));
+ }
+});
 const asCaptain=(port='porto')=>({...initialState(),money:15000000,port});
 const assets=name=>JSON.parse(readFileSync(new URL('../dist/assets/'+name,import.meta.url),'utf8'));
 const chart=new Navigator(assets('navigation.json'),assets('rivers.json'),createChartDetail([...assets('world-land.geojson').features,...assets('islands.geojson').features]));
@@ -56,7 +86,7 @@ test('each canal connects reachable water endpoints and passage receipts reconci
       assert.ok(route.sections.every(s=>s.river));
     }
   }
-  const project=CANALS[2],id=project.id,content={investors:{a:6000000,b:4000000},readyAt:start,toll:101};
+  const project=PROJECT_BY_ID['canal-panama'],id=project.id,content={investors:{a:6000000,b:4000000},readyAt:start,toll:101};
   const game=asCaptain(null);
   game.position=project.path[0];
   game.rumorProgress=normalizeRumorProgress(game);
@@ -70,28 +100,27 @@ test('each canal connects reachable water endpoints and passage receipts reconci
   assert.throws(()=>projectAction(game,content,'visitor',id,'transit',()=>{},start+2,chart),/입구/);
 });
 
-test('automatic routing can use two canals, with each reservation collected only at its own entrance',()=>{
-  const game=asCaptain(null);
-  const corinth=CANALS[0],suez=CANALS[1],all=chart.route(corinth.path[0],suez.path.at(-1),{canals:[corinth,suez]});
-  assert.deepEqual(all.passages.map(p=>p.id),[corinth.id,suez.id]);
-  game.position=corinth.path[0];
-  game.food=500;
+test('retired Corinth reservations refund once and replan without disturbing paid passages',async()=>{
+  const {retireCorinthRoute}=await import('../dist/navigation-migration.js');
+  const {CANAL_IDS}=await import('../dist/canal-reservations.js');
+  const game=asCaptain(null),from=[22.6,38.13],to=[23.059,37.897];
+  const original=makeRoute([from,to]);
+  game.position=from;game.food=500;
+  game.voyage={...original,target:null,travelled:0,foodRemaining:1,passages:[
+    {id:'canal-corinth',start:0,end:original.total,amount:80,paid:false,coupon:true}
+  ]};
   game.rumorProgress=normalizeRumorProgress(game);
-  game.rumorProgress.items.I052=1;
-  designateCanalPass(game,corinth.id);
   const balance=game.money;
-  const reservation=reserveCanalTolls(game,all,{[corinth.id]:100,[suez.id]:100});
-  game.voyage={...all,passages:reservation.passages,travelled:0,foodRemaining:500};
-  assert.equal(advanceVoyage(game,chart,1).entry,corinth.id);
-  const ledger={readyAt:start,investors:{a:1200000},toll:150};
-  projectAction(game,ledger,'visitor',corinth.id,'passage',0,start+1000,chart);
-  assert.equal(ledger.dividends.a,80);
-  assert.throws(()=>projectAction(game,ledger,'visitor',corinth.id,'passage',0,start+1001,chart),/입구/);
-  assert.equal(advanceVoyage(game,chart,30000).entry,suez.id);
-  assert.equal(refundCanalTolls(game),100);
-  assert.equal(refundCanalTolls(game),0);
-  assert.equal(game.money,balance-80);
-  assert.equal(game.rumorProgress.items.I052,0);
+  assert.ok(retireCorinthRoute(game,chart));
+  assert.equal(game.money,balance+80);
+  assert.equal(game.rumorProgress.items.I052,1);
+  assert.equal(retireCorinthRoute(game,chart),null);
+  assert.ok(!CANAL_IDS.includes('canal-corinth'));
+  assert.ok(!CANALS.some(c=>c.id==='canal-corinth'));
+  assert.ok(!game.voyage?.passages);
+  game.voyage={...original,travelled:1,passages:[{id:'canal-corinth',start:0,end:original.total,amount:80,paid:true}]};
+  assert.equal(retireCorinthRoute(game,chart),null);
+  assert.equal(game.money,balance+80);
 });
 
 test('a designated voucher skips other canals, survives reload and is returned when the eligible passage is canceled',()=>{

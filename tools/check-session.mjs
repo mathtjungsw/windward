@@ -11,17 +11,19 @@ const ns='demo-windward-session',uid='session-captain',stamp={'.sv':'timestamp'}
 async function req(path,{admin=false,method='GET',body,query={}}={}){const u=new URL(path+'.json','http://127.0.0.1:9000/');u.searchParams.set('ns',ns);if(!admin)u.searchParams.set('auth',token);for(const[k,v]of Object.entries(query))u.searchParams.set(k,JSON.stringify(v));const r=await fetch(u,{method,headers:{'content-type':'application/json',...(admin?{Authorization:'Bearer owner'}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});return {status:r.status,value:await r.json()};}
 assert.equal((await req('.settings/rules',{admin:true,method:'PUT',body:JSON.parse(fs.readFileSync(new URL('../firebase.database.rules.json',import.meta.url)))})).status,200);
 const original=initialState(),record={schemaVersion:6,defenseSeq:0,revision:10,session:'old',operationSequence:3,lastOperation:{id:'old:3',sequence:3,kind:'ports',key:'lisbon',sharedRevision:5},data:JSON.stringify(original),leaseUntil:0,updatedAt:Date.now()},node=defenseFromGame(original,{}, {name:'검증',session:'old',saveRevision:10});
-await req('gameV2',{admin:true,method:'PUT',body:{config:{minSchema:9},accounts:{[uid]:{name:'검증',updatedAt:Date.now()}},privateSaves:{[uid]:record},fleetStates:{[uid]:node}}});
-assert.equal((await req('gameV2/config/minSchema',{admin:true,method:'PUT',body:7})).status,200);
-const staleSave=await req('gameV2/privateSaves/'+uid,{method:'PUT',body:{...record,revision:11,updatedAt:stamp}});
+await req('gameV2',{admin:true,method:'PUT',body:{config:{minSchema:10},accounts:{[uid]:{name:'검증',updatedAt:Date.now()}},privateSaves:{[uid]:record},fleetStates:{[uid]:node}}});
+assert.equal((await req('gameV2/corinthRefunds/'+uid,{admin:true,method:'PUT',body:{amount:840000}})).status,200);
+assert.equal((await req('gameV2/corinthRefunds/'+uid,{method:'PUT',body:{amount:1}})).status,401);
+const staleSave=await req('gameV2/privateSaves/'+uid,{method:'PUT',body:{...record,schemaVersion:9,revision:11,updatedAt:stamp}});
 assert.equal(staleSave.status,401,'the previous client cannot overwrite a save during rollout');
 const snap=value=>({val:()=>value,forEach:fn=>Object.entries(value||{}).forEach(([key,v])=>fn({key,val:()=>v}))}),sdk={ref:(_,p)=>p,serverTimestamp:()=>stamp,get:async p=>{const r=await req(p);assert.equal(r.status,200,p);return snap(r.value);},onValue:()=>()=>{},runTransaction:async(p,fn)=>{const r=await req(p);assert.equal(r.status,200);const value=fn(r.value);if(value===undefined)return {committed:false,snapshot:snap(r.value)};const result=await req(p,{method:'PUT',body:value});assert.equal(result.status,200,p+' transaction');return {committed:true,snapshot:snap(result.value)};},set:async(p,v)=>{const r=await req(p,{method:'PUT',body:v});assert.equal(r.status,200,p);},query:(p,...filters)=>({path:p,filters}),orderByChild:x=>x,startAt:x=>x,limitToLast:x=>x,onDisconnect:p=>({remove:async()=>{assert.equal((await req(p,{method:'DELETE'})).status,200,'disconnect registration path must be authorized');}})};
-Object.defineProperty(navigator,'onLine',{value:true,configurable:true});const cache=new Map(),a=new CaptainAccount({getItem:k=>cache.get(k)||null,setItem:(k,v)=>cache.set(k,v)},'new-session');a.sdk=sdk;a.defenseEnabled=true;let game;const messages=[];a.readGame=()=>game;a.applyGame=g=>game=g;a.onStatus=m=>messages.push(m);game=await a.enter({uid},{name:'검증'});clearInterval(a.timer);game.money+=7;a.save(game);await a.flush();assert.equal(a.dirty,false);assert.equal(a.lost,false);assert.ok(messages.includes('클라우드 저장 완료'));assert.ok(!messages.some(m=>m.includes('연결 확인')));assert.equal(JSON.parse((await req('gameV2/privateSaves/'+uid)).value.data).money,original.money+7);
+Object.defineProperty(navigator,'onLine',{value:true,configurable:true});const cache=new Map(),a=new CaptainAccount({getItem:k=>cache.get(k)||null,setItem:(k,v)=>cache.set(k,v)},'new-session');a.sdk=sdk;a.defenseEnabled=true;let game;const messages=[];a.readGame=()=>game;a.applyGame=g=>game=g;a.onStatus=m=>messages.push(m);game=await a.enter({uid},{name:'검증'});clearInterval(a.timer);game.money+=7;a.save(game);await a.flush();assert.equal(a.dirty,false);assert.equal(a.lost,false);assert.ok(messages.includes('클라우드 저장 완료'));assert.ok(!messages.some(m=>m.includes('연결 확인')));assert.equal(JSON.parse((await req('gameV2/privateSaves/'+uid)).value.data).money,original.money+840007);
+game=await a.enter({uid},{name:'검증'});clearInterval(a.timer);assert.equal(game.money,original.money+840007,'refund credited once');
 // Permanent map key is UID. Membership key must still include the session.
 const f={account:a,uid,shipKey:uid,root:'gameV2/real',sdk,active:true,connected:true,color:0,name:a.name,onChange:()=>{}},roster=new CaptainRoster(f);roster.connect();assert.equal(roster.selfRef,'gameV2/real/captains/'+uid+'_new-session');await roster.prepareDisconnect();await roster.publish({status:'정박'},true);const members=await req('gameV2/real/captains',{query:{orderBy:'updatedAt',limitToLast:100}});assert.equal(members.status,200);assert.ok(members.value[uid+'_new-session']);
 await sdk.set('gameV2/real/rankings/'+uid,{...gameStats(game),name:a.name,saveRevision:a.revision,updatedAt:stamp,lastSeenAt:stamp});const ranks=await req('gameV2/real/rankings',{query:{orderBy:'profit',startAt:-1e12,limitToLast:5}});assert.equal(ranks.status,200);assert.ok(ranks.value[uid]);
-assert.equal((await req('gameV2/privateSaves/'+uid)).value.schemaVersion,9);
-console.log('PASS: previous saves migrate to schema 9, outdated writes are rejected, and cloud save, online roster and rankings work.');
+assert.equal((await req('gameV2/privateSaves/'+uid)).value.schemaVersion,10);
+console.log('PASS: previous saves migrate to schema 10, outdated writes are rejected, and cloud save, online roster and rankings work.');
 
 // Story reward officers must be accepted by both canonical and public combat state.
 // This exercises actual enter() and save() instead of just matching a rule string.
@@ -30,7 +32,7 @@ for(const officer of ['OS01','OS02']){
  progress.officers=[officer];progress.active=officer;progress.officerXP[officer]=1600;
  const oldSave={...record,schemaVersion:8,data:JSON.stringify(prior)};
  const oldFleet=defenseFromGame(prior,{}, {name:'이야기 검증',session:'old',saveRevision:oldSave.revision});
- await req('gameV2',{admin:true,method:'PUT',body:{config:{minSchema:9},accounts:{[uid]:{name:'이야기 검증'}},privateSaves:{[uid]:oldSave},fleetStates:{[uid]:oldFleet}}});
+ await req('gameV2',{admin:true,method:'PUT',body:{config:{minSchema:10},accounts:{[uid]:{name:'이야기 검증'}},privateSaves:{[uid]:oldSave},fleetStates:{[uid]:oldFleet}}});
  const memory=new Map(),account=new CaptainAccount({getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v),removeItem:k=>memory.delete(k)},'story-'+officer);
  account.sdk=sdk;account.defenseEnabled=true;let current;
  account.readGame=()=>current;account.applyGame=value=>current=value;

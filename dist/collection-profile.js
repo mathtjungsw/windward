@@ -1,5 +1,5 @@
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.13-stories-harbors-tax.1';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.13-stories-harbors-tax.1';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.13-gear-corinth';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.13-gear-corinth';
 
 export function collectionProfile(game){
   const hires=new Set(game.rumorProgress?.officers||[]);

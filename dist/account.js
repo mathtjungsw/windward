@@ -1,10 +1,10 @@
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.13-stories-harbors-tax.1';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.13-stories-harbors-tax.1';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.13-stories-harbors-tax.1';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.13-stories-harbors-tax.1';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.13-stories-harbors-tax.1';
-import {applyRaftStart} from './raft-start.js?v=2026.11.13-stories-harbors-tax.1';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.13-stories-harbors-tax.1';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.13-gear-corinth';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.13-gear-corinth';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.13-gear-corinth';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.13-gear-corinth';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.13-gear-corinth';
+import {applyRaftStart} from './raft-start.js?v=2026.11.13-gear-corinth';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.13-gear-corinth';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
@@ -116,13 +116,14 @@ export class CaptainAccount {
       }
     } catch(error) { throw Error('기기 저장을 읽지 못했어요. 원본은 유지됩니다.'); }
     const observed = (await this.sdk.get(ref)).val();
-    if(observed?.schemaVersion>9)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
+    if(observed?.schemaVersion>10)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
     if(observed&&(observed.schemaVersion||0)<5){const backup='windward-before-expansion-v5:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('업데이트 전 원본 기록을 보관하지 못했어요. 저장 공간을 확인하세요.');}}
     if(observed&&observed.schemaVersion<4){const backup='windward-before-raft-start-v4:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('전환 전 기록을 기기에 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
     if(observed&&observed.schemaVersion<3){const backup='windward-before-world-v3:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('이관 전 기기 백업을 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
     if(cached?.data?.version<3){const backup=key+':before-world-v3';if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(cached));}
     const defense=this.defenseEnabled?(await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/fleetStates/'+uid))).val():null;
     const checkpoint=this.defenseEnabled?(await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/privateNavigation/'+uid))).val():null;
+    const corinth=this.defenseEnabled?(await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/corinthRefunds/'+uid))).val():null;
     let block, recovered;
     const result = await this.sdk.runTransaction(ref, current => {
       current ??= observed;
@@ -140,10 +141,18 @@ export class CaptainAccount {
       const source = boundaryRecovery || (recovered ? cached.data : current ? current.data : initialState());
       const game = parseGame(source);
       applyRaftStart(game);if(this.defenseEnabled){if(!recovered&&checkpoint?.data)restoreNavigation(game,JSON.parse(checkpoint.data),current?.revision);mergeDefense(game,defense,Date.now()+(this.serverOffset||0));if(!game.port){game.offlinePaused=true;}}
+      // The credit and its receipt are committed together in the private save.
+      const priorRefund=current&&JSON.parse(current.data).corinthRefund;
+      if(priorRefund)game.corinthRefund=priorRefund;
+      if(Number.isSafeInteger(corinth?.amount)&&corinth.amount>0&&!game.corinthRefund){
+        game.money+=corinth.amount;
+        game.corinthRefund=corinth.amount;
+        game.log.unshift({day:game.day,text:'코린토스 운하 투자금 정산 · '+corinth.amount.toLocaleString('ko-KR')+' D',type:'info'});
+      }
       game.world = 'real';
       game.speed = 1;
       return {
-        schemaVersion:this.defenseEnabled?9:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}),
+        schemaVersion:this.defenseEnabled?10:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}),
         operationSequence: current?.operationSequence||0,
         ...(current?.lastOperation?{lastOperation:current.lastOperation}:{}),
         revision: (current?.revision || 0) + 1,
@@ -225,7 +234,7 @@ export class CaptainAccount {
       const result = await this.sdk.runTransaction(this.ref, current => {
         current ??= this.record;
         if (current?.session !== this.session || current.revision !== expected) return;
-        return {...current, schemaVersion:this.defenseEnabled?9:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}), data, revision: expected + 1, leaseUntil: Date.now()+(this.serverOffset||0) + 90000,
+        return {...current, schemaVersion:this.defenseEnabled?10:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}), data, revision: expected + 1, leaseUntil: Date.now()+(this.serverOffset||0) + 90000,
           updatedAt: this.sdk.serverTimestamp()};
       }, {applyLocally: false});
       if (!result.committed) {

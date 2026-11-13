@@ -1,18 +1,18 @@
-import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.13-stories-harbors-tax.1';
-import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.13-stories-harbors-tax.1';
-import {historicalArt} from './historical-ship-art.js?v=2026.11.13-stories-harbors-tax.1';
-import {vesselGunLimits} from './cannons.js?v=2026.11.13-stories-harbors-tax.1';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.13-stories-harbors-tax.1';
-import {gearOnShip,tradeGear} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax.1';
-import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.13-stories-harbors-tax.1';
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.13-stories-harbors-tax.1';
-import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,STORED_SHIP_LIMIT,storedShips} from './ship-rules.js?v=2026.11.13-stories-harbors-tax.1';
-import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax.1';
-import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.13-stories-harbors-tax.1';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.13-stories-harbors-tax.1';
-import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.13-stories-harbors-tax.1';
-import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.13-stories-harbors-tax.1';
-import {lastSeenText} from './captain-time.js?v=2026.11.13-stories-harbors-tax.1';
+import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.13-gear-corinth';
+import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.13-gear-corinth';
+import {historicalArt} from './historical-ship-art.js?v=2026.11.13-gear-corinth';
+import {vesselGunLimits} from './cannons.js?v=2026.11.13-gear-corinth';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.13-gear-corinth';
+import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.13-gear-corinth';
+import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.13-gear-corinth';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.13-gear-corinth';
+import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,STORED_SHIP_LIMIT,storedShips} from './ship-rules.js?v=2026.11.13-gear-corinth';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-gear-corinth';
+import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.13-gear-corinth';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.13-gear-corinth';
+import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.13-gear-corinth';
+import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.13-gear-corinth';
+import {lastSeenText} from './captain-time.js?v=2026.11.13-gear-corinth';
 const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const KINDS={ruin:'유적',relic:'유물',animal:'동물',treasure:'보물'};
@@ -70,8 +70,8 @@ export function createExpansion(api){
   });
  }
  function showFleet(){
-  const s=get(),rows=fleetDisplayShips(s),spec=ship(s),slow=rows.find(p=>vesselSeaSpeed(s,p)===spec.speed),trade=tradeGear(s);
-  api.onModal('내 배와 동행 선단','최대 5척 · 가장 느린 배의 속도로 함께 항해',`<p class="help-tip">선단 속도 ${fmt(spec.speed)}해리/일 · 속도 제한: ${esc(vesselSpec(slow).name)} · 보급 한도 ${spec.supply}일 · 적재 ${usedSpace(s)}/${capacity(s)}칸</p><p class="fleet-trade-gear">선단 교역 장비 · ${trade?esc(trade.name+' · '+trade.effect):'장착 없음'}</p><div class="ship-growth-grid">${rows.map((p,i)=>{const gear=gearOnShip(s,p.id);return `<article class="growth-step"><img ${p.kind?'class="historical-photo"':''} src="${p.kind?historicalArt(p.kind):shipArtPath(p.tier)}" alt="${esc(vesselSpec(p).name)}" loading="lazy"><h3>${i?'동행선 '+i:'⚑ 기함'} · ${esc(vesselSpec(p).name)}</h3><p>${p.tier+1}단계 · ${fmt(vesselSeaSpeed(s,p))}해리/일</p><p class="vessel-gear">장착 장비 · ${gear?esc(gear.name+' · '+gear.effect):'없음'}</p><button data-upgrade-vessel="${p.id}" ${!s.port||p.tier===19?'disabled':''}>이 배 개량 · ${fmt(SHIPS[p.tier].upgrade)} D</button><button data-flagship="${p.id}" ${!s.port?'disabled':''}>기함 지정</button><button data-store-vessel="${esc(p.id)}" ${!PORT_BY_ID[s.port]?.active||PORT_BY_ID[s.port]?.depot||s.voyage||rows.length<2||storedShips(s).length>=STORED_SHIP_LIMIT?'disabled':''}>이 항구에 맡기기</button><button data-sell-vessel="${p.id}" ${!s.port||rows.length<2?'disabled':''}>매각 · ${fmt(shipResaleValue(p))} D</button></article>`;}).join('')}</div><div class="dialog-actions"><button id="fleet-shipyard">역사 선박 조선소</button><button id="fleet-stored">항구에 맡긴 배 · ${storedShips(s).length}척</button><button id="fleet-items">아이템 가방</button><button id="detail-add" ${!s.port||additionalShipCost(s)===null?'disabled':''}>배 추가 · ${fmt(additionalShipCost(s))} D</button><button id="fleet-growth">전체 20단계 보기</button><button id="fleet-all-upgrade" ${!s.port||!rows.every(p=>p.tier===rows[0].tier)||rows[0].tier===19?'disabled':''}>같은 단계 선단 일괄 개량 · ${fmt(upgradeCost(s))} D</button></div><p>기함을 조종하면 나머지는 지나온 길을 따라 한 줄로 이동해요. 배를 맡기면 새 배를 편입할 자리가 생겨요. 항해 선단에는 최소 한 척을 남겨야 해요.</p>`,'wide');
+  const s=get(),rows=fleetDisplayShips(s),spec=ship(s),slow=rows.find(p=>vesselSeaSpeed(s,p)===spec.speed),trade=equippedGear(s,'trade'),explore=equippedGear(s,'explore');
+  api.onModal('내 배와 동행 선단','최대 5척 · 가장 느린 배의 속도로 함께 항해',`<p class="help-tip">선단 속도 ${fmt(spec.speed)}해리/일 · 속도 제한: ${esc(vesselSpec(slow).name)} · 보급 한도 ${spec.supply}일 · 적재 ${usedSpace(s)}/${capacity(s)}칸</p><p class="fleet-trade-gear">교역 ${trade.length}/3 · ${esc(trade.map(item=>item.name).join(' · ')||'없음')}</p><div class="ship-growth-grid">${rows.map((p,i)=>{const gear=gearOnShip(s,p.id);return `<article class="growth-step"><img ${p.kind?'class="historical-photo"':''} src="${p.kind?historicalArt(p.kind):shipArtPath(p.tier)}" alt="${esc(vesselSpec(p).name)}" loading="lazy"><h3>${i?'동행선 '+i:'⚑ 기함'} · ${esc(vesselSpec(p).name)}</h3><p>${p.tier+1}단계 · ${fmt(vesselSeaSpeed(s,p))}해리/일</p><p class="vessel-gear">장착 장비 · ${gear?esc(gear.name+' · '+gear.effect):'없음'}</p><button data-upgrade-vessel="${p.id}" ${!s.port||p.tier===19?'disabled':''}>이 배 개량 · ${fmt(SHIPS[p.tier].upgrade)} D</button><button data-flagship="${p.id}" ${!s.port?'disabled':''}>기함 지정</button><button data-store-vessel="${esc(p.id)}" ${!PORT_BY_ID[s.port]?.active||PORT_BY_ID[s.port]?.depot||s.voyage||rows.length<2||storedShips(s).length>=STORED_SHIP_LIMIT?'disabled':''}>이 항구에 맡기기</button><button data-sell-vessel="${p.id}" ${!s.port||rows.length<2?'disabled':''}>매각 · ${fmt(shipResaleValue(p))} D</button></article>`;}).join('')}</div><div class="dialog-actions"><button id="fleet-shipyard">역사 선박 조선소</button><button id="fleet-stored">항구에 맡긴 배 · ${storedShips(s).length}척</button><button id="fleet-items">아이템 가방</button><button id="detail-add" ${!s.port||additionalShipCost(s)===null?'disabled':''}>배 추가 · ${fmt(additionalShipCost(s))} D</button><button id="fleet-growth">전체 20단계 보기</button><button id="fleet-all-upgrade" ${!s.port||!rows.every(p=>p.tier===rows[0].tier)||rows[0].tier===19?'disabled':''}>같은 단계 선단 일괄 개량 · ${fmt(upgradeCost(s))} D</button></div><p>기함을 조종하면 나머지는 지나온 길을 따라 한 줄로 이동해요. 배를 맡기면 새 배를 편입할 자리가 생겨요. 항해 선단에는 최소 한 척을 남겨야 해요.</p>`,'wide');
   $('#fleet-shipyard').onclick=showShipyard;
   $('#fleet-stored').onclick=showStoredShips;
   const root=$('#modal-content'),grid=root.querySelector('.ship-growth-grid'),actions=$('#fleet-shipyard').parentElement;
@@ -83,7 +83,7 @@ export function createExpansion(api){
     <p>해상 ${fmt(vesselSeaSpeed(s,vessel))}해리/일 · 선단 내구도 ${fmt(s.hullHP??fleetMaxHP(s))}/${fmt(fleetMaxHP(s))}</p>
     <label>볼 선박 <select id="fleet-display-select">${rows.map((row,i)=>`<option value="${row.id}" ${row.id===vessel.id?'selected':''}>${i?'동행선 '+i:'기함'} · ${esc(vesselSpec(row).name)}</option>`).join('')}</select></label></div>
     </section><nav class="expansion-tabs fleet-display-tabs">${[['fleet','선단'],['gear','장비'],['yard','조선·보관']].map(([key,label])=>`<button data-fleet-view="${key}" aria-pressed="${fleetTab===key}">${label}</button>`).join('')}</nav>
-    <section id="fleet-equipment" ${fleetTab==='gear'?'':'hidden'}><h3>선택한 배의 장비</h3><p>${esc(gearOnShip(s,vessel.id)?.name||'선박 장비 없음')}</p><p>선단 교역 장비 · ${esc(trade?.name||'없음')}</p><button id="fleet-open-equipment">아이템 가방·장착 관리</button></section>`);
+    <section id="fleet-equipment" ${fleetTab==='gear'?'':'hidden'}><h3>선택한 배의 장비</h3><p>${esc(gearOnShip(s,vessel.id)?.name||'선박 장비 없음')}</p><p>교역 ${trade.length}/3 · ${esc(trade.map(item=>item.name+' '+item.effect).join(' · ')||'없음')}</p><p>탐사 ${explore.length}/3 · ${esc(explore.map(item=>item.name+' '+item.effect).join(' · ')||'없음')}</p><button id="fleet-open-equipment">아이템 가방·장착 관리</button></section>`);
   grid.classList.add('fleet-management-list');
   grid.hidden=fleetTab==='gear';actions.hidden=fleetTab!=='yard';
   root.classList.toggle('fleet-overview-mode',fleetTab==='fleet');

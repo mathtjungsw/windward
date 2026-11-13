@@ -323,3 +323,30 @@ test('selecting a harbor already within docking range docks before the outbound 
  assert.equal(app.state.port,'porto');assert.equal(app.state.voyage,null);assert.equal(app.state.controlMode,'auto');
  app.beginPlaying(initialState());$('#modal').close();
 });
+
+test('discovering Salalah renders the map and preserves manual and open-sea automatic movement',async()=>{
+ const {RELEASE}=await import('../dist/release-notes.js');
+ const data=await import('../dist/data.js?v='+RELEASE);
+ const id='developed-salalah',oldPort=structuredClone(data.PORT_BY_ID[id]);
+ const added=data.registerDevelopedPorts({[id]:{level:2,name:'살랄라'}});
+ const oldReserve=app.combat.hasReserve,oldBlocked=app.combat.blocked;
+ app.combat.hasReserve=()=>true;app.combat.blocked=()=>false;
+ try{
+  for(const mode of ['manual','auto']){
+   const game=initialState();game.port=null;game.position=[55.133546,16.033181];game.food=54;
+   game.fleetShips=[{id:game.flagshipId,tier:19}];game.shipTier=19;game.controlMode=mode;
+   game.knownPorts.push(id);
+   assert.doesNotThrow(()=>app.beginPlaying(game),'newly discovered Salalah must not crash map rendering');
+   $('#modal').close();await wait();app.stopForUI();
+   const marker=$('[data-port="'+id+'"]');assert.ok(marker);assert.match(marker.textContent,/살랄라/);
+   if(mode==='manual')app.heldKeys.add('ArrowLeft');
+   else{app.planDestination(null,[54.8,16.03],false);await app.startVoyage();assert.ok(app.state.voyage);assert.equal(app.state.voyage.target,null);}
+   const before=[...app.state.position];app.sailingClock.reset(0);app.tick(0);
+   assert.doesNotThrow(()=>app.tick(100));assert.notDeepEqual(app.state.position,before,mode+' must move after discovering Salalah');
+  }
+ }finally{
+  app.combat.hasReserve=oldReserve;app.combat.blocked=oldBlocked;app.stopForUI();
+  for(const port of added){const index=data.PORTS.findIndex(p=>p.id===port.id);if(index>=0)data.PORTS.splice(index,1);delete data.ACTIVE_PORT_BY_ID[port.id];}
+  Object.assign(data.PORT_BY_ID[id],oldPort);app.beginPlaying(initialState());$('#modal').close();
+ }
+});

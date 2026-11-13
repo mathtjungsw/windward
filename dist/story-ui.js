@@ -1,7 +1,7 @@
-import {STORIES,STORY_BY_ID} from './story-catalog.js?v=2026.11.13-stories-harbors-tax.1';
-import {PORT_BY_ID} from './data.js?v=2026.11.13-stories-harbors-tax.1';
-import {OFFICER_BY_ID,ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.13-stories-harbors-tax.1';
-import {storyAction,storyRequirement,refreshStories,recordStoryView,completedChapter} from './story-core.js?v=2026.11.13-stories-harbors-tax.1';
+import {STORIES,STORY_BY_ID} from './story-catalog.js?v=2026.11.13-gear-corinth';
+import {PORT_BY_ID} from './data.js?v=2026.11.13-gear-corinth';
+import {OFFICER_BY_ID,ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.13-gear-corinth';
+import {storyAction,storyRequirement,refreshStories,recordStoryView,completedChapter} from './story-core.js?v=2026.11.13-gear-corinth';
 
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const names={ship:'내 배 보기',cargo:'화물·보유금',route:'항구 찾기와 항로', 'porto-route':'포르투 항로',supply:'항구 보급',trade:'교역소',sale:'최고가 판매처', 'auto-route':'자동 항해 전환',favorites:'항구 즐겨찾기',minimap:'세계지도',journal:'항해일지',tavern:'주점',note:'소문노트','note-hide':'소문 숨기기','note-restore':'숨긴 소문 복원',album:'발견 도감',investigation:'흔적 조사',guild:'조합 의뢰',shipyard:'역사 선박 조선소',stored:'항구에 맡긴 배',guns:'대포 장착',items:'아이템 가방',officers:'부선장 명부',captains:'선장 목록',ranks:'선장 랭킹',chat:'선장 채팅',projects:'공동 사업',settings:'조작·화면 설정',finder:'메뉴 찾기'};

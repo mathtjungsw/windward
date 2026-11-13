@@ -1,7 +1,7 @@
-import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.13-stories-harbors-tax.1';
-import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.13-stories-harbors-tax.1';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.13-stories-harbors-tax.1';
-import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.13-stories-harbors-tax.1';
+import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.13-gear-corinth';
+import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.13-gear-corinth';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.13-gear-corinth';
+import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.13-gear-corinth';
 
 export const isConsumable=entry=>['supply','repair','coupon','extension','shore-consumable','distance','trade-voucher','activity','project','facility'].includes(entry?.type);
 export const itemLimit=entry=>isConsumable(entry)?20:1;
@@ -10,6 +10,13 @@ const byId = Object.fromEntries(CONTRACTS.map(entry=>[entry.id,entry]));
 const validId = id=>id===TURTLE_RUMOR.id||Object.hasOwn(byId,id)||Object.hasOwn(RUMOR_BY_ID,id);
 const ids = (values, check)=>[...new Set(Array.isArray(values)?values.filter(check):[])];
 const object = value=>value&&typeof value==='object'&&!Array.isArray(value)?value:{};
+
+const gearIds=(value,items,type)=>ids(Array.isArray(value)?value:[value],id=>typeof id==='string'&&items[id]>0&&ITEM_BY_ID[id]?.type===type).slice(0,3);
+
+export function equippedGear(game,type){
+  const p=game.rumorProgress;
+  return gearIds(p?.[type==='trade'?'tradeGear':'exploreGear'],p?.items||{},type).map(id=>ITEM_BY_ID[id]);
+}
 
 export function normalizeRumorProgress(game){
   const src=object(game.rumorProgress), read=ids(src.read,id=>Object.hasOwn(byId,id)||id===TURTLE_RUMOR.id);
@@ -44,8 +51,8 @@ export function normalizeRumorProgress(game){
   ],id=>Object.hasOwn(ITEM_BY_ID,id));
   return {read,hidden,officers,items,acquiredItems,contracts,shipGear,canalPass:CANAL_IDS.includes(src.canalPass)?src.canalPass:null,
     active:officers.includes(src.active)?src.active:null,
-    exploreGear:items[src.exploreGear]>0&&ITEM_BY_ID[src.exploreGear]?.type==='explore'?src.exploreGear:null,
-    tradeGear:items[src.tradeGear]>0&&ITEM_BY_ID[src.tradeGear]?.type==='trade'?src.tradeGear:null,
+    exploreGear:gearIds(src.exploreGear,items,'explore'),
+    tradeGear:gearIds(src.tradeGear,items,'trade'),
     coupons:Object.fromEntries(Object.entries(object(src.coupons)).filter(([kind,id])=>Object.hasOwn(ITEM_BY_ID,id)&&ITEM_BY_ID[id].coupon===kind)),
     distanceGear,vouchers,records,flag:items.I062>0&&src.flag===true,officerMiles:Number.isFinite(src.officerMiles)&&src.officerMiles>=0&&src.officerMiles<20?src.officerMiles:0,
     officerXP:Object.fromEntries(officers.map(id=>[id,Math.max(0,Math.min(10000,Number.isSafeInteger(src.officerXP?.[id])?src.officerXP[id]:0))])),
@@ -132,7 +139,7 @@ export function recordContractArrival(game,port){
     if(!task.done&&byId[id]?.challenge.ports.includes(port)&&!task.ports.includes(port))task.ports.push(port);
   }
 }
-export function performContractAction(game,id,action){
+export function performContractAction(game,id,action,replaceId){
   const entry=byId[id];
   if(!entry||!safeDock(game))throw Error('전투나 구조가 끝난 뒤 항구에 입항하세요.');
   const p=progress(game), status=contractStatus(game,entry);
@@ -144,8 +151,14 @@ export function performContractAction(game,id,action){
       p.active=p.active===id?null:id;
       preserveHullRatio(game,previous,activeOfficer(game)?.hullBonus||0);
     }
-    else if(entry.type==='trade')p.tradeGear=p.tradeGear===id?null:id;
-    else if(entry.type==='explore')p.exploreGear=p.exploreGear===id?null:id;
+    else if(entry.type==='trade'||entry.type==='explore'){
+      const key=entry.type==='trade'?'tradeGear':'exploreGear';
+      const selected=equippedGear(game,entry.type).map(item=>item.id);
+      if(selected.includes(id))p[key]=selected.filter(item=>item!==id);
+      else if(selected.length<3)p[key]=[...selected,id];
+      else if(selected.includes(replaceId))p[key]=selected.map(item=>item===replaceId?id:item);
+      else throw Error('교체할 장비를 선택하세요.');
+    }
     else if(entry.type==='flag')p.flag=!p.flag;
     else if(entry.type==='ship'){
       const flag=game.flagshipId, wasEquipped=p.shipGear[flag]===id;
@@ -236,15 +249,18 @@ export function gearOnShip(game,shipId){
   const p=game.rumorProgress, id=p?.shipGear?.[shipId];
   return p?.items[id]>0?ITEM_BY_ID[id]:null;
 }
-export function tradeGear(game){
-  const p=game.rumorProgress, id=p?.tradeGear;
-  return p?.items[id]>0?ITEM_BY_ID[id]:null;
-}
+export function tradeGear(game){return equippedGear(game,'trade')[0]||null;}
 export function explorationGear(game){
-  const p=game.rumorProgress,id=p?.exploreGear;
-  return p?.items[id]>0?ITEM_BY_ID[id]:null;
+  const entries=equippedGear(game,'explore');
+  if(!entries.length)return null;
+  const effects={id:entries.map(item=>item.id).join(','),name:entries.map(item=>item.name).join(' · ')};
+  for(const item of entries)for(const [key,value] of Object.entries(item)){
+    if(typeof value==='boolean')effects[key]=effects[key]||value;
+    if(typeof value==='number')effects[key]=(effects[key]||0)+value;
+  }
+  return effects;
 }
-export const extraCapacity=game=>tradeGear(game)?.capacity||0;
+export const extraCapacity=game=>equippedGear(game,'trade').reduce((total,item)=>total+(item.capacity||0),0);
 export function supplyDiscount(game){
   const officer=activeOfficer(game);
   return officer?.supplyDiscount||(MEDITERRANEAN_PORTS.has(game.port)?officer?.mediterraneanSupply||0:0);
@@ -272,10 +288,10 @@ export function activateCoupon(game,id){
 export function saleBonus(game,portId,goodId){
   const region=PORT_BY_ID[portId]?.region;
   const eligible=gear=>gear&&(!gear.sellRegion||region===gear.sellRegion)&&(!gear.sellPorts||gear.sellPorts.includes(portId))&&(!gear.sellGoods||gear.sellGoods.includes(goodId));
-  return Math.min(.03,[activeOfficer(game),tradeGear(game)].reduce((sum,g)=>sum+(eligible(g)?g.sellBonus||0:0),0));
+  return Math.min(.03,[activeOfficer(game),...equippedGear(game,'trade')].reduce((sum,g)=>sum+(eligible(g)?g.sellBonus||0:0),0));
 }
 export function contractDescription(entry){
   if(entry.scenario)return '항해자의 이야기 완료 보상입니다. 획득 후 기존 장비 칸 또는 동행 부선장으로 선택하세요.';
   return entry.challenge.ports.map(id=>PORT_BY_ID[id]?.name).join(' · ')+' 방문, '+GOODS[entry.challenge.cargo].name+' '+entry.challenge.qty+'상자 납품';
 }
-import {CANAL_IDS} from './canal-reservations.js?v=2026.11.13-stories-harbors-tax.1';
+import {CANAL_IDS} from './canal-reservations.js?v=2026.11.13-gear-corinth';

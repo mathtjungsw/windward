@@ -1,4 +1,5 @@
-export const CANAL_IDS=['canal-corinth','canal-suez','canal-panama'];
+export const RETIRED_CANAL='canal-corinth';
+export const CANAL_IDS=['canal-suez','canal-panama'];
 
 export function designateCanalPass(game,id){
   if(!CANAL_IDS.includes(id)||!game.rumorProgress?.items?.I052)throw Error('보유한 운하 통행권을 확인하세요.');

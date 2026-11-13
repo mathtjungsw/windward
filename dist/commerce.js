@@ -1,11 +1,11 @@
-import {shipyardTrade} from './historical-ships.js?v=2026.11.13-stories-harbors-tax.1';
-import {recordTrade} from './rank-progress.js?v=2026.11.13-stories-harbors-tax.1';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-stories-harbors-tax.1';
-import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.13-stories-harbors-tax.1';
-import {tradeQuote} from './market-rules.js?v=2026.11.13-stories-harbors-tax.1';
-import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.13-stories-harbors-tax.1';
-import {saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax.1';
-import {recordStoryTrade} from './story-core.js?v=2026.11.13-stories-harbors-tax.1';
+import {shipyardTrade} from './historical-ships.js?v=2026.11.13-gear-corinth';
+import {recordTrade} from './rank-progress.js?v=2026.11.13-gear-corinth';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-gear-corinth';
+import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.13-gear-corinth';
+import {tradeQuote} from './market-rules.js?v=2026.11.13-gear-corinth';
+import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.13-gear-corinth';
+import {saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.13-gear-corinth';
+import {recordStoryTrade} from './story-core.js?v=2026.11.13-gear-corinth';
 export function captainTradeQuote(game,portId,goodId,qty,mode,item,now,rate){
  const quote=tradeQuote(portId,goodId,qty,mode,item,now,rate);
  const bonus=mode==='sell'&&game?Math.floor(quote.total*saleBonus(game,portId,goodId)+1e-9):0;

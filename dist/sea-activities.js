@@ -1,7 +1,7 @@
-import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.13-stories-harbors-tax.1';
-import {GOODS} from './data.js?v=2026.11.13-stories-harbors-tax.1';
-import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax.1';
-import {explorationGear,activeOfficer,appendItemRecord,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax.1';
+import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.13-gear-corinth';
+import {GOODS} from './data.js?v=2026.11.13-gear-corinth';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-gear-corinth';
+import {explorationGear,activeOfficer,appendItemRecord,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-gear-corinth';
 
 export const SEA_TYPES={
   fishing:{label:'어장',wait:20000,cooldown:1800000,good:'driedfish',qty:2},

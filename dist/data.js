@@ -1,8 +1,8 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.13-stories-harbors-tax.1';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.13-stories-harbors-tax.1';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.13-stories-harbors-tax.1';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.13-stories-harbors-tax.1';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.13-stories-harbors-tax.1';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.13-gear-corinth';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.13-gear-corinth';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.13-gear-corinth';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.13-gear-corinth';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.13-gear-corinth';
 Object.assign(GOODS,PREMIUM_GOODS);
 
 export {GOODS};
@@ -46,7 +46,7 @@ export const DEPOT_SITES=[['stjohns',.35,0],['reykjavik',-.55,0],['mogadishu',.3
   const lon=Number((site.lon+dx).toFixed(6)),lat=Number((site.lat+dy).toFixed(6));
   return {...site,id:'depot-'+key,portId:'depot-'+key,name:site.name+' 공동 보급항',lon,lat,point:[lon,lat],previousPoint:site.point};
 });
-for(const site of DEVELOPMENT_SITES)PORT_BY_ID[site.portId]={...site,id:site.portId,name:site.name,en:site.name,developable:true,active:false,market:[],economy:{stock:site.stock,demand:site.demand,demandTiers:site.demandTiers},pricePhase:200+DEVELOPMENT_SITES.indexOf(site)};
+for(const site of DEVELOPMENT_SITES)PORT_BY_ID[site.portId]={...site,id:site.portId,name:site.name,en:site.name,developable:true,active:false,market:[],specialty:Object.keys(site.stock).find(id=>site.stock[id]==='producer')||Object.keys(site.stock)[0],economy:{stock:site.stock,demand:site.demand,demandTiers:site.demandTiers},pricePhase:200+DEVELOPMENT_SITES.indexOf(site)};
 for(const site of DEPOT_SITES)PORT_BY_ID[site.id]={...site,en:site.name,sea:'공동 보급항',depot:true,active:false,market:[],economy:{stock:{},demand:[],demandTiers:{}},specialty:'grain',fact:'선장들이 공동으로 건설한 보급항입니다. 정박한 뒤 공동 창고에서 식량을 구입할 수 있어요.'};
 export function registerDevelopedPorts(registry={},now=Date.now()){
   const added=[];

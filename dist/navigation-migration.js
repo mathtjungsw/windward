@@ -1,7 +1,23 @@
-import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.13-stories-harbors-tax.1';
-import {ship,voyageEstimate,positionAlong,makeRoute} from './engine.js?v=2026.11.13-stories-harbors-tax.1';
+import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.13-gear-corinth';
+import {ship,voyageEstimate,positionAlong,makeRoute,canDepart} from './engine.js?v=2026.11.13-gear-corinth';
+import {currentCanal,refundCanalTolls,RETIRED_CANAL} from './canal-reservations.js?v=2026.11.13-gear-corinth';
 
 export const NAVIGATION_VERSION=3;
+
+export function retireCorinthRoute(game,nav){
+  const previous=game.voyage;
+  if(!previous?.passages?.some(p=>p.id===RETIRED_CANAL&&!p.paid)||currentCanal(previous))return null;
+  const end=previous.path.at(-1);
+  refundCanalTolls(game);
+  game.voyage=null;
+  const route=nav.route(game.position,end,{maxOffshore:ship(game).offshore});
+  const estimate=route&&route.total>=.0001&&canDepart(game,route);
+  if(!estimate?.ok)return '코린토스 운하 예약을 환불했어요. 현재 위치에서 새 항로와 보급을 확인하세요.';
+  const {path,lengths,total,sections,waterways}=route;
+  game.voyage={...previous,path,lengths,total,sections,waterways,travelled:0,foodRemaining:estimate.food};
+  delete game.voyage.passages;
+  return '코린토스 운하 예약을 환불하고 운하를 우회하는 항로를 계산했어요.';
+}
 
 function extendAcapulcoVoyage(game,nav,voyage){
   const end=voyage.path.at(-1);
@@ -18,6 +34,8 @@ function extendAcapulcoVoyage(game,nav,voyage){
 // Reconcile only navigation. This never calls arrival, rescue or discovery awards.
 export function reconcileNavigation(game,nav){
   if(!nav?.detail)return null;
+  const retirement=retireCorinthRoute(game,nav);
+  if(retirement)return retirement;
   if(game.voyage?.target==='acapulco')extendAcapulcoVoyage(game,nav,game.voyage);
   const previous=game.voyage;
   if(previous?.canal||previous?.passages?.length){

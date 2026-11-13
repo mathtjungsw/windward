@@ -1,10 +1,10 @@
-import {shipyardReport} from './historical-ships.js?v=2026.11.13-stories-harbors-tax.1';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.13-stories-harbors-tax.1';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.13-stories-harbors-tax.1';
-import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax.1';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-stories-harbors-tax.1';
+import {shipyardReport} from './historical-ships.js?v=2026.11.13-gear-corinth';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.13-gear-corinth';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.13-gear-corinth';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-gear-corinth';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.13-gear-corinth';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax.1';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-gear-corinth';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[

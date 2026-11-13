@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.13-stories-harbors-tax.1';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.13-stories-harbors-tax.1';
-import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax.1';
-import {supplyRoom,tradingPort} from './engine.js?v=2026.11.13-stories-harbors-tax.1';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax.1';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.13-stories-harbors-tax.1';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.13-stories-harbors-tax.1';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.13-gear-corinth';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.13-gear-corinth';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-gear-corinth';
+import {supplyRoom,tradingPort} from './engine.js?v=2026.11.13-gear-corinth';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-gear-corinth';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.13-gear-corinth';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.13-gear-corinth';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));
@@ -15,7 +15,6 @@ const freight=[
   id:'freight-'+port,kind:'freight',name:ACTIVE_PORT_BY_ID[port].name+' 공동 수송',port,good,goal,reward
 }));
 export const CANALS=[
-  {id:'canal-corinth',kind:'canal',name:'코린토스 운하',cost:1200000,duration:6*HOUR,path:[[22.60,38.13],[22.94,37.972],[22.982,37.944],[23.059,37.897]]},
   {id:'canal-suez',kind:'canal',name:'수에즈 운하',cost:6000000,duration:12*HOUR,path:[[32.31,31.32],[32.31,30.85],[32.34,30.57],[32.38,30.28],[32.54,29.9]]},
   {id:'canal-panama',kind:'canal',name:'파나마 운하',cost:10000000,duration:24*HOUR,path:[[-79.914,9.415],[-79.916,9.276],[-79.803,9.152],[-79.677,9.097],[-79.562,8.87]]}
 ];

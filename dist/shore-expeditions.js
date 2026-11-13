@@ -1,7 +1,7 @@
-import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.13-stories-harbors-tax.1';
-import {mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax.1';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.13-stories-harbors-tax.1';
-import {activeOfficer,explorationGear,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax.1';
+import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.13-gear-corinth';
+import {mapDistance} from './world-wrap.js?v=2026.11.13-gear-corinth';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.13-gear-corinth';
+import {activeOfficer,explorationGear,equippedGear,addOfficerExperience} from './rumor-progress.js?v=2026.11.13-gear-corinth';
 
 export const SHORE_SITES={
   porto:{market:'강가 마을',site:'언덕의 옛 창고',ridge:'소나무 고갯길',good:'wine',theme:'green'},
@@ -107,7 +107,7 @@ export function canRecordShore(game,kind,node=game.shoreTrip?.node){
   const trip=game.shoreTrip, rule=RECORD_ACTIONS[kind];
   if(!trip||!rule||!atSurvey({...trip,node},rule.node))return false;
   if(trip.records?.includes(kind)||game.shoreProgress?.records?.[trip.port]?.includes(kind))return false;
-  return rule.item?game.rumorProgress?.items?.[rule.item]>0:explorationGear(game)?.id===rule.gear;
+  return rule.item?game.rumorProgress?.items?.[rule.item]>0:equippedGear(game,'explore').some(item=>item.id===rule.gear);
 }
 export function shoreBagLimit(game){
   return Math.min(7,3+(activeOfficer(game)?.shoreBag||0)+(explorationGear(game)?.shoreBag||0));

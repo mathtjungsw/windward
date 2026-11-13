@@ -1,62 +1,62 @@
-import {createUiUsage} from './ui-usage.js?v=2026.11.13-stories-harbors-tax.1';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.13-stories-harbors-tax.1';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.13-stories-harbors-tax.1';
-import {reconcileNavigation} from './navigation-migration.js?v=2026.11.13-stories-harbors-tax.1';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.13-stories-harbors-tax.1';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.13-stories-harbors-tax.1';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.13-stories-harbors-tax.1';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.13-stories-harbors-tax.1';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.13-stories-harbors-tax.1';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.13-stories-harbors-tax.1';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.13-stories-harbors-tax.1';
-import {createCommunity} from './community.js?v=2026.11.13-stories-harbors-tax.1';
-import {createTaxCollector} from './tax-collector.js?v=2026.11.13-stories-harbors-tax.1';
-import {createStoryUI} from './story-ui.js?v=2026.11.13-stories-harbors-tax.1';
-import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.13-stories-harbors-tax.1';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.13-stories-harbors-tax.1';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.13-stories-harbors-tax.1';
-import {createCombat} from './combat-ui.js?v=2026.11.13-stories-harbors-tax.1';
-import {createBusiness} from './business-ui.js?v=2026.11.13-stories-harbors-tax.1';
-import {createExpansion} from './expansion-ui.js?v=2026.11.13-stories-harbors-tax.1';
-import {gameStats} from './public-stats.js?v=2026.11.13-stories-harbors-tax.1';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.13-stories-harbors-tax.1';
-import {shipGlyph} from './art.js?v=2026.11.13-stories-harbors-tax.1';
-import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.13-stories-harbors-tax.1';
-import {RELEASE} from './release-notes.js?v=2026.11.13-stories-harbors-tax.1';
-import {createUX} from './ux.js?v=2026.11.13-stories-harbors-tax.1';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.13-stories-harbors-tax.1';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.13-stories-harbors-tax.1';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.13-stories-harbors-tax.1';
-import {AtlasView} from './atlas-view.js?v=2026.11.13-stories-harbors-tax.1';
-import {FleetPresence} from './multiplayer.js?v=2026.11.13-stories-harbors-tax.1';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.13-stories-harbors-tax.1';
-import {CaptainChat} from './chat.js?v=2026.11.13-stories-harbors-tax.1';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.13-stories-harbors-tax.1';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.13-stories-harbors-tax.1';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.13-stories-harbors-tax.1';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.13-stories-harbors-tax.1';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.13-stories-harbors-tax.1';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.13-stories-harbors-tax.1';
-import {CaptainRankings} from './rankings.js?v=2026.11.13-stories-harbors-tax.1';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.13-stories-harbors-tax.1';
+import {createUiUsage} from './ui-usage.js?v=2026.11.13-gear-corinth';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.13-gear-corinth';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.13-gear-corinth';
+import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.13-gear-corinth';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.13-gear-corinth';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.13-gear-corinth';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.13-gear-corinth';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.13-gear-corinth';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.13-gear-corinth';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.13-gear-corinth';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.13-gear-corinth';
+import {createCommunity} from './community.js?v=2026.11.13-gear-corinth';
+import {createTaxCollector} from './tax-collector.js?v=2026.11.13-gear-corinth';
+import {createStoryUI} from './story-ui.js?v=2026.11.13-gear-corinth';
+import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.13-gear-corinth';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.13-gear-corinth';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.13-gear-corinth';
+import {createCombat} from './combat-ui.js?v=2026.11.13-gear-corinth';
+import {createBusiness} from './business-ui.js?v=2026.11.13-gear-corinth';
+import {createExpansion} from './expansion-ui.js?v=2026.11.13-gear-corinth';
+import {gameStats} from './public-stats.js?v=2026.11.13-gear-corinth';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.13-gear-corinth';
+import {shipGlyph} from './art.js?v=2026.11.13-gear-corinth';
+import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.13-gear-corinth';
+import {RELEASE} from './release-notes.js?v=2026.11.13-gear-corinth';
+import {createUX} from './ux.js?v=2026.11.13-gear-corinth';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.13-gear-corinth';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.13-gear-corinth';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.13-gear-corinth';
+import {AtlasView} from './atlas-view.js?v=2026.11.13-gear-corinth';
+import {FleetPresence} from './multiplayer.js?v=2026.11.13-gear-corinth';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.13-gear-corinth';
+import {CaptainChat} from './chat.js?v=2026.11.13-gear-corinth';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.13-gear-corinth';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.13-gear-corinth';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.13-gear-corinth';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.13-gear-corinth';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.13-gear-corinth';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.13-gear-corinth';
+import {CaptainRankings} from './rankings.js?v=2026.11.13-gear-corinth';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.13-gear-corinth';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.13-stories-harbors-tax.1';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.13-stories-harbors-tax.1';
-import {captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.13-stories-harbors-tax.1';
-import {createGuildUI} from './guild-ui.js?v=2026.11.13-stories-harbors-tax.1';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.13-stories-harbors-tax.1';
-import {ownership} from './commerce.js?v=2026.11.13-stories-harbors-tax.1';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.13-stories-harbors-tax.1';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.13-stories-harbors-tax.1';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.13-stories-harbors-tax.1';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.13-stories-harbors-tax.1';
-import {createShoreUI} from './shore-ui.js?v=2026.11.13-stories-harbors-tax.1';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.13-stories-harbors-tax.1';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.13-stories-harbors-tax.1';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.13-stories-harbors-tax.1';
-import {useRepairKit} from './activities.js?v=2026.11.13-stories-harbors-tax.1';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.13-stories-harbors-tax.1';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,makeRoute} from './engine.js?v=2026.11.13-stories-harbors-tax.1';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.13-gear-corinth';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.13-gear-corinth';
+import {captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.13-gear-corinth';
+import {createGuildUI} from './guild-ui.js?v=2026.11.13-gear-corinth';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.13-gear-corinth';
+import {ownership} from './commerce.js?v=2026.11.13-gear-corinth';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.13-gear-corinth';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.13-gear-corinth';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.13-gear-corinth';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.13-gear-corinth';
+import {createShoreUI} from './shore-ui.js?v=2026.11.13-gear-corinth';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.13-gear-corinth';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.13-gear-corinth';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.13-gear-corinth';
+import {useRepairKit} from './activities.js?v=2026.11.13-gear-corinth';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.13-gear-corinth';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,makeRoute} from './engine.js?v=2026.11.13-gear-corinth';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -342,7 +342,9 @@ function toggleChat(open=!chatOpen){if(open&&playing)recordStoryView(state,'chat
 function renderFleetList(){
   const root=$('#fleet-live-list');if(!root)return;root.tabIndex=0;
   const players=fleet.onlineCaptains();
-  if($('#fleet-online-count'))$('#fleet-online-count').textContent=!fleet.connected?'함께 항해에 연결하면 전체 접속 명단을 볼 수 있어요.':fleet.roster?.error?'명단을 불러오지 못했어요. 함께 항해를 다시 연결해 주세요.':fleet.roster&&!fleet.roster.ready?'접속 중인 선장들을 확인하고 있어요…':`나 포함 ${players.length}명 접속 중 · 내 시야의 다른 배 ${visibleShips().length}척`;
+  const count=$('#fleet-online-count');
+  const countText=!fleet.connected?'함께 항해에 연결하면 전체 접속 명단을 볼 수 있어요.':fleet.roster?.error?'명단을 불러오지 못했어요. 함께 항해를 다시 연결해 주세요.':fleet.roster&&!fleet.roster.ready?'접속 중인 선장들을 확인하고 있어요…':`나 포함 ${players.length}명 접속 중 · 내 시야의 다른 배 ${visibleShips().length}척`;
+  if(count&&count.textContent!==countText)count.textContent=countText;
   const nearby=new Map(visibleShips().map(p=>[p.uid,p]));
   const signature=JSON.stringify([fleet.uid,players.map(p=>[p.uid,p.name,p.color,p.status,nearby.has(p.uid)])]);
   if(signature===root.dataset.rosterKey)return;
@@ -1027,6 +1029,8 @@ function tick(now){
  const before=[...state.position];
  for(const delta of sailingClock.steps(now,!!mode)){
   if(mode==='auto'){
+   const retirement=retireCorinthRoute(state,nav);
+   if(retirement){toast(retirement);renderRoutes();renderHUD();save();if(!state.voyage)break;}
    if(!state.voyage)break;const previous=[...state.position],canal=currentCanal(state.voyage),result=advanceVoyage(state,nav,delta,canal?null:(from,to)=>expansion?.intercept(from,to)??1);if(!canal)exploreMove(previous,state.position);
    if(result.entry){save();enterReservedCanal(result.entry);sailingClock.reset(now);break;}
    if(result.interrupted){stopForUI();paused=true;renderHUD();sailingClock.reset(now);break;}if(result.arrived){arrive();sailingClock.reset(now);break;}if(result.depleted){launchRescue();sailingClock.reset(now);break;}
@@ -1054,7 +1058,7 @@ menuFinderButton.textContent='메뉴 찾기';menuFinderButton.onclick=openMenuFi
 $('.main-nav').append(menuFinderButton);
 setupInterface();ux=createUX({getState:()=>state,getAccount:()=>account,getNav:()=>nav,getSelection:()=>selected,getPlan:()=>planned,getFleet:()=>fleet,getVisibleShips:visibleShips,getChat:()=>chat,storage,onTrade:(mode,id)=>business?.trade(mode,id),onStop:stopForUI,onHome:centerShip,onSelect:selectPort,onPlan:planDestination,onSail:startVoyage,onManual:startManual,onMode:setControlMode,onSave:changed,onPanel:renderPanel,onSea:()=>seaUI?.open(),onGuild:()=>guildUI?.open(),onProjects:()=>projectsUI?.open(),onDepot:id=>projectsUI?.inspect(id),onShareRecord:(message,from,port)=>{if(appendItemRecord(state,'shares',String(message.id||((from?.id||'')+':'+port.id)),(from?from.name+' → ':'')+port.name,guildTime()))save();},onShore:()=>shoreUI?.open(),onModal:showModal,onClose:()=>modal.close(),onToast:toast,onRescue:launchRescue,onTab:setTab,onChat:toggleChat,onMapLabels:()=>renderChartLabels(true),onRankVisibility:visible=>rankings.setVisible(visible),onAtlas:showAtlas,onJournal:showJournal,onHelp:showHelp,onMenuFinder:openMenuFinder,onStory:()=>storyUI?.open(),onShip:()=>expansion?.showShip(),onCollection:()=>expansion?.showAlbum(),onBusiness:()=>business?.showHub(),onGuns:()=>business?.showArmory(),onSaleSearch:()=>saleFinder?.open(),onOfficers:()=>rumorUI?.showDirectory('officer'),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show(),onCombatTarget:uid=>combat?.attack(uid),onSuggestions:()=>community?.showSuggestions(true),onOwnedPorts:()=>community?.showOwnedPorts(),onCaptains:()=>expansion?.showCaptains('all',true)});renderHUD();renderMission();renderPanel();$('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
 expansion=createExpansion({getState:()=>state,getNav:()=>nav,getFleet:()=>fleet,getRankings:()=>rankings,getStats:()=>gameStats(state,exploration),onModal:showModal,onToast:toast,onChanged:changed,onClose:()=>modal.close(),canShowDiscovery:()=>playing&&!!nav&&!state.shoreTrip&&$('.chart')?.classList.contains('shore-map-open')===false&&!modal.open&&!state.battleId&&!state.npcBattle&&!state.raidId&&!ux?.isBlocking(),onDiscoveryPause:()=>{stopForUI();paused=!!state.voyage;},onInspect:inspectNearby,onApproach:approachDiscovery,onShowDiscoveryPoint:showDiscoveryOnChart,onResumeRoute:resumeDetour,onShipAction:fn=>business?.shipAction(fn),onStorageAction:fn=>business?.run('personal',account.uid,fn),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show()});
-rumorUI=createRumorUI({getState:()=>state,nav:()=>nav,modal:showModal,toast,changed,depart:autoToPort,onCanals:()=>projectsUI?.open('canal'),share:(text,card)=>ux?.share(text,card),action:(id,action)=>{
+rumorUI=createRumorUI({getState:()=>state,nav:()=>nav,modal:showModal,toast,changed,depart:autoToPort,onCanals:()=>projectsUI?.open('canal'),share:(text,card)=>ux?.share(text,card),action:(id,action,replaceId)=>{
   if(!account.ready)return toast('로그인 뒤 이용하세요.','error');
   const port=state.port;
   const item=ITEM_BY_ID[id], repair=action==='use'&&item?.type==='repair',distanceGear=action==='use'&&item?.type==='distance';
@@ -1063,7 +1067,7 @@ rumorUI=createRumorUI({getState:()=>state,nav:()=>nav,modal:showModal,toast,chan
   return business.run(assigned?'ports':'personal',assigned||account.uid,(game,content,time)=>{
     if(assigned)setIncomeOfficer(game,content,assigned,account.uid,ownership(content).ownerUid,time,0);
     if(game.port!==port)throw Error('정박한 항구가 바뀌었어요. 다시 확인하세요.');
-    const result=action==='use'?(repair?useRepairKit(game,id):distanceGear?activateDistanceGear(game,id):item?.type==='trade-voucher'?activateTradeVoucher(game,id):item?.coupon?activateCoupon(game,id):useEmergencySupplies(game,id)):performContractAction(game,id,action);
+    const result=action==='use'?(repair?useRepairKit(game,id):distanceGear?activateDistanceGear(game,id):item?.type==='trade-voucher'?activateTradeVoucher(game,id):item?.coupon?activateCoupon(game,id):useEmergencySupplies(game,id)):performContractAction(game,id,action,replaceId);
     if(action==='equip'&&usedSpace(game)>capacity(game))throw Error('적재 공간을 먼저 비우세요.');
     return result;
   });

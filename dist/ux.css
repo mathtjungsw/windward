@@ -52,6 +52,13 @@
   .topbar .header-end{gap:5px}.topbar #update-notes{font-size:11px;padding:5px 6px;min-height:44px}
   .bottom-bar #chat-toggle{position:static;box-shadow:none}
   #modal{max-height:85dvh;max-width:calc(100vw - 24px)}
-  #toast-container{top:auto;bottom:calc(70px + env(safe-area-inset-bottom,0px));height:max-content;grid-auto-rows:max-content;align-content:end}
+  #toast-container{
+    top:auto;bottom:calc(70px + env(safe-area-inset-bottom,0px));
+    left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));
+    width:auto;max-width:420px;transform:none;grid-template-columns:minmax(0,1fr);
+    height:max-content;grid-auto-rows:max-content;align-content:end;justify-items:center;
+  }
+  #toast-container .toast{box-sizing:border-box;max-width:100%;min-width:0;overflow-wrap:anywhere;white-space:normal}
+  body:has(#manual-pad.visible) #toast-container{bottom:auto;top:max(12px,env(safe-area-inset-top,0px))}
 }
 @media(max-width:850px) and (orientation:landscape){.game-layout>.chart{height:56dvh;min-height:170px}#manual-pad.visible{grid-template-rows:auto}#manual-pad>button:first-child,#manual-pad>div,#manual-pad>button:nth-of-type(2){grid-row:1;grid-column:auto}#manual-pad.visible{grid-template-columns:52px auto 52px}}
