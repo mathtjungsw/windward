@@ -42,3 +42,39 @@ test('fast sailing stops at the first trace boundary and charges only the distan
 test('wake followers use the travelled bend and the short map seam instead of a line through land',()=>{const points=[[0,0],[1,0],[1,1]],tails=wakeFollowers(points,4,30);assert.equal(tails.length,3);assert.ok(Math.abs(tails[0].point[0]-1)<.001);assert.ok(Math.abs(tails[2].point[1])<.01);const seam=wakeFollowers([[179,0],[-179,0]],2,30);assert.ok(seam[0].point[0]<-179&&seam[0].point[0]>-180);});
 test('minimap viewport is split at both chart seams without a line across the whole world',()=>{const rects=viewportRects([[175,75],[185,75],[185,85],[175,85]]);assert.equal(rects.length,4);for(const r of rects){assert.ok(r.right-r.left<=5);assert.ok(r.north-r.south<=5);assert.ok(r.left>=-180&&r.right<=180&&r.south>=-60&&r.north<=80);}});
 test('mixed fleet cannon restrictions apply to the actual hull and equipped weight consumes cargo space',()=>{const s=initialState();syncFleet(s,[{id:'big',tier:19},{id:'raft',tier:0}],'big');s.money=1e6;const g=buyCannon(s,'large',4,'gun').gun;assert.throws(()=>equipCannon(s,g.id,'raft',now),/단계/);const before=usedSpace(s);equipCannon(s,g.id,'big',now);assert.equal(gunWeight(s),8);assert.equal(usedSpace(s),before+8);for(let i=1;i<6;i++){buyCannon(s,'large',0,'g'+i);equipCannon(s,'g'+i,'big',now);}buyCannon(s,'large',0,'over');assert.throws(()=>equipCannon(s,'over','big',now),/무게/);});
+
+test('updated port tax rates feed the same quote and ownership policy',async()=>{
+ const {changePortPolicy,taxRate}=await import('../dist/commerce.js');
+ const {tradeQuote}=await import('../dist/market-rules.js');
+ const content={investors:{owner:100}};
+ changePortPolicy(content,'owner',30,{guest:25,free:0},[]);
+ assert.equal(taxRate(content,'guest','macau'),25);
+ assert.equal(taxRate(content,'free','macau'),0);
+ assert.equal(taxRate(content,'other','macau'),30);
+ assert.equal(taxRate(content,'owner','macau'),0);
+ const quote=tradeQuote('macau','wine',6,'sell',{},Date.now(),30);
+ assert.equal(quote.tax,Math.floor(quote.gross*.3));
+ assert.throws(()=>changePortPolicy(content,'owner',31,{},[]));
+});
+
+test('specialty purchase permits exactly 30 boxes and investment withdrawal rechecks the stage',async()=>{
+ const {portGrowth,portMarketItem,withdrawInvestment}=await import('../dist/commerce.js');
+ const {tradeQuote}=await import('../dist/market-rules.js');
+ const game=initialState(),time=Date.now(),id='macau',good='premium-silk';
+ game.port=id;game.voyage=null;game.money=100;
+ const content={investors:{me:3000000},ownerUid:'me',markets:{[good]:{stock:30,stockAt:time,stockVersion:2}}};
+ assert.equal(portGrowth(content,id).stage,2);
+ let item=portMarketItem(content,id,good,1);
+ assert.equal(tradeQuote(id,good,1,'buy',item,time).next.stock,29);
+ assert.throws(()=>tradeQuote(id,good,1,'buy',{...item,stock:29},time),/30상자/);
+ assert.throws(()=>withdrawInvestment(game,content,'me',id,1900000,time,2,1),/장부/);
+ const result=withdrawInvestment(game,content,'me',id,1900000,time,1,1);
+ assert.equal(result.received,1520000);
+ assert.equal(result.loss,380000);
+ assert.equal(game.money,1520100);
+ assert.equal(portGrowth(content,id).stage,0);
+ item=portMarketItem(content,id,good,2);
+ assert.equal(item.stock,30);
+ assert.throws(()=>tradeQuote(id,good,1,'buy',item,time),/투자 성장/);
+ assert.ok(tradeQuote(id,good,1,'sell',item,time).total>0);
+});

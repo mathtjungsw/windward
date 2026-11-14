@@ -216,4 +216,4 @@ ITEMS.push(
 export const OFFICER_BY_ID = Object.fromEntries(OFFICERS.map(x=>[x.id,x]));
 export const ITEM_BY_ID = Object.fromEntries(ITEMS.map(x=>[x.id,x]));
 export const MEDITERRANEAN_PORTS = new Set(['marseille','venice','athens','istanbul','alexandria']);
-import {EXTRA_ITEMS} from './item-catalog-extra.js?v=2026.11.14-trade-access';
+import {EXTRA_ITEMS} from './item-catalog-extra.js?v=2026.11.14-harbor-chart';

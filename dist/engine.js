@@ -1,16 +1,16 @@
-import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.14-trade-access';
-import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.14-trade-access';
-import {regionalFactor} from './regional-economy.js?v=2026.11.14-trade-access';
-import {recordTrade} from './rank-progress.js?v=2026.11.14-trade-access';
-import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.14-trade-access';
-import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,STORED_SHIP_LIMIT,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.14-trade-access';
-import {parseState} from './save-game.js?v=2026.11.14-trade-access';
-import {gunWeight} from './cannons.js?v=2026.11.14-trade-access';
-import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.14-trade-access';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.14-trade-access';
-import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.14-trade-access';
-import {charterCargo} from './guild-contracts.js?v=2026.11.14-trade-access';
-export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.14-trade-access';
+import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.14-harbor-chart';
+import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.14-harbor-chart';
+import {regionalFactor} from './regional-economy.js?v=2026.11.14-harbor-chart';
+import {recordTrade} from './rank-progress.js?v=2026.11.14-harbor-chart';
+import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.14-harbor-chart';
+import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,STORED_SHIP_LIMIT,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.14-harbor-chart';
+import {parseState} from './save-game.js?v=2026.11.14-harbor-chart';
+import {gunWeight} from './cannons.js?v=2026.11.14-harbor-chart';
+import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.14-harbor-chart';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.14-harbor-chart';
+import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.14-harbor-chart';
+import {charterCargo} from './guild-contracts.js?v=2026.11.14-harbor-chart';
+export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.14-harbor-chart';
 
 export const SAVE_KEY='windward-save-v1';
 export const START_DATE=Date.UTC(1522,3,6);
@@ -563,6 +563,10 @@ export function routeSections(nav,route){
     }
   }return sections;
 }
+export function rareEffectActive(game,kind){
+ const effect=game.rareEffect;
+ return effect?.kind===kind&&effect.until>game.day;
+}
 function sectionMotion(s,route,section,gear){
   const rescue=['rescue','transition'].includes(route.kind),stats=ship(s);
   if(route.legacy)return {speed:[360,440,520][route.legacyShipLevel??Math.min(2,s.level||0)]/(rescue?2:1),rate:.9,limit:Infinity};
@@ -572,6 +576,10 @@ function sectionMotion(s,route,section,gear){
   if(!section.river&&section.current)speed*=1+Math.min(...fleetShips(s).map(v=>gearOnShip(s,v.id)?.currentSpeed||0));
   if(route.direct&&!section.river)speed*=route.manualMultiplier||1;
   let rate=voyageSupplyRate(s,section.river,section.coastal),limit=Infinity;
+  if(!rescue&&rareEffectActive(s,'speed')){
+    if(!section.river)speed*=1.03;
+    limit=Math.max(1e-7,(s.rareEffect.until-s.day)*speed);
+  }
   if(!rescue)for(const [id,miles] of Object.entries(gear||{})){
     if(miles<=1e-8)continue;
     const item=ITEM_BY_ID[id];
@@ -593,7 +601,7 @@ export function voyageEstimate(s,route,travelled=0){
   for(const section of sections){
     let remaining=Math.max(0,section.end-Math.max(travelled,section.start));
     while(remaining>1e-8){
-      const {speed,rate,limit}=sectionMotion(s,route,section,gear);
+      const {speed,rate,limit}=sectionMotion(s.rareEffect?{...s,day:s.day+days}:s,route,section,gear);
       const miles=Math.min(remaining,limit),time=miles/speed;
       days+=time;food+=time*rate;remaining-=miles;spendGear(gear,miles);
     }
@@ -618,7 +626,7 @@ export function manualHelmSpeed(s,nav,point){
   if(nav.riverAt(point))return ship(s).riverSpeed;
   const manualBonus=nav.coastAt(point)<=80?Math.min(...fleetShips(s).map(p=>gearOnShip(s,p.id)?.manualSpeed||0))+(activeOfficer(s)?.manualSpeed||0):0;
   const effects=Object.entries(s.rumorProgress?.distanceGear||{}).reduce((factor,[id,miles])=>miles>0?factor*(1+(ITEM_BY_ID[id]?.speed||0)):factor,1);
-  return Math.min(...fleetShips(s).map(v=>vesselSeaSpeed(s,v,nav.coastAt(point)<=80)))*(1+manualBonus)*effects;
+  return Math.min(...fleetShips(s).map(v=>vesselSeaSpeed(s,v,nav.coastAt(point)<=80)))*(1+manualBonus)*effects*(rareEffectActive(s,'speed')?1.03:1);
 }
 export function useEmergencySupplies(s,id){
   const p=s.rumorProgress;
@@ -649,6 +657,10 @@ export function advanceVoyage(s,nav,seconds,intercept=null){
       p.officerMiles=total-experience*20;
       addOfficerExperience(s,experience);
     }
+  }
+  if(!rescue&&s.canalMission){
+   const id=s.canalMission.id;
+   if(v.passages?.some(p=>p.id===id&&p.paid&&v.travelled+1e-7>=p.end)||v.canal===id&&v.travelled+1e-7>=v.total)s.canalMission.passed=true;
   }
   s.position=positionAlong(v,v.travelled);return {miles,days,interrupted,...(entry?{entry}:{}),arrived:v.travelled>=v.total-1e-7,depleted:!rescue&&s.food<=1e-8};
 }

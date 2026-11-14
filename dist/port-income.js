@@ -7,14 +7,19 @@ export function basicIncomeRate(content,portId,owner=content.developedOwner||con
   if(NEUTRAL.has(portId))return 0;
   const base=portId.startsWith('depot-')?500:content.developedOwner?((content.development?.level||0)>=2?1000:500)+(content.advancedSupply?500:0):MAJOR.has(portId)?3000:1000;
   const bonus=owner&&content.officerIncome?.uid===owner?Math.max(0,Math.min(420,content.officerIncome.basis||0)):0;
-  return Math.floor(base*(10000+bonus)/10000);
+  const capital=Object.values(content.investors||{}).reduce((sum,n)=>sum+(Number.isSafeInteger(n)&&n>0?n:0),0);
+  const threshold=MAJOR.has(portId)?3000000:1000000;
+  const developed=capital+Math.min(content.growthContribution||0,threshold*.2)>=threshold;
+  const tourism=owner&&developed&&content.domestic?.kind==='tourism'?Math.min(200,Math.floor(base/10)):0;
+  const station=owner&&content.harborOfficer?.owner===owner?Math.floor(base*.05):0;
+  return Math.floor(base*(10000+bonus)/10000)+tourism+station;
 }
 function accruedUnits(period,now){
   return Math.min(period.rate*CAP_HOURS*HOUR,period.units+Math.max(0,now-period.at)*period.rate);
 }
 function validPeriod(period){
   return period&&typeof period.owner==='string'&&Number.isSafeInteger(period.at)&&period.at>=0&&
-    Number.isSafeInteger(period.rate)&&period.rate>=500&&period.rate<=3130&&Number.isSafeInteger(period.units)&&period.units>=0;
+    Number.isSafeInteger(period.rate)&&period.rate>=500&&period.rate<=3480&&Number.isSafeInteger(period.units)&&period.units>=0;
 }
 function previousUnits(content,uid){
   const value=content.basicIncome?.previous?.[uid];

@@ -1,7 +1,7 @@
-import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.14-trade-access';
-import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.14-trade-access';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.14-trade-access';
-import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.14-trade-access';
+import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.14-harbor-chart';
+import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.14-harbor-chart';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.14-harbor-chart';
+import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.14-harbor-chart';
 
 export const isConsumable=entry=>['supply','repair','coupon','extension','shore-consumable','distance','trade-voucher','activity','project','facility'].includes(entry?.type);
 export const itemLimit=entry=>isConsumable(entry)?20:1;
@@ -146,6 +146,7 @@ export function performContractAction(game,id,action,replaceId){
   if(action==='equip'){
     if(!status.owned)throw Error('먼저 획득하세요.');
     if(!entry.type){
+      if(Object.values(game.harborOfficers||{}).includes(id))throw Error('항구에 배치한 부선장을 먼저 회수하세요.');
       const previous=activeOfficer(game)?.hullBonus||0;
       if(p.active!==id)p.officerMiles=0;
       p.active=p.active===id?null:id;
@@ -294,4 +295,4 @@ export function contractDescription(entry){
   if(entry.scenario)return '항해자의 이야기 완료 보상입니다. 획득 후 기존 장비 칸 또는 동행 부선장으로 선택하세요.';
   return entry.challenge.ports.map(id=>PORT_BY_ID[id]?.name).join(' · ')+' 방문, '+GOODS[entry.challenge.cargo].name+' '+entry.challenge.qty+'상자 납품';
 }
-import {CANAL_IDS} from './canal-reservations.js?v=2026.11.14-trade-access';
+import {CANAL_IDS} from './canal-reservations.js?v=2026.11.14-harbor-chart';

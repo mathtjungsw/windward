@@ -1868,6 +1868,30 @@ export const TRADE_RESEARCH = {
       "url": "https://www.rbf.gov.fj/core-functions/currency-management/a-history-of-fijis-currency/",
       "kind": "official-record",
       "supports": "19세기 초 백단향을 위한 방문 선박과 피지인의 물물교환."
+    },
+    "jamestown": {
+      "label": "제임스타운 지리",
+      "kind": "공식 지역 자료",
+      "supports": "지역과 항구 위치",
+      "url": "https://sthelenagov.org/about-st-helena"
+    },
+    "georgetown-ascension": {
+      "label": "조지타운 지리",
+      "kind": "공식 지역 자료",
+      "supports": "지역과 항구 위치",
+      "url": "https://www.ascension.gov.ac/"
+    },
+    "sanjuan-robinson": {
+      "label": "산후안바우티스타 지리",
+      "kind": "공식 지역 자료",
+      "supports": "지역과 항구 위치",
+      "url": "https://www.ctbto.org/our-work/station-profiles/ha03-juan-fernandez-islands-chile"
+    },
+    "portvila": {
+      "label": "포트빌라 지리",
+      "kind": "공식 지역 자료",
+      "supports": "지역과 항구 위치",
+      "url": "https://www.gov.vu/"
     }
   },
   "goodsNotes": {
@@ -2542,6 +2566,30 @@ export const TRADE_RESEARCH = {
       "text": "게임 배치: 지역 농수산물·원료 공급과 직물·공예품 수입 수요를 나눴습니다. 개발 시설과 가격은 실제 역사상의 항만 시설을 재현하지 않습니다. 양모 원료를 완성 모직물과 구분했습니다.",
       "sources": [
         "porcelain"
+      ]
+    },
+    "jamestown": {
+      "text": "도서 보급 거점으로 현지 공급과 수입품을 게임에 배치했다.",
+      "sources": [
+        "jamestown"
+      ]
+    },
+    "georgetown-ascension": {
+      "text": "도서 보급 거점으로 현지 공급과 수입품을 게임에 배치했다.",
+      "sources": [
+        "georgetown-ascension"
+      ]
+    },
+    "sanjuan-robinson": {
+      "text": "도서 보급 거점으로 현지 공급과 수입품을 게임에 배치했다.",
+      "sources": [
+        "sanjuan-robinson"
+      ]
+    },
+    "portvila": {
+      "text": "도서 보급 거점으로 현지 공급과 수입품을 게임에 배치했다.",
+      "sources": [
+        "portvila"
       ]
     }
   }

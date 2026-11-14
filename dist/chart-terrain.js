@@ -11,6 +11,6 @@ export function chartTilePlacements({x,y,w,h,k},manifest,padding=16){
  }return out;
 }
 export class ChartTerrain{
- constructor(root,manifest){this.root=root;this.manifest=manifest;this.nodes=new Map();}
- update(view){const live=new Set();for(const p of chartTilePlacements(view,this.manifest)){live.add(p.id);if(this.nodes.has(p.id))continue;const image=document.createElementNS('http://www.w3.org/2000/svg','image');for(const [key,value]of Object.entries({x:p.x,y:p.y,width:p.w,height:p.h,href:`assets/chart-tiles/${p.file}?v=${p.sha256.slice(0,16)}`,preserveAspectRatio:'none','pointer-events':'none','data-tile':p.id}))image.setAttribute(key,value);this.root.append(image);this.nodes.set(p.id,image);}for(const [id,node]of this.nodes)if(!live.has(id)){node.remove();this.nodes.delete(id);}}
+ constructor(root,manifest,assetPath='assets/chart-tiles'){this.root=root;this.manifest=manifest;this.assetPath=assetPath;this.nodes=new Map();}
+ update(view,detail=true){const live=new Set();for(const p of detail?chartTilePlacements(view,this.manifest):[]){live.add(p.id);if(this.nodes.has(p.id))continue;const image=document.createElementNS('http://www.w3.org/2000/svg','image');for(const [key,value]of Object.entries({x:p.x,y:p.y,width:p.w,height:p.h,href:`${this.assetPath}/${p.file}?v=${p.sha256.slice(0,16)}`,preserveAspectRatio:'none','pointer-events':'none','data-tile':p.id}))image.setAttribute(key,value);this.root.append(image);this.nodes.set(p.id,image);}for(const [id,node]of this.nodes)if(!live.has(id)){node.remove();this.nodes.delete(id);}}
 }

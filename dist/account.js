@@ -1,10 +1,10 @@
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.14-trade-access';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.14-trade-access';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.14-trade-access';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.14-trade-access';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.14-trade-access';
-import {applyRaftStart} from './raft-start.js?v=2026.11.14-trade-access';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.14-trade-access';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.14-harbor-chart';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.14-harbor-chart';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.14-harbor-chart';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.14-harbor-chart';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.14-harbor-chart';
+import {applyRaftStart} from './raft-start.js?v=2026.11.14-harbor-chart';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.14-harbor-chart';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';

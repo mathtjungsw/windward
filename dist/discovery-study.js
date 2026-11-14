@@ -1,3 +1,4 @@
+import {ATLAS_ADDITIONS} from './discoveries-catalog.js?v=2026.11.14-harbor-chart';
 // Geographic context for the catalog. Sources for real sites and species are listed on the cards.
 const records={
  'ruin-azores':['포르투갈 아소르스 제도, 테르세이라섬의 앙그라 두 에루이즈무','유럽과 아프리카·아메리카를 오가는 선단이 대서양을 건너며 이 항구에 들렀어요. 만의 입구를 지키는 요새들은 항구를 보급과 방어에 어떻게 활용했는지 보여 줍니다.'],
@@ -70,7 +71,9 @@ const references={
 };
 export function discoveryStudy(id){
  const row=Object.hasOwn(records,id)?records[id]:null;
- return row?{place:row[0],detail:row[1],sources:references[id]||[]}:null;
+ if(row)return {place:row[0],detail:row[1],sources:references[id]||[]};
+ const addition=ATLAS_ADDITIONS.find(item=>item.id===id);
+ return addition?{place:addition.region,detail:addition.description,sources:[]}:null;
 }
 export function discoveryCoordinates([lon,lat]){
  const display=(n,positive,negative)=>Math.abs(n).toFixed(2)+'° '+(n<0?negative:positive);

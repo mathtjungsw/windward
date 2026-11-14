@@ -13,18 +13,18 @@ const read=name=>JSON.parse(readFileSync(new URL('../'+name,import.meta.url),'ut
 const nav=new Navigator(read('dist/assets/navigation.json'),read('dist/assets/rivers.json'));
 const start=nav.approach({lon:-9.14,lat:38.72});
 
-test('the world catalog keeps 54 old active ports, retires 34 and adds 24 across six navigation regions',()=>{
- assert.equal(ACTIVE_PORT_IDS.length,78);assert.equal(new Set(ACTIVE_PORT_IDS).size,78);
- assert.equal(RETIRED_PORT_IDS.length,34);assert.equal(NEW_PORTS.length,24);
+test('the world catalog keeps 54 old active ports, retires 34 and adds 28 across six navigation regions',()=>{
+ assert.equal(ACTIVE_PORT_IDS.length,82);assert.equal(new Set(ACTIVE_PORT_IDS).size,82);
+ assert.equal(RETIRED_PORT_IDS.length,34);assert.equal(NEW_PORTS.length,28);
  const added=new Set(NEW_PORTS.map(p=>p.id));assert.equal(ACTIVE_PORT_IDS.filter(id=>!added.has(id)).length,54);
- assert.equal(new Set([...ACTIVE_PORT_IDS,...RETIRED_PORT_IDS]).size,112);
+ assert.equal(new Set([...ACTIVE_PORT_IDS,...RETIRED_PORT_IDS]).size,116);
  assert.ok(RETIRED_PORT_IDS.every(id=>!ACTIVE_PORT_IDS.includes(id)));
  const counts=Object.values(PORT_REGIONS).reduce((m,r)=>(m[r]=(m[r]||0)+1,m),{});
- assert.deepEqual(counts,{'유럽':14,'아프리카':15,'아시아':16,'북아메리카':10,'남아메리카':11,'오세아니아':12});
+ assert.deepEqual(counts,{'유럽':14,'아프리카':17,'아시아':16,'북아메리카':10,'남아메리카':12,'오세아니아':13});
  assert.ok(['lisbon','porto','seville'].every(id=>ACTIVE_PORT_IDS.includes(id)));
 });
 
-test('all 24 new game berths are water points with connected ocean routes and valid economy stories',()=>{
+test('all 28 new game berths are water points with connected ocean routes and valid economy stories',()=>{
  const features=[...read('dist/assets/world-land.geojson').features,...read('dist/assets/islands.geojson').features];
  const detailedNav=new Navigator(read('dist/assets/navigation.json'),read('dist/assets/rivers.json'),createChartDetail(features));
  const origin=detailedNav.approach(PORT_BY_ID.lisbon);
@@ -42,12 +42,12 @@ test('all 24 new game berths are water points with connected ocean routes and va
  }
 });
 
-test('60 distinct active discovery records span all four kinds and award 21600 total fame',()=>{
- assert.equal(DISCOVERIES.length,60);assert.equal(Object.keys(DISCOVERY_BY_ID).length,60);
- assert.equal(new Set(DISCOVERIES.map(d=>d.point.join(','))).size,60);
- for(const [kind,count] of Object.entries({ruin:15,relic:17,animal:14,treasure:14}))assert.equal(DISCOVERIES.filter(d=>d.kind===kind).length,count);
- for(const [tier,count] of Object.entries({1:10,2:22,3:17,4:11}))assert.equal(DISCOVERIES.filter(d=>d.tier===Number(tier)).length,count);
- assert.equal(DISCOVERIES.reduce((n,d)=>n+d.fame,0),21600);
+test('72 distinct active discovery records span all four kinds and award 22800 total fame',()=>{
+ assert.equal(DISCOVERIES.length,72);assert.equal(Object.keys(DISCOVERY_BY_ID).length,72);
+ assert.equal(new Set(DISCOVERIES.map(d=>d.point.join(','))).size,72);
+ for(const [kind,count] of Object.entries({ruin:20,relic:24,animal:14,treasure:14}))assert.equal(DISCOVERIES.filter(d=>d.kind===kind).length,count);
+ for(const [tier,count] of Object.entries({1:16,2:28,3:17,4:11}))assert.equal(DISCOVERIES.filter(d=>d.tier===Number(tier)).length,count);
+ assert.equal(DISCOVERIES.reduce((n,d)=>n+d.fame,0),22800);
  assert.equal(DISCOVERY_BY_ID['ruin-itsukushima'],undefined);
  for(const d of DISCOVERIES){
   assert.equal(d.lon,d.point[0]);assert.equal(d.lat,d.point[1]);

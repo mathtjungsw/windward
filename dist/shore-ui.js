@@ -1,8 +1,8 @@
-import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.14-trade-access';
-import {GOODS} from './data.js?v=2026.11.14-trade-access';
-import {explorationGear} from './rumor-progress.js?v=2026.11.14-trade-access';
-import {shipGlyph} from './art.js?v=2026.11.14-trade-access';
-import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.14-trade-access';
+import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.14-harbor-chart';
+import {GOODS} from './data.js?v=2026.11.14-harbor-chart';
+import {explorationGear} from './rumor-progress.js?v=2026.11.14-harbor-chart';
+import {shipGlyph} from './art.js?v=2026.11.14-harbor-chart';
+import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.14-harbor-chart';
 
 const button=(title,action,target='')=>`<button type="button" class="service-button" data-shore-action="${action}" data-shore-target="${target}">${title}</button>`;
 const nodes=['harbor','market','site','ridge'];

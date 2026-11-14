@@ -1,7 +1,7 @@
-import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.14-trade-access';
-import {fleetCount} from './ship-rules.js?v=2026.11.14-trade-access';
-import {PROJECTS,canalAccess,depotAccess,projectView} from './projects.js?v=2026.11.14-trade-access';
-import {canalPassDiscount} from './canal-reservations.js?v=2026.11.14-trade-access';
+import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.14-harbor-chart';
+import {fleetCount} from './ship-rules.js?v=2026.11.14-harbor-chart';
+import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,projectView} from './projects.js?v=2026.11.14-harbor-chart';
+import {canalPassDiscount} from './canal-reservations.js?v=2026.11.14-harbor-chart';
 
 const $=s=>document.querySelector(s), fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const time=at=>at?new Date(at).toLocaleString('ko-KR',{dateStyle:'short',timeStyle:'short'}):'';
@@ -82,9 +82,17 @@ export function createProjectsUI(api){
       if(view.status==='open'&&project.kind==='canal'){
         const total=view.toll*fleetCount(game),discount=canalPassDiscount(game,id,total);
         details+=`<p>척당 통행료 ${fmt(view.toll)} D · 내 선단 ${fmt(total-discount)} D${discount?' (통행권 적용)':''}</p>`;
+        const ledger=canalLedger(content,api.uid(),api.now());
+        details+=`<details><summary>운하 수익 장부</summary><p>최근 7일 · 진입 기준 · 선단 ${fmt(ledger.entries)}회 · 선박 ${fmt(ledger.ships)}척 · 무료 ${fmt(ledger.free)}회<br>실제 통행료 ${fmt(ledger.fees)} D</p>${ledger.principal?`<p>내 투자금 ${fmt(ledger.principal)} D · 수령 기록 ${fmt(ledger.received)} D · 미수령 ${fmt(ledger.balance)} D<br>장부에 기록된 기준 미회수 ${fmt(ledger.remaining)} D · 전망 ${ledger.days===null?'집계 중 또는 산정 불가':fmt(ledger.days)+'일'}</p>`:''}<p>${ledger.started?'집계 시작 '+time(ledger.started):'아직 진입 기록이 없어요.'} · 이전 통행과 과거 수령액은 제외</p></details>`;
+        const offer=CANAL_DELIVERY[id],mission=game.canalMission;
+        if(offer){
+          details+=`<h3>운하 경유 납품</h3><p>${ACTIVE_PORT_BY_ID[offer.origin]?.name} → ${ACTIVE_PORT_BY_ID[offer.target]?.name} · ${GOODS[offer.good].name} 10상자 · 보수 1,800 D</p><p>이번 공동 목표 ${Math.min(3,Object.keys(content.activation?.captains||{}).length)}/3 · 투자자 보상 3,000 D · 내 미수령 공동 보상 ${fmt(content.activationDividends?.[api.uid()])} D</p>`;
+          if(!mission&&game.port===offer.origin)actions+=button('mission-accept','운하 의뢰 수락');
+          if(mission?.id===id){details+=`<p>${mission.passed?'운하 완주 확인':'운하 완주 대기'} · 마감 ${time(mission.deadline)}</p>`;if(game.port===offer.target)actions+=button('mission-report','목적지 납품');actions+=button('mission-cancel','운하 의뢰 포기');}
+        }
         actions+=button('entrance','가까운 운하 입구로 항해');
         if(canalAccess(game,project,api.nav())>=0)actions+=button('transit','운하 진입 · '+fmt(total-discount)+' D',total-discount);
-        if(view.owner===api.uid())actions+=field(0,view.toll,200)+button('toll','척당 통행료 변경');
+        if(view.owner===api.uid())actions+=field(0,view.toll,300)+button('toll','척당 통행료 변경');
       }
       if(project.kind==='canal'&&has('I052')){
         const designated=PROJECTS.find(p=>p.id===game.rumorProgress.canalPass);

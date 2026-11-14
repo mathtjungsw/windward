@@ -38,7 +38,7 @@ test('v2 ships and retired harbors migrate without losing cargo, visits or suppl
  }
  assert.throws(()=>parseSavedGame({...initialState(),version:5}),/최신/);
  assert.throws(()=>parseSavedGame({...initialState(),visited:['constructor']}));
- assert.equal(PORTS.length,78);assert.equal(ALL_PORTS.length,112);
+ assert.equal(PORTS.length,82);assert.equal(ALL_PORTS.length,116);
 });
 test('rescue ignores undiscovered and known-but-unvisited ports, freezes exploration through restore and replan',()=>{
  const s={...initialState(),port:null,position:[-8.9,41.2],food:0,money:1500,knownPorts:PORTS.map(p=>p.id)};

@@ -454,5 +454,8 @@ export const UI_USAGE_IDS=Object.freeze([
  "action-reload",
  "action-sale-depart",
  "action-sale-look",
- "action-share-card"
+ "action-share-card",
+ "id-quick-tavern",
+ "id-chart-zoom-in",
+ "id-chart-zoom-out"
 ]);

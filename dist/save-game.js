@@ -1,17 +1,17 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.14-trade-access';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.14-trade-access';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.14-trade-access';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.14-trade-access';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.14-trade-access';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.14-harbor-chart';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.14-harbor-chart';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.14-harbor-chart';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.14-harbor-chart';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.14-harbor-chart';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.14-trade-access';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.14-harbor-chart';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.14-trade-access';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.14-trade-access';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.14-trade-access';
-import {normalizeDepotDock} from './projects.js?v=2026.11.14-trade-access';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.14-trade-access';
-import {normalizeStories} from './story-core.js?v=2026.11.14-trade-access';
+import {normalizeSea} from './sea-activities.js?v=2026.11.14-harbor-chart';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.14-harbor-chart';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.14-harbor-chart';
+import {normalizeDepotDock} from './projects.js?v=2026.11.14-harbor-chart';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.14-harbor-chart';
+import {normalizeStories} from './story-core.js?v=2026.11.14-harbor-chart';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
@@ -27,8 +27,19 @@ export function parseState(raw,defaults){
  if(v&&(!Array.isArray(v.path)||v.path.length<2||v.path.length>10000||v.path.some(p=>!point(p))||!Array.isArray(v.lengths)||v.lengths.length!==v.path.length-1||v.lengths.some(n=>!finite(n)||n<0)||(v.target!==null&&!Object.hasOwn(PORT_BY_ID,v.target))||!finite(v.total)||v.total<=0||!finite(v.travelled)||v.travelled<0||v.travelled>v.total+.1||!finite(v.foodRemaining)))bad();
  const canalId=id=>['canal-corinth','canal-suez','canal-panama'].includes(id);
  if(v?.canal!==undefined&&!canalId(v.canal))bad();
- if(v?.passages!==undefined&&(!Array.isArray(v.passages)||v.passages.length>3||v.passages.some((p,i)=>!canalId(p?.id)||!finite(p.start)||!finite(p.end)||p.start<0||p.end<=p.start||p.end>v.total+.0001||i&&p.start<v.passages[i-1].end||!Number.isSafeInteger(p.amount)||p.amount<0||p.amount>1000||typeof p.paid!=='boolean'||!p.paid&&v.travelled>p.start+.0001)))bad();
+ if(v?.passages!==undefined&&(!Array.isArray(v.passages)||v.passages.length>3||v.passages.some((p,i)=>!canalId(p?.id)||!finite(p.start)||!finite(p.end)||p.start<0||p.end<=p.start||p.end>v.total+.0001||i&&p.start<v.passages[i-1].end||!Number.isSafeInteger(p.amount)||p.amount<0||p.amount>1500||typeof p.paid!=='boolean'||!p.paid&&v.travelled>p.start+.0001)))bad();
  const ids=(value,max=Object.keys(PORT_BY_ID).length)=>[...new Set((Array.isArray(value)?value:[]).filter(id=>Object.hasOwn(PORT_BY_ID,id)))].slice(0,max);
+ if(s.harborOfficers!==undefined&&(!s.harborOfficers||typeof s.harborOfficers!=='object'||Array.isArray(s.harborOfficers)||Object.entries(s.harborOfficers).some(([port,officer])=>!Object.hasOwn(PORT_BY_ID,port)||typeof officer!=='string'||!s.rumorProgress?.officers?.includes(officer))||new Set(Object.values(s.harborOfficers)).size!==Object.keys(s.harborOfficers).length))bad();
+ if(s.delegateTrade!==undefined){
+  const route=s.delegateTrade;
+  if(!route||!Object.hasOwn(PORT_BY_ID,route.origin)||!Object.hasOwn(PORT_BY_ID,route.destination)||route.origin===route.destination||!Object.hasOwn(GOODS,route.good)||!Number.isSafeInteger(route.qty)||route.qty<1||route.qty>100||!Number.isSafeInteger(route.budget)||route.budget<1||route.budget>1e12||!Number.isSafeInteger(Math.floor(route.due))||route.due<0||s.harborOfficers?.[route.origin]!==route.officer)bad();
+ }
+ if(s.albumRewards!==undefined){
+  const reward=s.albumRewards;
+  if(!reward||typeof reward!=='object'||Array.isArray(reward))bad();
+  for(const key of ['title','quest','flag','titleActive','flagActive','questDone'])if(reward[key]!==undefined&&typeof reward[key]!=='boolean')bad();
+  if(reward.reports!==undefined&&(!reward.reports||typeof reward.reports!=='object'||Array.isArray(reward.reports)||Object.keys(reward.reports).length>3||Object.entries(reward.reports).some(([id,value])=>value!==true||!s.discoveries?.[id])))bad();
+ }
  const game={...defaults(),...s,version:3,world:'real',speed:1,shipTier:s.version>=3?s.shipTier:LEGACY_TIER[s.level],fleetCount:s.version>=3?s.fleetCount:1,
   visited:ids(s.visited),knownPorts:ids([...(s.knownPorts||defaults().knownPorts),...s.visited,s.port,v?.kind?null:v?.target]),
   controlMode:v?'auto':s.controlMode==='manual'?'manual':'auto',explored:typeof s.explored==='string'&&s.explored.length<40000?s.explored:'',

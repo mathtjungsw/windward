@@ -6,7 +6,7 @@ const data=JSON.parse(fs.readFileSync(new URL('tools/world-catalog.json',root),'
 const catalog=JSON.parse(fs.readFileSync(new URL('tools/port-catalog.json',root),'utf8'));
 validateGoods(catalog.goods);
 const active=Object.values(data.regions).flat(),regionById=Object.fromEntries(Object.entries(data.regions).flatMap(([r,ids])=>ids.map(id=>[id,r])));
-if(active.length!==78||new Set(active).size!==78||data.ports.length!==24||data.retired.length!==34)throw Error('세계 항구 수가 명세와 다릅니다.');
+if(active.length!==82||new Set(active).size!==82||data.ports.length!==28||data.retired.length!==34)throw Error('세계 항구 수가 명세와 다릅니다.');
 const ports=data.ports.map(({stock,demand,demandTiers,...p})=>({...p,region:regionById[p.id],specialty:Object.keys(stock)[0],market:Object.keys(stock)}));
 const economy=Object.fromEntries(data.ports.map(p=>[p.id,{stock:p.stock,demand:p.demand,demandTiers:p.demandTiers}]));
 const allEconomies={...catalog.economy,...data.economyOverrides,...economy};

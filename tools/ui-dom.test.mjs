@@ -506,3 +506,28 @@ test('selected and docked port shows personal restriction without blocking entry
   Object.assign(a,old);
  }
 });
+
+test('owned ports toggle groups without a server refresh and zoom clamps with an overview at 25%',async()=>{
+ const a=app.account,old={ready:a.ready,uid:a.uid,sdk:a.sdk};
+ let reads=0;
+ const values={porto:{ownerName:'검사 선장',ownerUid:'view-fixture',portName:'포르투',share:70,defaultRate:30}};
+ Object.assign(a,{ready:true,uid:'view-fixture',sdk:{ref:(_,p)=>p,query:p=>p,orderByKey:()=>null,limitToFirst:()=>null,onValue:()=>()=>{},get:async()=>{
+  reads++; return {val:()=>null,forEach:fn=>Object.entries(values).forEach(([key,value])=>fn({key,val:()=>value}))};
+ }}});
+ try{
+  await app.community.showOwnedPorts(true);
+  const before=reads;
+  $('#owned-view-captains').click();
+  assert.match($('.owned-captain-group summary').textContent,/검사 선장.*1곳/);
+  $('#owned-view-ports').click();
+  assert.ok(!$('.owned-captain-group'));
+  assert.equal(reads,before);
+  $('#modal').close();
+  for(let i=0;i<5;i++)$('#chart-zoom-out').click();
+  assert.equal($('#chart-zoom-value').textContent,'25%');
+  assert.equal($('#chart-zoom-out').disabled,true);
+  assert.equal($('#terrain-tiles').childElementCount,0);
+  for(let i=0;i<5;i++)$('#chart-zoom-in').click();
+  assert.equal($('#chart-zoom-value').textContent,'100%');
+ }finally{Object.assign(a,old);$('#modal').close();}
+});

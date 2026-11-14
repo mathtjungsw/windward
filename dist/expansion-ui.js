@@ -1,18 +1,18 @@
-import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.14-trade-access';
-import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.14-trade-access';
-import {historicalArt} from './historical-ship-art.js?v=2026.11.14-trade-access';
-import {vesselGunLimits} from './cannons.js?v=2026.11.14-trade-access';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.14-trade-access';
-import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.14-trade-access';
-import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.14-trade-access';
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.14-trade-access';
-import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,STORED_SHIP_LIMIT,storedShips} from './ship-rules.js?v=2026.11.14-trade-access';
-import {mapDistance} from './world-wrap.js?v=2026.11.14-trade-access';
-import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.14-trade-access';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.14-trade-access';
-import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.14-trade-access';
-import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.14-trade-access';
-import {lastSeenText} from './captain-time.js?v=2026.11.14-trade-access';
+import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.14-harbor-chart';
+import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.14-harbor-chart';
+import {historicalArt} from './historical-ship-art.js?v=2026.11.14-harbor-chart';
+import {vesselGunLimits} from './cannons.js?v=2026.11.14-harbor-chart';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.14-harbor-chart';
+import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.14-harbor-chart';
+import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.14-harbor-chart';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.14-harbor-chart';
+import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,STORED_SHIP_LIMIT,storedShips} from './ship-rules.js?v=2026.11.14-harbor-chart';
+import {mapDistance} from './world-wrap.js?v=2026.11.14-harbor-chart';
+import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.14-harbor-chart';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.14-harbor-chart';
+import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.14-harbor-chart';
+import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.14-harbor-chart';
+import {lastSeenText} from './captain-time.js?v=2026.11.14-harbor-chart';
 const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const KINDS={ruin:'유적',relic:'유물',animal:'동물',treasure:'보물'};
@@ -202,6 +202,57 @@ export function createExpansion(api){
   const button=root.querySelector('[data-discovery-study-map]');
   if(button)button.onclick=()=>api.onShowDiscoveryPoint?.(d);
  }
+ const milestones=[
+  {id:'title',count:10,name:'항해 기록가',effect:'일반 상품 구매가 1% 할인'},
+  {id:'quest',count:25,name:'바다의 유산 조사',effect:'기존 발견물 세 점의 도감 기록을 살펴보는 특별 탐사 의뢰'},
+  {id:'flag',count:40,name:'수집 기념 깃발',effect:'선단 해상 속도 2% 증가'}
+ ];
+ const heritageIds=['ruin-azores','ruin-carthage','ruin-kilwa','ruin-anse','ruin-mahabalipuram','ruin-rapanui','ruin-fortjesus','ruin-sganggwaay'];
+ function showMilestones(){
+  const game=get(),found=discoveryStats(game).foundCount,progress=game.albumRewards||{};
+  const eligible=heritageIds.filter(id=>game.discoveries?.[id]);
+  api.onModal('도감 수집 보상',`발견 ${found}종`,milestones.map(m=>{
+   const earned=progress[m.id];
+   return `<article class="sale-search-row"><strong>${m.count}종 · ${m.name}</strong><p>${m.effect}</p>${earned?m.id==='quest'?'수령함':`<button data-album-equip="${m.id}" ${game.port&&!game.voyage?'':'disabled'}>${progress[m.id+'Active']?'사용 해제':'정박 중 사용'}</button>`:`<button data-album-reward="${m.id}" ${found>=m.count?'':'disabled'}>${found>=m.count?'보상 받기':'수집 중'}</button>`}</article>`;
+  }).join('')+(progress.quest&&!progress.questDone?`<h3>특별 탐사 · 바다의 유산 조사</h3><p>발견 기록 세 점을 조합에 보고하세요. ${Object.keys(progress.reports||{}).length}/3 · 완료 보수 500 D</p>${eligible.filter(id=>!progress.reports?.[id]).map(id=>`<button data-album-report="${id}" ${game.port&&!game.voyage?'':'disabled'}>${esc(DISCOVERY_BY_ID[id].name)} 보고</button>`).join('')}`:progress.questDone?'<p>특별 탐사 완료</p>':'')+'<button id="album-back">수집 목록으로</button>','medium');
+  $('#album-back').onclick=()=>showAlbum();
+  const commit=(button,task)=>{
+   button.disabled=true;
+   api.onStorageAction?.(task).then(result=>{
+    if(result&&button.isConnected)showMilestones();
+    else if(button.isConnected)button.disabled=false;
+   });
+  };
+  document.querySelectorAll('[data-album-reward]').forEach(b=>b.onclick=()=>{
+   const milestone=milestones.find(m=>m.id===b.dataset.albumReward);
+   commit(b,state=>{
+    const profile=state.albumRewards??={};
+    if(profile[milestone.id]||discoveryStats(state).foundCount<milestone.count)throw Error('수집 조건을 다시 확인하세요.');
+    profile[milestone.id]=true;
+    return {message:milestone.name+' 보상 획득'};
+   });
+  });
+  document.querySelectorAll('[data-album-equip]').forEach(b=>b.onclick=()=>{
+   const id=b.dataset.albumEquip;
+   commit(b,state=>{
+    if(!state.port||state.voyage||!state.albumRewards?.[id])throw Error('항구에 정박한 뒤 보상을 장착하세요.');
+    const key=id+'Active';state.albumRewards[key]=!state.albumRewards[key];
+    return {message:'수집 보상 설정 완료'};
+   });
+  });
+  document.querySelectorAll('[data-album-report]').forEach(b=>b.onclick=()=>{
+   const id=b.dataset.albumReport;
+   commit(b,state=>{
+    const profile=state.albumRewards;
+    if(!state.port||state.voyage||!profile?.quest||profile.questDone||!heritageIds.includes(id)||!state.discoveries?.[id])throw Error('항구에서 발견 기록을 확인하세요.');
+    const reports=profile.reports??={};
+    if(reports[id])throw Error('이미 보고한 기록이에요.');
+    reports[id]=true;
+    if(Object.keys(reports).length>=3){profile.questDone=true;state.money+=500;}
+    return {message:profile.questDone?'특별 탐사 완료 · 500 D':'발견 기록 보고 완료'};
+   });
+  });
+ }
  function showAlbum(detailId=null){
   if(detailId){
    const d=DISCOVERY_BY_ID[detailId],record=get().discoveries?.[detailId];
@@ -214,7 +265,8 @@ export function createExpansion(api){
    return;
   }
   const s=get(),stats=discoveryStats(s),items=DISCOVERIES.filter(d=>(albumKind==='all'||d.kind===albumKind)&&(albumOwned==='all'||(albumOwned==='found')===!!s.discoveries?.[d.id]));
-  api.onModal('발견 수집 도감',`수집 ${stats.foundCount}/${DISCOVERIES.length} · 명성 ${fmt(stats.fame)}`,`<nav class="expansion-tabs">${[['all','전체'],...Object.entries(KINDS)].map(([id,name])=>`<button data-kind="${id}" aria-pressed="${albumKind===id}">${name}</button>`).join('')}</nav><label class="album-filter">표시 <select id="album-owned"><option value="all">전체</option><option value="found">수집한 기록</option><option value="missing">미발견</option></select></label><div class="collection-grid">${items.map(d=>{const got=!!s.discoveries?.[d.id];return `<button class="collection-card ${got?'collected':'uncollected'}" data-collection="${d.id}" ${got?'':'disabled'}><img src="${got?collectionArt(d.id):'assets/discoveries/unknown.svg'}" alt="${got?esc(d.name):'아직 발견하지 못한 '+KINDS[d.kind]}" loading="lazy" width="240" height="180"><strong>${got?esc(d.name):'미발견 · '+KINDS[d.kind]}</strong><span>난도 ${d.tier} · 명성 ${fmt(d.fame)}</span></button>`;}).join('')}</div><p class="modal-meta">미발견 장소는 항해 중 흔적과 주점에서 들은 소문으로 찾아보세요. 같은 발견은 한 번만 명성을 얻어요.</p>`,'wide');
+  api.onModal('발견 수집 도감',`수집 ${stats.foundCount}/${DISCOVERIES.length} · 명성 ${fmt(stats.fame)}`,`<button id="album-rewards">수집 보상</button><nav class="expansion-tabs">${[['all','전체'],...Object.entries(KINDS)].map(([id,name])=>`<button data-kind="${id}" aria-pressed="${albumKind===id}">${name}</button>`).join('')}</nav><label class="album-filter">표시 <select id="album-owned"><option value="all">전체</option><option value="found">수집한 기록</option><option value="missing">미발견</option></select></label><div class="collection-grid">${items.map(d=>{const got=!!s.discoveries?.[d.id];return `<button class="collection-card ${got?'collected':'uncollected'}" data-collection="${d.id}" ${got?'':'disabled'}><img src="${got?collectionArt(d.id):'assets/discoveries/unknown.svg'}" alt="${got?esc(d.name):'아직 발견하지 못한 '+KINDS[d.kind]}" loading="lazy" width="240" height="180"><strong>${got?esc(d.name):'미발견 · '+KINDS[d.kind]}</strong><span>난도 ${d.tier} · 명성 ${fmt(d.fame)}</span></button>`;}).join('')}</div><p class="modal-meta">미발견 장소는 항해 중 흔적과 주점에서 들은 소문으로 찾아보세요. 같은 발견은 한 번만 명성을 얻어요.</p>`,'wide');
+  $('#album-rewards').onclick=showMilestones;
   $('#album-owned').value=albumOwned;$('#album-owned').onchange=e=>{albumOwned=e.target.value;albumScroll=0;showAlbum();};
   document.querySelectorAll('[data-kind]').forEach(b=>b.onclick=()=>{albumKind=b.dataset.kind;albumScroll=0;showAlbum();});
   document.querySelectorAll('[data-collection]').forEach(b=>b.onclick=()=>{albumScroll=$('#modal-content').scrollTop;showAlbum(b.dataset.collection);});$('#modal-content').scrollTop=albumScroll;

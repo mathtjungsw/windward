@@ -1,6 +1,6 @@
-import {navigationCheckpoint,routeKey} from './defense-core.js?v=2026.11.14-trade-access';
-import {seaSector} from './presence-core.js?v=2026.11.14-trade-access';
-import {refreshDefense} from './defense-account.js?v=2026.11.14-trade-access';
+import {navigationCheckpoint,routeKey} from './defense-core.js?v=2026.11.14-harbor-chart';
+import {seaSector} from './presence-core.js?v=2026.11.14-harbor-chart';
+import {refreshDefense} from './defense-account.js?v=2026.11.14-harbor-chart';
 export async function connectPersistent(f){const a=f.account,s=f.sdk;f.connectionRef=s.ref(f.db,'gameV2/real/fleetConnections/'+f.uid);const online={session:a.session,online:true,at:s.serverTimestamp()};await s.set(f.connectionRef,online);await s.onDisconnect(f.connectionRef).set({...online,online:false});}
 export async function publishPersistent(f,ship,signature,force){
  const a=f.account,s=f.sdk;try{

@@ -1,5 +1,5 @@
-import {OFFICER_BY_ID} from './rumor-catalog.js?v=2026.11.14-trade-access';
-import {activeOfficer,officerLevel} from './rumor-progress.js?v=2026.11.14-trade-access';
+import {OFFICER_BY_ID} from './rumor-catalog.js?v=2026.11.14-harbor-chart';
+import {activeOfficer,officerLevel} from './rumor-progress.js?v=2026.11.14-harbor-chart';
 
 const snapshotPattern=/^(O0(?:0[1-9]|1[0-9]|2[0-4])):([1-5]):([01]):([01]):([01]):([01])$/;
 export function officerSnapshot(game,nav){

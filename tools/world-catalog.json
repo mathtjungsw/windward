@@ -1,5 +1,5 @@
 {
-  "version": "2026.11.10-regional-trade-31",
+  "version": "2026.11.14-harbor-82",
   "regions": {
     "유럽": [
       "lisbon",
@@ -32,7 +32,9 @@
       "ribeiragrande",
       "portlouis",
       "toamasina",
-      "walvisbay"
+      "walvisbay",
+      "jamestown",
+      "georgetown-ascension"
     ],
     "아시아": [
       "muscat",
@@ -75,7 +77,8 @@
       "ushuaia",
       "belem",
       "puertoayora",
-      "iquique"
+      "iquique",
+      "sanjuan-robinson"
     ],
     "오세아니아": [
       "sydney",
@@ -89,7 +92,8 @@
       "hobart",
       "apia",
       "darwin",
-      "kolonia"
+      "kolonia",
+      "portvila"
     ]
   },
   "retired": [
@@ -1131,6 +1135,130 @@
         "cotton": 1.3
       },
       "economyNote": "게임 배치: 소금, 건어물, 가죽 중심 공급에 수입·중계와 별도 수요를 결합했습니다."
+    },
+    {
+      "id": "jamestown",
+      "name": "제임스타운",
+      "en": "Jamestown",
+      "country": "세인트헬레나",
+      "cityLon": -5.72,
+      "cityLat": -15.92,
+      "lon": -5.72,
+      "lat": -15.92,
+      "sea": "남대서양",
+      "stock": {
+        "driedfish": "producer",
+        "grain": "local",
+        "timber": "import"
+      },
+      "demand": [
+        "wine",
+        "wool"
+      ],
+      "demandTiers": {
+        "wine": 1.3,
+        "wool": 1.3
+      },
+      "fact": "세인트헬레나섬의 항구. 남대서양을 건너는 선단의 보급 거점으로 배치했어요.",
+      "sources": [
+        {
+          "label": "지역·지리 자료",
+          "url": "https://sthelenagov.org/about-st-helena"
+        }
+      ]
+    },
+    {
+      "id": "georgetown-ascension",
+      "name": "조지타운",
+      "en": "Georgetown",
+      "country": "어센션섬",
+      "cityLon": -14.42,
+      "cityLat": -7.93,
+      "lon": -14.42,
+      "lat": -7.93,
+      "sea": "남대서양",
+      "stock": {
+        "driedfish": "producer",
+        "salt": "local",
+        "grain": "import"
+      },
+      "demand": [
+        "wine",
+        "wool"
+      ],
+      "demandTiers": {
+        "wine": 1.3,
+        "wool": 1.3
+      },
+      "fact": "어센션섬 서쪽의 거점. 아프리카 서해안에서 남대서양으로 향하는 항로에 놓여 있어요.",
+      "sources": [
+        {
+          "label": "지역·지리 자료",
+          "url": "https://www.ascension.gov.ac/"
+        }
+      ]
+    },
+    {
+      "id": "sanjuan-robinson",
+      "name": "산후안바우티스타",
+      "en": "San Juan Bautista",
+      "country": "칠레",
+      "cityLon": -78.83,
+      "cityLat": -33.64,
+      "lon": -78.83,
+      "lat": -33.64,
+      "sea": "남태평양",
+      "stock": {
+        "driedfish": "producer",
+        "timber": "local",
+        "cotton": "import"
+      },
+      "demand": [
+        "wine",
+        "wool"
+      ],
+      "demandTiers": {
+        "wine": 1.3,
+        "wool": 1.3
+      },
+      "fact": "칠레 후안페르난데스 제도 로빈슨크루소섬 북쪽의 정착지예요.",
+      "sources": [
+        {
+          "label": "지역·지리 자료",
+          "url": "https://www.ctbto.org/our-work/station-profiles/ha03-juan-fernandez-islands-chile"
+        }
+      ]
+    },
+    {
+      "id": "portvila",
+      "name": "포트빌라",
+      "en": "Port Vila",
+      "country": "바누아투",
+      "cityLon": 168.31,
+      "cityLat": -17.75,
+      "lon": 168.31,
+      "lat": -17.75,
+      "sea": "남태평양",
+      "stock": {
+        "sugar": "producer",
+        "driedfish": "local",
+        "timber": "import"
+      },
+      "demand": [
+        "wine",
+        "wool"
+      ],
+      "demandTiers": {
+        "wine": 1.3,
+        "wool": 1.3
+      },
+      "fact": "바누아투 에파테섬의 남서쪽 만에 자리한 항구예요.",
+      "sources": [
+        {
+          "label": "지역·지리 자료",
+          "url": "https://www.gov.vu/"
+        }
+      ]
     }
   ],
   "economyOverrides": {

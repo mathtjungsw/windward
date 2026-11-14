@@ -17,7 +17,7 @@ export function reserveCanalTolls(game,route,prices){
   let useCoupon=!!items?.I052,total=0;
   const passages=(route.passages||[]).map(p=>{
     const price=prices[p.id];
-    if(!Number.isSafeInteger(price)||price<0||price>1000)throw Error('운하 통행료를 다시 조회하세요.');
+    if(!Number.isSafeInteger(price)||price<0||price>1500)throw Error('운하 통행료를 다시 조회하세요.');
     const discount=useCoupon?canalPassDiscount(game,p.id,price):0;
     if(discount)useCoupon=false;
     const amount=price-discount;

@@ -1,9 +1,9 @@
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.14-trade-access';
-import {distance,helmStep} from './engine.js?v=2026.11.14-trade-access';
-import {wrapPosition,mapDistance} from './world-wrap.js?v=2026.11.14-trade-access';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.14-harbor-chart';
+import {distance,helmStep} from './engine.js?v=2026.11.14-harbor-chart';
+import {wrapPosition,mapDistance} from './world-wrap.js?v=2026.11.14-harbor-chart';
 
 export const SIGHT_NM=180,DISCOVERY_NM=80,INFO_PRICE=100,INFO_RANGE=600;
-import {activeOfficer} from './rumor-progress.js?v=2026.11.14-trade-access';
+import {activeOfficer} from './rumor-progress.js?v=2026.11.14-harbor-chart';
 export const informationCost=s=>Math.ceil(INFO_PRICE*(1-(activeOfficer(s)?.infoDiscount||0)));
 export const START_PORTS=['lisbon','porto','seville'];
 export const worldId=value=>value==='real'?'real':'peace';

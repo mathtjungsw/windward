@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.14-trade-access';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.14-trade-access';
-import {mapDistance} from './world-wrap.js?v=2026.11.14-trade-access';
-import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.14-trade-access';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.14-trade-access';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.14-trade-access';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.14-trade-access';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.14-harbor-chart';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.14-harbor-chart';
+import {mapDistance} from './world-wrap.js?v=2026.11.14-harbor-chart';
+import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.14-harbor-chart';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.14-harbor-chart';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.14-harbor-chart';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.14-harbor-chart';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));
@@ -42,7 +42,7 @@ export function projectView(project,content,uid,now){
     initializeBasicIncome(preview,project.id,owner,Math.max(content.readyAt,content.baseCollectedAt||0));
     base=estimateBasicIncome(preview,project.id,uid,owner,now).accrued;
   }
-  return {owner,raised:totalOf(content.investors),mine:amountOf(content.investors,uid),status:phase,readyAt:content.readyAt||0,stock:content.stock||0,toll:owner?content.toll||0:0,balance:amountOf(content.dividends,uid)+base,base};
+  return {owner,raised:totalOf(content.investors),mine:amountOf(content.investors,uid),status:phase,readyAt:content.readyAt||0,stock:content.stock||0,toll:owner?content.toll||0:0,balance:amountOf(content.dividends,uid)+amountOf(content.activationDividends,uid)+base,base};
 }
 function consumeItem(game,id){
   if(!(game.rumorProgress?.items?.[id]>0))throw Error('사용할 증서가 가방에 없어요.');
@@ -100,6 +100,25 @@ function freightAction(game,content,uid,project,action,requested,now){
   if(view.pledged<view.mine+qty)(content.pledges??={})[uid]=view.mine+qty;
   return {message:qty+'상자를 공동 수송에 납품했어요.',qty};
 }
+const canalDay=now=>String(Math.floor((now+9*HOUR)/(24*HOUR)));
+function recordCanalEntry(content,now,ships,amount){
+ const day=canalDay(now),traffic=content.traffic??={};
+ content.trafficSince??=now;
+ for(const key of Object.keys(traffic))if(Number(key)<Number(day)-6)delete traffic[key];
+ const row=traffic[day]??={entries:0,ships:0,paid:0,free:0,fees:0};
+ row.entries++;row.ships+=ships;row.fees+=amount;
+ if(amount)row.paid++;else row.free++;
+}
+export function canalLedger(content,uid,now){
+ const day=Number(canalDay(now)),stats={entries:0,ships:0,paid:0,free:0,fees:0};
+ for(const [key,row] of Object.entries(content.traffic||{}))if(+key>=day-6&&+key<=day)
+  for(const field of Object.keys(stats))stats[field]+=row[field]||0;
+ const total=totalOf(content.investors),principal=amountOf(content.investors,uid),
+  balance=amountOf(content.dividends,uid),received=amountOf(content.collectedDividends,uid),
+  remaining=Math.max(0,principal-balance-received),expected=stats.fees*(total?principal/total:0)/7;
+ const days=expected>0&&stats.paid>=10&&content.trafficSince&&day-Number(canalDay(content.trafficSince))>=6?Math.ceil(remaining/expected):null;
+ return {...stats,principal,balance,received,remaining,days,started:content.trafficSince||null};
+}
 function addDividend(content,amount){
   const investors=content.investors||{},total=totalOf(investors);
   if(!amount||!total)return;
@@ -139,11 +158,50 @@ export function canalAccess(game,project,nav){
   if(!atSea(game))return -1;
   return [project.path[0],project.path.at(-1)].findIndex(point=>mapDistance(game.position,point)<=6&&!!nav?.clear(game.position,point));
 }
+export const CANAL_DELIVERY={
+ 'canal-suez':{origin:'alexandria',target:'jeddah',good:'grain'},
+ 'canal-panama':{origin:'cartagena',target:'acapulco',good:'timber'}
+};
+const canalWeek=now=>Math.floor((now+9*HOUR+3*24*HOUR)/(7*24*HOUR));
+export function canalDeliveryAction(game,content,uid,id,action,now){
+ const offer=CANAL_DELIVERY[id],mission=game.canalMission,week=canalWeek(now);
+ if(!offer||!game.port||game.voyage)throw Error('지정된 항구에 정박하세요.');
+ if(action==='mission-cancel'){
+  if(mission?.id!==id)throw Error('진행 중인 의뢰를 확인하세요.');
+  delete game.canalMission;return {message:'운하 납품을 종료했어요.'};
+ }
+ if(action==='mission-accept'){
+  if(mission||game.port!==offer.origin||game.canalMissionWeeks?.[id]===week)throw Error('출발 항구에서 이번 주 의뢰를 확인하세요.');
+  game.canalMission={id,deadline:now+48*HOUR,passed:false};
+  return {message:'운하 경유 납품을 수락했어요.'};
+ }
+ if(mission?.id!==id||!mission.passed||now>=mission.deadline||game.port!==offer.target||game.canalMissionWeeks?.[id]===week)throw Error('지정 운하 완주·목적지와 납품 기한을 확인하세요.');
+ const cargo=game.cargo[offer.good],quantity=10;
+ if(!cargo||cargo.qty<quantity)throw Error('납품 물품 10상자가 필요해요.');
+ if(cargo.qty===quantity)delete game.cargo[offer.good];
+ else game.cargo[offer.good]={qty:cargo.qty-quantity,cost:cargo.cost*(cargo.qty-quantity)/cargo.qty};
+ game.money+=1800;
+ (game.canalMissionWeeks??={})[id]=week;delete game.canalMission;
+ if(content.activation?.week!==week)content.activation={week,captains:{},awarded:false};
+ const log=content.activation;
+ log.captains[uid]=true;
+ if(!log.awarded&&Object.keys(log.captains).length>=3){
+  const funding=totalOf(content.investors);
+  if(funding){const payouts=content.activationDividends??={};
+   for(const [investor,stake] of Object.entries(content.investors)){
+    const amount=Math.floor(3000*stake/funding);if(amount)payouts[investor]=(payouts[investor]||0)+amount;
+   }
+  }
+  log.awarded=true;
+ }
+ return {message:'운하 경유 납품 완료 · 1,800 D 수령'};
+}
 export function projectAction(game,content,uid,id,action,requested,now,nav){
   const project=PROJECT_BY_ID[id];
   if(!project)throw Error('등록된 공동 사업을 확인하세요.');
   if(project.kind==='freight')return freightAction(game,content,uid,project,action,requested,now);
   const view=projectView(project,content,uid,now);
+  if(project.kind==='canal'&&view.status==='open'&&['mission-accept','mission-report','mission-cancel'].includes(action))return canalDeliveryAction(game,content,uid,id,action,now);
   if(action==='invest'){
     if(!tradingPort(game)||view.status!=='funding'||!Number.isSafeInteger(requested)||requested<=0||requested%10000)throw Error('항구에서 공사 시작 전 10,000 D 단위로 투자하세요.');
     const remaining=project.cost-view.raised-(content.materialCredit||0);
@@ -178,7 +236,10 @@ export function projectAction(game,content,uid,id,action,requested,now,nav){
   if(action==='dividend'){
     if(!view.balance)throw Error('받을 수 있는 수입이 없어요.');
     game.money+=view.balance;
+    const tollShare=amountOf(content.dividends,uid);
     if(content.dividends)delete content.dividends[uid];
+    if(content.activationDividends)delete content.activationDividends[uid];
+    if(project.kind==='canal'&&tollShare){const received=content.collectedDividends??={};received[uid]=(received[uid]||0)+tollShare;}
     let registry;
     if(view.base){
       if(project.kind==='depot'&&!content.registeredCapital&&view.raised+(content.materialCredit||0)===project.cost)registry=depotRegistry(project,content);
@@ -220,15 +281,16 @@ export function projectAction(game,content,uid,id,action,requested,now,nav){
     return {message:project.name+' 정박 · 정박 중 공격받지 않아요.'};
   }
   if(action==='toll'){
-    if(project.kind!=='canal'||view.owner!==uid||!Number.isSafeInteger(requested)||requested<0||requested>200)throw Error('운하 운영자가 척당 0~200 D를 설정할 수 있어요.');
+    if(project.kind!=='canal'||view.owner!==uid||!Number.isSafeInteger(requested)||requested<0||requested>300)throw Error('운하 운영자가 척당 0~300 D를 설정할 수 있어요.');
     content.toll=requested;
     return {message:'운하 통행료를 변경했어요.'};
   }
   if(action==='passage'){
     const voyage=game.voyage,passage=pendingCanal(voyage);
-    if(project.kind!=='canal'||passage?.id!==id||voyage.travelled+1e-6<passage.start||voyage.travelled>=passage.end||!Number.isSafeInteger(passage.amount)||passage.amount<0||passage.amount>1000)throw Error('예약한 운하 입구와 통행료를 확인하세요.');
+    if(project.kind!=='canal'||passage?.id!==id||voyage.travelled+1e-6<passage.start||voyage.travelled>=passage.end||!Number.isSafeInteger(passage.amount)||passage.amount<0||passage.amount>1500)throw Error('예약한 운하 입구와 통행료를 확인하세요.');
     passage.paid=true;
     addDividend(content,passage.amount);
+    recordCanalEntry(content,now,fleetCount(game),passage.amount);
     return {message:project.name+' 진입 · 예약 요금 '+passage.amount+' D'};
   }
   if(action==='stock'||action==='supply'||action==='auto-supply'){
@@ -260,6 +322,7 @@ export function projectAction(game,content,uid,id,action,requested,now,nav){
     game.money-=toll-discount;
     game.voyage=result;
     addDividend(content,toll-discount);
+    recordCanalEntry(content,now,fleetCount(game),toll-discount);
     return {message:project.name+' 통행을 시작했어요.',toll:toll-discount};
   }
   throw Error('지원하지 않는 공동 사업 행동이에요.');

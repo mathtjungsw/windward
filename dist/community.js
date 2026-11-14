@@ -1,4 +1,5 @@
-import {PORT_BY_ID,PORTS} from './data.js?v=2026.11.14-trade-access';
+import {PORT_BY_ID,PORTS} from './data.js?v=2026.11.14-harbor-chart';
+import {CONTESTED_PORTS} from './harbor-battles.js?v=2026.11.14-harbor-chart';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function suggestionDraft(title,body){title=String(title||'').trim();body=String(body||'').trim();if(!title||title.length>50||!body||body.length>1200||/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(title+body))throw Error('제목 1~50자, 내용 1~1,200자로 작성하세요.');return {title,body};}
 export function createCommunity(api){
@@ -50,25 +51,74 @@ export function createCommunity(api){
   const request=ownershipRead;
   try{return await request;}finally{if(ownershipRead===request)ownershipRead=null;}
  }
+ const ownedViewKey='windward-owned-port-view';
+ let ownedView='ports';
+ try{if(localStorage.getItem(ownedViewKey)==='captains')ownedView='captains';}catch{}
+ function ownedRow(port){
+  const row=document.createElement('article'),summary=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small'),button=document.createElement('button');
+  row.className='owned-port-row';summary.className='owned-port-summary';name.textContent=port.portName;
+  const share=port.kind==='developed'?'개발 항구':(port.kind==='depot'?'공동 보급항 · ':'')+'지분 '+Number(port.share).toFixed(2)+'%';
+  const owner=ownedView==='ports'?port.ownerName+(port.ownerUid===a.uid?' (나)':'')+' · ':'';
+  detail.textContent=(port.operatorOnly?'과반 소유자 없음':owner+share+' · 기본 세율 '+port.defaultRate+'%')+(port.operatorName&&port.operatorUntil>Date.now()&&port.operatorUid!==port.ownerUid?' · 운영 '+port.operatorName:'');
+  button.textContent='지도에서 보기';
+  button.onclick=()=>{const place=PORT_BY_ID[port.id];if(place)api.look(api.portPoint?.(place)||[place.lon,place.lat]);};
+  summary.append(name,detail);row.append(summary,button);return row;
+ }
+ function paintOwned(rows,list){
+  const sorted=[...rows].sort((a,b)=>a.portName.localeCompare(b.portName,'ko'));
+  list.replaceChildren();
+  if(!sorted.length){list.textContent='현재 소유자가 있는 항구가 없어요.';return;}
+  if(ownedView==='ports'){list.append(...sorted.map(ownedRow));return;}
+  const captains=new Map();
+  for(const port of sorted){
+   if(port.operatorOnly)continue;
+   if(!captains.has(port.ownerUid))captains.set(port.ownerUid,{name:port.ownerName,id:port.ownerUid,ports:[]});
+   captains.get(port.ownerUid).ports.push(port);
+  }
+  for(const captain of [...captains.values()].sort((a,b)=>b.ports.length-a.ports.length||a.name.localeCompare(b.name,'ko')||a.id.localeCompare(b.id))){
+   const group=document.createElement('details'),label=document.createElement('summary');
+   group.className='owned-captain-group';
+   label.textContent=captain.name+(captain.id===a.uid?' (나)':'')+' · '+captain.ports.length+'곳';
+   group.append(label,...captain.ports.map(ownedRow));list.append(group);
+  }
+  list.append(...sorted.filter(port=>port.operatorOnly).map(ownedRow));
+ }
  async function showOwnedPorts(force=false){
   if(!ready())return;
   const gen=++generation;
   api.modal('현재 소유 항구','과반 지분 소유 · 개발 항구 포함',header('owned')+
-    '<div class="dialog-actions"><button id="owned-refresh">새로고침</button><button id="owned-tax-collector">세금 징수선</button><small>현재 소유자가 있는 항구</small></div><div id="owned-port-list">불러오는 중…</div>','wide');
+    '<div class="dialog-actions"><button id="owned-refresh">새로고침</button><button id="owned-tax-collector">세금 징수선</button></div><div class="expansion-tabs" aria-label="소유 항구 보기"><button id="owned-view-ports">항구별</button><button id="owned-view-captains">선장별</button></div><div id="owned-port-list">불러오는 중…</div>','wide');
+  const list=$('#owned-port-list'),ports=$('#owned-view-ports'),captains=$('#owned-view-captains');
+  let rows=null;
+  function choose(view,remember=false){
+   ownedView=view;
+   if(remember)try{localStorage.setItem(ownedViewKey,view);}catch{}
+   ports.setAttribute('aria-pressed',String(view==='ports'));
+   captains.setAttribute('aria-pressed',String(view==='captains'));
+   if(rows)paintOwned(rows,list);
+  }
+  choose(ownedView);
   bind();$('#owned-refresh').onclick=()=>showOwnedPorts(true);$('#owned-tax-collector').onclick=()=>api.taxCollector?.();
+  ports.onclick=()=>choose('ports',true);captains.onclick=()=>choose('captains',true);
   try{
-   const rows=await syncOwnership(force===true),list=$('#owned-port-list');
-   if(gen!==generation||!list)return;
-   list.replaceChildren();
-   for(const p of [...rows].sort((a,b)=>a.portName.localeCompare(b.portName,'ko'))){
-    const row=document.createElement('article'),summary=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small'),button=document.createElement('button');
-    row.className='owned-port-row';summary.className='owned-port-summary';name.textContent=p.portName;
-    detail.textContent=p.ownerName+(p.ownerUid===a.uid?' (나)':'')+' · '+(p.kind==='developed'?'개발 항구':(p.kind==='depot'?'공동 보급항 · ':'')+'지분 '+Number(p.share).toFixed(2)+'%')+' · 기본 세율 '+p.defaultRate+'%';
-    button.textContent='지도에서 보기';button.onclick=()=>{const port=PORT_BY_ID[p.id];if(port)api.look(api.portPoint?.(port)||[port.lon,port.lat]);};
-    summary.append(name,detail);row.append(summary,button);list.append(row);
+   const [owned,activeGrants]=await Promise.all([
+    syncOwnership(force===true),
+    Promise.all(CONTESTED_PORTS.map(async id=>{
+     try{
+      const {content}=await a.readShared('ports',id);
+      const grant=content.harborOperator;
+      return grant?.until>Date.now()&&grant.name?{id,operatorName:grant.name,operatorUid:grant.uid,operatorUntil:grant.until}:null;
+     }catch{return null;}
+    }))
+   ]);
+   const index=new Map(owned.map(row=>[row.id,row]));
+   for(const grant of activeGrants.filter(Boolean)){
+    const row=index.get(grant.id)||{id:grant.id,portName:PORT_BY_ID[grant.id].name,operatorOnly:true};
+    index.set(grant.id,{...row,...grant});
    }
-   if(!rows.length)list.textContent='현재 소유자가 있는 항구가 없어요.';
-  }catch{if(gen===generation&&$('#owned-port-list'))$('#owned-port-list').textContent='소유 현황을 불러오지 못했어요. 새로고침해 주세요.';}
+   rows=[...index.values()];
+   if(gen===generation&&list.isConnected)paintOwned(rows,list);
+  }catch{if(gen===generation&&list.isConnected)list.textContent='소유 현황을 불러오지 못했어요. 새로고침해 주세요.';}
  }
  return {showSuggestions,showOwnedPorts,syncOwnership,ownerName:id=>a.uid===ownershipUid?ownershipRows.get(id)?.ownerName:null};
 }

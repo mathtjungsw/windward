@@ -1,5 +1,5 @@
-import {PORTS,GOODS} from './data.js?v=2026.11.14-trade-access';
-import {taxRate,permitted,captainTradeQuote,NEUTRAL_PORTS} from './commerce.js?v=2026.11.14-trade-access';
+import {PORTS,GOODS} from './data.js?v=2026.11.14-harbor-chart';
+import {taxRate,permitted,captainTradeQuote,NEUTRAL_PORTS} from './commerce.js?v=2026.11.14-harbor-chart';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const SALE_SEARCH_NOTICE='지금 검색한 시점에 조회한 시세 기준 최고가입니다. 시세와 세금은 실제 판매할 때 달라질 수 있어요.';
 export function ownedTradeGoods(game){const result={};for(const cargo of [game.cargo,JSON.parse(game.battleReserve?.cargoJSON||'{}')])for(const [id,c]of Object.entries(cargo||{}))if(GOODS[id]&&c.qty>0)result[id]=(result[id]||0)+c.qty;return result;}
@@ -25,7 +25,7 @@ async function readPortPolicy(read,portId,uid,includeRates){
   read('blacklist'),readRates?read('defaultRate'):null,readRates?read('rates/'+uid):null
  ]);
  if(blacklist!=null&&(!Array.isArray(blacklist)||blacklist.some(value=>typeof value!=='string')))throw Error('거래 제한을 확인하지 못했어요.');
- if([defaultRate,personalRate].some(value=>value!=null&&(!Number.isFinite(value)||value<0||value>10)))throw Error('항구 세율을 확인하지 못했어요.');
+ if([defaultRate,personalRate].some(value=>value!=null&&(!Number.isFinite(value)||value<0||value>30)))throw Error('항구 세율을 확인하지 못했어요.');
  policy.blacklist=blacklist??[];
  policy.defaultRate=defaultRate??0;
  if(personalRate!=null)policy.rates={[uid]:personalRate};
@@ -163,7 +163,7 @@ export function createSaleFinder(api){
       };
       article.append(
        element('strong',`${index+1}. ${row.port.name}${known.has(row.port.id)?'':' · 미발견'}`),
-       element('p',`판매가 ${fmt(row.quote.unit)} D/상자 · 세율 ${row.rate}%${row.quote.bonus?' · 보너스 +'+fmt(row.quote.bonus)+' D':''} · ${qty}상자 수령 ${fmt(row.quote.total)} D`),
+       element('p',`${row.quote.eventEnd?'행사 시세 · ':''}판매가 ${fmt(row.quote.unit)} D/상자 · 세율 ${row.rate}%${row.quote.bonus?' · 보너스 +'+fmt(row.quote.bonus)+' D':''} · ${qty}상자 수령 ${fmt(row.quote.total)} D`),
        lookButton(row.port),depart
       );
       target.append(article);

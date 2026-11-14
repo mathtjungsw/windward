@@ -1,6 +1,6 @@
 // Static discovery stories and game observation points.
-import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.14-trade-access';
-export const DISCOVERY_CATALOG_VERSION='2026.11.12-discoveries-60';
+import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.14-harbor-chart';
+export const DISCOVERY_CATALOG_VERSION='2026.11.14-discoveries-72';
 export const RETIRED_DISCOVERY_FAME={'ruin-itsukushima':400};
 const source=(label,url)=>({label,url});
 const UNESCO=(id,label)=>source('UNESCO · '+label,'https://whc.unesco.org/en/list/'+id+'/');
@@ -45,8 +45,24 @@ const rows=[
  {id:'ruin-sganggwaay',kind:'ruin',name:'스강과이 해안 유산',region:'북아메리카',tier:3,point:[-131.22,52.1],sitePoint:[-131.220278,52.095],description:'캐나다 하이다과이의 스강과이에는 집과 기둥 유산이 남아 있어요. 하이다의 살아 있는 문화와 바다의 관계를 이해하는 해안 관찰 그림이며 실물을 가져오지 않습니다.',sources:[UNESCO(157,'SGang Gwaay')],hintPorts:['vancouver'],hints:['캐나다 태평양 연안을 따라 북서쪽 섬들로 향하면 하이다의 집과 기둥 유산을 관찰하는 이야기가 있어요.']},
  {id:'ruin-fortjesus',kind:'ruin',name:'몸바사 포트지저스',region:'아프리카',tier:2,point:[40,-4],sitePoint:[39.679444,-4.062778],description:'케냐 몸바사의 포트지저스는 1593~1596년에 세워진 요새예요. 여러 시대의 유산을 모은 게임이므로 1522년에 이미 있었다고 소개하지 않으며 해상 관찰 기록으로 수집합니다.',sources:[UNESCO(1295,'Fort Jesus')],hintPorts:[]}
 ];
+export const ATLAS_ADDITIONS=[
+ ['ruin-leptis','ruin','렙티스 마그나의 항구','아프리카',[14.4,32.81],'리비아 연안의 옛 로마 도시에는 시장과 인공 항구의 흔적이 남아 있어요.',UNESCO(183,'Leptis Magna'),'arches'],
+ ['ruin-sabratha','ruin','사브라타 해안 도시','아프리카',[12.49,33.06],'지중해 남쪽 해안에서 사브라타의 고대 도시 유산을 관찰해요.',UNESCO(184,'Sabratha'),'arches'],
+ ['ruin-dilmun','ruin','딜문의 고대 항구','아시아',[50.49,26.36],'바레인의 고대 항구에는 여러 지역을 연결한 교역의 자취가 있어요.',UNESCO(1192,'Qalat al-Bahrain'),'walls'],
+ ['ruin-zanzibar-record','ruin','잔지바르 석조 도시의 골목','아프리카',[39.08,-6.04],'인도양 교역을 통해 여러 문화가 만난 잔지바르의 석조 도시를 기록해요.',UNESCO(173,'Stone Town of Zanzibar'),'walls'],
+ ['ruin-kotor-record','ruin','코토르 옛 방어 시설','유럽',[18.15,42.15],'아드리아해의 만과 중세 항도 코토르의 방어 시설을 살펴봐요. 게임 조사점은 만 밖 해역이에요.',UNESCO(125,'Kotor'),'walls'],
+ ['relic-cuneiform-record','relic','메소포타미아 점토판 기록','아시아',[48.98,29.01],'점토에 쐐기 모양 문자를 새겨 정보를 남겼어요. 게임에서는 페르시아만의 가상 사본을 관찰합니다.',source('대영박물관 · 점토판','https://www.britishmuseum.org/collection/object/W_1881-0701-3157'),'tablet'],
+ ['relic-jikji-record','relic','직지의 금속활자 기록','아시아',[126.03,36.19],'고려의 금속활자 인쇄 문화를 살펴봐요. 게임에서는 서해의 가상 인쇄 견본을 기록합니다.',source('유네스코 · 세계기록유산과 직지','https://www.unesco.org/en/memory-world'),'book'],
+ ['relic-andean-khipu','relic','안데스의 키푸 기록','남아메리카',[-77.52,-12.28],'안데스에서는 끈의 매듭과 배열에 정보를 담았어요. 해안에서 관찰하는 게임용 견본입니다.',source('메트로폴리탄 미술관 · 안데스 직조','https://resources.metmuseum.org/resources/metpublications/pdf/Weaving_Abstraction.pdf'),'rope'],
+ ['relic-papyrus-chart','relic','나일강 문서 두루마리','아프리카',[31.03,32.01],'파피루스 문화를 참고해 만든 창작 조사 기록입니다. 실제 문서의 수중 위치를 뜻하지 않아요.',null,'book'],
+ ['relic-cargo-seals','relic','홍해 교역 인장 묶음','아시아',[38.46,20.25],'상자의 출처를 표시하는 인장을 소재로 만든 게임 속 창작 기록이에요.',null,'seal'],
+ ['relic-broken-hull','relic','남대서양의 선창 조각','아프리카',[-6.25,-16.05],'외딴 섬 부근에서 발견하는 창작 해저 유물이에요. 실제 난파선 위치를 나타내지 않아요.',null,'wreck'],
+ ['relic-sunken-jars','relic','남태평양 해저 항아리','오세아니아',[167.45,-18.47],'게임의 항로를 위해 배치한 창작 항아리입니다. 재질과 묶음 흔적을 기록해요.',null,'jar']
+].map(([id,kind,name,region,point,description,ref,art],position)=>({
+ id,kind,name,region,point,description,sources:ref?[ref]:[],fiction:!ref,art,tier:position%2?2:1,hintPorts:[],hints:[]
+}));
 const fame=[0,50,150,400,1000],spot=[0,100,100,100,100],inspect=[0,60,60,60,60];
-export const DISCOVERIES=[...rows,...NEW_DISCOVERIES].map(d=>({...d,lon:d.point[0],lat:d.point[1],fiction:!!d.fiction,fame:fame[d.tier],spotRadius:spot[d.tier],inspectRadius:inspect[d.tier],rumorIds:d.hintPorts.map((p,i)=>d.id+'-rumor-'+(i+1)),image:'assets/discoveries/'+d.id+'.svg'}));
+export const DISCOVERIES=[...rows,...NEW_DISCOVERIES,...ATLAS_ADDITIONS].map(d=>({...d,lon:d.point[0],lat:d.point[1],fiction:!!d.fiction,fame:fame[d.tier],spotRadius:spot[d.tier],inspectRadius:inspect[d.tier],rumorIds:d.hintPorts.map((p,i)=>d.id+'-rumor-'+(i+1)),image:'assets/discoveries/'+d.id+'.svg'}));
 export const DISCOVERY_BY_ID=Object.fromEntries(DISCOVERIES.map(d=>[d.id,d]));
 export const RUMORS=DISCOVERIES.flatMap(d=>d.hintPorts.map((portId,i)=>({id:d.rumorIds[i],portId,discoveryId:d.id,text:d.hints[i]})));
 export const RUMOR_BY_ID=Object.fromEntries(RUMORS.map(r=>[r.id,r]));

@@ -1,5 +1,5 @@
-import {historicalGlyph} from './historical-ship-art.js?v=2026.11.14-trade-access';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.14-trade-access';
+import {historicalGlyph} from './historical-ship-art.js?v=2026.11.14-harbor-chart';
+import {ATLAS_ADDITIONS,DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.14-harbor-chart';
 // Original vector illustrations for Windward. No external images or runtime requests.
 export const SHIP_ART_NAMES=Object.freeze(['통나무 뗏목','돛 달린 뗏목','보강 뗏목','소형 노젓는 배','소형 교역 돛배','단돛 교역선','연안 교역선','개량 연안선','쌍돛 연안선','항해 캐러벨','개량 캐러벨','대형 캐러벨','소형 카락','교역 카락','대형 카락','원양 교역선','교역 갤리온','대형 갤리온','원양 대형 범선','명장의 교역 범선']);
 export const DISCOVERY_ART_IDS=Object.freeze(DISCOVERIES.map(d=>d.id));
@@ -67,6 +67,7 @@ export function shipArt(tier){const t=tierIndex(tier);return svg('ship-'+t,SHIP_
 export function shipArtPath(tier){return `assets/ships/ship-${String(tierIndex(tier)+1).padStart(2,'0')}.svg`;}
 export function discoveryArt(id){return `assets/discoveries/${DISCOVERY_ART_IDS.includes(id)?id:'unknown'}.svg`;}
 export function collectionArt(id,detail=false){
+ if(ATLAS_ADDITIONS.some(entry=>entry.id===id))return discoveryArt(id);
  id=({IS01:'I045',IS02:'I050'})[id]||id;
  const discovery=DISCOVERY_ART_IDS.includes(id);
  if(!discovery&&!/^I0(0[1-9]|[1-5][0-9]|6[0-4])$/.test(id))return 'assets/discoveries/unknown.svg';

@@ -246,3 +246,10 @@ button.shore-pin:focus-visible { outline:2px solid #265f65; outline-offset:2px; 
 .sale-port-status-row{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem .7rem;padding:.5rem 0;border-top:1px solid #d4d9c8}
 .sale-port-status-row span{font-size:.83rem;color:#804e2b}
 .sale-port-status-row button{margin-inline-start:auto;padding:.45rem .6rem;border:1px solid #9db5a6;border-radius:6px}
+#chart-zoom-value{display:grid;place-items:center;min-height:22px;font-size:11px;font-variant-numeric:tabular-nums}
+.map-controls button:disabled{opacity:.4}
+@media (max-width:850px){.map-controls #chart-zoom-in,.map-controls #chart-zoom-out{min-height:36px}}
+.owned-captain-group{border-bottom:1px solid var(--line);padding:.3rem 0}
+.owned-captain-group summary{padding:.8rem .25rem;cursor:pointer;font-weight:600}
+.owned-captain-group .owned-port-row{padding-inline-start:.8rem}
+.map-controls #chart-style{font:600 11px var(--sans)}

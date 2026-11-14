@@ -83,7 +83,7 @@ test('detail preserves islands smaller than a world grid cell, holes and the dat
 });
 
 test('all catalog berths are water points, and the starter berth is a valid manual dock',()=>{
-  assert.equal(PORTS.length,78);
+  assert.equal(PORTS.length,82);
   for(const port of ALL_PORTS){
     const point=berth(port.id);
     assert.ok(point&&!nav.isLand(point),port.id);
