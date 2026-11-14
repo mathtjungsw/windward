@@ -1,10 +1,10 @@
-import {shipyardReport} from './historical-ships.js?v=2026.11.14-harbor-chart';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.14-harbor-chart';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.14-harbor-chart';
-import {mapDistance} from './world-wrap.js?v=2026.11.14-harbor-chart';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.14-harbor-chart';
+import {shipyardReport} from './historical-ships.js?v=2026.11.15-fleet-login';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.15-fleet-login';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-fleet-login';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-fleet-login';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-fleet-login';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.14-harbor-chart';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-fleet-login';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[

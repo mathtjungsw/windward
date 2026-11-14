@@ -1,17 +1,17 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.14-harbor-chart';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.14-harbor-chart';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.14-harbor-chart';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.14-harbor-chart';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.14-harbor-chart';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.15-fleet-login';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.15-fleet-login';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-fleet-login';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.15-fleet-login';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.15-fleet-login';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.14-harbor-chart';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.15-fleet-login';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.14-harbor-chart';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.14-harbor-chart';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.14-harbor-chart';
-import {normalizeDepotDock} from './projects.js?v=2026.11.14-harbor-chart';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.14-harbor-chart';
-import {normalizeStories} from './story-core.js?v=2026.11.14-harbor-chart';
+import {normalizeSea} from './sea-activities.js?v=2026.11.15-fleet-login';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.15-fleet-login';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.15-fleet-login';
+import {normalizeDepotDock} from './projects.js?v=2026.11.15-fleet-login';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.15-fleet-login';
+import {normalizeStories} from './story-core.js?v=2026.11.15-fleet-login';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;

@@ -1,7 +1,7 @@
-import {SEA_SITES} from './sea-activities.js?v=2026.11.14-harbor-chart';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.14-harbor-chart';
-import {PORT_BY_ID} from './data.js?v=2026.11.14-harbor-chart';
-import {mapDistance} from './world-wrap.js?v=2026.11.14-harbor-chart';
+import {SEA_SITES} from './sea-activities.js?v=2026.11.15-fleet-login';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.15-fleet-login';
+import {PORT_BY_ID} from './data.js?v=2026.11.15-fleet-login';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-fleet-login';
 
 const types={smuggler:{name:'밀수선 화물 회수',reward:1200},salvage:{name:'표류 화물 수색',reward:520}};
 const siteFor=(port,entries)=>[...entries].sort((a,b)=>mapDistance([port.lon,port.lat],a.point)-mapDistance([port.lon,port.lat],b.point))[0];

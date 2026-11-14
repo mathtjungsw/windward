@@ -1,5 +1,5 @@
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.14-harbor-chart';
-import {ownershipRankChanges} from './port-rankings.js?v=2026.11.14-harbor-chart';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-fleet-login';
+import {ownershipRankChanges} from './port-rankings.js?v=2026.11.15-fleet-login';
 async function bounded(task,ms=5000){let timer;try{return await Promise.race([task,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('network-timeout')),ms))]);}finally{clearTimeout(timer);}}
 // Economic writes share the same queue as autosave. Acknowledgement precedes UI state.
 export function installAtomicAccount(Type){

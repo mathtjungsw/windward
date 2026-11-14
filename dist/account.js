@@ -1,10 +1,10 @@
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.14-harbor-chart';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.14-harbor-chart';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.14-harbor-chart';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.14-harbor-chart';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.14-harbor-chart';
-import {applyRaftStart} from './raft-start.js?v=2026.11.14-harbor-chart';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.14-harbor-chart';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.15-fleet-login';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.15-fleet-login';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-fleet-login';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-fleet-login';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.15-fleet-login';
+import {applyRaftStart} from './raft-start.js?v=2026.11.15-fleet-login';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.15-fleet-login';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
@@ -182,7 +182,7 @@ export class CaptainAccount {
       revision: record.revision, ready: true, lost: false, dirty: false, economicUncertain:false
     });
     try{this.storage.removeItem?.('windward-economic-pending:'+uid);}catch{}
-    this.cache(game, false);if(this.defenseEnabled&&!await publishDefense(this,game)){this.ready=false;throw Object.assign(Error('접속 중 전투 상태가 갱신됐어요. 다시 연결합니다.'),{code:'permission_denied'});}
+    this.cache(game, false);if(this.defenseEnabled&&!await publishDefense(this,game,defense)){this.ready=false;throw Object.assign(Error('접속 중 전투 상태가 갱신됐어요. 다시 연결합니다.'),{code:'permission_denied'});}
     this.onCommitted(game,this.revision);
     this.onStatus(recovered ? '이 기기의 기록을 복원했어요.' : '클라우드 저장 연결됨');
     this.stopWatch?.();

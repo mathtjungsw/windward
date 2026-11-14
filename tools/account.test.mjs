@@ -92,3 +92,25 @@ test('entry retries a concurrent defense ledger without merging into the previou
  f.a.sdk.runTransaction=async(ref,fn)=>{if(ref===key&&publications++===0){const latest={...node,seq:1,revision:2,cashTotal:500};f.records.set(key,latest);return {committed:false,snapshot:{val:()=>latest}};}return original(ref,fn);};
  const entered=await f.a.enter(user,null,input);clearInterval(f.a.timer);assert.equal(entered.money,10500);assert.equal(entered.defenseAck.seq,1);assert.equal(applied,0);assert.equal(JSON.parse(f.records.get('gameV2/privateSaves/owner').data).money,10500);
 });
+
+test('a cold client can enter with a nonzero defense sequence and preserve the ledger',async()=>{
+ const game=initialState(),key='gameV2/fleetStates/owner';
+ const f=fixture({schemaVersion:10,defenseSeq:30,revision:4,data:JSON.stringify(game),session:'expired',leaseUntil:0});
+ f.a.defenseEnabled=true;
+ const defense={...defenseFromGame(game,{}, {name:input.name,session:'expired'},1000),revision:9,seq:30,cashTotal:500};
+ f.records.set(key,defense);
+ const original=f.a.sdk.runTransaction;
+ const sources=[];
+ f.a.sdk.runTransaction=(ref,fn)=>{
+  if(ref!==key)return original(ref,fn);
+  sources.push(null);
+  assert.equal(fn(null)?.seq,30);
+  return original(ref,current=>{sources.push(current.seq);return fn(current);});
+ };
+ const entered=await f.a.enter(user,{name:input.name});
+ clearInterval(f.a.timer);
+ assert.deepEqual(sources,[null,30]);
+ assert.equal(entered.money,game.money+500);
+ assert.equal(f.records.get(key).seq,30);
+ assert.equal(f.records.get(key).cashTotal,500);
+});

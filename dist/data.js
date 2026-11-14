@@ -1,8 +1,8 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.14-harbor-chart';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.14-harbor-chart';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.14-harbor-chart';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.14-harbor-chart';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.14-harbor-chart';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.15-fleet-login';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.15-fleet-login';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.15-fleet-login';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.15-fleet-login';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.15-fleet-login';
 Object.assign(GOODS,PREMIUM_GOODS);
 
 export {GOODS};
