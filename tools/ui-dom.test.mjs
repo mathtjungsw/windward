@@ -383,3 +383,126 @@ test('discovering Salalah renders the map and preserves manual and open-sea auto
   Object.assign(data.PORT_BY_ID[id],oldPort);app.beginPlaying(initialState());$('#modal').close();
  }
 });
+
+test('sale results split restricted and failed ports and recheck only the destination before sailing',async()=>{
+ const {createSaleFinder}=await import('../dist/sale-finder.js');
+ const originalFetch=globalThis.fetch;
+ const game=initialState();
+ game.cargo={wine:{qty:10,cost:300}};
+ game.knownPorts=['lisbon','porto','seville','havana','london'];
+ const reads=[],departures=[],looked=[];
+ const finder=createSaleFinder({
+  account:{ready:true,uid:'me',sdk:{},restEndpoint:'https://trade-fixture.invalid/',auth:{currentUser:{getIdToken:async()=>'test'}}},
+  getState:()=>game,modal:(_title,_eyebrow,content)=>{$('#modal-content').innerHTML=content;$('#modal').showModal();},
+  look:point=>looked.push(point),depart:port=>departures.push(port)
+ });
+ const blocked=new Set(['havana']),failed=new Set(['london']);
+ let delayed=null;
+ globalThis.fetch=async url=>{
+  const [,port,key]=url.pathname.match(/\/ports\/([^/]+)\/content\/(.+)\.json$/);
+  reads.push([port,key]);
+  if(key==='blacklist'&&delayed)await delayed;
+  if(failed.has(port))return {ok:false};
+  const value=key==='ownerUid'?'other':key==='blacklist'&&blocked.has(port)?['me']:null;
+  return {ok:true,json:async()=>value};
+ };
+ const departButton=port=>document.querySelector(`.sale-search-row [data-port-id="${port}"]`);
+ try{
+  finder.open();
+  $('#sale-search-known').checked=true;
+  await $('#sale-search-form').onsubmit({preventDefault(){}});
+  assert.match($('#sale-search-results h3').textContent,/확인된 항구 중/);
+  assert.match($('.sale-port-restricted').textContent,/아바나/);
+  assert.match($('.sale-port-uncertain').textContent,/런던/);
+  assert.equal(document.querySelectorAll('.sale-search-row').length,3);
+  $('.sale-port-restricted button').click();
+  assert.equal(looked.length,1);
+  assert.equal(departButton('havana'),null);
+
+  reads.length=0;
+  blocked.add('seville');
+  await departButton('seville').onclick();
+  assert.equal(departButton('seville'),null);
+  assert.match($('.sale-port-restricted summary').textContent,/2곳/);
+  assert.match($('#sale-search-status').textContent,/판매할 수 없어요/);
+  assert.equal($('#sale-search-known').checked,true);
+  assert.deepEqual(reads.map(item=>item[1]).sort(),['blacklist','developedOwner','ownerUid']);
+  assert.ok(reads.every(item=>item[0]==='seville'));
+  assert.deepEqual(departures,[]);
+
+  failed.add('porto');
+  await departButton('porto').onclick();
+  assert.match($('#sale-search-status').textContent,/다시 시도/);
+  assert.equal(departButton('porto').disabled,false);
+  failed.delete('porto');
+
+  let release;
+  delayed=new Promise(resolve=>{release=resolve;});
+  reads.length=0;
+  const departure=departButton('porto').onclick();
+  await departButton('porto').onclick();
+  assert.match(departButton('porto').textContent,/확인 중/);
+  $('#modal').close();
+  release();
+  await departure;
+  assert.deepEqual(departures,[]);
+  assert.equal(reads.length,3);
+
+  delayed=null;
+  blocked.delete('seville');
+  finder.open();
+  $('#sale-search-known').checked=true;
+  await $('#sale-search-form').onsubmit({preventDefault(){}});
+  assert.ok(departButton('seville'));
+  await departButton('porto').onclick();
+  assert.deepEqual(departures,['porto']);
+ }finally{
+  $('#modal').close();
+  globalThis.fetch=originalFetch;
+  document.querySelectorAll('#cargo-price-search')[1]?.remove();
+ }
+});
+
+test('selected and docked port shows personal restriction without blocking entry or supply',async()=>{
+ app.beginPlaying(initialState());
+ $('#modal').close();
+ app.state.food=6;
+ app.state.cargo={wine:{qty:2,cost:120}};
+ const a=app.account,old={ready:a.ready,uid:a.uid,sdk:a.sdk},subscriptions=[];
+ Object.assign(a,{ready:true,uid:'me',sdk:{ref:(_,path)=>path,onValue:(path,success,error)=>{
+  subscriptions.push({path,success,error});return ()=>{};
+ }}});
+ const restricted={revision:1,content:{investors:{other:100},blacklist:['me']}};
+ try{
+  app.business.observe(null);
+  app.renderPanel();
+  assert.match($('#port-trade-access').textContent,/확인 중/);
+  const lisbon=subscriptions.at(-1);
+  assert.match(lisbon.path,/\/lisbon$/);
+  lisbon.success({val:()=>restricted});
+  assert.match($('#port-trade-access').textContent,/내 거래 제한 · 입항과 보급 가능/);
+  assert.equal($('[data-buy]').disabled,true);
+  assert.equal($('[data-sell]').disabled,true);
+  assert.equal($('#supply-one').disabled,false);
+  assert.equal(app.state.port,'lisbon');
+  for(let i=0;i<3;i++)app.renderPanel();
+  assert.equal(subscriptions.length,1);
+  await app.selectPort('porto',false);
+  const porto=subscriptions.at(-1);
+  assert.notEqual(porto,lisbon);
+  porto.error();
+  lisbon.success({val:()=>restricted});
+  assert.match($('#port-trade-access').textContent,/확인 필요/);
+  porto.success({val:()=>null});
+  assert.match($('#port-trade-access').textContent,/내 거래 가능/);
+  await app.selectPort('lisbon',false);
+  const returned=subscriptions.at(-1);
+  returned.success({val:()=>({revision:2,content:{investors:{other:100}}})});
+  assert.match($('#port-trade-access').textContent,/내 거래 가능/);
+  assert.equal($('[data-buy]').disabled,false);
+  assert.equal($('[data-sell]').disabled,false);
+ }finally{
+  app.business.observe(null);
+  Object.assign(a,old);
+ }
+});

@@ -1,16 +1,16 @@
-import {shipyardVictory} from './historical-ships.js?v=2026.11.14-supply-storage';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.14-supply-storage';
-import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.14-supply-storage';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.14-supply-storage';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.14-supply-storage';
-import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.14-supply-storage';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.14-supply-storage';
-import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.14-supply-storage';
-import {mapDistance} from './world-wrap.js?v=2026.11.14-supply-storage';
-import {currentCanal} from './canal-reservations.js?v=2026.11.14-supply-storage';
+import {shipyardVictory} from './historical-ships.js?v=2026.11.14-trade-access';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.14-trade-access';
+import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.14-trade-access';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.14-trade-access';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.14-trade-access';
+import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.14-trade-access';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.14-trade-access';
+import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.14-trade-access';
+import {mapDistance} from './world-wrap.js?v=2026.11.14-trade-access';
+import {currentCanal} from './canal-reservations.js?v=2026.11.14-trade-access';
 export const COMBAT_RANGE=180,COMBAT_TIMEOUT=180000,PROTECTION_MS=120000;
 export function npcSlotChanges(game,uid,currentSlot){currentSlot??=null;const expected='npc:'+uid;if(currentSlot&&currentSlot!==expected)throw Error('선장 간 전투를 먼저 마치세요.');const next=game.npcBattle?expected:null;return currentSlot===next?{}:{['combatSlots/'+uid]:next};}
-export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.14-supply-storage';
+export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.14-trade-access';
 const copy=o=>structuredClone(o||{});
 export function splitCargo(cargo,limit){const taken={},rest={};for(const [id,c]of Object.entries(cargo||{}).sort(([a],[b])=>a.localeCompare(b))){const qty=Math.min(c.qty,Math.max(0,limit)),cost=c.qty?c.cost*qty/c.qty:0;if(qty)taken[id]={qty,cost};if(qty<c.qty)rest[id]={qty:c.qty-qty,cost:c.cost-cost};limit-=qty;}return {taken,rest};}
 export const cargoCount=c=>Object.values(c||{}).reduce((n,c)=>n+c.qty,0);

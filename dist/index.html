@@ -7,10 +7,10 @@
   <meta name="description" content="세계지도를 항해하고, 항구를 발견하고, 특산물을 거래하세요. 당신만의 항해가 시작됩니다.">
   <title>바람의 항로 — A Trader's Atlas</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2313242c'/%3E%3Cpath d='M32 6 39 25 58 32 39 39 32 58 25 39 6 32 25 25Z' fill='%23d9ba78'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=2026.11.14-supply-storage">
-  <link rel="stylesheet" href="upgrade.css?v=2026.11.14-supply-storage">
-<link rel="stylesheet" href="ux.css?v=2026.11.14-supply-storage">
-<link rel="stylesheet" href="expedition.css?v=2026.11.14-supply-storage">
+  <link rel="stylesheet" href="style.css?v=2026.11.14-trade-access">
+  <link rel="stylesheet" href="upgrade.css?v=2026.11.14-trade-access">
+<link rel="stylesheet" href="ux.css?v=2026.11.14-trade-access">
+<link rel="stylesheet" href="expedition.css?v=2026.11.14-trade-access">
 </head>
 <body>
   <svg class="icon-defs" aria-hidden="true"><defs>
@@ -76,7 +76,7 @@
 
     <aside class="port-panel" id="port-panel" aria-label="항구와 무역">
       <div class="port-illustration"><div class="scene-stars">✦ <span>✧</span> ·</div><svg viewBox="0 0 360 140" aria-hidden="true"><circle cx="280" cy="35" r="22" fill="#d5b879" opacity=".65"/><path d="M0 100 35 80 60 90 95 65 135 82 170 50 220 80 280 65 330 85 360 70V140H0Z" fill="#99b7a3"/><path d="M0 110h360v30H0Z" fill="#83b8c1"/><g fill="#e3c38b"><path d="M30 106V77h24v29M26 77l16-14 16 14ZM62 106V68h18v38M59 68l12-22 12 22ZM91 106V82h32v24M87 82l20-13 20 13ZM132 106V60h20v46M128 60l14-16 14 16ZM164 106V78h37v28M160 78l22-16 23 16ZM214 106V72h24v34M210 72l16-13 16 13Z"/><path d="M257 104V51h9v53M251 51h21l-10-14ZM288 107V85h34v22M285 85l20-14 20 14Z"/></g><g fill="#727e59"><path d="M39 97v-9h6v9M68 90V76h5v14M102 100V88h7v12M139 85V70h5v15M177 100V86h8v14M222 92V80h6v12M299 101v-9h8v9"/></g><path d="M0 115h360M15 125h50m20 8h57m70-9h78m16 9h36" stroke="#6c8378" opacity=".4"/><path d="m237 121 21 0-6 5h-10ZM248 106v15m-2-14-7 12h7Z" fill="#dfc68f"/></svg><span class="port-scene-label" id="scene-label">PORT OF LISBON</span></div>
-      <div class="panel-content"><div class="port-kicker"><span id="port-region">유럽 · 포르투갈</span><span class="port-badge" id="port-badge">정박 중</span></div><h1 id="port-name">리스본 <em>Lisbon</em></h1><p class="port-description" id="port-description"></p><div class="port-coordinates" id="port-coordinates"></div>
+      <div class="panel-content"><div class="port-kicker"><span id="port-region">유럽 · 포르투갈</span><span class="port-badge" id="port-badge">정박 중</span></div><h1 id="port-name">리스본 <em>Lisbon</em></h1><p id="port-trade-access" class="port-trade-access" role="status" hidden></p><p class="port-description" id="port-description"></p><div class="port-coordinates" id="port-coordinates"></div>
       <div id="route-box" class="route-box hidden"></div>
       <div class="panel-tabs"><button class="active" id="trade-tab">교역소</button><button id="ship-tab">선박 · 보급</button></div>
       <section id="trade-content"><div class="trade-heading"><span id="trade-heading">이 항구의 교역품</span><span>단위: 두카트</span></div><div id="market"></div><div class="cargo-heading"><svg><use href="#i-box"/></svg><h3>내 화물창</h3><span id="cargo-count">0 / 40</span></div><p id="cargo-trade-context" class="cargo-trade-context" role="status"></p><button id="cargo-port-btn" class="cargo-port-button" hidden></button><div id="cargo-list"></div></section>
@@ -90,7 +90,7 @@
   <section id="chat-panel" class="chat-panel" aria-label="선장 채팅" hidden><div class="chat-heading"><div><strong>선장들의 항해 채팅</strong><small>최근 대화 50개만 남아요</small></div><button id="chat-close" aria-label="채팅창 닫기">×</button></div><div id="chat-messages" class="chat-messages" aria-label="최근 채팅 메시지"></div><button id="chat-connection">함께 항해 연결하기</button><form id="chat-form"><label for="chat-input" class="chat-input-label">메시지</label><div class="chat-compose"><textarea id="chat-input" maxlength="200" rows="2" placeholder="선장들에게 인사해 보세요" disabled></textarea><button id="chat-send" type="submit" disabled>보내기</button></div><div class="chat-meta"><span id="chat-status" role="status">함께 항해에 연결하면 대화할 수 있어요.</span><span id="chat-count">0/200</span></div></form></section>
   <div id="toast-container" aria-live="polite"></div>
   <dialog id="modal"><div class="modal-top"><span id="modal-eyebrow">SHIP'S JOURNAL</span><button id="close-modal" class="icon-btn" aria-label="창 닫기">×</button></div><h2 id="modal-title"></h2><div id="modal-content"></div></dialog>
-  <script type="module" src="app.js?v=2026.11.14-supply-storage"></script>
+  <script type="module" src="app.js?v=2026.11.14-trade-access"></script>
 </body>
 </html>
 

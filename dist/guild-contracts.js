@@ -1,10 +1,10 @@
-import {shipyardReport} from './historical-ships.js?v=2026.11.14-supply-storage';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.14-supply-storage';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.14-supply-storage';
-import {mapDistance} from './world-wrap.js?v=2026.11.14-supply-storage';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.14-supply-storage';
+import {shipyardReport} from './historical-ships.js?v=2026.11.14-trade-access';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.14-trade-access';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.14-trade-access';
+import {mapDistance} from './world-wrap.js?v=2026.11.14-trade-access';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.14-trade-access';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.14-supply-storage';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.14-trade-access';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[

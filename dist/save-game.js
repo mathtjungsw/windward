@@ -1,17 +1,17 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.14-supply-storage';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.14-supply-storage';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.14-supply-storage';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.14-supply-storage';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.14-supply-storage';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.14-trade-access';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.14-trade-access';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.14-trade-access';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.14-trade-access';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.14-trade-access';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.14-supply-storage';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.14-trade-access';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.14-supply-storage';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.14-supply-storage';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.14-supply-storage';
-import {normalizeDepotDock} from './projects.js?v=2026.11.14-supply-storage';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.14-supply-storage';
-import {normalizeStories} from './story-core.js?v=2026.11.14-supply-storage';
+import {normalizeSea} from './sea-activities.js?v=2026.11.14-trade-access';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.14-trade-access';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.14-trade-access';
+import {normalizeDepotDock} from './projects.js?v=2026.11.14-trade-access';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.14-trade-access';
+import {normalizeStories} from './story-core.js?v=2026.11.14-trade-access';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;

@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.14-supply-storage';
-import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.14-supply-storage';
-import {PORT_BY_ID} from './data.js?v=2026.11.14-supply-storage';
+import {ownership} from './commerce.js?v=2026.11.14-trade-access';
+import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.14-trade-access';
+import {PORT_BY_ID} from './data.js?v=2026.11.14-trade-access';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;

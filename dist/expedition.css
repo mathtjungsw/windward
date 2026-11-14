@@ -237,3 +237,12 @@ button.shore-pin:focus-visible { outline:2px solid #265f65; outline-offset:2px; 
 .study-pin-label{fill:#744516;stroke:#fffbe8;stroke-width:4;paint-order:stroke;font:700 12px var(--sans)}
 .collection-card.collected img{object-fit:cover}
 @media(max-width:550px){.historical-grid{grid-template-columns:1fr}.discovery-location{grid-template-columns:1fr}.discovery-location dd{margin-bottom:.25rem}}
+
+.port-trade-access{font-size:.85rem;margin:.35rem 0;color:#415f56}
+.port-trade-access.is-restricted,.sale-search-status{color:#804e2b}
+.sale-search-row button+button{margin-inline-start:.4rem}
+.sale-port-details{margin-top:.75rem;border:1px solid #d4d9c8;border-radius:6px;padding:0 .75rem}
+.sale-port-details summary{padding:.7rem 0;cursor:pointer}
+.sale-port-status-row{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem .7rem;padding:.5rem 0;border-top:1px solid #d4d9c8}
+.sale-port-status-row span{font-size:.83rem;color:#804e2b}
+.sale-port-status-row button{margin-inline-start:auto;padding:.45rem .6rem;border:1px solid #9db5a6;border-radius:6px}

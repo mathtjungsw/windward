@@ -1,62 +1,62 @@
-import {createUiUsage} from './ui-usage.js?v=2026.11.14-supply-storage';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.14-supply-storage';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.14-supply-storage';
-import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.14-supply-storage';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.14-supply-storage';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.14-supply-storage';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.14-supply-storage';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.14-supply-storage';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.14-supply-storage';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.14-supply-storage';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.14-supply-storage';
-import {createCommunity} from './community.js?v=2026.11.14-supply-storage';
-import {createTaxCollector} from './tax-collector.js?v=2026.11.14-supply-storage';
-import {createStoryUI} from './story-ui.js?v=2026.11.14-supply-storage';
-import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.14-supply-storage';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.14-supply-storage';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.14-supply-storage';
-import {createCombat} from './combat-ui.js?v=2026.11.14-supply-storage';
-import {createBusiness} from './business-ui.js?v=2026.11.14-supply-storage';
-import {createExpansion} from './expansion-ui.js?v=2026.11.14-supply-storage';
-import {gameStats} from './public-stats.js?v=2026.11.14-supply-storage';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.14-supply-storage';
-import {shipGlyph} from './art.js?v=2026.11.14-supply-storage';
-import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.14-supply-storage';
-import {RELEASE} from './release-notes.js?v=2026.11.14-supply-storage';
-import {createUX} from './ux.js?v=2026.11.14-supply-storage';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.14-supply-storage';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.14-supply-storage';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.14-supply-storage';
-import {AtlasView} from './atlas-view.js?v=2026.11.14-supply-storage';
-import {FleetPresence} from './multiplayer.js?v=2026.11.14-supply-storage';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.14-supply-storage';
-import {CaptainChat} from './chat.js?v=2026.11.14-supply-storage';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.14-supply-storage';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.14-supply-storage';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.14-supply-storage';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.14-supply-storage';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.14-supply-storage';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.14-supply-storage';
-import {CaptainRankings} from './rankings.js?v=2026.11.14-supply-storage';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.14-supply-storage';
+import {createUiUsage} from './ui-usage.js?v=2026.11.14-trade-access';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.14-trade-access';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.14-trade-access';
+import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.14-trade-access';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.14-trade-access';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.14-trade-access';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.14-trade-access';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.14-trade-access';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.14-trade-access';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.14-trade-access';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.14-trade-access';
+import {createCommunity} from './community.js?v=2026.11.14-trade-access';
+import {createTaxCollector} from './tax-collector.js?v=2026.11.14-trade-access';
+import {createStoryUI} from './story-ui.js?v=2026.11.14-trade-access';
+import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.14-trade-access';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.14-trade-access';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.14-trade-access';
+import {createCombat} from './combat-ui.js?v=2026.11.14-trade-access';
+import {createBusiness} from './business-ui.js?v=2026.11.14-trade-access';
+import {createExpansion} from './expansion-ui.js?v=2026.11.14-trade-access';
+import {gameStats} from './public-stats.js?v=2026.11.14-trade-access';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.14-trade-access';
+import {shipGlyph} from './art.js?v=2026.11.14-trade-access';
+import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.14-trade-access';
+import {RELEASE} from './release-notes.js?v=2026.11.14-trade-access';
+import {createUX} from './ux.js?v=2026.11.14-trade-access';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.14-trade-access';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.14-trade-access';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.14-trade-access';
+import {AtlasView} from './atlas-view.js?v=2026.11.14-trade-access';
+import {FleetPresence} from './multiplayer.js?v=2026.11.14-trade-access';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.14-trade-access';
+import {CaptainChat} from './chat.js?v=2026.11.14-trade-access';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.14-trade-access';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.14-trade-access';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.14-trade-access';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.14-trade-access';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.14-trade-access';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.14-trade-access';
+import {CaptainRankings} from './rankings.js?v=2026.11.14-trade-access';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.14-trade-access';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.14-supply-storage';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.14-supply-storage';
-import {captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.14-supply-storage';
-import {createGuildUI} from './guild-ui.js?v=2026.11.14-supply-storage';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.14-supply-storage';
-import {ownership} from './commerce.js?v=2026.11.14-supply-storage';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.14-supply-storage';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.14-supply-storage';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.14-supply-storage';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.14-supply-storage';
-import {createShoreUI} from './shore-ui.js?v=2026.11.14-supply-storage';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.14-supply-storage';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.14-supply-storage';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.14-supply-storage';
-import {useRepairKit} from './activities.js?v=2026.11.14-supply-storage';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.14-supply-storage';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.14-supply-storage';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.14-trade-access';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.14-trade-access';
+import {captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.14-trade-access';
+import {createGuildUI} from './guild-ui.js?v=2026.11.14-trade-access';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.14-trade-access';
+import {ownership} from './commerce.js?v=2026.11.14-trade-access';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.14-trade-access';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.14-trade-access';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.14-trade-access';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.14-trade-access';
+import {createShoreUI} from './shore-ui.js?v=2026.11.14-trade-access';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.14-trade-access';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.14-trade-access';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.14-trade-access';
+import {useRepairKit} from './activities.js?v=2026.11.14-trade-access';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.14-trade-access';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.14-trade-access';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -473,25 +473,31 @@ function renderPanel(){
   arrivalNote.hidden=!p||atPort||distance(state.position,portPoint(p))>SIGHT_NM;
   if(p)arrivalNote.textContent=`입항 범위 ${Math.round(dockingRadius(p,portPoint(p)))}해리 · 같은 물길에서 접근하면 정박해요.`;
   $('#scene-label').textContent=p?'PORT OF '+p.en.toUpperCase():'THE OPEN SEA';
+  business?.observe(p?.depot?null:p?.id);
+  const portAccess=business?.tradeAccess(p?.id),restricted=portAccess==='restricted';
+  const accessNote=$('#port-trade-access');
+  const accessText={pending:'내 거래 가능 여부 확인 중…',allowed:'내 거래 가능',restricted:'내 거래 제한 · 입항과 보급 가능',unknown:'거래 가능 여부 확인 필요'}[portAccess]||'';
+  if(accessNote.textContent!==accessText)accessNote.textContent=accessText;
+  accessNote.hidden=!accessText;
+  accessNote.classList.toggle('is-restricted',restricted);
   $('#trade-heading').textContent=atPort?'이 항구의 교역품':'현지 시세 · 도착 후 거래 가능';
   $('#market').innerHTML=p?p.market.map(id=>{
     const g=GOODS[id],unit=business?.displayUnit(p.id,id)??price(p.id,id,state.day);
-    return `<div class="market-row"><span class="good-icon" style="color:${g.color}">${g.icon}</span><div class="good-name"><strong>${g.name}</strong><small class="${p.specialty===id?'specialty':''}">${{producer:'✦ 대표 공급',local:'지역 공급',import:'수입·중계'}[p.economy.stock[id]]}</small></div><div class="good-price">${unit}<small>D / 상자</small></div><button class="trade-btn" data-buy="${id}" ${atPort?'':'disabled'}>구매</button></div>`;
+    return `<div class="market-row"><span class="good-icon" style="color:${g.color}">${g.icon}</span><div class="good-name"><strong>${g.name}</strong><small class="${p.specialty===id?'specialty':''}">${{producer:'✦ 대표 공급',local:'지역 공급',import:'수입·중계'}[p.economy.stock[id]]}</small></div><div class="good-price">${unit}<small>D / 상자</small></div><button class="trade-btn" data-buy="${id}" ${atPort&&!restricted?'':'disabled'}>구매</button></div>`;
   }).join(''):'<div class="empty-cargo">가까운 항구에 들어가면<br>교역소를 이용할 수 있어요.</div>';
   if(p?.depot){
     $('#trade-heading').textContent='공동 보급항';
     $('#market').innerHTML='<button class="service-button" id="depot-service">공동 창고와 보급 보기</button>';
     $('#depot-service').onclick=()=>projectsUI?.inspect(p.id);
   }
-  business?.observe(p?.depot?null:p?.id);
-  const salePort=tradingPort(state);
-  $('#cargo-trade-context').textContent=salePort?`${salePort.name} 입항 완료 · 이 항구의 가격으로 판매할 수 있어요.`:'항해 중 · 항구에 입항하면 화물을 판매할 수 있어요.';
+  const salePort=tradingPort(state),saleRestricted=business?.tradeAccess(salePort?.id)==='restricted';
+  $('#cargo-trade-context').textContent=salePort?`${salePort.name} 입항 완료 · ${saleRestricted?'내 거래 제한 · 보급 가능':'정박한 항구의 교역소에서 판매해요.'}`:'항해 중 · 항구에 입항하면 화물을 판매할 수 있어요.';
   $('#cargo-port-btn').hidden=!salePort||salePort.id===selected;
   $('#cargo-port-btn').textContent=salePort?`${salePort.name} 교역소 열기`:'';
   $('#cargo-port-btn').onclick=()=>{if(salePort)selectPort(salePort.id);};
   $('#cargo-list').innerHTML=Object.entries(state.cargo).filter(([,c])=>c.qty>0).map(([id,c])=>{
     const g=GOODS[id],unit=salePort?(business?.displayUnit(salePort.id,id,true)??sellPrice(salePort.id,id,state.day)):0,margin=unit-c.cost/c.qty;
-    return `<div class="cargo-row"><span class="good-icon" style="color:${g.color}">${g.icon}</span><div class="good-name"><strong>${g.name} · ${c.qty}상자</strong><small>매입 평균 ${fmt(c.cost/c.qty)} D${salePort?` · ${margin>=0?'+':''}${fmt(margin)} D / 상자`:''}</small><button class="cargo-sale-link" data-sale-search="${id}">최고가 판매처 찾기</button></div><div class="good-price">${salePort?unit:'—'}<small>판매가</small></div><button class="trade-btn" data-sell="${id}" ${salePort?'':'disabled'}>판매</button></div>`;
+    return `<div class="cargo-row"><span class="good-icon" style="color:${g.color}">${g.icon}</span><div class="good-name"><strong>${g.name} · ${c.qty}상자</strong><small>매입 평균 ${fmt(c.cost/c.qty)} D${salePort?` · ${margin>=0?'+':''}${fmt(margin)} D / 상자`:''}</small><button class="cargo-sale-link" data-sale-search="${id}">최고가 판매처 찾기</button></div><div class="good-price">${salePort?unit:'—'}<small>판매가</small></div><button class="trade-btn" data-sell="${id}" ${salePort&&!saleRestricted?'':'disabled'}>판매</button></div>`;
   }).join('')||'<div class="empty-cargo">화물창이 비어 있어요.<small>특산물을 싣고 새로운 바다로 떠나세요.</small></div>';
   $$('[data-buy]').forEach(b=>b.onclick=()=>tradeDialog('buy',b.dataset.buy));
   $$('[data-sale-search]').forEach(b=>b.onclick=()=>saleFinder?.open(b.dataset.saleSearch));
@@ -697,8 +703,8 @@ function selectPort(id,open=true){
   else {planned=null;renderRoutes();renderPanel();renderPorts();}
   if(open&&innerWidth<=850)ux?.openPort('target',false);
 }
-async function autoToPort(id){
- if(!playing||!nav||sessionBlocked||account.busy||account.economicUncertain)return false;
+async function autoToPort(id,canContinue=()=>true){
+ if(!canContinue()||!playing||!nav||sessionBlocked||account.busy||account.economicUncertain)return false;
  if(currentCanal(state.voyage)){toast('운하를 빠져나온 뒤 목적지를 선택하세요.');return false;}
  if(state.shoreTrip){shoreUI?.open();return false;}
  if(state.seaJob){seaUI?.open();return false;}
@@ -717,26 +723,26 @@ async function autoToPort(id){
    try{return await request;}finally{paused=prior;}
  };
  let route=await routeTo();
- if(intent!==navigationIntent)return false;
+ if(!canContinue()||intent!==navigationIntent)return false;
  let check=route?.total>=.5?canDepart(state,route):{ok:false,error:'이 항구까지 안전한 항로를 찾지 못했어요.'};
  if(!check.ok){toast(check.error,'error');return false;}
  if(!combat?.hasReserve()){
    try{await combat.prepare();}catch(error){toast(error.message,'error');return false;}
-   if(intent!==navigationIntent||state.voyage?.kind||combat?.blocked())return false;
+   if(!canContinue()||intent!==navigationIntent||state.voyage?.kind||combat?.blocked())return false;
    route=await routeTo();
-   if(intent!==navigationIntent)return false;
+   if(!canContinue()||intent!==navigationIntent)return false;
    check=route?.total>=.5?canDepart(state,route):{ok:false,error:'이 항구까지 안전한 항로를 찾지 못했어요.'};
    if(!check.ok){toast(check.error,'error');return false;}
  }
  if(route.passages){
    const previous=planned;
    planned={target:id,point,route};
-   await startVoyage(intent,true);
+   await startVoyage(intent,true,null,canContinue);
    if(state.voyage?.target!==id){planned=previous;renderRoutes();renderPanel();}
    return state.voyage?.target===id;
  }
  stopForUI();refundCanalTolls(state);state.voyage=null;state.controlMode='auto';selected=id;setTab('trade');planned={target:id,point,route};
- await startVoyage(intent);
+ await startVoyage(intent,false,null,canContinue);
  return state.voyage?.target===id;
 }
 function quoteCanalRoute(game,route){
@@ -813,7 +819,7 @@ function applyDestination(target,point,route,scroll,depot){
   }
   if(scroll&&innerWidth<=850)ux?.openPort('target',false);
 }
-async function startVoyage(intent=navigationIntent,replacing=false,investigation=null){
+async function startVoyage(intent=navigationIntent,replacing=false,investigation=null,canContinue=()=>true){
   if(typeof intent!=='number')intent=navigationIntent;
   if(!playing||sessionBlocked||account.busy||account.economicUncertain){
     investigation?.fail('항해 기록 저장이 끝난 뒤 다시 시도해 주세요.');
@@ -823,13 +829,13 @@ async function startVoyage(intent=navigationIntent,replacing=false,investigation
   if(state.seaJob)return seaUI?.open();
   if(combat?.blocked())return toast('전투 결과를 먼저 확인하세요.');
   if(!combat?.hasReserve()){try{await combat.prepare();}catch(e){if(investigation)investigation.fail(e.message);else toast(e.message,'error');return false;}}
-  if(intent!==navigationIntent)return;
+  if(!canContinue()||intent!==navigationIntent)return;
   if(state.controlMode==='manual'&&!replacing){if(selected&&selected!==state.port){ux?.closeSheet();startManual(portApproaches.get(selected));}return;}
   if(!planned||state.voyage&&!replacing||planned.target&&!knowsPort(state,planned.target))return;const estimate=canDepart(state,planned.route);if(!estimate.ok){if(investigation)investigation.fail(estimate.error);else toast(estimate.error,'error');return false;}
   if(planned.route.passages){
     const plan=planned,origin=state.port,quoted=plan.route.quotedTolls;
     await business.run('personal',account.uid,(game,_shared,now)=>{
-      if(game.voyage&&(!replacing||game.voyage.kind||currentCanal(game.voyage))||game.port!==origin||distance(game.position,plan.route.path[0])>.01||intent!==navigationIntent)throw Error('배 위치나 목적지가 바뀌었어요. 새 항로를 확인하세요.');
+      if(game.voyage&&(!replacing||game.voyage.kind||currentCanal(game.voyage))||game.port!==origin||distance(game.position,plan.route.path[0])>.01||intent!==navigationIntent||!canContinue())throw Error('배 위치나 목적지가 바뀌었어요. 새 항로를 확인하세요.');
       const prices={};
       for(const id of Object.keys(quoted)){
         const cached=surveyedCanals.get(id);

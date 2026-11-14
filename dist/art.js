@@ -1,5 +1,5 @@
-import {historicalGlyph} from './historical-ship-art.js?v=2026.11.14-supply-storage';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.14-supply-storage';
+import {historicalGlyph} from './historical-ship-art.js?v=2026.11.14-trade-access';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.14-trade-access';
 // Original vector illustrations for Windward. No external images or runtime requests.
 export const SHIP_ART_NAMES=Object.freeze(['통나무 뗏목','돛 달린 뗏목','보강 뗏목','소형 노젓는 배','소형 교역 돛배','단돛 교역선','연안 교역선','개량 연안선','쌍돛 연안선','항해 캐러벨','개량 캐러벨','대형 캐러벨','소형 카락','교역 카락','대형 카락','원양 교역선','교역 갤리온','대형 갤리온','원양 대형 범선','명장의 교역 범선']);
 export const DISCOVERY_ART_IDS=Object.freeze(DISCOVERIES.map(d=>d.id));
