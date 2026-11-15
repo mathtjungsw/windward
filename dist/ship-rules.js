@@ -1,5 +1,5 @@
-import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.15-fleet-login';
-import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.15-fleet-login';
+import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.15-ranking-sync';
+import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.15-ranking-sync';
 
 export const ACTIVE_SECONDS_PER_DAY=2;
 const rows=[

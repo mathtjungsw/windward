@@ -1,4 +1,4 @@
-import {PRESENCE_TTL,PRESENCE_COLORS} from './presence-core.js?v=2026.11.15-fleet-login';
+import {PRESENCE_TTL,PRESENCE_COLORS} from './presence-core.js?v=2026.11.15-ranking-sync';
 
 // Global membership contains no coordinates, cargo, scores or account secrets.
 export function validCaptain(value,now=Date.now()){

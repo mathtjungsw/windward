@@ -183,7 +183,7 @@
               ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
             },
             "foundCount": {
-              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 60 && newData.val() % 1 == 0"
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 72 && newData.val() % 1 == 0"
             },
             "fame": {
               ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val() % 1 == 0"

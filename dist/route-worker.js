@@ -1,5 +1,5 @@
-import {Navigator} from './engine.js?v=2026.11.15-fleet-login';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.15-fleet-login';
+import {Navigator} from './engine.js?v=2026.11.15-ranking-sync';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.15-ranking-sync';
 
 let nav;
 self.onmessage=({data})=>{

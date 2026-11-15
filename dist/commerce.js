@@ -1,11 +1,11 @@
-import {shipyardTrade} from './historical-ships.js?v=2026.11.15-fleet-login';
-import {recordTrade} from './rank-progress.js?v=2026.11.15-fleet-login';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-fleet-login';
-import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.15-fleet-login';
-import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.15-fleet-login';
-import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-fleet-login';
-import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.15-fleet-login';
-import {recordStoryTrade} from './story-core.js?v=2026.11.15-fleet-login';
+import {shipyardTrade} from './historical-ships.js?v=2026.11.15-ranking-sync';
+import {recordTrade} from './rank-progress.js?v=2026.11.15-ranking-sync';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-ranking-sync';
+import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.15-ranking-sync';
+import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.15-ranking-sync';
+import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-ranking-sync';
+import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.15-ranking-sync';
+import {recordStoryTrade} from './story-core.js?v=2026.11.15-ranking-sync';
 export function captainTradeQuote(game,portId,goodId,qty,mode,item,now,rate){
  const quote=tradeQuote(portId,goodId,qty,mode,item,now,rate);
  const bonus=mode==='sell'&&game?Math.floor(quote.total*saleBonus(game,portId,goodId)+1e-9):0;

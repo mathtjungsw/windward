@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.15-fleet-login';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.15-fleet-login';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-fleet-login';
-import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.15-fleet-login';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-fleet-login';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.15-fleet-login';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-fleet-login';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.15-ranking-sync';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.15-ranking-sync';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-ranking-sync';
+import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.15-ranking-sync';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-ranking-sync';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.15-ranking-sync';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-ranking-sync';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));
