@@ -1,9 +1,9 @@
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.15-freight-purchase-fix';
-import {distance,helmStep} from './engine.js?v=2026.11.15-freight-purchase-fix';
-import {wrapPosition,mapDistance} from './world-wrap.js?v=2026.11.15-freight-purchase-fix';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.15-freight-daily-limit';
+import {distance,helmStep} from './engine.js?v=2026.11.15-freight-daily-limit';
+import {wrapPosition,mapDistance} from './world-wrap.js?v=2026.11.15-freight-daily-limit';
 
 export const SIGHT_NM=180,DISCOVERY_NM=80,INFO_PRICE=100,INFO_RANGE=600;
-import {activeOfficer} from './rumor-progress.js?v=2026.11.15-freight-purchase-fix';
+import {activeOfficer} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
 export const informationCost=s=>Math.ceil(INFO_PRICE*(1-(activeOfficer(s)?.infoDiscount||0)));
 export const START_PORTS=['lisbon','porto','seville'];
 export const worldId=value=>value==='real'?'real':'peace';

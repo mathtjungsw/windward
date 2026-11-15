@@ -1,7 +1,7 @@
-import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.15-freight-purchase-fix';
-import {GOODS} from './data.js?v=2026.11.15-freight-purchase-fix';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-purchase-fix';
-import {explorationGear,activeOfficer,appendItemRecord,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-freight-purchase-fix';
+import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.15-freight-daily-limit';
+import {GOODS} from './data.js?v=2026.11.15-freight-daily-limit';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-daily-limit';
+import {explorationGear,activeOfficer,appendItemRecord,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
 
 export const SEA_TYPES={
   fishing:{label:'어장',wait:20000,cooldown:1800000,good:'driedfish',qty:2},

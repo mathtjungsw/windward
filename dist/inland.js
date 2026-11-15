@@ -1,8 +1,8 @@
-import {GOODS} from './data.js?v=2026.11.15-freight-purchase-fix';
-import {capacity,usedSpace} from './engine.js?v=2026.11.15-freight-purchase-fix';
-import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.15-freight-purchase-fix';
-import {recordTrade} from './rank-progress.js?v=2026.11.15-freight-purchase-fix';
-import {blessingRate} from './blessings.js?v=2026.11.15-freight-purchase-fix';
+import {GOODS} from './data.js?v=2026.11.15-freight-daily-limit';
+import {capacity,usedSpace} from './engine.js?v=2026.11.15-freight-daily-limit';
+import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.15-freight-daily-limit';
+import {recordTrade} from './rank-progress.js?v=2026.11.15-freight-daily-limit';
+import {blessingRate} from './blessings.js?v=2026.11.15-freight-daily-limit';
 
 export const INLAND_CITIES={
  cordoba:{id:'cordoba',name:'코르도바',port:'seville',point:[-4.7794,37.8847],path:[[-5.6,37.53],[-5.16,37.77]],seconds:60,terrain:0,goods:{leather:.83,oliveoil:.87}},

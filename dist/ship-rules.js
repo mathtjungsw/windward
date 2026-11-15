@@ -1,5 +1,5 @@
-import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.15-freight-purchase-fix';
-import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.15-freight-purchase-fix';
+import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.15-freight-daily-limit';
+import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
 
 export const ACTIVE_SECONDS_PER_DAY=2;
 const rows=[

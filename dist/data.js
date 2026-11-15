@@ -1,8 +1,8 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.15-freight-purchase-fix';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.15-freight-purchase-fix';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.15-freight-purchase-fix';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.15-freight-purchase-fix';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.15-freight-purchase-fix';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.15-freight-daily-limit';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.15-freight-daily-limit';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.15-freight-daily-limit';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.15-freight-daily-limit';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.15-freight-daily-limit';
 Object.assign(GOODS,PREMIUM_GOODS);
 
 export {GOODS};
@@ -11,7 +11,6 @@ export const FREIGHT_ORDERS=[
   ['porto','wine',40,4800],['alexandria','timber',60,8400],['goa','cotton',60,8400],
   ['nagasaki','silk',80,13200],['havana','cacao',80,13200],['sydney','grain',80,11200]
 ];
-const freightGoodsByPort=new Map(FREIGHT_ORDERS.map(([port,good])=>[port,good]));
 
 // Modern country names help connect the sailing atlas to present-day geography.
 const ORIGINAL_PORTS = [
@@ -43,7 +42,7 @@ const OLD_PORTS = [...ORIGINAL_PORTS.map(p=>({...p,...UPDATED_PORTS[p.id]})),...
   return {...p,pricePhase:[...ORIGINAL_PORTS,...EXTRA_PORTS].findIndex(q=>q.id===p.id),region:regionForPort(p.id,p.region),economy,specialty:Object.keys(economy.stock).find(g=>economy.stock[g]==='producer')||Object.keys(economy.stock)[0],market:Object.keys(economy.stock)};
 });
 const activeIds=new Set(ACTIVE_PORT_IDS);
-export const ALL_PORTS=[...OLD_PORTS,...NEW_PORTS.map((p,i)=>{const economy=NEW_PORT_ECONOMY[p.id];return {...p,pricePhase:88+i,economy,specialty:Object.keys(economy.stock).find(g=>economy.stock[g]==='producer')||Object.keys(economy.stock)[0],market:Object.keys(economy.stock)};})].map(p=>({...p,market:p.market.filter(good=>good!==freightGoodsByPort.get(p.id)),active:activeIds.has(p.id)}));
+export const ALL_PORTS=[...OLD_PORTS,...NEW_PORTS.map((p,i)=>{const economy=NEW_PORT_ECONOMY[p.id];return {...p,pricePhase:88+i,economy,specialty:Object.keys(economy.stock).find(g=>economy.stock[g]==='producer')||Object.keys(economy.stock)[0],market:Object.keys(economy.stock)};})].map(p=>({...p,active:activeIds.has(p.id)}));
 export const PORTS=ALL_PORTS.filter(p=>p.active);
 export const PORT_BY_ID = Object.fromEntries(ALL_PORTS.map(p=>[p.id,p]));
 export const ACTIVE_PORT_BY_ID=Object.fromEntries(PORTS.map(p=>[p.id,p]));

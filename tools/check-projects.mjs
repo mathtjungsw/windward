@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {initialState} from '../dist/engine.js';
-import {projectAction} from '../dist/projects.js';
+import {nextFreightParticipation,projectAction,PROJECT_BY_ID} from '../dist/projects.js';
 
 const namespace='demo-windward-projects',url='http://127.0.0.1:9000/',timestamp={'.sv':'timestamp'};
 const project='freight-porto',path='shared/projects/'+project;
@@ -34,7 +34,7 @@ async function prepare(uid,action,amount,key=project){
   const old=personal.value,current=shared.value||{revision:0,content:{}},game=JSON.parse(old.data),content=current.content;
   const result=projectAction(game,content,uid,key,action,amount,Date.now());
   const sequence=old.operationSequence+1,id=uid+':'+sequence,revision=old.revision+1,sharedRevision=current.revision+1;
-  const receipt={id,sequence,kind:'projects',key,sharedRevision};
+  const receipt={id,sequence,kind:'projects',key,sharedRevision,...(old.schemaVersion>=13?{blessingStart:0}:{})};
   const record={revision:sharedRevision,content:{...content,_version:1},updatedAt:timestamp,lastOperation:{id,uid,sequence,saveRevision:revision}};
   return {result,patch:{['privateSaves/'+uid]:{...old,revision,operationSequence:sequence,lastOperation:receipt,data:JSON.stringify(game),updatedAt:timestamp},[node]:record,...(result.registry?{['harborRegistry/'+key]:result.registry}:{})}};
 }
@@ -84,3 +84,56 @@ assert.equal((await commit(alice,(await prepare(alice,'invest',150000,joint)).pa
 assert.equal((await commit(bob,(await prepare(bob,'invest',150000,joint)).patch)).status,200);
 assert.equal((await request('gameV2/harborRegistry/'+joint,{uid:alice})).value.ownerUid,'');
 console.log('PASS: local Firebase projects use individual reads, atomic shared revisions, cargo limits, and one-time split rewards.');
+
+const captain='quota-captain',counter='freightParticipation/'+captain,savePath='gameV2/privateSaves/'+captain;
+const now=Date.now(),quotaGame=initialState();
+const quotaSave={schemaVersion:15,noviceGraduated:true,defenseSeq:0,revision:1,operationSequence:0,session:'quota-session',leaseUntil:now+90000,data:JSON.stringify(quotaGame),updatedAt:timestamp};
+assert.equal((await request('gameV2/config/minSchema',{admin:true,method:'PUT',body:15})).status,200);
+assert.equal((await request(savePath,{admin:true,method:'PUT',body:quotaSave})).status,200);
+async function arrive(key){
+  const {port,good,goal}=PROJECT_BY_ID[key];
+  const save=(await request(savePath,{uid:captain})).value,game=JSON.parse(save.data);
+  game.port=port;game.cargo[good]={qty:goal,cost:1};
+  assert.equal((await request(savePath,{admin:true,method:'PATCH',body:{data:JSON.stringify(game)}})).status,200);
+  assert.equal((await commit(captain,(await prepare(captain,'renew',0,key)).patch)).status,200);
+}
+const counterValue=async()=>(await request('gameV2/'+counter,{uid:captain})).value;
+const quotaFor=async (key,patch)=>nextFreightParticipation(await counterValue(),key,patch['shared/projects/'+key].content.round,Date.now(),timestamp);
+for(const [i,key] of ['freight-porto','freight-goa','freight-havana'].entries()){
+  await arrive(key);
+  const {patch}=await prepare(captain,'deliver',1,key);
+  assert.equal((await commit(captain,patch)).status,401,'cannot first deliver without consuming a slot');
+  patch[counter]=await quotaFor(key,patch);
+  assert.equal((await commit(captain,patch)).status,200,'atomic freight participation '+key);
+  assert.equal((await counterValue()).usedBoxes,[40,100,180][i]);
+}
+const part='freight-havana';
+assert.equal((await commit(captain,(await prepare(captain,'deliver',79,part)).patch)).status,200);
+for(let i=0;i<4;i++){
+  await arrive(part);
+  const {patch}=await prepare(captain,'deliver',i===3?1:80,part);
+  patch[counter]=await quotaFor(part,patch);
+  assert.equal((await commit(captain,patch)).status,200);
+}
+assert.equal((await counterValue()).usedBoxes,500);
+assert.equal((await commit(captain,(await prepare(captain,'deliver',79,part)).patch)).status,200,'split deliveries already counted still work at the limit');
+const round=(await request('gameV2/shared/projects/'+part,{uid:captain})).value.content.round;
+assert.equal((await commit(captain,(await prepare(captain,'claim',round,part)).patch)).status,200,'payout remains available at the limit');
+assert.equal((await request('gameV2/'+counter,{uid:captain,method:'DELETE'})).status,401,'cannot reset own counter');
+assert.equal((await request('gameV2/'+counter,{uid:alice})).status,401,'counter is personal');
+const fourth='freight-sydney';
+await arrive(fourth);
+const {patch:blocked}=await prepare(captain,'deliver',1,fourth);
+const current=await counterValue(),fourthRound=blocked['shared/projects/'+fourth].content.round;
+blocked[counter]={...current,usedBoxes:580,project:fourth,round:fourthRound,updatedAt:timestamp};
+assert.equal((await commit(captain,blocked)).status,401,'cannot overrun the limit by using another port');
+blocked[counter].usedBoxes=80;
+assert.equal((await commit(captain,blocked)).status,401,'cannot reset the current day');
+blocked[counter].day++;
+assert.equal((await commit(captain,blocked)).status,401,'cannot write tomorrow’s counter');
+assert.equal((await request('gameV2/'+counter,{admin:true,method:'PATCH',body:{day:current.day-1}})).status,200);
+assert.equal((await commit(captain,blocked)).status,401,'a client day ahead remains invalid');
+blocked[counter]=await quotaFor(fourth,blocked);
+assert.equal((await commit(captain,blocked)).status,200,'first participation on a new Korean date');
+assert.equal((await counterValue()).usedBoxes,80);
+console.log('PASS: shared freight daily cap across ports, atomic counter, split delivery, and unaffected claims.');

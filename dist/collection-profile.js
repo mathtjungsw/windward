@@ -1,5 +1,5 @@
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-freight-purchase-fix';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-freight-purchase-fix';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-freight-daily-limit';
 
 export function collectionProfile(game){
   const hires=new Set(game.rumorProgress?.officers||[]);

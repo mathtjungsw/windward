@@ -1,4 +1,4 @@
-import {BLESSINGS,BLESSING_MS,blessingDay,blessingAvailability,withBlessingEnd,setBlessing,setBlessingClock} from './blessings.js?v=2026.11.15-freight-purchase-fix';
+import {BLESSINGS,BLESSING_MS,blessingDay,blessingAvailability,withBlessingEnd,setBlessing,setBlessingClock} from './blessings.js?v=2026.11.15-freight-daily-limit';
 
 const $=s=>document.querySelector(s);
 const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

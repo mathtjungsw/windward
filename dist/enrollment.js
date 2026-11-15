@@ -1,5 +1,5 @@
-import {parseSavedGame} from './engine.js?v=2026.11.15-freight-purchase-fix';
-import {reserveLoss} from './combat-core.js?v=2026.11.15-freight-purchase-fix';
+import {parseSavedGame} from './engine.js?v=2026.11.15-freight-daily-limit';
+import {reserveLoss} from './combat-core.js?v=2026.11.15-freight-daily-limit';
 
 // One-time registration conserves total cash and cargo, including existing
 // escrow. It does not award/refund anything or move a captain to a new port.

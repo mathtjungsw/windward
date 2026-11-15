@@ -1,9 +1,9 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.15-freight-purchase-fix';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-purchase-fix';
-import {segmentDistance} from './voyage-core.js?v=2026.11.15-freight-purchase-fix';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.15-freight-purchase-fix';
-import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.15-freight-purchase-fix';
-import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.15-freight-purchase-fix';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-daily-limit';
+import {segmentDistance} from './voyage-core.js?v=2026.11.15-freight-daily-limit';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.15-freight-daily-limit';
+import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
+import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.15-freight-daily-limit';
 const shipTrace=s=>(s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0)+(explorationGear(s)?.spotBonus||0);
 export const explorationAllowed=s=>!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{

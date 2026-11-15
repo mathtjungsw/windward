@@ -1,5 +1,5 @@
-import {DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.15-freight-purchase-fix';
-import {QUIZ_KINDS,quizStatus,quizResetAt,quizPrompt,openQuiz,answerQuiz,quizCommit} from './album-quiz.js?v=2026.11.15-freight-purchase-fix';
+import {DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
+import {QUIZ_KINDS,quizStatus,quizResetAt,quizPrompt,openQuiz,answerQuiz,quizCommit} from './album-quiz.js?v=2026.11.15-freight-daily-limit';
 
 const fmt=n=>Number(n).toLocaleString('ko-KR');
 const $=s=>document.querySelector(s);

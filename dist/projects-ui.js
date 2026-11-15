@@ -1,7 +1,7 @@
-import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.15-freight-purchase-fix';
-import {fleetCount} from './ship-rules.js?v=2026.11.15-freight-purchase-fix';
-import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,freightSources,projectView} from './projects.js?v=2026.11.15-freight-purchase-fix';
-import {canalPassDiscount} from './canal-reservations.js?v=2026.11.15-freight-purchase-fix';
+import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.15-freight-daily-limit';
+import {fleetCount} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
+import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.15-freight-daily-limit';
+import {canalPassDiscount} from './canal-reservations.js?v=2026.11.15-freight-daily-limit';
 
 const $=s=>document.querySelector(s), fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const time=at=>at?new Date(at).toLocaleString('ko-KR',{dateStyle:'short',timeStyle:'short'}):'';
@@ -44,11 +44,13 @@ export function createProjectsUI(api){
     const has=id=>!!game.rumorProgress?.items?.[id];
     let details,actions='';
     if(project.kind==='freight'){
+      const {remaining}=freightParticipation(record.freightParticipation,api.now());
+      const rounds=Math.floor(remaining/project.goal);
       details=`<p>${GOODS[project.good].name} ${view.delivered}/${project.goal}상자 · 내 기여 ${view.mine}상자${view.pledged?' · 맡은 수량 '+view.pledged+'상자':''}</p>
-        <p>구매 가능한 항구 예시 · ${freightSources(project).map(port=>port.name).join(' · ')}</p>
+        <p>이 의뢰 오늘 ${rounds}회 가능 · 전 항구 합산 ${remaining}/${FREIGHT_DAILY_BOX_LIMIT}상자분 남음 · 한국시간 자정 갱신</p>
         <p>보수 ${fmt(content.reward||project.reward)} D · 목표 달성 후 기여량에 따라 분배${view.deadline?' · 마감 '+time(view.deadline):''}</p>`;
       if(!view.round||view.status!=='active')actions+=button('renew','공동 수송 의뢰 열기')+(has('I047')?button('special','공동 수송 증서 사용'):'');
-      if(view.round&&view.status==='active'&&game.port){
+      if(view.round&&view.status==='active'&&game.port&&(rounds||view.mine)){
         const max=Math.min(game.cargo[project.good]?.qty||0,project.goal-view.delivered);
         actions+=field(1,game.port===project.port&&max?max:view.pledged||project.goal-view.delivered,project.goal)+button('join','이 수량 맡기');
         if(game.port===project.port&&max)actions+=button('deliver','화물 납품');

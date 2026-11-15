@@ -1,13 +1,13 @@
-import {collectionArt} from './art.js?v=2026.11.15-freight-purchase-fix';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-freight-purchase-fix';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-freight-purchase-fix';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.15-freight-purchase-fix';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.15-freight-purchase-fix';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.15-freight-purchase-fix';
-import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.15-freight-purchase-fix';
+import {collectionArt} from './art.js?v=2026.11.15-freight-daily-limit';
+import {PORT_BY_ID} from './data.js?v=2026.11.15-freight-daily-limit';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.15-freight-daily-limit';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.15-freight-daily-limit';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.15-freight-daily-limit';
+import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
 
-import {readRumor} from './discoveries.js?v=2026.11.15-freight-purchase-fix';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.15-freight-purchase-fix';
+import {readRumor} from './discoveries.js?v=2026.11.15-freight-daily-limit';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
 
 const labels={all:'읽은 소문',hidden:'숨긴 소문'};
 const headline=text=>text.length>28?text.slice(0,28).trimEnd()+'…':text;

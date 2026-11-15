@@ -1,18 +1,18 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.15-freight-purchase-fix';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.15-freight-purchase-fix';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-freight-purchase-fix';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.15-freight-purchase-fix';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.15-freight-purchase-fix';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.15-freight-daily-limit';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.15-freight-daily-limit';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-freight-daily-limit';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.15-freight-purchase-fix';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.15-freight-purchase-fix';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.15-freight-purchase-fix';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.15-freight-purchase-fix';
-import {normalizeDepotDock} from './projects.js?v=2026.11.15-freight-purchase-fix';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.15-freight-purchase-fix';
-import {normalizeStories} from './story-core.js?v=2026.11.15-freight-purchase-fix';
-import {validInlandSave} from './inland.js?v=2026.11.15-freight-purchase-fix';
+import {normalizeSea} from './sea-activities.js?v=2026.11.15-freight-daily-limit';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.15-freight-daily-limit';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.15-freight-daily-limit';
+import {normalizeDepotDock} from './projects.js?v=2026.11.15-freight-daily-limit';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.15-freight-daily-limit';
+import {normalizeStories} from './story-core.js?v=2026.11.15-freight-daily-limit';
+import {validInlandSave} from './inland.js?v=2026.11.15-freight-daily-limit';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;

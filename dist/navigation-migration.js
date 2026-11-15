@@ -1,6 +1,6 @@
-import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.15-freight-purchase-fix';
-import {ship,voyageEstimate,positionAlong,makeRoute,canDepart} from './engine.js?v=2026.11.15-freight-purchase-fix';
-import {currentCanal,refundCanalTolls,RETIRED_CANAL} from './canal-reservations.js?v=2026.11.15-freight-purchase-fix';
+import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.15-freight-daily-limit';
+import {ship,voyageEstimate,positionAlong,makeRoute,canDepart} from './engine.js?v=2026.11.15-freight-daily-limit';
+import {currentCanal,refundCanalTolls,RETIRED_CANAL} from './canal-reservations.js?v=2026.11.15-freight-daily-limit';
 
 export const NAVIGATION_VERSION=3;
 

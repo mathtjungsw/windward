@@ -1,21 +1,27 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS,PORTS} from './data.js?v=2026.11.15-freight-purchase-fix';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.15-freight-purchase-fix';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-purchase-fix';
-import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.15-freight-purchase-fix';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-freight-purchase-fix';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.15-freight-purchase-fix';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-freight-purchase-fix';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.15-freight-daily-limit';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-daily-limit';
+import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.15-freight-daily-limit';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.15-freight-daily-limit';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-freight-daily-limit';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));
 const freight=FREIGHT_ORDERS.filter(([port])=>ACTIVE_PORT_BY_ID[port]).map(([port,good,goal,reward])=>({
   id:'freight-'+port,kind:'freight',name:ACTIVE_PORT_BY_ID[port].name+' 공동 수송',port,good,goal,reward
 }));
-export function freightSources(project){
-  const destination=ACTIVE_PORT_BY_ID[project.port],target=[destination.lon,destination.lat];
-  return PORTS.filter(port=>port.id!==project.port&&port.market.includes(project.good))
-    .map(port=>({port,miles:mapDistance(target,[port.lon,port.lat])}))
-    .sort((a,b)=>a.miles-b.miles).slice(0,3).map(row=>row.port);
+export const FREIGHT_DAILY_BOX_LIMIT=500;
+export function freightParticipation(record,now){
+  const day=Math.floor((now+9*HOUR)/(24*HOUR));
+  const used=record?.day===day?record.usedBoxes:0;
+  return {day,remaining:Math.max(0,FREIGHT_DAILY_BOX_LIMIT-used)};
+}
+export function nextFreightParticipation(record,project,round,now,updatedAt){
+  const {day,remaining}=freightParticipation(record,now);
+  const {goal}=PROJECT_BY_ID[project];
+  if(remaining<goal)throw Error(`이 의뢰는 ${goal}상자분이 필요해요. 오늘 남은 한도는 ${remaining}상자분이에요.`);
+  return {day,usedBoxes:FREIGHT_DAILY_BOX_LIMIT-remaining+goal,project,round,updatedAt};
 }
 export const CANALS=[
   {id:'canal-suez',kind:'canal',name:'수에즈 운하',cost:6000000,duration:12*HOUR,path:[[32.31,31.32],[32.31,30.85],[32.34,30.57],[32.38,30.28],[32.54,29.9]]},

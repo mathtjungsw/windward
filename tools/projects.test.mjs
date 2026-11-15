@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {initialState,parseSavedGame,Navigator,makeRoute,voyageEstimate,advanceVoyage} from '../dist/engine.js';
 import {createChartDetail} from '../dist/chart-waterways.js';
-import {CANALS,PROJECTS,PROJECT_BY_ID,freightSources,projectAction,projectView} from '../dist/projects.js';
+import {CANALS,PROJECTS,PROJECT_BY_ID,freightParticipation,nextFreightParticipation,projectAction,projectView} from '../dist/projects.js';
 import {ITEMS,OFFICERS} from '../dist/rumor-catalog.js';
 import {RELEASE} from '../dist/release-notes.js';
 const {PORTS,GOODS,ACTIVE_PORT_BY_ID,registerDevelopedPorts,DEPOT_SITES}=await import('../dist/data.js?v='+RELEASE);
@@ -62,29 +62,38 @@ test('cooperative freight caps concurrent demand, preserves remaining cargo and 
   assert.throws(()=>projectAction(b,content,'b',port,'claim',1,start+6,chart),/보수/);
 });
 
-test('freight destinations block purchase while supplied cargo can still be sold or delivered',()=>{
+test('freight destinations use their original markets and purchased local cargo can be delivered',()=>{
+  const local=new Set(['porto','goa','nagasaki','havana']);
   for(const project of PROJECTS.filter(project=>project.kind==='freight')){
-    const {id,port,good,goal}=project;
+    const {id,port,good}=project;
     const game=asCaptain(port),market={},freight={};
-    assert.ok(!ACTIVE_PORT_BY_ID[port].market.includes(good),id);
-    const sources=freightSources(project);
-    assert.ok(sources.length&&sources.every(source=>source.id!==port&&source.market.includes(good)),id);
-
+    assert.equal(ACTIVE_PORT_BY_ID[port].market.includes(good),local.has(port),id);
     const localQuote=captainTradeQuote(game,port,good,1,'buy',{},start,0);
-    assert.throws(()=>executeTrade(game,market,'a',port,good,1,'buy',localQuote,start,0),/구매할 수 없어요/);
-
-    game.port=sources[0].id;
-    const sourceQuote=captainTradeQuote(game,game.port,good,1,'buy',{},start,0);
-    executeTrade(game,{},'a',game.port,good,1,'buy',sourceQuote,start,0);
-    game.port=port;
-    const sale=captainTradeQuote(game,port,good,1,'sell',{},start,0);
-    assert.equal(executeTrade(game,market,'a',port,good,1,'sell',sale,start,0).ok,true);
-
-    game.cargo[good]={qty:goal,cost:goal*10};
+    if(local.has(port)){
+      assert.equal(executeTrade(game,market,'a',port,good,1,'buy',localQuote,start,0).ok,true);
+    }else{
+      assert.throws(()=>executeTrade(game,market,'a',port,good,1,'buy',localQuote,start,0),/구매할 수 없어요/);
+      game.cargo[good]={qty:1,cost:10};
+    }
     projectAction(game,freight,'a',id,'renew',0,start,chart);
-    assert.equal(projectAction(game,freight,'a',id,'deliver',goal,start,chart).qty,goal);
-    assert.equal(projectAction(game,freight,'a',id,'claim',1,start,chart).reward,project.reward);
+    assert.equal(projectAction(game,freight,'a',id,'deliver',1,start,chart).qty,1);
   }
+});
+
+test('freight participation shares a 500-box allowance across job sizes and resets at Korean midnight',()=>{
+  const midnight=Date.UTC(2026,10,16,15),today=midnight-1;
+  for(const [id,expected] of [['freight-porto',12],['freight-goa',8],['freight-sydney',6]]){
+    let used;
+    for(let i=1;i<=expected;i++)used=nextFreightParticipation(used,id,i,today,today);
+    assert.equal(freightParticipation(used,today).remaining,20);
+    assert.throws(()=>nextFreightParticipation(used,id,expected+1,today,today),/20상자분/);
+  }
+  let record;
+  for(const [round,id] of ['freight-porto','freight-goa',...Array(5).fill('freight-havana')].entries())record=nextFreightParticipation(record,id,round+1,today,today);
+  assert.equal(freightParticipation(record,today).remaining,0);
+  assert.throws(()=>nextFreightParticipation(record,'freight-sydney',1,today,today),/0상자분/);
+  assert.equal(freightParticipation(record,midnight).remaining,500);
+  assert.equal(nextFreightParticipation(record,'freight-sydney',1,midnight,midnight).usedBoxes,80);
 });
 
 test('project refunds use actual stakes, and the last investor opens construction once',()=>{

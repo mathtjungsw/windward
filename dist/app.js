@@ -1,71 +1,71 @@
-import {createCaptainsMail} from './captains-mail.js?v=2026.11.15-freight-purchase-fix';
-import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.15-freight-purchase-fix';
-import {regionalEvent} from './market-events.js?v=2026.11.15-freight-purchase-fix';
-import {createUiUsage} from './ui-usage.js?v=2026.11.15-freight-purchase-fix';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-freight-purchase-fix';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.15-freight-purchase-fix';
-import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.15-freight-purchase-fix';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.15-freight-purchase-fix';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.15-freight-purchase-fix';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.15-freight-purchase-fix';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.15-freight-purchase-fix';
-import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.15-freight-purchase-fix';
-import {createBlessings} from './blessings-ui.js?v=2026.11.15-freight-purchase-fix';
-import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.15-freight-purchase-fix';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.15-freight-purchase-fix';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.15-freight-purchase-fix';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.15-freight-purchase-fix';
-import {createCommunity} from './community.js?v=2026.11.15-freight-purchase-fix';
-import {createTaxCollector} from './tax-collector.js?v=2026.11.15-freight-purchase-fix';
-import {createStoryUI} from './story-ui.js?v=2026.11.15-freight-purchase-fix';
-import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.15-freight-purchase-fix';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.15-freight-purchase-fix';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.15-freight-purchase-fix';
-import {createCombat} from './combat-ui.js?v=2026.11.15-freight-purchase-fix';
-import {createBusiness} from './business-ui.js?v=2026.11.15-freight-purchase-fix';
-import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.15-freight-purchase-fix';
-import {createInlandUI} from './inland-ui.js?v=2026.11.15-freight-purchase-fix';
-import {INLAND_CITIES,INLAND_PORTS,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.15-freight-purchase-fix';
-import {createExpansion} from './expansion-ui.js?v=2026.11.15-freight-purchase-fix';
-import {gameStats} from './public-stats.js?v=2026.11.15-freight-purchase-fix';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.15-freight-purchase-fix';
-import {shipGlyph} from './art.js?v=2026.11.15-freight-purchase-fix';
-import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.15-freight-purchase-fix';
-import {RELEASE} from './release-notes.js?v=2026.11.15-freight-purchase-fix';
-import {createUX} from './ux.js?v=2026.11.15-freight-purchase-fix';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.15-freight-purchase-fix';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.15-freight-purchase-fix';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.15-freight-purchase-fix';
-import {AtlasView} from './atlas-view.js?v=2026.11.15-freight-purchase-fix';
-import {FleetPresence} from './multiplayer.js?v=2026.11.15-freight-purchase-fix';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.15-freight-purchase-fix';
-import {CaptainChat} from './chat.js?v=2026.11.15-freight-purchase-fix';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.15-freight-purchase-fix';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.15-freight-purchase-fix';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.15-freight-purchase-fix';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-freight-purchase-fix';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.15-freight-purchase-fix';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.15-freight-purchase-fix';
-import {CaptainRankings} from './rankings.js?v=2026.11.15-freight-purchase-fix';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.15-freight-purchase-fix';
+import {createCaptainsMail} from './captains-mail.js?v=2026.11.15-freight-daily-limit';
+import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.15-freight-daily-limit';
+import {regionalEvent} from './market-events.js?v=2026.11.15-freight-daily-limit';
+import {createUiUsage} from './ui-usage.js?v=2026.11.15-freight-daily-limit';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.15-freight-daily-limit';
+import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.15-freight-daily-limit';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.15-freight-daily-limit';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.15-freight-daily-limit';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.15-freight-daily-limit';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.15-freight-daily-limit';
+import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.15-freight-daily-limit';
+import {createBlessings} from './blessings-ui.js?v=2026.11.15-freight-daily-limit';
+import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.15-freight-daily-limit';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.15-freight-daily-limit';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.15-freight-daily-limit';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.15-freight-daily-limit';
+import {createCommunity} from './community.js?v=2026.11.15-freight-daily-limit';
+import {createTaxCollector} from './tax-collector.js?v=2026.11.15-freight-daily-limit';
+import {createStoryUI} from './story-ui.js?v=2026.11.15-freight-daily-limit';
+import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.15-freight-daily-limit';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.15-freight-daily-limit';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.15-freight-daily-limit';
+import {createCombat} from './combat-ui.js?v=2026.11.15-freight-daily-limit';
+import {createBusiness} from './business-ui.js?v=2026.11.15-freight-daily-limit';
+import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.15-freight-daily-limit';
+import {createInlandUI} from './inland-ui.js?v=2026.11.15-freight-daily-limit';
+import {INLAND_CITIES,INLAND_PORTS,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.15-freight-daily-limit';
+import {createExpansion} from './expansion-ui.js?v=2026.11.15-freight-daily-limit';
+import {gameStats} from './public-stats.js?v=2026.11.15-freight-daily-limit';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
+import {shipGlyph} from './art.js?v=2026.11.15-freight-daily-limit';
+import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.15-freight-daily-limit';
+import {RELEASE} from './release-notes.js?v=2026.11.15-freight-daily-limit';
+import {createUX} from './ux.js?v=2026.11.15-freight-daily-limit';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.15-freight-daily-limit';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.15-freight-daily-limit';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.15-freight-daily-limit';
+import {AtlasView} from './atlas-view.js?v=2026.11.15-freight-daily-limit';
+import {FleetPresence} from './multiplayer.js?v=2026.11.15-freight-daily-limit';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.15-freight-daily-limit';
+import {CaptainChat} from './chat.js?v=2026.11.15-freight-daily-limit';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.15-freight-daily-limit';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.15-freight-daily-limit';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.15-freight-daily-limit';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-freight-daily-limit';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.15-freight-daily-limit';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.15-freight-daily-limit';
+import {CaptainRankings} from './rankings.js?v=2026.11.15-freight-daily-limit';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.15-freight-daily-limit';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.15-freight-purchase-fix';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.15-freight-purchase-fix';
-import {portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.15-freight-purchase-fix';
-import {createGuildUI} from './guild-ui.js?v=2026.11.15-freight-purchase-fix';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.15-freight-purchase-fix';
-import {ownership} from './commerce.js?v=2026.11.15-freight-purchase-fix';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.15-freight-purchase-fix';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.15-freight-purchase-fix';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.15-freight-purchase-fix';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.15-freight-purchase-fix';
-import {createShoreUI} from './shore-ui.js?v=2026.11.15-freight-purchase-fix';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.15-freight-purchase-fix';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.15-freight-purchase-fix';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.15-freight-purchase-fix';
-import {useRepairKit} from './activities.js?v=2026.11.15-freight-purchase-fix';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.15-freight-purchase-fix';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.15-freight-purchase-fix';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.15-freight-daily-limit';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.15-freight-daily-limit';
+import {portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.15-freight-daily-limit';
+import {createGuildUI} from './guild-ui.js?v=2026.11.15-freight-daily-limit';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.15-freight-daily-limit';
+import {ownership} from './commerce.js?v=2026.11.15-freight-daily-limit';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.15-freight-daily-limit';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.15-freight-daily-limit';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.15-freight-daily-limit';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.15-freight-daily-limit';
+import {createShoreUI} from './shore-ui.js?v=2026.11.15-freight-daily-limit';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.15-freight-daily-limit';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.15-freight-daily-limit';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
+import {useRepairKit} from './activities.js?v=2026.11.15-freight-daily-limit';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.15-freight-daily-limit';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.15-freight-daily-limit';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -1488,6 +1488,11 @@ guildUI=createGuildUI({getState:()=>state,now:guildTime,modal:showModal,offers:(
       trade:delivery?order=>executeTrade(game,shared,account.uid,order.target,order.good,order.qty,'sell',quote,time,revision):null
     }),()=>{if(action==='deliver'||action==='report')uiUsage.complete('action-guild');});
 }});
+const freightParticipationPath=()=>`freightParticipation/${account.uid}`;
+async function readFreightParticipation(){
+  const sdk=account.sdk;
+  return (await sdk.get(sdk.ref(account.db,'gameV2/'+freightParticipationPath()))).val();
+}
 projectsUI=createProjectsUI({game:()=>state,uid:()=>account.uid,now:guildTime,nav:()=>nav,modal:showModal,close:()=>{modal.close();paused=false;centerShip();},
   setCanals:enabled=>{state.useCanals=enabled;save();toast(enabled?'자동 항해에 운하를 이용해요. 통행료는 항로에 표시돼요.':'자동 항해에서 운하를 제외해요.');if(planned&&!state.voyage)planDestination(planned.target,planned.point,false);},
   read:async id=>{
@@ -1501,6 +1506,7 @@ projectsUI=createProjectsUI({game:()=>state,uid:()=>account.uid,now:guildTime,na
       const text=project.name+' · 운하 '+Math.round(route.total)+'해리 · 보급 '+voyageEstimate(state,{...route,sections:[{start:0,end:route.total,river:true}]}).food.toFixed(1)+'일분 · 우회 '+(open?Math.round(open.total)+'해리':'경로 없음')+' · 척당 '+projectView(project,record.content,account.uid,guildTime()).toll+' D';
       if(appendItemRecord(state,'canals',id,text,guildTime()))save();
     }
+    if(project?.kind==='freight')return {...record,freightParticipation:await readFreightParticipation()};
     return record;
   },go:(project,action,view)=>{
     if(!nav||state.voyage)return toast('항해가 끝난 뒤 목적지를 선택하세요.');
@@ -1519,7 +1525,7 @@ projectsUI=createProjectsUI({game:()=>state,uid:()=>account.uid,now:guildTime,na
       if(!nav||combat?.blocked())return toast('전투가 끝난 뒤 운하로 진입하세요.');
       if(!combat?.hasReserve())try{await combat.prepare();}catch(error){return toast(error.message,'error');}
     }
-    return business.run('projects',project.id,(game,shared,now)=>{
+    return business.run('projects',project.id,async(game,shared,now)=>{
       const requested=action!=='transit'?amount:({entrance,toll})=>{
         if(toll!==amount)throw Error('운하 통행료가 바뀌었어요. 현재 요금을 다시 확인하세요.');
         const points=entrance===0?project.path:project.path.slice().reverse();
@@ -1530,7 +1536,13 @@ projectsUI=createProjectsUI({game:()=>state,uid:()=>account.uid,now:guildTime,na
         game.controlMode='auto';
         return {...route,target:null,origin:null,canal:project.id,travelled:0,foodRemaining:estimate.food};
       };
-      return projectAction(game,shared,account.uid,project.id,action,requested,now,nav);
+      const firstDelivery=project.kind==='freight'&&action==='deliver'&&!shared.deliveries?.[account.uid];
+      const result=projectAction(game,shared,account.uid,project.id,action,requested,now,nav);
+      if(firstDelivery){
+        const count=await readFreightParticipation();
+        result.extras={[freightParticipationPath()]:nextFreightParticipation(count,project.id,shared.round,guildTime(),account.sdk.serverTimestamp())};
+      }
+      return result;
     },async result=>{if(result.registry){await business.syncPorts();await community?.syncOwnership(true).catch(()=>{});}return done?.(result);});
   }});
 const projectsMenu=document.createElement('button');

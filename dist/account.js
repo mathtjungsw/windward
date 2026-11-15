@@ -1,16 +1,16 @@
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.15-freight-purchase-fix';
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.15-freight-purchase-fix';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.15-freight-purchase-fix';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-freight-purchase-fix';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-freight-purchase-fix';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.15-freight-purchase-fix';
-import {applyRaftStart} from './raft-start.js?v=2026.11.15-freight-purchase-fix';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.15-freight-purchase-fix';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.15-freight-daily-limit';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.15-freight-daily-limit';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.15-freight-daily-limit';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-freight-daily-limit';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-freight-daily-limit';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.15-freight-daily-limit';
+import {applyRaftStart} from './raft-start.js?v=2026.11.15-freight-daily-limit';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.15-freight-daily-limit';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
 export const localSaveKey = uid => 'windward-account-v4:' + uid;
-const SAVE_SCHEMA_VERSION = 14;
+const SAVE_SCHEMA_VERSION = 15;
 
 export function accountName(value) {
   const name = String(value || '').normalize('NFKC').trim();
