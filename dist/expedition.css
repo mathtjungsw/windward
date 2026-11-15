@@ -50,6 +50,14 @@ dialog#modal[data-size=wide]{width:min(960px,calc(100vw - 32px));max-width:calc(
 
 #modal[data-investigation=true]{max-width:min(480px,calc(100vw - 32px));max-height:80dvh}.economic-busy::after{content:"서버에 안전하게 저장 중…";position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:99999;background:#fff7d7;border:1px solid #91753d;border-radius:8px;padding:12px;color:#25535a;box-shadow:0 3px 16px #0002;pointer-events:none}
 
+#chart-sailing-actions{display:contents}
+@media(max-width:850px){
+ #chart-sailing-actions{position:absolute;bottom:28px;left:50%;width:min(350px,calc(100% - 28px));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;z-index:6;pointer-events:none}
+ #chart-sailing-actions .discovery-alert,#chart-sailing-actions .sailing-banner{position:relative;inset:auto;transform:none;pointer-events:auto}
+ #chart-sailing-actions .discovery-alert{max-width:100%;padding:8px 12px;min-height:44px}
+ #chart-sailing-actions .sailing-banner{width:100%;margin:0}
+}
+
 .port-captain-policy{padding:12px 0;border-bottom:1px solid #cbd1bc}.port-captain-policy label{font-size:13px;display:inline-flex!important;align-items:center;gap:6px;margin:4px 6px 4px 0!important}
 
 #modal-content button{background:#edf2e5;border:1px solid #9aafa0;border-radius:6px;padding:10px 13px;color:#255762}#modal-content button.primary-button{background:#286c77;color:#fffcef;border-color:#286c77}#modal-content button:disabled{opacity:.48}#npc-markers text{font:11px var(--sans);fill:#793d43;stroke:#fffbed;paint-order:stroke;stroke-width:3px}

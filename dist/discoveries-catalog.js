@@ -1,5 +1,5 @@
 // Static discovery stories and game observation points.
-import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.15-ranking-sync';
+import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.15-discovery-resume';
 export const DISCOVERY_CATALOG_VERSION='2026.11.14-discoveries-72';
 export const RETIRED_DISCOVERY_FAME={'ruin-itsukushima':400};
 const source=(label,url)=>({label,url});

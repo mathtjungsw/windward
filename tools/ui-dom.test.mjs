@@ -39,25 +39,73 @@ test('investigation move reports an active canal and detours before its entrance
  app.combat.hasReserve=()=>true;
  try{
   app.beginPlaying(game);$('#modal').close();await wait();
+  assert.equal($('#modal').open,false,'nearby traces do not open a popup automatically inside a canal');
   app.expansion.investigate();
   const button=$('[data-popup-approach="'+d.id+'"]');
   assert.ok(button);
   button.click();
   assert.match($('#investigation-move-status').textContent,/운하 구간/);
+  $('#investigation-resume-voyage').click();
+  assert.equal($('#modal').open,false);
+  assert.equal($('#pause-btn').getAttribute('aria-label'),'항해 일시 정지');
+  assert.equal(app.state.voyage.passages[0].paid,true);
+  app.sailingClock.reset(0);app.tick(0);app.tick(100);
+  assert.ok(app.state.voyage.travelled>0,'the existing voyage advances inside the paid passage');
+  app.expansion.investigate();
+  const retry=$('[data-popup-approach="'+d.id+'"]');
   const balance=app.state.money;
   app.state.voyage.passages[0].paid=false;
   app.state.food=.1;
-  button.click();
+  retry.click();
   assert.match($('#investigation-move-status').textContent,/보급/);
+  assert.ok($('#investigation-resume-voyage'));
   assert.equal(app.state.voyage.passages[0].paid,false);
   assert.equal(app.state.money,balance);
   app.state.food=10;
-  button.click();await wait();
+  retry.click();await wait();
   assert.equal(app.state.investigationTarget,d.id,$('#investigation-move-status')?.textContent);
   assert.equal(app.state.money,balance+80);
   assert.deepEqual(app.state.detourTarget.point,destination);
   assert.equal($('#modal').open,false);
  }finally{app.combat.hasReserve=previousReserve;app.beginPlaying(initialState());$('#modal').close();}
+});
+test('returning to the route cancels a discovery detour still awaiting battle preparation',async()=>{
+ const d=DISCOVERIES.find(item=>item.id==='relic-compass');
+ const from=[-9.85,38.7],destination=[-12,38],route=makeRoute([from,destination]);
+ const game={...initialState(),port:null,position:from,food:10,navigationVersion:NAVIGATION_VERSION,
+   voyage:{...route,target:null,travelled:0,foodRemaining:1}};
+ const oldReserve=app.combat.hasReserve,oldPrepare=app.combat.prepare;
+ let ready;
+ app.combat.hasReserve=()=>false;
+ app.combat.prepare=()=>new Promise(resolve=>{ready=resolve;});
+ try{
+  app.beginPlaying(game);$('#modal').close();await wait();
+  app.expansion.investigate();
+  $('[data-popup-approach]').click();
+  assert.ok(ready);
+  $('#investigation-resume-voyage').click();
+  ready();
+  await wait();
+  assert.deepEqual(app.state.voyage.path.at(-1),destination);
+  assert.equal(app.state.investigationTarget,undefined);
+ }finally{app.combat.hasReserve=oldReserve;app.combat.prepare=oldPrepare;app.beginPlaying(initialState());$('#modal').close();}
+});
+test('a failed return departure keeps the original destination available from the investigation dialog',async()=>{
+ const from=[-9.85,38.7],destination=[-12,38];
+ const game={...initialState(),port:null,position:from,food:10,navigationVersion:NAVIGATION_VERSION,
+   detourTarget:{target:null,point:destination}};
+ const oldReserve=app.combat.hasReserve,oldPrepare=app.combat.prepare;
+ app.combat.hasReserve=()=>false;
+ app.combat.prepare=async()=>{throw Error('저장 대기');};
+ try{
+  app.beginPlaying(game);$('#modal').close();await wait();
+  app.expansion.investigate();
+  const button=$('#investigation-resume-voyage');
+  assert.equal(button.textContent,'원래 항로 계속하기');
+  button.click();await wait();
+  assert.deepEqual(app.state.detourTarget.point,destination);
+  assert.equal(app.state.voyage,null);
+ }finally{app.combat.hasReserve=oldReserve;app.combat.prepare=oldPrepare;app.beginPlaying(initialState());$('#modal').close();}
 });
 test('application initializes new menus and both minimap choices without runtime errors',()=>{assert.ok(app.nav);assert.ok($('.atlas-toggle'));for(const text of ['항구 투자·활동','대포·수리'])assert.ok([...document.querySelectorAll('.main-nav button')].some(b=>b.textContent.includes(text)));const point=[...app.state.position];$('[data-view=flat]').click();assert.equal(app.globe.mode,'flat');assert.deepEqual(app.state.position,point);$('[data-view=globe]').click();assert.equal(app.globe.mode,'globe');});
 test('the flagship and trailing ships stay upright on a diagonal route',()=>{

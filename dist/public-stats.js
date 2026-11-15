@@ -1,11 +1,11 @@
-import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.15-ranking-sync';
-import {GOODS} from './data.js?v=2026.11.15-ranking-sync';
-import {Exploration} from './voyage-core.js?v=2026.11.15-ranking-sync';
-import {explorationStats} from './exploration-score.js?v=2026.11.15-ranking-sync';
-import {discoveryStats} from './discoveries.js?v=2026.11.15-ranking-sync';
-import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.15-ranking-sync';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-ranking-sync';
-import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.15-ranking-sync';
+import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.15-discovery-resume';
+import {GOODS} from './data.js?v=2026.11.15-discovery-resume';
+import {Exploration} from './voyage-core.js?v=2026.11.15-discovery-resume';
+import {explorationStats} from './exploration-score.js?v=2026.11.15-discovery-resume';
+import {discoveryStats} from './discoveries.js?v=2026.11.15-discovery-resume';
+import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.15-discovery-resume';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-discovery-resume';
+import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.15-discovery-resume';
 export function collectionRankStats(game){
  const progress=game.rumorProgress,acquired=new Set(progress?.acquiredItems||[]),officers=new Set(progress?.officers||[]);
  return {shoreCompleted:game.shoreProgress?.count||0,rareFinds:DISCOVERIES.filter(d=>d.tier>=3&&game.discoveries?.[d.id]).length,

@@ -1,17 +1,17 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.15-ranking-sync';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.15-ranking-sync';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-ranking-sync';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.15-ranking-sync';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.15-ranking-sync';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.15-discovery-resume';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.15-discovery-resume';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-discovery-resume';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.15-discovery-resume';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.15-discovery-resume';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.15-ranking-sync';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.15-discovery-resume';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.15-ranking-sync';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.15-ranking-sync';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.15-ranking-sync';
-import {normalizeDepotDock} from './projects.js?v=2026.11.15-ranking-sync';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.15-ranking-sync';
-import {normalizeStories} from './story-core.js?v=2026.11.15-ranking-sync';
+import {normalizeSea} from './sea-activities.js?v=2026.11.15-discovery-resume';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.15-discovery-resume';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.15-discovery-resume';
+import {normalizeDepotDock} from './projects.js?v=2026.11.15-discovery-resume';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.15-discovery-resume';
+import {normalizeStories} from './story-core.js?v=2026.11.15-discovery-resume';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;

@@ -1,16 +1,16 @@
-import {shipyardVictory} from './historical-ships.js?v=2026.11.15-ranking-sync';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.15-ranking-sync';
-import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-ranking-sync';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.15-ranking-sync';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-ranking-sync';
-import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.15-ranking-sync';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.15-ranking-sync';
-import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.15-ranking-sync';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-ranking-sync';
-import {currentCanal} from './canal-reservations.js?v=2026.11.15-ranking-sync';
+import {shipyardVictory} from './historical-ships.js?v=2026.11.15-discovery-resume';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.15-discovery-resume';
+import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-discovery-resume';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.15-discovery-resume';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-discovery-resume';
+import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.15-discovery-resume';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.15-discovery-resume';
+import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.15-discovery-resume';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-discovery-resume';
+import {currentCanal} from './canal-reservations.js?v=2026.11.15-discovery-resume';
 export const COMBAT_RANGE=180,COMBAT_TIMEOUT=180000,PROTECTION_MS=120000;
 export function npcSlotChanges(game,uid,currentSlot){currentSlot??=null;const expected='npc:'+uid;if(currentSlot&&currentSlot!==expected)throw Error('선장 간 전투를 먼저 마치세요.');const next=game.npcBattle?expected:null;return currentSlot===next?{}:{['combatSlots/'+uid]:next};}
-export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-ranking-sync';
+export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-discovery-resume';
 const copy=o=>structuredClone(o||{});
 export function splitCargo(cargo,limit){const taken={},rest={};for(const [id,c]of Object.entries(cargo||{}).sort(([a],[b])=>a.localeCompare(b))){const qty=Math.min(c.qty,Math.max(0,limit)),cost=c.qty?c.cost*qty/c.qty:0;if(qty)taken[id]={qty,cost};if(qty<c.qty)rest[id]={qty:c.qty-qty,cost:c.cost-cost};limit-=qty;}return {taken,rest};}
 export const cargoCount=c=>Object.values(c||{}).reduce((n,c)=>n+c.qty,0);

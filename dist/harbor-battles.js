@@ -1,4 +1,4 @@
-import {ownership} from './commerce.js?v=2026.11.15-ranking-sync';
+import {ownership} from './commerce.js?v=2026.11.15-discovery-resume';
 
 const HOUR=3600000, DAY=24*HOUR, WINDOW=2*HOUR;
 export const CONTESTED_PORTS=['jamestown','georgetown-ascension','sanjuan-robinson','portvila'];
