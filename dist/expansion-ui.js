@@ -1,19 +1,20 @@
-import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.15-inland-album';
-import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.15-inland-album';
-import {historicalArt} from './historical-ship-art.js?v=2026.11.15-inland-album';
-import {vesselGunLimits} from './cannons.js?v=2026.11.15-inland-album';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-inland-album';
-import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.15-inland-album';
-import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.15-inland-album';
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.15-inland-album';
-import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,STORED_SHIP_LIMIT,storedShips} from './ship-rules.js?v=2026.11.15-inland-album';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-inland-album';
-import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.15-inland-album';
-import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS as KINDS} from './discoveries-catalog.js?v=2026.11.15-inland-album';
-import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.15-inland-album';
-import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.15-inland-album';
-import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.15-inland-album';
-import {lastSeenText} from './captain-time.js?v=2026.11.15-inland-album';
+import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.15-search-manual-protection';
+import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.15-search-manual-protection';
+import {historicalArt} from './historical-ship-art.js?v=2026.11.15-search-manual-protection';
+import {vesselGunLimits} from './cannons.js?v=2026.11.15-search-manual-protection';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-search-manual-protection';
+import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.15-search-manual-protection';
+import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.15-search-manual-protection';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.15-search-manual-protection';
+import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,STORED_SHIP_LIMIT,storedShips} from './ship-rules.js?v=2026.11.15-search-manual-protection';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-search-manual-protection';
+import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.15-search-manual-protection';
+import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS as KINDS} from './discoveries-catalog.js?v=2026.11.15-search-manual-protection';
+import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.15-search-manual-protection';
+import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.15-search-manual-protection';
+import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.15-search-manual-protection';
+import {lastSeenText} from './captain-time.js?v=2026.11.15-search-manual-protection';
+import {nextShipEndsProtection} from './novice.js?v=2026.11.15-search-manual-protection';
 const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createExpansion(api){
@@ -73,7 +74,7 @@ export function createExpansion(api){
   if($('#turtle-order'))$('#turtle-order').onclick=async()=>{if(await api.onShipAction(game=>turtleShipyard(game,turtle?'deliver':'accept')))showShipyard();};
   document.querySelectorAll('[data-build-historical]').forEach(b=>b.onclick=()=>{
    const id=b.dataset.buildHistorical,q=historicalQuote(get(),id);
-   api.onModal(q.row.name+'을 건조할까요?',q.row.portName+' 조선소',`<p>${fmt(q.cost)} D를 지불하고 선단에 편입합니다.</p><div class="dialog-actions"><button id="historic-build-confirm">건조 확인</button><button id="historic-build-back">돌아가기</button></div>`,'small');
+   api.onModal(q.row.name+'을 건조할까요?',q.row.portName+' 조선소',`<p>${fmt(q.cost)} D를 지불하고 선단에 편입합니다.</p>${nextShipEndsProtection(get(),{added:1,stage:q.row.stage})?'<p class="help-tip">이 배를 편입하면 초보 선장 보호를 졸업해요.</p>':''}<div class="dialog-actions"><button id="historic-build-confirm">건조 확인</button><button id="historic-build-back">돌아가기</button></div>`,'small');
    $('#historic-build-back').onclick=showShipyard;$('#historic-build-confirm').onclick=async()=>{if(busy)return;busy=true;try{if(await api.onShipAction(g=>buildHistoricalShip(g,id,q.cost)))showFleet();}finally{busy=false;}};
   });
  }
@@ -188,7 +189,8 @@ export function createExpansion(api){
   };
  }
  function confirmShip(kind){const s=get(),cost=kind==='upgrade'?upgradeCost(s):additionalShipCost(s),label=kind==='upgrade'?'선단을 한 단계 개량':'동행 선박 1척 추가';
-  api.onModal(label+'할까요?','선박·선단',`<p>비용 ${fmt(cost)} D · 보유 ${fmt(s.money)} D</p><p>${kind==='add'?`현재 식량을 나누어 항해 가능 보급은 ${(s.food*fleetCount(s)/(fleetCount(s)+1)).toFixed(1)}일분이 돼요.`:'현재 화물과 보급은 그대로 유지되고 선단 전체 모양과 성능이 바뀝니다.'}</p><div class="dialog-actions"><button id="ship-confirm" class="primary-button">확인</button><button id="ship-cancel" class="service-button">돌아가기</button></div>`,'small');
+  const graduate=nextShipEndsProtection(s,kind==='add'?{added:1}:{stage:shipTier(s)+2});
+  api.onModal(label+'할까요?','선박·선단',`<p>비용 ${fmt(cost)} D · 보유 ${fmt(s.money)} D</p><p>${kind==='add'?`현재 식량을 나누어 항해 가능 보급은 ${(s.food*fleetCount(s)/(fleetCount(s)+1)).toFixed(1)}일분이 돼요.`:'현재 화물과 보급은 그대로 유지되고 선단 전체 모양과 성능이 바뀝니다.'}</p>${graduate?'<p class="help-tip">이 단계에 도달하면 초보 선장 보호를 졸업해요.</p>':''}<div class="dialog-actions"><button id="ship-confirm" class="primary-button">확인</button><button id="ship-cancel" class="service-button">돌아가기</button></div>`,'small');
   $('#ship-cancel').onclick=()=>showShip();$('#ship-confirm').onclick=async()=>{if(busy)return;busy=true;try{const r=await api.onShipAction(game=>(kind==='upgrade'?upgradeShip:addShip)(game));if(r){tierKey='';showShip();}}finally{busy=false;}};
  }
  function discoveryCardDetail(d,withPoint=false){

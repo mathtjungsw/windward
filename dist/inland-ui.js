@@ -1,7 +1,7 @@
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.15-inland-album';
-import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.15-inland-album';
-import {inlandHarborStorage} from './inland.js?v=2026.11.15-inland-album';
-import {INLAND_CITIES,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.15-inland-album';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.15-search-manual-protection';
+import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.15-search-manual-protection';
+import {inlandHarborStorage} from './inland.js?v=2026.11.15-search-manual-protection';
+import {INLAND_CITIES,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.15-search-manual-protection';
 
 const $=s=>document.querySelector(s),fmt=n=>Number(n).toLocaleString('ko-KR');
 const time=ms=>{const seconds=Math.max(0,Math.ceil(ms/1000));return seconds>=60?`${Math.floor(seconds/60)}분 ${seconds%60}초`:`${seconds}초`;};
@@ -132,8 +132,8 @@ export function createInlandUI(api){
   function paint(){
    try{
     const qty=input.valueAsNumber;if(qty>max)throw Error();
-    current=harbor?captainTradeQuote(game,city.port,good,qty,mode,portMarketItem(record.content,city.port,good,record.revision),api.now(),taxRate(record.content,api.uid(),city.port)):inlandMarketQuote(city,good,qty,mode,record.content,record.revision,api.now());
-    $('#inland-estimate').textContent=`${qty}상자 × ${money(current.unit)} · 세금 ${money(current.tax)} · 총 ${money(current.total)}. 표시된 단가로 전량 거래해요.`;
+    current=harbor?captainTradeQuote(game,city.port,good,qty,mode,portMarketItem(record.content,city.port,good,record.revision),api.now(),taxRate(record.content,api.uid(),city.port,game)):inlandMarketQuote(city,good,qty,mode,record.content,record.revision,api.now());
+    $('#inland-estimate').textContent=`${qty}상자 × ${money(current.unit)} · 세금 ${money(current.tax)}${current.noviceTax?' · 초보 선장 면세':''} · 총 ${money(current.total)}. 표시된 단가로 전량 거래해요.`;
     button.disabled=!sale&&current.total>game.money;
    }catch{current=null;button.disabled=true;$('#inland-estimate').textContent='창고 공간과 수량을 확인해 주세요.';}
   }

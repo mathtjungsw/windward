@@ -1,5 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.15-inland-album';
-import {advanceBasicIncome} from './port-income.js?v=2026.11.15-inland-album';
+import {ownership} from './commerce.js?v=2026.11.15-search-manual-protection';
+import {advanceBasicIncome} from './port-income.js?v=2026.11.15-search-manual-protection';
+import {noviceActive} from './novice.js?v=2026.11.15-search-manual-protection';
 
 const HOUR=3600000, DAY=24*HOUR, WINDOW=2*HOUR;
 export const CONTESTED_PORTS=['jamestown','georgetown-ascension','sanjuan-robinson','portvila'];
@@ -26,6 +27,7 @@ export function harborBattleAction(game,content,uid,port,action,value,now,name){
   return {message:'다음 공방의 포탑 배치를 저장했어요.'};
  }
  if(action==='start'){
+  if(noviceActive(game))throw Error('초보 보호를 졸업하면 공개 공방에 도전할 수 있어요. 공방 연습은 이용할 수 있습니다.');
   if(!window.open||operator===uid||content.harborOperator?.until>now||content.harborCooldown>now||battle?.end>now&&battle.state==='active')throw Error('도전 가능한 시간과 항구 운영 상태를 확인하세요.');
   const assigned=Math.min(10,game.militia?.escort||0);
   content.harborMatch={attacker:uid,defender:operator||'',begin:now,end:Math.min(window.end,now+300000),state:'active',capture:0,ship:100,fort:100,turn:0,assigned,training:game.crewTraining||0,stance:content.harborDefense?.uid===operator?content.harborDefense.stance:'channel',attackName:name,connected:now};

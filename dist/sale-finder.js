@@ -1,9 +1,9 @@
-import {PORTS,GOODS} from './data.js?v=2026.11.15-inland-album';
-import {taxRate,permitted,captainTradeQuote,NEUTRAL_PORTS} from './commerce.js?v=2026.11.15-inland-album';
+import {PORTS,GOODS} from './data.js?v=2026.11.15-search-manual-protection';
+import {taxRate,permitted,captainTradeQuote,NEUTRAL_PORTS} from './commerce.js?v=2026.11.15-search-manual-protection';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const SALE_SEARCH_NOTICE='지금 검색한 시점에 조회한 시세 기준 최고가입니다. 시세와 세금은 실제 판매할 때 달라질 수 있어요.';
 export function ownedTradeGoods(game){const result={};for(const cargo of [game.cargo,JSON.parse(game.battleReserve?.cargoJSON||'{}')])for(const [id,c]of Object.entries(cargo||{}))if(GOODS[id]&&c.qty>0)result[id]=(result[id]||0)+c.qty;return result;}
-export function rankSaleQuotes(rows,{goodId,qty,uid,at,game}){return rows.filter(r=>permitted(r.policy,uid)).map(r=>{const rate=taxRate(r.policy,uid,r.port.id),quote=captainTradeQuote(game,r.port.id,goodId,qty,'sell',r.item||{},at,rate);return {...r,rate,quote};}).sort((a,b)=>b.quote.total-a.quote.total||b.quote.unit-a.quote.unit||a.port.name.localeCompare(b.port.name,'ko'));}
+export function rankSaleQuotes(rows,{goodId,qty,uid,at,game}){return rows.filter(r=>permitted(r.policy,uid)).map(r=>{const rate=taxRate(r.policy,uid,r.port.id,game),quote=captainTradeQuote(game,r.port.id,goodId,qty,'sell',r.item||{},at,rate);return {...r,rate,quote};}).sort((a,b)=>b.quote.total-a.quote.total||b.quote.unit-a.quote.unit||a.port.name.localeCompare(b.port.name,'ko'));}
 export async function freshSaleRead(account){
  if(!navigator.onLine||!account.auth?.currentUser||!account.restEndpoint)throw Error('현재 시세는 서버에 연결한 뒤 검색할 수 있어요.');
  const token=await account.auth.currentUser.getIdToken();
@@ -101,6 +101,7 @@ export function createSaleFinder(api){
    target.replaceChildren();
    try{
     const goodId=form.querySelector('#sale-search-good').value,knownOnly=form.querySelector('#sale-search-known').checked;
+    let lookup=api.searchRoutes?.();
     const qty=Math.min(1000,ownedTradeGoods(api.getState())[goodId]||0);
     if(!qty)throw Error('보유 수량이 달라졌어요. 창을 다시 열어 주세요.');
     const remote=await freshSaleRead(a);
@@ -125,6 +126,11 @@ export function createSaleFinder(api){
      );
      if(failed.length)target.append(element('p',`미조회 ${failed.length}곳이 있어 확인에 성공한 항구의 시세만 비교했어요.`,'help-tip'));
      if(!ranked.length)target.append(element('p','판매 가능하다고 확인된 항구가 없어요.'));
+     if(lookup&&ranked.length){
+      const refresh=element('button','현재 위치로 항로 다시 계산');
+      refresh.type='button';refresh.onclick=()=>{lookup=api.searchRoutes();paint();};
+      target.append(refresh);
+     }
      for(const [index,row] of ranked.slice(0,5).entries()){
       const article=element('article',null,'sale-search-row');
       const depart=element('button','항구로 이동');
@@ -161,10 +167,12 @@ export function createSaleFinder(api){
         }
        }
       };
-      article.append(
+       const routeInfo=element('p',lookup?'항로 계산 중…':'','route-search-detail');
+       if(lookup)void lookup(row.port).then(result=>{if(current()&&article.isConnected)routeInfo.textContent=result.text+(!known.has(row.port.id)?' · 항구 정보 필요':'');});
+       article.append(
        element('strong',`${index+1}. ${row.port.name}${known.has(row.port.id)?'':' · 미발견'}`),
-       element('p',`${row.quote.eventEnd?'행사 시세 · ':''}판매가 ${fmt(row.quote.unit)} D/상자 · 세율 ${row.rate}%${row.quote.bonus?' · 보너스 +'+fmt(row.quote.bonus)+' D':''} · ${qty}상자 수령 ${fmt(row.quote.total)} D`),
-       lookButton(row.port),depart
+       element('p',`${row.quote.eventEnd?'행사 시세 · ':''}판매가 ${fmt(row.quote.unit)} D/상자 · 세율 ${row.rate}%${row.quote.noviceTax?' · 초보 선장 면세':''}${row.quote.bonus?' · 보너스 +'+fmt(row.quote.bonus)+' D':''} · ${qty}상자 수령 ${fmt(row.quote.total)} D`),
+       routeInfo,lookButton(row.port),depart
       );
       target.append(article);
      }

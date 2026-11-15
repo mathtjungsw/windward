@@ -1,4 +1,4 @@
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.15-inland-album';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.15-search-manual-protection';
 
 const HOUR=3600000,DAY=24*HOUR,epoch=Date.UTC(2026,10,16,3);
 const agenda=[

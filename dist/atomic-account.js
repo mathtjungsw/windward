@@ -1,5 +1,6 @@
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-inland-album';
-import {ownershipRankChanges} from './port-rankings.js?v=2026.11.15-inland-album';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-search-manual-protection';
+import {ownershipRankChanges} from './port-rankings.js?v=2026.11.15-search-manual-protection';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.15-search-manual-protection';
 async function bounded(task,ms=5000){let timer;try{return await Promise.race([task,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('network-timeout')),ms))]);}finally{clearTimeout(timer);}}
 // Economic writes share the same queue as autosave. Acknowledgement precedes UI state.
 export function installAtomicAccount(Type){
@@ -16,14 +17,21 @@ export function installAtomicAccount(Type){
   this.busy=true;this.onBusy?.(true);try{
    if(this.defenseEnabled){await refreshDefense(this);if(kind!=='raids'&&this.readGame()?.raidId)throw Error('진행 중인 해상 교전을 먼저 마치세요.');}
    if(this.dirty)await this.writeSave();if(!this.ready||this.lost||this.dirty)throw Error('항해 기록 저장을 먼저 확인하세요.');
-   const s=this.sdk,root='gameV2',path=`shared/${kind}/${key}`,ref=s.ref(this.db,`${root}/${path}`),before=(await bounded(s.get(ref))).val()||{revision:0,content:{}},game=structuredClone(this.readGame()),now=Date.now()+(this.serverOffset||0),content=structuredClone(before.content||{}),result=await mutate(game,content,now,before.revision||0);
+   const s=this.sdk,root='gameV2',path=`shared/${kind}/${key}`,ref=s.ref(this.db,`${root}/${path}`),before=(await bounded(s.get(ref))).val()||{revision:0,content:{}},game=structuredClone(this.readGame()),now=Date.now()+(this.serverOffset||0),content=structuredClone(before.content||{});
+   const protect=this.record.schemaVersion>=12;
+   if(protect){
+    const ownership=kind==='ports'&&game.noviceGraduated===false?await bounded(s.get(s.ref(this.db,root+'/real/portRankings/'+this.uid))):null;
+    markNovice(game,this.record.noviceGraduated,ownsOrOwnedPort(ownership?.val()));
+   }
+   const result=await mutate(game,content,now,before.revision||0);
    if(result?.ok===false)throw Error(result.error||'처리할 수 없어요.');
    if(result?.noWrite)return result;
-   const sequence=(this.record.operationSequence||0)+1,id=this.session+':'+sequence,revision=this.revision+1,op={id,sequence,kind,key,sharedRevision:before.revision+1},stamp=s.serverTimestamp();
-   const record={...this.record,schemaVersion:this.defenseEnabled?Math.max(6,this.record.schemaVersion):5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}),revision,session:this.session,data:JSON.stringify(game),leaseUntil:now+90000,updatedAt:stamp,operationSequence:sequence,lastOperation:op};
+   const sequence=(this.record.operationSequence||0)+1,id=this.session+':'+sequence,revision=this.revision+1,op={id,sequence,kind,key,sharedRevision:before.revision+1,...(protect&&result?.noviceTax?{noviceTax:true}:{})},stamp=s.serverTimestamp();
+   const ownerChanges=kind==='ports'?await bounded(ownershipRankChanges(this,key,before.content||{},content,id)):{};
+   const graduated=protect?markNovice(game,this.record.noviceGraduated,ownsOrOwnedPort(ownerChanges['real/portRankings/'+this.uid])):undefined;
+   const record={...this.record,schemaVersion:this.defenseEnabled?Math.max(6,this.record.schemaVersion):5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}),...(protect?{noviceGraduated:graduated}:{}),revision,session:this.session,data:JSON.stringify(game),leaseUntil:now+90000,updatedAt:stamp,operationSequence:sequence,lastOperation:op};
    content._version=1;
    const shared={revision:before.revision+1,content,updatedAt:stamp,lastOperation:{id,uid:this.uid,sequence,saveRevision:revision}};
-   const ownerChanges=kind==='ports'?await bounded(ownershipRankChanges(this,key,before.content||{},content,id)):{};
    const journal='windward-economic-pending:'+this.uid;try{this.storage.setItem(journal,JSON.stringify({id,sequence,revision,kind,key}));}catch{throw Error('처리 전 기기 기록을 보관할 수 없어요.');}
    let confirmed=record;
    const changes={...ownerChanges,...(result?.extras||{}),['privateSaves/'+this.uid]:record,[path]:shared};if(result?.registry)changes['harborRegistry/'+result.registry.id]=result.registry;

@@ -1,5 +1,5 @@
-import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.15-inland-album';
-import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.15-inland-album';
+import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.15-search-manual-protection';
+import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.15-search-manual-protection';
 
 export const ACTIVE_SECONDS_PER_DAY=2;
 const rows=[

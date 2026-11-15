@@ -1,4 +1,4 @@
-import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.15-inland-album';
+import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.15-search-manual-protection';
 
 export function createSeaActivityUI(api){
   let pending=false, timer, signature='';

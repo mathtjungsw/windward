@@ -48,14 +48,19 @@ async function expeditionPage(mode){
  `;
  return (await fixturePage(game)).replace('account.seenVersion=RELEASE;beginPlaying('+JSON.stringify(game)+');',()=>`account.seenVersion=RELEASE;beginPlaying(${JSON.stringify(game)});${fixture}`);
 }
-async function inlandAlbumPreview(){
- const game=initialState(),port=PORTS.find(p=>p.id==='seville');
+async function inlandAlbumPreview(suez=false){
+ const game=initialState(),port=PORTS.find(p=>p.id===(suez?'alexandria':'seville'));
  Object.assign(game,{port:port.id,position:[port.lon,port.lat],money:30000});
  game.visited.push(port.id);
+ if(suez){
+  game.shipTier=19;game.fleetShips[0].tier=19;game.food=90;game.noviceGraduated=true;
+  game.knownPorts.push('alexandria','jeddah');
+ }
  for(const entry of DISCOVERIES)game.discoveries[entry.id]={foundDay:1,foundAt:1000};
  const marker='beginPlaying('+JSON.stringify(game)+');';
  const mock=`
    const records=new Map();account.ready=true;account.uid='local-inland-album';account.save=()=>{};
+   if(${suez})records.set('projects/canal-suez',{revision:1,content:{readyAt:Date.now()-6000,investors:{'local-inland-album':6000000},toll:120}});
    combat.releaseIfPort=async()=>{};
    account.readShared=async (kind,key)=>structuredClone(records.get(kind+'/'+key)||{revision:0,content:{}});
    account.atomicAction=async (kind,key,mutate)=>{
@@ -214,7 +219,7 @@ const server=createServer(async(req,res)=>{
     if(useEmulators&&url.pathname==='/account.js')return reply(res,'.js',await emulatorAccount());
     const manual={...initialState(),port:null,controlMode:'manual'};
     if(url.pathname==='/__qa/development')return reply(res,'.html',await developmentPreviewPage());
-    if(url.pathname==='/__qa/inland-album')return reply(res,'.html',await inlandAlbumPreview());
+    if(url.pathname==='/__qa/inland-album')return reply(res,'.html',await inlandAlbumPreview(url.searchParams.has('suez')));
     if(url.pathname==='/__qa/expedition')return reply(res,'.html',await expeditionPage(url.searchParams.get('mode')));
     if(url.pathname==='/__qa/harbor')return reply(res,'.html',await fixturePage({...manual,position:[url.searchParams.has('near')?-9.44:-10.1,41]}));
     if(url.pathname==='/__qa/trade')return reply(res,'.html',await fixturePage({...manual,position:[-9.44,41],cargo:{wine:{qty:10,cost:310}},boughtLisbonWine:true,money:2090}));

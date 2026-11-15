@@ -1,12 +1,12 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.15-inland-album';
-import {shipArtPath} from './art.js?v=2026.11.15-inland-album';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.15-inland-album';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-inland-album';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.15-inland-album';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.15-inland-album';
-import {autoSupplyDays,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.15-inland-album';
-import {isTypingTarget} from './controls.js?v=2026.11.15-inland-album';
-import {validCard} from './social-core.js?v=2026.11.15-inland-album';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.15-search-manual-protection';
+import {shipArtPath} from './art.js?v=2026.11.15-search-manual-protection';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.15-search-manual-protection';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-search-manual-protection';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.15-search-manual-protection';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.15-search-manual-protection';
+import {autoSupplyDays,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.15-search-manual-protection';
+import {isTypingTarget} from './controls.js?v=2026.11.15-search-manual-protection';
+import {validCard} from './social-core.js?v=2026.11.15-search-manual-protection';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');

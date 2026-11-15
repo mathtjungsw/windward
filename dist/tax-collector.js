@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.15-inland-album';
-import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.15-inland-album';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-inland-album';
+import {ownership} from './commerce.js?v=2026.11.15-search-manual-protection';
+import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.15-search-manual-protection';
+import {PORT_BY_ID} from './data.js?v=2026.11.15-search-manual-protection';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;

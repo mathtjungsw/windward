@@ -1,5 +1,5 @@
-import {Navigator} from './engine.js?v=2026.11.15-inland-album';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.15-inland-album';
+import {Navigator} from './engine.js?v=2026.11.15-search-manual-protection';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.15-search-manual-protection';
 
 let nav;
 self.onmessage=({data})=>{

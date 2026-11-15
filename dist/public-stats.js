@@ -1,11 +1,11 @@
-import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.15-inland-album';
-import {GOODS} from './data.js?v=2026.11.15-inland-album';
-import {Exploration} from './voyage-core.js?v=2026.11.15-inland-album';
-import {explorationStats} from './exploration-score.js?v=2026.11.15-inland-album';
-import {discoveryStats} from './discoveries.js?v=2026.11.15-inland-album';
-import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.15-inland-album';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-inland-album';
-import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.15-inland-album';
+import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.15-search-manual-protection';
+import {GOODS} from './data.js?v=2026.11.15-search-manual-protection';
+import {Exploration} from './voyage-core.js?v=2026.11.15-search-manual-protection';
+import {explorationStats} from './exploration-score.js?v=2026.11.15-search-manual-protection';
+import {discoveryStats} from './discoveries.js?v=2026.11.15-search-manual-protection';
+import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.15-search-manual-protection';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-search-manual-protection';
+import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.15-search-manual-protection';
 export function collectionRankStats(game){
  const progress=game.rumorProgress,acquired=new Set(progress?.acquiredItems||[]),officers=new Set(progress?.officers||[]);
  return {shoreCompleted:game.shoreProgress?.count||0,rareFinds:DISCOVERIES.filter(d=>d.tier>=3&&game.discoveries?.[d.id]).length,

@@ -1,10 +1,11 @@
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.15-inland-album';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.15-inland-album';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-inland-album';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-inland-album';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.15-inland-album';
-import {applyRaftStart} from './raft-start.js?v=2026.11.15-inland-album';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.15-inland-album';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.15-search-manual-protection';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.15-search-manual-protection';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.15-search-manual-protection';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-search-manual-protection';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-search-manual-protection';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.15-search-manual-protection';
+import {applyRaftStart} from './raft-start.js?v=2026.11.15-search-manual-protection';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.15-search-manual-protection';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
@@ -116,7 +117,7 @@ export class CaptainAccount {
       }
     } catch(error) { throw Error('기기 저장을 읽지 못했어요. 원본은 유지됩니다.'); }
     const observed = (await this.sdk.get(ref)).val();
-    if(observed?.schemaVersion>11)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
+    if(observed?.schemaVersion>12)throw Error('최신 버전으로 새로고침해 주세요. 기록은 유지됩니다.');
     if(observed&&(observed.schemaVersion||0)<5){const backup='windward-before-expansion-v5:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('업데이트 전 원본 기록을 보관하지 못했어요. 저장 공간을 확인하세요.');}}
     if(observed&&observed.schemaVersion<4){const backup='windward-before-raft-start-v4:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('전환 전 기록을 기기에 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
     if(observed&&observed.schemaVersion<3){const backup='windward-before-world-v3:'+uid;try{if(!this.storage.getItem(backup))this.storage.setItem(backup,JSON.stringify(observed));}catch{throw Error('이관 전 기기 백업을 보관하지 못했어요. 저장 공간을 확인해 주세요.');}}
@@ -124,6 +125,7 @@ export class CaptainAccount {
     const defense=this.defenseEnabled?(await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/fleetStates/'+uid))).val():null;
     const checkpoint=this.defenseEnabled?(await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/privateNavigation/'+uid))).val():null;
     const corinth=this.defenseEnabled?(await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/corinthRefunds/'+uid))).val():null;
+    const portRank=this.defenseEnabled?(await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/real/portRankings/'+uid))).val():null;
     let block, recovered;
     const result = await this.sdk.runTransaction(ref, current => {
       current ??= observed;
@@ -151,8 +153,9 @@ export class CaptainAccount {
       }
       game.world = 'real';
       game.speed = 1;
+      if(this.defenseEnabled)markNovice(game,current?.noviceGraduated,ownsOrOwnedPort(portRank));
       return {
-        schemaVersion:this.defenseEnabled?11:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}),
+        schemaVersion:this.defenseEnabled?12:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0,noviceGraduated:game.noviceGraduated}:{}),
         operationSequence: current?.operationSequence||0,
         ...(current?.lastOperation?{lastOperation:current.lastOperation}:{}),
         revision: (current?.revision || 0) + 1,
@@ -228,13 +231,14 @@ export class CaptainAccount {
     if(this.defenseEnabled)await refreshDefense(this);
     const game = this.readGame();
     if (!game) return;
+    if(this.defenseEnabled&&markNovice(game,this.record.noviceGraduated)!==this.record.noviceGraduated)this.dirty=true;
     const data = this.dirty ? JSON.stringify(game) : this.record.data;
     const expected = this.revision;
     try {
       const result = await this.sdk.runTransaction(this.ref, current => {
         current ??= this.record;
         if (current?.session !== this.session || current.revision !== expected) return;
-        return {...current, schemaVersion:this.defenseEnabled?11:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}), data, revision: expected + 1, leaseUntil: Date.now()+(this.serverOffset||0) + 90000,
+        return {...current, schemaVersion:this.defenseEnabled?12:5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0,noviceGraduated:game.noviceGraduated}:{}), data, revision: expected + 1, leaseUntil: Date.now()+(this.serverOffset||0) + 90000,
           updatedAt: this.sdk.serverTimestamp()};
       }, {applyLocally: false});
       if (!result.committed) {
@@ -270,6 +274,7 @@ export class CaptainAccount {
     await this.flushPromise;
     if (this.dirty) await this.flush();
     this.stopWatch?.();
+    this.stopNoviceWatch?.();
     if (this.ready && !this.dirty && navigator.onLine) {
       try {
         await this.sdk.runTransaction(this.ref, current => {

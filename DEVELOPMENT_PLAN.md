@@ -1,5 +1,9 @@
 # 바람의 항로 · 최신 상세 개발계획
 
+## 2026-11-15 · 항로 거리, 게임 설명서, 초보 보호
+
+[항해 거리·시간 표시, 검색형 게임 설명서, 초보 선장 면세·공격 보호](docs/DEVELOPMENT_PLAN_2026-11-15_SEARCH_MANUAL_NOVICE.md)를 적용한다. 설명서 11편은 `docs/manual`의 Markdown 원고로 관리하고 `node tools/build-web-manual.mjs`로 생성한다. 초보 보호에는 저장 버전 12를 적용하고, 기존 계정은 확인 가능한 선박·소유 이력을 기준으로 분류한다.
+
 ## 2026-11-15 · 내륙 도시와 새 발견 도감
 
 - [1–2번 내륙 도시·육상 운송과 발견 도감·일일 퀴즈](docs/DEVELOPMENT_PLAN_2026-11-15_INLAND_AND_ALBUM.md)

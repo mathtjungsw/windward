@@ -41,4 +41,36 @@ time=Date.now();profiles=Object.fromEntries(['a','b'].map(uid=>[uid,combatProfil
 finishExpired(room,'a',Date.now(),{},true);patch=await prepare('a','battles','duel-accepted',room);assert.equal((await apply('a',patch)).status,200,'surrender closes a duel without firing');
 for(const uid of ['a','b']){claimBattle(games[uid],room,uid,Date.now());patch=await prepare(uid,'battles','duel-accepted',room,{['combatSlots/'+uid]:null,['combatVaults/'+uid]:null});assert.equal((await apply(uid,patch)).status,200,'duel settlement '+uid);}
 assert.equal(games.a.money+games.b.money,19800,'two actual repair fees, no minted duel rewards');
+await req('gameV2/config/minSchema',{admin:true,method:'PUT',body:12});
+for(const [uid,graduated] of [['a',true],['b',false],['c',false]]){
+ const record=(await req('gameV2/privateSaves/'+uid,{uid})).value;
+ await req('gameV2/privateSaves/'+uid,{admin:true,method:'PUT',body:{...record,schemaVersion:12,defenseSeq:0,noviceGraduated:graduated}});
+}
+const preview=(kind,key)=>prepare('c',kind,key,{});
+patch=await preview('ports','seville');patch['privateSaves/c'].lastOperation.noviceTax=true;
+assert.equal((await apply('c',patch)).status,200,'protected tax exemption accepted');
+await req('gameV2/real/portRankings/c',{admin:true,method:'PUT',body:{name:'c',everOwned:true,ownedPortCount:0,revision:3,updatedAt:Date.now()}});
+patch=await preview('ports','seville');patch['privateSaves/c'].lastOperation.noviceTax=true;
+assert.equal((await apply('c',patch)).status,401,'former owner cannot use protected tax exemption');
+const downgrade=await prepare('a','personal','a',{});
+downgrade['privateSaves/a'].noviceGraduated=false;
+assert.equal((await apply('a',downgrade)).status,401,'graduation cannot be wiped');
+for(const uid of ['a','b']){
+ games[uid].defeatProtectionUntil=0;
+ const reserve=reserveLoss(games[uid],uid+'-novice-reserve');
+ patch=await prepare(uid,'personal',uid,{}, {['combatVaults/'+uid]:reserve});
+ assert.equal((await apply(uid,patch)).status,200);
+ const {point,at,...profile}=combatProfile(games[uid],uid,Date.now());
+ assert.equal((await req('gameV2/combatProfiles/'+uid,{uid,method:'PUT',body:{...profile,at:stamp}})).status,200);
+}
+time=Date.now();profiles=Object.fromEntries(['a','b'].map(uid=>[uid,combatProfile(games[uid],uid,time)]));reserves=Object.fromEntries(['a','b'].map(uid=>[uid,games[uid].battleReserve]));
+for(const [a,b] of [['a','b'],['b','a']]){
+ room=openBattle('free',a,b,profiles,reserves,time);
+ patch=await prepare(a,'battles','novice-free',room,{'combatSlots/a':'novice-free','combatSlots/b':'novice-free'});
+ assert.equal((await apply(a,patch)).status,401,'novice may neither receive nor start free attack');
+}
+assert.equal((await req('gameV2/combatInvites/a/b',{admin:true,method:'PUT',body:{from:'b',name:'b',at:Date.now()}})).status,200);
+room=openBattle('duel','a','b',profiles,reserves,Date.now());
+patch=await prepare('a','battles','novice-duel',room,{'combatSlots/a':'novice-duel','combatSlots/b':'novice-duel'});
+assert.equal((await apply('a',patch)).status,200,'novice can join a consented duel');
 console.log('PASS: isolated atomic market, concurrency, vaults, two-participant battle, immutable settlement, claims and replay rules');

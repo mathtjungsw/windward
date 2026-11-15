@@ -1,4 +1,8 @@
-const entries=[
+export const MENU_ENTRIES=[
+  ['atlas','항구 찾기','항구 찾기','항해 → 항구 찾기','알고 있는 항구와 현재 위치의 항로를 확인해요.','몇 일 거리|항구 검색|거리|항해 시간'],
+  ['ship','내 배 보기','내 배 보기','항해 → 내 배 보기','선단과 선박 성장 단계를 확인해요.','선단|배 보기|항구 보관'],
+  ['combat','선장 전투','선장 전투','더보기 → 선장 전투','합의 결투와 해전 정보를 확인해요.','대포 발사|대포 있는데 발사 안 됨|공격|결투|패배 손실'],
+  ['mail','외교 서신','외교 서신','더보기 → 외교 서신','선장에게 편지를 보내고 보관해요.','편지|첨부금|차단'],
   ['trade','교역소','항구 → 교역소','항구·보급 → 교역소','정박 중인 항구에서 상품을 구매할 수 있어요.','특산품 거래|물건 사기|구매|시세'],
   ['cargo','내 화물','교역소 → 내 화물','화물','항구에 정박하면 보유 상품을 팔 수 있어요.','특산품 거래|물건 팔기|판매|화물'],
   ['sale','최고가 판매처','내 화물 → 최고가 판매처','화물 → 최고가 판매처','보유 화물을 가장 비싸게 살 항구를 비교해요.','최고가|비싼 곳|판매처'],
@@ -19,17 +23,20 @@ const entries=[
 const normalize=text=>text.normalize('NFKC').toLowerCase().replace(/[\s·]/g,'');
 export function findMenus(query){
   const key=normalize(query);
-  return entries.map(entry=>{
+  return MENU_ENTRIES.map(entry=>{
     const name=normalize(entry[1]), aliases=entry[5].split('|').map(normalize);
     const score=!key?1:name===key?4:aliases.includes(key)?3:name.includes(key)?2:aliases.some(x=>x.includes(key))?1:0;
     return {entry,score};
   }).filter(row=>row.score).sort((a,b)=>b.score-a.score).map(row=>row.entry);
 }
-export function showMenuFinder({modal,navigate,mobile}){
+export function showMenuFinder({modal,navigate,mobile,manual}){
   modal('메뉴 찾기','',`<label for="menu-finder-input">하고 싶은 일</label>
     <input id="menu-finder-input" type="search" maxlength="60" placeholder="예: 특산품 거래" autocomplete="off">
+    ${manual?'<button id="menu-finder-manual" class="service-button">설명서에서 검색</button>':''}
     <div id="menu-finder-results" aria-live="polite"></div>`,'medium');
   const input=document.querySelector('#menu-finder-input'),list=document.querySelector('#menu-finder-results');
+  const help=document.querySelector('#menu-finder-manual');
+  if(help)help.onclick=()=>manual(input.value.trim());
   function render(){
     const rows=findMenus(input.value);
     list.innerHTML=rows.map(([id,name,pc,phone,hint])=>`<article class="owned-port-row">

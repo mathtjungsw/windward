@@ -86,5 +86,15 @@ const persisted=(await req('gameV2/shared/raids/raid',{uid:'a'})).value;assert.e
 persisted.content.players.a.guns[0].readyAt=0;await req('gameV2/shared/raids/raid',{admin:true,method:'PUT',body:persisted});await req('gameV2/fleetStates/a/guns/a-gun/readyAt',{admin:true,method:'PUT',body:0});shot.r.actorNode.guns['a-gun'].readyAt=0;
 const unarmed=advanceOfflineRaid(shot.game,persisted.content,shot.r.node,'a',{kind:'fire',gunId:'a-gun',autoDefense:true},Date.now(),[0,0],()=>true,shot.r.actorNode);
 assert.equal((await apply(patchFor(shot.game,persisted.content,unarmed,'a','raid',shot.patch['privateSaves/a'],1))).status,200,'subsequent shot after empty-array round trip');
-+
+for(const [a,b] of [[false,true],[true,false],[true,true]]){
+ f=await reset();await req('gameV2/config/minSchema',{admin:true,method:'PUT',body:12});
+ for(const [uid,graduated] of [['a',a],['b',b]]){
+  f.saves[uid]={...f.saves[uid],schemaVersion:12,noviceGraduated:graduated};
+  await req('gameV2/privateSaves/'+uid,{admin:true,method:'PUT',body:f.saves[uid]});
+ }
+ assert.equal((await req('gameV2/privateSaves/b/noviceGraduated',{uid:'a'})).value,b);
+ assert.equal((await req('gameV2/privateSaves/b',{uid:'a'})).status,401);
+ shot=first(f,'novice');
+ assert.equal((await apply(shot.patch)).status,a&&b?200:401,'both players need graduation for a new free raid');
+}
 console.log('PASS: paired offline raid, dock/session/slot/equipment guards, concurrent attack, stale autosave, one-time escrow, private checkpoint, persistent logout, and old-client boundary.');

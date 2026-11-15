@@ -1,7 +1,7 @@
-import {GOODS} from './data.js?v=2026.11.15-inland-album';
-import {capacity,usedSpace} from './engine.js?v=2026.11.15-inland-album';
-import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.15-inland-album';
-import {recordTrade} from './rank-progress.js?v=2026.11.15-inland-album';
+import {GOODS} from './data.js?v=2026.11.15-search-manual-protection';
+import {capacity,usedSpace} from './engine.js?v=2026.11.15-search-manual-protection';
+import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.15-search-manual-protection';
+import {recordTrade} from './rank-progress.js?v=2026.11.15-search-manual-protection';
 
 export const INLAND_CITIES={
  cordoba:{id:'cordoba',name:'코르도바',port:'seville',point:[-4.7794,37.8847],path:[[-5.6,37.53],[-5.16,37.77]],seconds:60,terrain:0,goods:{leather:.83,oliveoil:.87}},
