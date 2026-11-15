@@ -1,4 +1,4 @@
-import {CoastalDetail} from './coastal-detail.js?v=2026.11.15-freight-daily-limit';
+import {CoastalDetail} from './coastal-detail.js?v=2026.11.15-era-atlas';
 
 // Connect world-grid cells through narrow waters using shore-checked waypoints.
 export const COARSE_CONNECTIONS=[

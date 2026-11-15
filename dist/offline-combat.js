@@ -1,8 +1,8 @@
-import {seaSector} from './presence-core.js?v=2026.11.15-freight-daily-limit';
-import {openOfflineRaid,advanceOfflineRaid} from './defense-core.js?v=2026.11.15-freight-daily-limit';
-import {readDefense,refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-freight-daily-limit';
-import {cannonStats} from './cannons.js?v=2026.11.15-freight-daily-limit';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-daily-limit';
+import {seaSector} from './presence-core.js?v=2026.11.15-era-atlas';
+import {openOfflineRaid,advanceOfflineRaid} from './defense-core.js?v=2026.11.15-era-atlas';
+import {readDefense,refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-era-atlas';
+import {cannonStats} from './cannons.js?v=2026.11.15-era-atlas';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-era-atlas';
 const roll=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
 export function createOfflineCombat(api){
  const a=api.account;let room=null,id=null,roomOff=null,connectionOff=null,ownOff=null,connection=null,working=false,lastAuto=0,lastError=0;

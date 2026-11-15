@@ -1,9 +1,9 @@
-import {watchSectorPages} from './sector-pages.js?v=2026.11.15-freight-daily-limit';
-import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.15-freight-daily-limit';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-daily-limit';
-import {REAL_WORLD_ROOT} from './account.js?v=2026.11.15-freight-daily-limit';
-import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.15-freight-daily-limit';
-import {CaptainRoster} from './captains.js?v=2026.11.15-freight-daily-limit';
+import {watchSectorPages} from './sector-pages.js?v=2026.11.15-era-atlas';
+import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.15-era-atlas';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-era-atlas';
+import {REAL_WORLD_ROOT} from './account.js?v=2026.11.15-era-atlas';
+import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.15-era-atlas';
+import {CaptainRoster} from './captains.js?v=2026.11.15-era-atlas';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{

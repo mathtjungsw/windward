@@ -42,16 +42,17 @@ test('all 28 new game berths are water points with connected ocean routes and va
  }
 });
 
-test('102 distinct active discovery records span six kinds and award 33350 total fame',()=>{
- assert.equal(DISCOVERIES.length,102);assert.equal(Object.keys(DISCOVERY_BY_ID).length,102);
- assert.equal(new Set(DISCOVERIES.map(d=>d.point.join(','))).size,102);
- for(const [kind,count] of Object.entries({ruin:25,relic:31,animal:14,treasure:14,book:14,nature:4}))assert.equal(DISCOVERIES.filter(d=>d.kind===kind).length,count);
- for(const [tier,count] of Object.entries({1:17,2:42,3:28,4:15}))assert.equal(DISCOVERIES.filter(d=>d.tier===Number(tier)).length,count);
- assert.equal(DISCOVERIES.reduce((n,d)=>n+d.fame,0),33350);
+test('historical additions preserve the 102 original discovery records and their fame',()=>{
+ const previous=DISCOVERIES.filter(d=>!d.media);
+ assert.equal(previous.length,102);assert.equal(Object.keys(DISCOVERY_BY_ID).length,DISCOVERIES.length);
+ assert.equal(new Set(DISCOVERIES.map(d=>d.point.join(','))).size,DISCOVERIES.length);
+ for(const [kind,count] of Object.entries({ruin:25,relic:31,animal:14,treasure:14,book:14,nature:4}))assert.equal(previous.filter(d=>d.kind===kind).length,count);
+ for(const [tier,count] of Object.entries({1:17,2:42,3:28,4:15}))assert.equal(previous.filter(d=>d.tier===Number(tier)).length,count);
+ assert.equal(previous.reduce((n,d)=>n+d.fame,0),33350);
  assert.equal(DISCOVERY_BY_ID['ruin-itsukushima'],undefined);
  for(const d of DISCOVERIES){
   assert.equal(d.lon,d.point[0]);assert.equal(d.lat,d.point[1]);
-  assert.equal(d.spotRadius,100);assert.equal(d.inspectRadius,60);assert.equal(d.image,'assets/discoveries/'+d.id+'.svg');
+  assert.equal(d.spotRadius,100);assert.equal(d.inspectRadius,60);assert.ok(d.media?d.image.endsWith('.webp'):d.image==='assets/discoveries/'+d.id+'.svg');
   assert.ok(d.description);if(!d.fiction)assert.ok(d.sources.length>0,d.id+' missing a primary source');
   for(const s of d.sources)assert.match(s.url,/^https:\/\//);
  }
@@ -86,9 +87,9 @@ test('the starter wine and dried fish cycle remains profitable before the first 
 });
 
 test('hard discoveries have one rumor, legendary discoveries two distinct active port rumors',()=>{
- assert.equal(RUMORS.length,58);assert.equal(Object.keys(RUMOR_BY_ID).length,58);
+ assert.equal(RUMORS.length,58+DISCOVERIES.filter(d=>d.media).length);assert.equal(Object.keys(RUMOR_BY_ID).length,RUMORS.length);
  for(const d of DISCOVERIES){
-  assert.equal(d.rumorIds.length,d.tier===4?2:d.tier===3?1:0);
+  assert.equal(d.rumorIds.length,d.media?1:d.tier===4?2:d.tier===3?1:0);
   const rumors=d.rumorIds.map(id=>RUMOR_BY_ID[id]);
   for(const r of rumors){assert.ok(ACTIVE_PORT_IDS.includes(r.portId));assert.equal(r.discoveryId,d.id);assert.ok(r.text.length>10);}
   assert.equal(new Set(rumors.map(r=>r.portId)).size,rumors.length);

@@ -39,7 +39,7 @@ test('quiz reward grows beyond the current catalog and locks at question creatio
  assert.equal(answerQuiz(game,'all',q.id,q.correct,now).noWrite,true);
  assert.equal(game.money,original+3600);
  const book=openQuiz(game,'book',now,()=>.2).record;
- assert.equal(book.reward,9800);
+ assert.equal(book.reward,quizReward(DISCOVERIES.length));
  const wrong=book.options.find(option=>option!==book.correct);
  assert.equal(answerQuiz(game,'book',book.id,wrong,now).record.paid,0);
  const reset=quizResetAt(now);

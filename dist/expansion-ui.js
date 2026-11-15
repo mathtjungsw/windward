@@ -1,20 +1,20 @@
-import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.15-freight-daily-limit';
-import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.15-freight-daily-limit';
-import {historicalArt} from './historical-ship-art.js?v=2026.11.15-freight-daily-limit';
-import {vesselGunLimits} from './cannons.js?v=2026.11.15-freight-daily-limit';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-freight-daily-limit';
-import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
-import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.15-freight-daily-limit';
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.15-freight-daily-limit';
-import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,STORED_SHIP_LIMIT,storedShips} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-daily-limit';
-import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.15-freight-daily-limit';
-import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS as KINDS} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
-import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.15-freight-daily-limit';
-import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.15-freight-daily-limit';
-import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.15-freight-daily-limit';
-import {lastSeenText} from './captain-time.js?v=2026.11.15-freight-daily-limit';
-import {nextShipEndsProtection} from './novice.js?v=2026.11.15-freight-daily-limit';
+import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.15-era-atlas';
+import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.15-era-atlas';
+import {historicalArt} from './historical-ship-art.js?v=2026.11.15-era-atlas';
+import {vesselGunLimits} from './cannons.js?v=2026.11.15-era-atlas';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-era-atlas';
+import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.15-era-atlas';
+import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.15-era-atlas';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.15-era-atlas';
+import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,STORED_SHIP_LIMIT,storedShips} from './ship-rules.js?v=2026.11.15-era-atlas';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-era-atlas';
+import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.15-era-atlas';
+import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS as KINDS} from './discoveries-catalog.js?v=2026.11.15-era-atlas';
+import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.15-era-atlas';
+import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.15-era-atlas';
+import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.15-era-atlas';
+import {lastSeenText} from './captain-time.js?v=2026.11.15-era-atlas';
+import {nextShipEndsProtection} from './novice.js?v=2026.11.15-era-atlas';
 const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createExpansion(api){
@@ -194,12 +194,12 @@ export function createExpansion(api){
   $('#ship-cancel').onclick=()=>showShip();$('#ship-confirm').onclick=async()=>{if(busy)return;busy=true;try{const r=await api.onShipAction(game=>(kind==='upgrade'?upgradeShip:addShip)(game));if(r){tierKey='';showShip();}}finally{busy=false;}};
  }
  function discoveryCardDetail(d,withPoint=false){
-  const study=discoveryStudy(d.id),point=d.point||[d.lon,d.lat],photo=ARCHIVE_CREDITS[d.id];
+  const study=discoveryStudy(d.id),point=d.point||[d.lon,d.lat],photo=d.media||ARCHIVE_CREDITS[d.id];
   const sources=[...(d.sources||[]),...(study?.sources||[])];
   return `<figure class="discovery-photo"><img class="discovery-hero" src="${collectionArt(d.id,true)}" alt="${esc(d.name)} ${photo?'자료 이미지':'재현 그림'}">
     <figcaption>${photo?`${photo.referenceOnly?'관련 실물 참고 사진 · ':''}<a href="${esc(photo.url)}" target="_blank" rel="noopener noreferrer">원본 자료</a> · ${esc(photo.author)} · ${photo.licenseUrl?`<a href="${esc(photo.licenseUrl)}" target="_blank" rel="noopener noreferrer">${esc(photo.license)}</a>`:esc(photo.license)} · 웹 표시용 크기 조정`:'학습용으로 재현한 이미지'}</figcaption></figure>
     <dl class="discovery-location">
-      <dt>${d.fiction?'이야기 배경':'실제 위치·서식지'}</dt><dd>${esc(d.place||study?.place||d.region)}</dd>
+      <dt>${d.fiction?'이야기 배경':d.kind==='book'?'제작·전승 지역':'실제 위치·서식지'}</dt><dd>${esc(d.place||study?.place||d.region)}</dd>
       ${withPoint?`<dt>게임 발견 지점</dt><dd>${esc(discoveryCoordinates(point))} <button type="button" data-discovery-study-map>지도에서 보기</button></dd>`:''}
     </dl>
     <h3>자세히 알아보기</h3><p>${esc(study?.detail||d.description)}</p>
@@ -321,7 +321,7 @@ export function createExpansion(api){
   function paint(){
     root.innerHTML='<div class="collection-grid">'+entries.map(entry=>{
       const i=Number(entry.id.slice(1))-1;
-      const image=officers?(entry.scenario?'<div class="fictional-officer">항해자의 동료<br>창작 인물</div>':`<div class="officer-portrait" style="background-position:${i%6*20}% ${Math.floor(i/6)*100/3}%" aria-hidden="true"></div>`):
+      const image=officers?(entry.scenario?'<div class="fictional-officer">항해자의 동료<br>창작 인물</div>':i>=24?'':`<div class="officer-portrait" style="background-position:${i%6*20}% ${Math.floor(i/6)*100/3}%" aria-hidden="true"></div>`):
         `<img loading="lazy" src="${collectionArt(entry.id)}" alt="">`;
       return `<button class="collection-card collected" data-public-card="${entry.id}">${image}<strong>${esc(entry.name)}</strong>${officers?`<small>${esc(entry.effect)}</small>`:''}</button>`;
     }).join('')+'</div>';
@@ -329,7 +329,7 @@ export function createExpansion(api){
       const entry=entries.find(value=>value.id===button.dataset.publicCard);
       const portrait=Number(entry.id.slice(1))-1;
       root.innerHTML=`<h3>${esc(entry.name)}</h3>${officers?
-        `${entry.scenario?'<p class="fictional-officer">항해자의 이야기에서 만난 창작 인물</p>':`<div class="officer-portrait public-officer" style="background-position:${portrait%6*20}% ${Math.floor(portrait/6)*100/3}%"></div>`}<p>${esc(entry.effect)}</p>`:
+        `${entry.scenario?'<p class="fictional-officer">항해자의 이야기에서 만난 창작 인물</p>':portrait>=24?'':`<div class="officer-portrait public-officer" style="background-position:${portrait%6*20}% ${Math.floor(portrait/6)*100/3}%"></div>`}<p>${esc(entry.effect)}</p>`:
         discoveryCardDetail(entry)}<button data-usage-key="action-public-card-back" data-public-back>카드 목록</button>`;
       root.querySelector('[data-public-back]').onclick=paint;
     };

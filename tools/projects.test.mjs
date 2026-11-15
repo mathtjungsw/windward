@@ -247,8 +247,8 @@ test('distance gear expires at the exact mileage used by preview and runtime',()
   assert.deepEqual(game.rumorProgress.distanceGear,{});
 });
 
-test('64 unique item IDs, partial trade voucher settlement and item record limits survive save normalization',()=>{
-  assert.deepEqual(ITEMS.filter(x=>!x.scenario).map(x=>x.id).sort(),Array.from({length:64},(_,i)=>'I'+String(i+1).padStart(3,'0')));
+test('98 unique item IDs, partial trade voucher settlement and item record limits survive save normalization',()=>{
+  assert.deepEqual(ITEMS.filter(x=>!x.scenario).map(x=>x.id).sort(),Array.from({length:98},(_,i)=>'I'+String(i+1).padStart(3,'0')));
   const game=asCaptain('amsterdam');
   game.rumorProgress=normalizeRumorProgress(game);
   game.rumorProgress.items.I018=1;game.rumorProgress.items.I024=1;
@@ -263,7 +263,7 @@ test('64 unique item IDs, partial trade voucher settlement and item record limit
   assert.equal(normalizeRumorProgress(game).records.prices.length,3);
 });
 
-test('every one of the 64 items and 24 officers requires a tavern clue and survives the regular acquisition and save path',()=>{
+test('every tavern item and officer requires a clue and survives acquisition and reload',()=>{
   for(const entry of [...ITEMS,...OFFICERS].filter(entry=>!entry.scenario)){
     assert.ok(ACTIVE_PORT_BY_ID[entry.tavern]&&ACTIVE_PORT_BY_ID[entry.port],entry.id);
     assert.ok(GOODS[entry.challenge.cargo],entry.id);

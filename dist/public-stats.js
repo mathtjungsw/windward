@@ -1,11 +1,11 @@
-import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.15-freight-daily-limit';
-import {GOODS} from './data.js?v=2026.11.15-freight-daily-limit';
-import {Exploration} from './voyage-core.js?v=2026.11.15-freight-daily-limit';
-import {explorationStats} from './exploration-score.js?v=2026.11.15-freight-daily-limit';
-import {discoveryStats} from './discoveries.js?v=2026.11.15-freight-daily-limit';
-import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
-import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.15-freight-daily-limit';
+import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.15-era-atlas';
+import {GOODS} from './data.js?v=2026.11.15-era-atlas';
+import {Exploration} from './voyage-core.js?v=2026.11.15-era-atlas';
+import {explorationStats} from './exploration-score.js?v=2026.11.15-era-atlas';
+import {discoveryStats} from './discoveries.js?v=2026.11.15-era-atlas';
+import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.15-era-atlas';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-era-atlas';
+import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.15-era-atlas';
 export function collectionRankStats(game){
  const progress=game.rumorProgress,acquired=new Set(progress?.acquiredItems||[]),officers=new Set(progress?.officers||[]);
  return {shoreCompleted:game.shoreProgress?.count||0,rareFinds:DISCOVERIES.filter(d=>d.tier>=3&&game.discoveries?.[d.id]).length,

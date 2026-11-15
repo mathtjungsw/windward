@@ -1,7 +1,8 @@
-import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.15-freight-daily-limit';
-import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.15-freight-daily-limit';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
-import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.15-freight-daily-limit';
+import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.15-era-atlas';
+import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.15-era-atlas';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.15-era-atlas';
+import {eraAvailable} from './era-cycle.js?v=2026.11.15-era-atlas';
+import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.15-era-atlas';
 
 export const isConsumable=entry=>['supply','repair','coupon','extension','shore-consumable','distance','trade-voucher','activity','project','facility'].includes(entry?.type);
 export const itemLimit=entry=>isConsumable(entry)?20:1;
@@ -69,7 +70,7 @@ function rumorDetails(id){
 const sortRumors=entries=>entries.sort((a,b)=>a.text.localeCompare(b.text,'ko'));
 export function rumorsAtTavern(game){
   if(!safeDock(game))return [];
-  const discoveries=Object.values(RUMOR_BY_ID).filter(r=>r.portId===game.port);
+  const discoveries=Object.values(RUMOR_BY_ID).filter(r=>r.portId===game.port&&eraAvailable(r));
   return sortRumors([...discoveries,...tavernRumors(game),...(game.port==='busan'?[TURTLE_RUMOR]:[])].map(r=>rumorDetails(r.id)));
 }
 export function rumorNote(game){
@@ -100,7 +101,7 @@ export function rumorRequirement(game,entry){
   return { ...rule, visitCount, met:game.shipTier+1>=rule.stage&&visitCount>=rule.ports };
 }
 export function tavernRumors(game){
-  return safeDock(game)?CONTRACTS.filter(entry=>!entry.scenario&&entry.tavern===game.port&&rumorRequirement(game,entry).met):[];
+  return safeDock(game)?CONTRACTS.filter(entry=>!entry.scenario&&entry.tavern===game.port&&rumorRequirement(game,entry).met&&(eraAvailable(entry)||game.rumorProgress?.read?.includes(entry.id))):[];
 }
 export function readContractRumor(game,id){
   if(id===TURTLE_RUMOR.id){if(!safeDock(game)||game.port!=='busan')return false;turtleShipyard(game,'rumor');}
@@ -295,4 +296,4 @@ export function contractDescription(entry){
   if(entry.scenario)return '항해자의 이야기 완료 보상입니다. 획득 후 기존 장비 칸 또는 동행 부선장으로 선택하세요.';
   return entry.challenge.ports.map(id=>PORT_BY_ID[id]?.name).join(' · ')+' 방문, '+GOODS[entry.challenge.cargo].name+' '+entry.challenge.qty+'상자 납품';
 }
-import {CANAL_IDS} from './canal-reservations.js?v=2026.11.15-freight-daily-limit';
+import {CANAL_IDS} from './canal-reservations.js?v=2026.11.15-era-atlas';

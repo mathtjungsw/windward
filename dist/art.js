@@ -1,9 +1,9 @@
-import {historicalGlyph} from './historical-ship-art.js?v=2026.11.15-freight-daily-limit';
-import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.15-freight-daily-limit';
-import {ATLAS_ADDITIONS,DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
+import {historicalGlyph} from './historical-ship-art.js?v=2026.11.15-era-atlas';
+import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.15-era-atlas';
+import {ATLAS_ADDITIONS,DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.15-era-atlas';
 // Original vector illustrations for Windward. No external images or runtime requests.
 export const SHIP_ART_NAMES=Object.freeze(['통나무 뗏목','돛 달린 뗏목','보강 뗏목','소형 노젓는 배','소형 교역 돛배','단돛 교역선','연안 교역선','개량 연안선','쌍돛 연안선','항해 캐러벨','개량 캐러벨','대형 캐러벨','소형 카락','교역 카락','대형 카락','원양 교역선','교역 갤리온','대형 갤리온','원양 대형 범선','명장의 교역 범선']);
-export const DISCOVERY_ART_IDS=Object.freeze(DISCOVERIES.map(d=>d.id));
+export const DISCOVERY_ART_IDS=Object.freeze(DISCOVERIES.filter(d=>!d.media).map(d=>d.id));
 
 const P={ink:'#244e57',wood:'#9b7047',woodLight:'#c59c65',woodDark:'#654a36',paper:'#fff5da',gold:'#c39a49',water:'#a8d5d6',sea:'#6daeb7',sky:'#e8f4ef',sand:'#e9d8ae',stone:'#aeaa91',green:'#789976'};
 const esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -68,6 +68,8 @@ export function shipArt(tier){const t=tierIndex(tier);return svg('ship-'+t,SHIP_
 export function shipArtPath(tier){return `assets/ships/ship-${String(tierIndex(tier)+1).padStart(2,'0')}.svg`;}
 export function discoveryArt(id){return `assets/discoveries/${DISCOVERY_ART_IDS.includes(id)?id:'unknown'}.svg`;}
 export function collectionArt(id,detail=false){
+ const discoveryImage=DISCOVERY_BY_ID[id];
+ if(discoveryImage?.media)return detail?discoveryImage.image:discoveryImage.thumbnail;
  if(Object.hasOwn(ARCHIVE_CREDITS,id))return `assets/archive-discoveries/${id}${detail?'':'-thumb'}.webp`;
  if(ATLAS_ADDITIONS.some(entry=>entry.id===id))return discoveryArt(id);
  id=({IS01:'I045',IS02:'I050'})[id]||id;

@@ -1,71 +1,73 @@
-import {createCaptainsMail} from './captains-mail.js?v=2026.11.15-freight-daily-limit';
-import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.15-freight-daily-limit';
-import {regionalEvent} from './market-events.js?v=2026.11.15-freight-daily-limit';
-import {createUiUsage} from './ui-usage.js?v=2026.11.15-freight-daily-limit';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.15-freight-daily-limit';
-import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.15-freight-daily-limit';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.15-freight-daily-limit';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.15-freight-daily-limit';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.15-freight-daily-limit';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.15-freight-daily-limit';
-import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.15-freight-daily-limit';
-import {createBlessings} from './blessings-ui.js?v=2026.11.15-freight-daily-limit';
-import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.15-freight-daily-limit';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.15-freight-daily-limit';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.15-freight-daily-limit';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.15-freight-daily-limit';
-import {createCommunity} from './community.js?v=2026.11.15-freight-daily-limit';
-import {createTaxCollector} from './tax-collector.js?v=2026.11.15-freight-daily-limit';
-import {createStoryUI} from './story-ui.js?v=2026.11.15-freight-daily-limit';
-import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.15-freight-daily-limit';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.15-freight-daily-limit';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.15-freight-daily-limit';
-import {createCombat} from './combat-ui.js?v=2026.11.15-freight-daily-limit';
-import {createBusiness} from './business-ui.js?v=2026.11.15-freight-daily-limit';
-import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.15-freight-daily-limit';
-import {createInlandUI} from './inland-ui.js?v=2026.11.15-freight-daily-limit';
-import {INLAND_CITIES,INLAND_PORTS,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.15-freight-daily-limit';
-import {createExpansion} from './expansion-ui.js?v=2026.11.15-freight-daily-limit';
-import {gameStats} from './public-stats.js?v=2026.11.15-freight-daily-limit';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
-import {shipGlyph} from './art.js?v=2026.11.15-freight-daily-limit';
-import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.15-freight-daily-limit';
-import {RELEASE} from './release-notes.js?v=2026.11.15-freight-daily-limit';
-import {createUX} from './ux.js?v=2026.11.15-freight-daily-limit';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.15-freight-daily-limit';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.15-freight-daily-limit';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.15-freight-daily-limit';
-import {AtlasView} from './atlas-view.js?v=2026.11.15-freight-daily-limit';
-import {FleetPresence} from './multiplayer.js?v=2026.11.15-freight-daily-limit';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.15-freight-daily-limit';
-import {CaptainChat} from './chat.js?v=2026.11.15-freight-daily-limit';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.15-freight-daily-limit';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.15-freight-daily-limit';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.15-freight-daily-limit';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-freight-daily-limit';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.15-freight-daily-limit';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.15-freight-daily-limit';
-import {CaptainRankings} from './rankings.js?v=2026.11.15-freight-daily-limit';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.15-freight-daily-limit';
+import {createCaptainsMail} from './captains-mail.js?v=2026.11.15-era-atlas';
+import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.15-era-atlas';
+import {regionalEvent} from './market-events.js?v=2026.11.15-era-atlas';
+import {createUiUsage} from './ui-usage.js?v=2026.11.15-era-atlas';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-era-atlas';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.15-era-atlas';
+import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.15-era-atlas';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.15-era-atlas';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.15-era-atlas';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.15-era-atlas';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.15-era-atlas';
+import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.15-era-atlas';
+import {createBlessings} from './blessings-ui.js?v=2026.11.15-era-atlas';
+import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.15-era-atlas';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.15-era-atlas';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.15-era-atlas';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.15-era-atlas';
+import {createCommunity} from './community.js?v=2026.11.15-era-atlas';
+import {createTaxCollector} from './tax-collector.js?v=2026.11.15-era-atlas';
+import {createStoryUI} from './story-ui.js?v=2026.11.15-era-atlas';
+import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.15-era-atlas';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.15-era-atlas';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.15-era-atlas';
+import {createCombat} from './combat-ui.js?v=2026.11.15-era-atlas';
+import {createBusiness} from './business-ui.js?v=2026.11.15-era-atlas';
+import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.15-era-atlas';
+import {createInlandUI} from './inland-ui.js?v=2026.11.15-era-atlas';
+import {INLAND_CITIES,INLAND_PORTS,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.15-era-atlas';
+import {createExpansion} from './expansion-ui.js?v=2026.11.15-era-atlas';
+import {gameStats} from './public-stats.js?v=2026.11.15-era-atlas';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.15-era-atlas';
+import {shipGlyph} from './art.js?v=2026.11.15-era-atlas';
+import {inspectDiscovery,explorationAllowed,discoveryStats,hasClues} from './discoveries.js?v=2026.11.15-era-atlas';
+import {RELEASE} from './release-notes.js?v=2026.11.15-era-atlas';
+import {createUX} from './ux.js?v=2026.11.15-era-atlas';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.15-era-atlas';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.15-era-atlas';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.15-era-atlas';
+import {AtlasView} from './atlas-view.js?v=2026.11.15-era-atlas';
+import {FleetPresence} from './multiplayer.js?v=2026.11.15-era-atlas';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.15-era-atlas';
+import {CaptainChat} from './chat.js?v=2026.11.15-era-atlas';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.15-era-atlas';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.15-era-atlas';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.15-era-atlas';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-era-atlas';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.15-era-atlas';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.15-era-atlas';
+import {CaptainRankings} from './rankings.js?v=2026.11.15-era-atlas';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.15-era-atlas';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.15-freight-daily-limit';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.15-freight-daily-limit';
-import {portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.15-freight-daily-limit';
-import {createGuildUI} from './guild-ui.js?v=2026.11.15-freight-daily-limit';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.15-freight-daily-limit';
-import {ownership} from './commerce.js?v=2026.11.15-freight-daily-limit';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.15-freight-daily-limit';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.15-freight-daily-limit';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.15-freight-daily-limit';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.15-freight-daily-limit';
-import {createShoreUI} from './shore-ui.js?v=2026.11.15-freight-daily-limit';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.15-freight-daily-limit';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.15-freight-daily-limit';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
-import {useRepairKit} from './activities.js?v=2026.11.15-freight-daily-limit';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.15-freight-daily-limit';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.15-freight-daily-limit';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.15-era-atlas';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.15-era-atlas';
+import {portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.15-era-atlas';
+import {harborMarket,harborSupply} from './data.js?v=2026.11.15-era-atlas';
+import {configureEra,ERA_PERIOD,eraAt,setEraServerOffset} from './era-cycle.js?v=2026.11.15-era-atlas';
+import {createGuildUI} from './guild-ui.js?v=2026.11.15-era-atlas';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.15-era-atlas';
+import {ownership} from './commerce.js?v=2026.11.15-era-atlas';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.15-era-atlas';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.15-era-atlas';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.15-era-atlas';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.15-era-atlas';
+import {createShoreUI} from './shore-ui.js?v=2026.11.15-era-atlas';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.15-era-atlas';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.15-era-atlas';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.15-era-atlas';
+import {useRepairKit} from './activities.js?v=2026.11.15-era-atlas';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.15-era-atlas';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.15-era-atlas';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -553,9 +555,9 @@ function renderPanel(){
    portMessage.open=!!message;
   }
   $('#trade-heading').textContent=atPort?'이 항구의 교역품':'현지 시세 · 도착 후 거래 가능';
-  $('#market').innerHTML=p?p.market.map(id=>{
+  $('#market').innerHTML=p?harborMarket(p,guildTime()).map(id=>{
     const g=GOODS[id],unit=business?.displayUnit(p.id,id)??price(p.id,id,state.day);
-    return `<div class="market-row"><span class="good-icon" style="color:${g.color}">${g.icon}</span><div class="good-name"><strong>${g.name}</strong><small class="${p.specialty===id?'specialty':''}">${{producer:'✦ 대표 공급',local:'지역 공급',import:'수입·중계'}[p.economy.stock[id]]}</small></div><div class="good-price">${unit}<small>D / 상자</small></div><button class="trade-btn" data-buy="${id}" ${atPort&&!restricted?'':'disabled'}>구매</button></div>`;
+    return `<div class="market-row"><span class="good-icon" style="color:${g.color}">${g.icon}</span><div class="good-name"><strong>${g.name}</strong><small class="${p.specialty===id?'specialty':''}">${{producer:'✦ 대표 공급',local:'지역 공급',import:'수입·중계'}[harborSupply(p,id)]||''}${g.era?' · 시대 교역품':''}</small></div><div class="good-price">${unit}<small>D / 상자</small></div><button class="trade-btn" data-buy="${id}" ${atPort&&!restricted?'':'disabled'}>구매</button></div>`;
   }).join(''):'<div class="empty-cargo">가까운 항구에 들어가면<br>교역소를 이용할 수 있어요.</div>';
   if(p?.depot){
     $('#trade-heading').textContent='공동 보급항';
@@ -660,6 +662,7 @@ async function approachDiscovery(d){
    else toast(message,'error');
  };
  if(!d||!nav||!explorationAllowed(state)||state.voyage?.legacy)return fail('현재 항해를 마친 뒤 조사 지점으로 이동할 수 있어요.');
+ if(!hasClues(state,d,guildTime()))return fail('지금은 이 조사 지점을 찾을 수 없어요.');
  if(currentCanal(state.voyage))return fail('운하 구간을 빠져나온 뒤 조사 지점으로 이동할 수 있어요.');
  if(!playing||sessionBlocked||account.busy||account.economicUncertain||state.seaJob||combat?.blocked())return fail('진행 중인 활동이나 저장을 마친 뒤 다시 시도해 주세요.');
  const previous=state.voyage,oldPlan=planned,point=d.point||[d.lon,d.lat];
@@ -1090,7 +1093,7 @@ async function startVoyage(intent=navigationIntent,replacing=false,investigation
     stopForUI();refundCanalTolls(state);state.controlMode='auto';selected=null;
     if(investigation.destination)state.detourTarget=investigation.destination;
     state.investigationTarget=investigation.id;
-  }
+  }else delete state.investigationTarget;
   if(resumedDetour)delete state.detourTarget;
   state.voyage={...planned.route,target:planned.target,origin:state.port,travelled:0,foodRemaining:estimate.food,...(planned.depot?{depot:planned.depot}:{})};state.port=null;delete state.depotDock;paused=false;planned=null;log(`${toward(state.voyage.target?PORT_BY_ID[state.voyage.target].name:PROJECT_BY_ID[state.voyage.depot]?.name||'새로운 해역')} 출항. 총 ${fmt(state.voyage.total)}해리.`, 'sailing');toast('⚓ 출항! 새로운 바다가 기다립니다.');modal.close();ux?.closeSheet();renderRoutes();renderPanel();renderHUD();centerShip();save();uiUsage.complete('action-voyage');
   if(innerWidth<=850)$('.chart').scrollIntoView({behavior:'smooth',block:'start'});
@@ -1119,7 +1122,7 @@ function arrive(manualPort=null){
     if(PORT_BY_ID[v.target]?.depot)void refillDepotOnArrival(v.target,arrival);
   }
   if(v.depot&&account.ready&&!safeReturn)void dockAtDepot(v.depot);
-  if(!v.target&&state.investigationTarget){delete state.investigationTarget;expansion?.investigate();}
+  if(!v.target&&state.investigationTarget)expansion?.investigate();
   if(discovery){const p=PORT_BY_ID[v.target];showModal(`${p.name}, 새로운 발견`,'A NEW PAGE IN YOUR ATLAS',`<p style="color:var(--gold);font-size:11px">${p.country} · ${p.region} · ${coordinates(p)}</p><p>${p.fact}</p><p class="help-tip">지리 수첩에 새로운 항구가 기록됐어요.<br>발견 보상 <strong>+${120+Math.floor(120*(activeOfficer(state)?.firstVisit||0))} D</strong></p><button class="primary-button" id="discovery-quiz">지리 퀴즈에 도전 · +100 D</button><button class="service-button" id="discovery-close">항구 둘러보기 <span>→</span></button>`);$('#discovery-close').onclick=()=>modal.close();$('#discovery-quiz').onclick=()=>quiz(p);}
 }
 
@@ -1363,7 +1366,9 @@ new ResizeObserver(()=>{if(mapReady)resizeMap();}).observe($('.chart'));
 
 let lastHud=0,lastSave=0;
 let ownershipCheckAt=0;
+let eraPaintAt=0;
 function tick(now){
+ if(now>=eraPaintAt){eraPaintAt=now+15000;renderEra();}
  renderInlandProgress(now);
  if(now>=ownershipCheckAt&&playing&&account.ready&&!document.hidden){ownershipCheckAt=now+60000;uiUsage.tick?.();community?.syncOwnership().catch(()=>{});taxCollector?.tick();}
  const allowed=playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!combat?.blocked()&&!paused&&!modal.open&&!ux?.isBlocking()&&!document.hidden;
@@ -1494,6 +1499,7 @@ async function readFreightParticipation(){
   return (await sdk.get(sdk.ref(account.db,'gameV2/'+freightParticipationPath()))).val();
 }
 projectsUI=createProjectsUI({game:()=>state,uid:()=>account.uid,now:guildTime,nav:()=>nav,modal:showModal,close:()=>{modal.close();paused=false;centerShip();},
+  openSpecialty:id=>business.showDepotMarket(id),
   setCanals:enabled=>{state.useCanals=enabled;save();toast(enabled?'자동 항해에 운하를 이용해요. 통행료는 항로에 표시돼요.':'자동 항해에서 운하를 제외해요.');if(planned&&!state.voyage)planDestination(planned.target,planned.point,false);},
   read:async id=>{
     const record=await account.readShared('projects',id),project=PROJECT_BY_ID[id];
@@ -1604,6 +1610,48 @@ $('#chat-input').onfocus=()=>heldKeys.clear();
 $('#chat-panel').addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){e.preventDefault();toggleChat(false);}else if(e.target.id==='chat-input'&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('#chat-form').requestSubmit();}});
 $('#chat-form').onsubmit=async e=>{e.preventDefault();const input=$('#chat-input'),draft=input.value,text=chatText(draft);$('#chat-send').disabled=true;input.disabled=true;$('#chat-status').textContent='전송 중…';const result=await chat.send(text);if(result.ok){if(input.value===draft){input.value='';$('#chat-count').textContent='0/200';}$('#chat-status').textContent='전송했어요 · 다음 메시지는 3초 뒤에';}else $('#chat-status').textContent=result.error;renderChatConnection();if(chatOpen&&!input.disabled)input.focus();};
 renderRanks();renderChatConnection();
+const eraButton=$('#era-status');
+const eraAnnouncement=$('#era-announcement');
+const eraStorageKey='windward-last-era-start';
+const eraArt=era=>`assets/era-heroes/${era.art}.webp`;
+let lastEraStart=null;
+try{lastEraStart=Number(storage.getItem(eraStorageKey))||null;}catch{}
+let paintedEra;
+function renderEra(){
+  const now=guildTime();setEraServerOffset(account.serverOffset||0);
+  const era=eraAt(now);
+  eraButton.hidden=!era;
+  if(era){
+    const hours=Math.max(1,Math.ceil((era.end-now)/3600000));
+    eraButton.textContent=`${era.name} · ${hours}시간 남음`;
+    if(lastEraStart!==null&&era.start>lastEraStart){
+      eraAnnouncement.querySelector('img').src=eraArt(era);
+      eraAnnouncement.querySelector('strong').textContent=era.name;
+      eraAnnouncement.hidden=false;
+    }
+    if(era.start!==lastEraStart){
+      lastEraStart=era.start;
+      try{storage.setItem(eraStorageKey,String(lastEraStart));}catch{}
+    }
+  }else{
+    eraAnnouncement.hidden=true;
+  }
+  if(paintedEra!==era?.window){paintedEra=era?.window;if(mapReady)renderPanel();}
+}
+function showEraDetails(){
+  const now=guildTime(),era=eraAt(now),port=selected&&PORT_BY_ID[selected];
+  if(!era)return;
+  const changes=port?(()=>{
+    const current=harborMarket(port,now),future=harborMarket(port,era.end);
+    const names=rows=>rows.map(id=>GOODS[id].name).join(', ');
+    const added=names(future.filter(id=>!current.includes(id))),removed=names(current.filter(id=>!future.includes(id)));
+    return added||removed?`<h3>${port.name} 교역품 변경</h3>${added?`<p>추가 · ${added}</p>`:''}${removed?`<p>종료 · ${removed}</p>`:''}`:'';
+  })():'';
+  showModal(era.name,era.years+'년 테마',`<figure class="era-hero"><img src="${eraArt(era)}" width="1000" height="450" alt="${era.alt}"></figure><p>${era.preview}</p><h3>다음 · ${era.next.name}</h3><p>${new Date(era.end).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'medium',timeStyle:'short'})} (한국시간)</p><p>${era.next.preview}</p>${changes}`,'medium');
+}
+eraButton.onclick=showEraDetails;
+$('#era-announcement-open').onclick=()=>{eraAnnouncement.hidden=true;eraButton.focus();showEraDetails();};
+$('#era-announcement-dismiss').onclick=()=>{eraAnnouncement.hidden=true;eraButton.focus();};
 async function maintenanceInProgress(){
   if(location.hostname!=='mathtjungsw.github.io')return false;
   try{
@@ -1611,6 +1659,7 @@ async function maintenanceInProgress(){
     const response=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(3000)});
     if(!response.ok)return false;
     const release=await response.json();
+    configureEra(release?.eraStart);renderEra();
     const force=release?.forceClassicChart===true;
     if(forcedClassic!==force){
       forcedClassic=force;
@@ -1618,6 +1667,13 @@ async function maintenanceInProgress(){
     }
     return release?.maintenance===true;
   }catch{return false;}
+}
+if(['localhost','127.0.0.1'].includes(location.hostname)){
+  const requested=Number(new URLSearchParams(location.search).get('era'));
+  const previewEpoch=Date.UTC(2026,10,14,15);
+  const window=Math.floor((Date.now()-previewEpoch)/ERA_PERIOD);
+  const phase=Number.isInteger(requested)&&requested>=1&&requested<=4?requested-1:null;
+  configureEra(phase===null?previewEpoch:previewEpoch+(window-phase)*ERA_PERIOD);renderEra();
 }
 if(await maintenanceInProgress()){
   location.replace('maintenance.html');

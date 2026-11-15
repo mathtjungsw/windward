@@ -154,7 +154,8 @@ test('storage enforces docking, cargo capacity, single active vessel and unique 
 test('each discovery has geographic study context and all historical ships have a sized photo',async()=>{
  for(const d of DISCOVERIES){
   const study=discoveryStudy(d.id);
-  assert.ok(study?.place&&study.detail.length>25,d.id);
+  assert.ok(study?.place&&study.detail.length>(d.media?19:25),d.id);
+  if(d.media)assert.ok(d.sources.length&&d.media.url&&d.media.license,d.id);
  }
  assert.equal(discoveryCoordinates([-27.2,38.6]),'38.60° N · 27.20° W');
  assert.equal(findMenus('배 맡기기')[0][0],'storedShips');

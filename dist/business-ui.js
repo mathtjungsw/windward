@@ -1,20 +1,20 @@
-import {noviceActive} from './novice.js?v=2026.11.15-freight-daily-limit';
-import {createHarborArena} from './harbor-arena.js?v=2026.11.15-freight-daily-limit';
-import {extraHarborRumor,harborOfficerRole,HARBOR_ROLE_LABEL,freeRecalledOfficer} from './harbor-officers.js?v=2026.11.15-freight-daily-limit';
-import {CONTESTED_PORTS,battleWindow,harborOperator,harborBattleAction,militiaAction,createHarborPractice,reconcileHarborLoss} from './harbor-battles.js?v=2026.11.15-freight-daily-limit';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-freight-daily-limit';
-import {returnReserve,reserveLoss} from './combat-core.js?v=2026.11.15-freight-daily-limit';
-import {PORTS,PORT_BY_ID,GOODS,registerDevelopedPorts} from './data.js?v=2026.11.15-freight-daily-limit';
-import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.15-freight-daily-limit';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-daily-limit';
-import {ship,fleetMaxHP,fleetShips} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
-import {capacity,usedSpace,tradingPort} from './engine.js?v=2026.11.15-freight-daily-limit';
-import {tradeQuote,specialtyStock} from './market-rules.js?v=2026.11.15-freight-daily-limit';
-import {invest,investmentWithdrawal,withdrawInvestment,portGrowth,portMarketItem,growthDeliveryInfo,deliverForGrowth,assignHarborOfficer,delegateTradePreview,portDevelopment,setPortDevelopment,ownership,taxRate,permitted,executeTrade,captainTradeQuote,changePortPolicy,withdrawTax,withdrawBasicIncome,investmentBase,NEUTRAL_PORTS} from './commerce.js?v=2026.11.15-freight-daily-limit';
-import {CANNONS,QUALITIES,cannonStats,buyCannon,equipCannon,upgradeCannon,sellCannon,gunWeight,currentHP} from './cannons.js?v=2026.11.15-freight-daily-limit';
-import {repairHull,coastalAction,playDice} from './activities.js?v=2026.11.15-freight-daily-limit';
-import {advanceBasicIncome,estimateBasicIncome,setIncomeOfficer} from './port-income.js?v=2026.11.15-freight-daily-limit';
-import {activeOfficer} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
+import {noviceActive} from './novice.js?v=2026.11.15-era-atlas';
+import {createHarborArena} from './harbor-arena.js?v=2026.11.15-era-atlas';
+import {extraHarborRumor,harborOfficerRole,HARBOR_ROLE_LABEL,freeRecalledOfficer} from './harbor-officers.js?v=2026.11.15-era-atlas';
+import {CONTESTED_PORTS,battleWindow,harborOperator,harborBattleAction,militiaAction,createHarborPractice,reconcileHarborLoss} from './harbor-battles.js?v=2026.11.15-era-atlas';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-era-atlas';
+import {returnReserve,reserveLoss} from './combat-core.js?v=2026.11.15-era-atlas';
+import {PORTS,PORT_BY_ID,GOODS,registerDevelopedPorts} from './data.js?v=2026.11.15-era-atlas';
+import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.15-era-atlas';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-era-atlas';
+import {ship,fleetMaxHP,fleetShips} from './ship-rules.js?v=2026.11.15-era-atlas';
+import {capacity,usedSpace,tradingPort} from './engine.js?v=2026.11.15-era-atlas';
+import {tradeQuote,specialtyStock} from './market-rules.js?v=2026.11.15-era-atlas';
+import {invest,investmentWithdrawal,withdrawInvestment,portGrowth,portMarketItem,specialtyLimit,specialtyTradePort,growthDeliveryInfo,deliverForGrowth,assignHarborOfficer,delegateTradePreview,portDevelopment,setPortDevelopment,ownership,taxRate,permitted,executeTrade,captainTradeQuote,changePortPolicy,withdrawTax,withdrawBasicIncome,investmentBase,NEUTRAL_PORTS} from './commerce.js?v=2026.11.15-era-atlas';
+import {CANNONS,QUALITIES,cannonStats,buyCannon,equipCannon,upgradeCannon,sellCannon,gunWeight,currentHP} from './cannons.js?v=2026.11.15-era-atlas';
+import {repairHull,coastalAction,playDice} from './activities.js?v=2026.11.15-era-atlas';
+import {advanceBasicIncome,estimateBasicIncome,setIncomeOfficer} from './port-income.js?v=2026.11.15-era-atlas';
+import {activeOfficer} from './rumor-progress.js?v=2026.11.15-era-atlas';
 const developmentCost=(game,level)=>Math.ceil([400000,200000,300000,160000][level]*(1-(activeOfficer(game)?.developmentDiscount||0)))-(level>0&&game.rumorProgress?.items?.I054?300:0);
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const random=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
@@ -69,8 +69,8 @@ export function createBusiness(api){const account=api.account,get=api.getState,c
  }
  async function run(kind,key,fn,done){if(pending)return;pending=true;api.pause();try{await api.beforeService?.();const result=await account.atomicAction(kind,key,fn);api.changed();if(!result?.quiet)api.toast(result?.message||'처리 완료');if(result?.broken)api.rescue();await done?.(result);return result;}catch(e){api.toast(e.message,'error');if($('#business-result'))$('#business-result').textContent=e.message;}finally{pending=false;}}
  async function readPort(id){const c=await account.readShared('ports',id);caches.set(id,c);return c;}
- async function trade(mode,id){if(pending)return;const p=tradingPort(get());if(!p)return api.toast('항구에 입항하세요.');api.pause();tradeState={mode,id,port:p.id,qty:1};try{const {content}=await readPort(p.id);if(!permitted(content,account.uid))return api.toast('이 항구에서는 현재 내 화물을 거래할 수 없어요.');paintTrade();}catch(e){api.toast(e.message,'error');}}
- function paintTrade(){const t=tradeState;if(!t)return;const s=get(),p=PORT_BY_ID[t.port],c=content(t.port),g=GOODS[t.id],max=t.mode==='sell'?s.cargo[t.id]?.qty||0:Math.max(0,Math.min(1000,capacity(s)-usedSpace(s),g.premium?specialtyStock(portMarketItem(c.content,p.id,t.id,c.revision),now(),[0,50,100][portGrowth(c.content,p.id).stage],portDevelopment(c.content,p.id)==='production'?6000000:undefined).stock:Infinity));let q,error='';try{q=captainTradeQuote(s,p.id,t.id,t.qty,t.mode,portMarketItem(c.content,p.id,t.id,c.revision),now(),taxRate(c.content,account.uid,p.id,s));}catch(e){error=e.message;}
+ async function trade(mode,id){if(pending)return;const p=specialtyTradePort(get(),id);if(!p)return api.toast('항구에 입항하세요.');api.pause();tradeState={mode,id,port:p.id,qty:1};try{const {content}=await readPort(p.id);if(!permitted(content,account.uid))return api.toast('이 항구에서는 현재 내 화물을 거래할 수 없어요.');paintTrade();}catch(e){api.toast(e.message,'error');}}
+ function paintTrade(){const t=tradeState;if(!t)return;const s=get(),p=PORT_BY_ID[t.port],c=content(t.port),g=GOODS[t.id],item=portMarketItem(c.content,p.id,t.id,c.revision),max=t.mode==='sell'?s.cargo[t.id]?.qty||0:Math.max(0,Math.min(1000,capacity(s)-usedSpace(s),g.premium?specialtyStock(item,now(),item.specialtyLimit,item.specialtyPeriod).stock:Infinity));let q,error='';try{q=captainTradeQuote(s,p.id,t.id,t.qty,t.mode,item,now(),taxRate(c.content,account.uid,p.id,s));}catch(e){error=e.message;}
  api.modal(`${g.name} ${t.mode==='sell'?'판매':'구매'}`,`${p.name} · 현실 시간 공동 시세`,`<p>${t.mode==='sell'?'이번 판매는 전량 같은 단가로 정산합니다.':'이번 구매는 전량 같은 단가로 정산합니다.'}</p><label>수량 <input id="market-qty" type="number" min="1" max="${max}" value="${t.qty}" inputmode="numeric"></label><div class="dialog-actions">${[1,5,10,max].map(n=>`<button data-market-qty="${n}">${n===max?'최대':n}</button>`).join('')}</div><div id="market-quote">${q?`<p>현재 단가 ${fmt(q.unit)} D · ${t.qty}상자</p><p>상품 총액 ${fmt(q.gross)} D · 세금 ${fmt(q.tax)} D${q.noviceTax?' · 초보 선장 면세':''}${q.albumDiscount?' · 도감 할인 '+fmt(q.albumDiscount)+' D':''}${q.bonus?' · 선장 보너스 +'+fmt(q.bonus)+' D':''}${q.blessing?' · 축복 +'+fmt(q.blessing)+' D':''}</p><h3>${t.mode==='sell'?'받는':'지불할'} 금액 ${fmt(q.total)} D</h3><p>다음 ${t.mode==='sell'?'판매':'구매'} 예상 단가 ${fmt(q.afterUnit)} D/상자 · 구매·판매 시세는 따로 변하고 현실 시간으로 회복</p>`:esc(error)}</div><button id="market-confirm" data-trade-mode="${t.mode}" class="primary-button" ${q&&max?'':'disabled'}>표시 금액으로 ${t.mode==='sell'?'판매':'구매'}</button><p id="business-result" role="status">견적 유효 5초 · 시세가 달라지면 재확인합니다.</p>`,'small');
  const update=n=>{t.qty=Math.max(1,Math.min(max,Math.floor(n)||1));paintTrade();};$('#market-qty').onchange=e=>update(Number(e.target.value));document.querySelectorAll('[data-market-qty]').forEach(b=>b.onclick=()=>update(Number(b.dataset.marketQty)));
  $('#market-confirm').onclick=async()=>{const result=await run('ports',p.id,(game,c,time,revision)=>executeTrade(game,c,account.uid,p.id,t.id,t.qty,t.mode,q,time,revision));if(result){api.onTradeComplete?.(t.mode);await readPort(p.id);paintTrade();$('#business-result').textContent='거래 완료 · '+fmt(result.total)+' D';}else{try{await readPort(p.id);paintTrade();$('#business-result').textContent='새 견적을 확인한 뒤 다시 확정하세요.';}catch{}}};
@@ -269,13 +269,29 @@ $('#growth-deliver')?.addEventListener('click',event=>{
   const order=growthDeliveryInfo(c,port.id,now(),account.uid);
   if(!order)return '';
   const growth=portGrowth(c,port.id);
-  return `<h3>조합 성장 납품</h3><p>투자 ${fmt(growth.total)} D · 납품 기여 ${fmt(growth.contribution)} · 성장 ${growth.stage}단계</p><p>${esc(GOODS[order.good].name)} ${order.quantity}상자 · 보수 ${fmt(order.reward)} D · 기여 +${fmt(order.points)} · 한국 시간 자정까지</p><button id="growth-deliver" data-day="${order.day}" ${order.done||!permitted(c,account.uid)||(get().cargo[order.good]?.qty||0)<order.quantity?'disabled':''}>${order.done?'오늘 납품 완료':'성장 물품 납품'}</button>`;
+  const progress=growth.community?`공용 납품 ${fmt(growth.contribution)}/300상자`:`투자 ${fmt(growth.total)} D · 납품 기여 ${fmt(growth.contribution)}`;
+  return `<h3>조합 성장 납품</h3><p>${progress} · 성장 ${growth.stage}단계</p><p>${esc(GOODS[order.good].name)} ${order.quantity}상자 · 보수 ${fmt(order.reward)} D · 기여 +${fmt(order.points)} · 한국 시간 자정까지</p><button id="growth-deliver" data-day="${order.day}" ${order.done||!permitted(c,account.uid)||(get().cargo[order.good]?.qty||0)<order.quantity?'disabled':''}>${order.done?(growth.community&&growth.stage===2?'성장 완료':'오늘 납품 완료'):'성장 물품 납품'}</button>`;
+ }
+ async function showDepotMarket(id){
+  const port=PORT_BY_ID[id];
+  if(!port?.active||!port.depot||get().port!==id||get().voyage)return api.toast('공동 보급항에 정박하세요.');
+  try{
+   const {content}=await readPort(id);
+   api.modal('공동 보급항 특산품',port.name,`${specialtyMarkup(port,content)}${growthMarkup(port,content)}<button id="depot-market-back">공동 창고로 돌아가기</button><p id="business-result" role="status"></p>`,'medium');
+   $('#depot-market-back').onclick=()=>api.onDepot?.(id);
+   $('#growth-deliver')?.addEventListener('click',event=>{
+    const day=Number(event.currentTarget.dataset.day);
+    run('ports',id,(game,c,time)=>deliverForGrowth(game,c,account.uid,id,time,day),()=>showDepotMarket(id));
+   });
+   document.querySelectorAll('[data-growth-buy]').forEach(b=>{b.onclick=()=>trade('buy',b.dataset.growthBuy);});
+  }catch(error){api.toast(error.message,'error');}
  }
  function specialtyMarkup(port,c){
-  const {stage,next}=portGrowth(c,port.id);
+  const {stage,next,community,facility}=portGrowth(c,port.id);
   return Object.entries(GOODS).filter(([,good])=>good.premium&&good.source===port.id).map(([id,good])=>{
-   if(!stage)return `<p><strong>${esc(good.name)}</strong> · 특산품 해금까지 ${fmt(next)} D</p>`;
-   const limit=[0,50,100][stage],stock=specialtyStock(c.markets?.[id],now(),limit,portDevelopment(c,port.id)==='production'?6000000:undefined).stock;
+   const limit=specialtyLimit(good,stage);
+   if(!limit)return `<p><strong>${esc(good.name)}</strong> · ${community?'공용 납품 '+fmt(next)+'상자 남음':facility?'교역소 2단계에서 해금':good.unlockStage===2?'항구 성장 2단계에서 해금':'특산품 해금까지 '+fmt(next)+' D'}</p>`;
+   const stock=specialtyStock(c.markets?.[id],now(),limit,portDevelopment(c,port.id)==='production'?6000000:undefined).stock;
    return `<p><strong>${esc(good.name)}</strong> · 재고 ${stock}/${limit}상자</p><button data-growth-buy="${id}" ${stock>=30&&permitted(c,account.uid)?'':'disabled'}>특산품 구매 · 재고 30상자 이상</button>`;
   }).join('');
  }
@@ -303,5 +319,5 @@ $('#growth-deliver')?.addEventListener('click',event=>{
    if(content.harborLosses?.[uid])await run('ports',port,(state,live)=>reconcileHarborLoss(state,live,uid));
   }
  }
- return {reconcileHarborRecords,extraRumor:game=>extraHarborRumor(game,content(game.port).content,account.uid,now()),shipAction,trade,showTradeRequest,harborMessage,observe,tradeAccess,displayUnit,showHub,showArmory,syncPorts,run,dispose:()=>{watchVersion++;stopWatch?.();stopRegistry?.();clearTimeout(registryTimer);}};
+ return {reconcileHarborRecords,extraRumor:game=>extraHarborRumor(game,content(game.port).content,account.uid,now()),shipAction,trade,showTradeRequest,harborMessage,observe,tradeAccess,displayUnit,showHub,showDepotMarket,showArmory,syncPorts,run,dispose:()=>{watchVersion++;stopWatch?.();stopRegistry?.();clearTimeout(registryTimer);}};
 }

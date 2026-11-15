@@ -16,6 +16,14 @@ let patch=await prepare('a','ports','porto',{markets:{wine:{pressure:4000,at:Dat
 assert.equal((await req('gameV2/shared/ports/porto',{uid:'a',method:'PUT',body:patch['shared/ports/porto']})).status,401,'market write requires paired own save');
 assert.equal((await req('gameV2/privateSaves/a',{uid:'a',method:'PUT',body:patch['privateSaves/a']})).status,401,'save receipt requires paired market write');
 assert.equal((await apply('a',patch)).status,200,'paired trade receipt');assert.equal((await apply('a',patch)).status,401,'operation replay blocked');
+const eraDuration=172800000,epoch=Date.now()-eraDuration-60000;
+assert.equal((await req('releaseStatus',{admin:true,method:'PUT',body:{eraStart:epoch}})).status,200);
+const nextTrade=await prepare('a','ports','porto',{markets:{wine:{pressure:8000,at:Date.now()}}});
+nextTrade['privateSaves/a'].lastOperation.marketEra=0;
+assert.equal((await apply('a',nextTrade)).status,401,'the server rejects an expired era quote');
+nextTrade['privateSaves/a'].lastOperation.marketEra=1;
+assert.equal((await apply('a',nextTrade)).status,200,'the same trade succeeds in the current era');
+await req('releaseStatus',{admin:true,method:'DELETE'});
 const aRace=await prepare('a','ports','porto',{tradeWinner:'a'}),bRace=await prepare('b','ports','porto',{tradeWinner:'b'});const race=await Promise.all([apply('a',aRace),apply('b',bRace)]);assert.deepEqual(race.map(r=>r.status).sort(),[200,401],'one port revision wins a race');
 assert.equal((await req('gameV2/privateSaves/b',{uid:'a'})).status,401,'no cross-private reads');
 for(const uid of ['a','b']){const reserve=reserveLoss(games[uid],uid+'-reserve');patch=await prepare(uid,'personal',uid,{}, {['combatVaults/'+uid]:reserve});const result=await apply(uid,patch);assert.equal(result.status,200,'deposit with own save: '+JSON.stringify(result.value));const {point,at,...profile}=combatProfile(games[uid],uid,Date.now());assert.equal((await req('gameV2/combatProfiles/'+uid,{uid,method:'PUT',body:{...profile,at:stamp}})).status,200);}

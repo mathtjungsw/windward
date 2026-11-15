@@ -24,8 +24,8 @@ function progressed(){
 const emptyProgress=()=>({read:[],hidden:[],officers:[],items:{},contracts:{},shipGear:{},active:null,tradeGear:null,coupons:{}});
 
 test('every officer has a valid port, cargo and a persistent recruitment path',()=>{
-  assert.equal(OFFICERS.filter(row=>!row.scenario).length,24);
-  assert.equal(new Set(OFFICERS.map(o=>o.id)).size,26);
+  assert.equal(OFFICERS.filter(row=>!row.scenario).length,36);
+  assert.equal(new Set(OFFICERS.map(o=>o.id)).size,38);
   for(const officer of OFFICERS.filter(row=>!row.scenario)){
     const game=progressed();
     game.money=100000;game.port=officer.tavern;
@@ -40,10 +40,10 @@ test('every officer has a valid port, cargo and a persistent recruitment path',(
     }
     const special=officer.challenge.pirates||officer.challenge.discoveries||officer.challenge.investment||officer.challenge.shore||officer.challenge.gunQuality;
     if(special)assert.throws(()=>performContractAction(game,officer.id,'deliver'),/추가 조건/);
-    game.rankProgress={pirateKills:3};
+    game.rankProgress={pirateKills:Math.max(3,officer.challenge.pirates||0)};
     game.investedPorts=['seville'];
     game.shoreProgress={count:3,sites:['porto']};
-    game.discoveries={a:{},b:{},c:{}};
+    game.discoveries=Object.fromEntries(Array.from({length:Math.max(3,officer.challenge.discoveries||0)},(_,i)=>['fixture-'+i,{}]));
     game.cannons=[{quality:2}];
     game.guild={completed:5,proofs:officer.challenge.proof||{}};
     game.projectStats={freight:officer.challenge.cooperative||0};

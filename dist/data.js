@@ -1,9 +1,11 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.15-freight-daily-limit';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.15-freight-daily-limit';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.15-freight-daily-limit';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.15-freight-daily-limit';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.15-freight-daily-limit';
-Object.assign(GOODS,PREMIUM_GOODS);
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.15-era-atlas';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.15-era-atlas';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.15-era-atlas';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.15-era-atlas';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.15-era-atlas';
+import {ERA_GOODS} from './era-goods.js?v=2026.11.15-era-atlas';
+import {eraAt} from './era-cycle.js?v=2026.11.15-era-atlas';
+Object.assign(GOODS,PREMIUM_GOODS,ERA_GOODS);
 
 export {GOODS};
 
@@ -53,6 +55,25 @@ export const DEPOT_SITES=[['stjohns',.35,0],['reykjavik',-.55,0],['mogadishu',.3
 });
 for(const site of DEVELOPMENT_SITES)PORT_BY_ID[site.portId]={...site,id:site.portId,name:site.name,en:site.name,developable:true,active:false,market:[],specialty:Object.keys(site.stock).find(id=>site.stock[id]==='producer')||Object.keys(site.stock)[0],economy:{stock:site.stock,demand:site.demand,demandTiers:site.demandTiers},pricePhase:200+DEVELOPMENT_SITES.indexOf(site)};
 for(const site of DEPOT_SITES)PORT_BY_ID[site.id]={...site,en:site.name,sea:'공동 보급항',depot:true,active:false,market:[],economy:{stock:{},demand:[],demandTiers:{}},specialty:'grain',fact:'선장들이 공동으로 건설한 보급항입니다. 정박한 뒤 공동 창고에서 식량을 구입할 수 있어요.'};
+const unmatched=new Map();
+for(const [id,g] of Object.entries(ERA_GOODS))for(const port of g.ports){
+ if(!unmatched.has(port))unmatched.set(port,[]);
+ unmatched.get(port).push(id);
+}
+const eraHighlights={pepper:2,cloves:2,nutmeg:2,cinnamon:2,silver:3,cacao:4,coffee:4,indigo:4,sandalwood:1};
+export const PORT_GROWTH_GOODS=Object.fromEntries(Object.values(PORT_BY_ID).map(port=>{
+ const material=port.id==='nagasaki'?'imari':(unmatched.get(port.id)?.[0]||port.specialty),base=GOODS[material];
+ const id='growth-'+port.id;
+ GOODS[id]={name:port.name+' 특선 '+base.name,base:Math.round(base.base*1.6),icon:base.icon,color:base.color,premium:true,source:port.id,unlockStage:2};
+ return [port.id,id];
+}));
+export const harborMarket=(port,now)=>{
+ const era=eraAt(now);
+ if(!era)return port.market;
+ return [...port.market,...(unmatched.get(port.id)||[]).filter(id=>!GOODS[id].era||GOODS[id].era===era.id)];
+};
+export const harborSupply=(port,id)=>port.economy?.stock?.[id]||(unmatched.get(port.id)?.includes(id)?'local':null);
+export const eraMarketBoost=(id,mode,era)=>era&&eraHighlights[id]===era.id&&mode==='sell'?1.04:1;
 export function registerDevelopedPorts(registry={},now=Date.now()){
   const added=[];
   for(const site of [...DEVELOPMENT_SITES,...DEPOT_SITES]){

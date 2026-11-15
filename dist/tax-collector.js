@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.15-freight-daily-limit';
-import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.15-freight-daily-limit';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-freight-daily-limit';
+import {ownership} from './commerce.js?v=2026.11.15-era-atlas';
+import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.15-era-atlas';
+import {PORT_BY_ID} from './data.js?v=2026.11.15-era-atlas';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;

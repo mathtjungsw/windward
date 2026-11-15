@@ -24,5 +24,17 @@ export const OFFICER_HISTORY={
   O021:['Afonso de Albuquerque','15~16세기 포르투갈','포르투갈령 인도를 통치했고 고아와 말라카 점령에 관여했어요.','https://cultura.marinha.pt/pt/museumarinha_web/multimedia_web/Paginas/efemeride-morte-afonso-de-albuquerque-16dez19.aspx'],
   O022:['John Paul Jones','18세기 미국','미국 독립전쟁 중 대륙해군에 복무했고, 1779년 영국 군함 세라피스와 교전했어요.','https://www.history.navy.mil/browse-by-topic/people/historical-figures/john-paul-jones.html'],
   O023:['Oliver Hazard Perry','19세기 초 미국','1812년 전쟁 중 미국 함대를 지휘해 1813년 이리호 전투에서 승리했어요.','https://www.history.navy.mil/browse-by-topic/people/historical-figures/oliver-hazard-perry.html'],
-  O024:['Thomas Cochrane','19세기 영국·남아메리카','영국 해군에 복무한 뒤 칠레와 브라질의 독립기 해군에 참여했어요.',greenwich(154946)]
+  O024:['Thomas Cochrane','19세기 영국·남아메리카','영국 해군에 복무한 뒤 칠레와 브라질의 독립기 해군에 참여했어요.',greenwich(154946)],
+  O025:['Artemisia I','고대 할리카르나소스','헤로도토스는 아르테미시아가 크세르크세스의 원정에 참가해 살라미스에서 싸웠다고 전해요.','https://sourcebooks.fordham.edu/ancient/480artemisia.asp'],
+  O026:['Pytheas of Massalia','고대 마살리아','북서 유럽을 항해한 인물이에요. 항해 기록은 후대 저자들의 인용 일부로 전해집니다.','https://www.cambridge.org/core/books/abs/geographers-of-the-ancient-greek-world/pytheas-of-massalia/32E5E5D0F603A690931494A0B15BD1DF'],
+  O027:['Zheng He','15세기 명나라','1405년부터 명나라 함대를 이끌고 동남아시아와 인도양으로 여러 차례 원정을 떠났어요.','https://hk.history.museum/en/web/mh/exhibition/2006_past_07.html'],
+  O028:['Juan Sebastián Elcano','16세기 스페인','마젤란 사후 빅토리아호를 이끌고 귀환해 첫 세계일주 항해를 완수했어요.','https://armada.defensa.gob.es/archivo/ohycn/ServicioEducativoyCultural/MagallanesyElcano.pdf'],
+  O029:['Ferdinand Magellan','16세기 포르투갈·스페인','1519년 스페인에서 출발한 원정대를 이끌고 대서양에서 태평양으로 들어갔어요. 원정대는 그의 사후 귀환했어요.','https://armada.defensa.gob.es/archivo/ohycn/ServicioEducativoyCultural/MagallanesyElcano.pdf'],
+  O030:['Bartolomeu Dias','15세기 포르투갈','1488년 아프리카 남쪽 곶을 돌아 항해했어요.','https://www.marinha.pt/en/a-marinha/historia/servir-portugal/Pages/default.aspx'],
+  O031:['Samuel de Champlain','17세기 프랑스·북아메리카','북아메리카 동부 연안과 수로를 탐사하고, 1607년에 항해 중 관찰한 지역을 지도로 남겼어요.','https://www.loc.gov/exhibits/treasures/tr22b.html'],
+  O032:['Stephen Decatur','18~19세기 미국','돛을 쓰는 군함의 지휘관으로 트리폴리 해역 작전과 1812년 전쟁에 참여했어요.','https://www.history.navy.mil/browse-by-topic/people/historical-figures/stephen-decatur.html'],
+  O033:['Marcus Vipsanius Agrippa','기원전 1세기 로마','옥타비아누스의 함대를 이끌었어요. 카시우스 디오는 악티움 해전 전후 아그리파가 참여한 해상 작전을 기록했어요.','https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Cassius_Dio/50*.html'],
+  O034:['Vasco da Gama','15~16세기 포르투갈','1497년 포르투갈에서 떠나 아프리카 남쪽 곶을 돌아 1498년 인도 캘리컷에 도착했어요.','https://cultura.marinha.pt/pt/museumarinha_web/multimedia_web/Paginas/DiaDaMarinha-ExposicaoVascoDaGama.aspx'],
+  O035:['Jacques Cartier','16세기 프랑스','프랑스에서 북아메리카로 세 차례 항해했어요. 1535년 두 번째 항해에서는 세인트로렌스강을 거슬러 올라갔어요.','https://parks.canada.ca/lhn-nhs/qc/cartierbrebeuf/culture/histoire-history/evenement-event/cartier/b'],
+  O036:['Abel Janszoon Tasman','17세기 네덜란드','1642년 바타비아에서 출항한 일지에는 오늘날 태즈메이니아와 뉴질랜드에 이른 항해가 기록돼 있어요.','https://www.nla.gov.au/sites/default/files/blogs/m_1558_abel_tasman.pdf']
 };

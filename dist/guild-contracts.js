@@ -1,11 +1,11 @@
-import {blessingBonus} from './blessings.js?v=2026.11.15-freight-daily-limit';
-import {shipyardReport} from './historical-ships.js?v=2026.11.15-freight-daily-limit';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-freight-daily-limit';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-daily-limit';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-freight-daily-limit';
+import {blessingBonus} from './blessings.js?v=2026.11.15-era-atlas';
+import {shipyardReport} from './historical-ships.js?v=2026.11.15-era-atlas';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.15-era-atlas';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-era-atlas';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-era-atlas';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-era-atlas';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-era-atlas';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[

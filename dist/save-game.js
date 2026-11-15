@@ -1,18 +1,18 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.15-freight-daily-limit';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.15-freight-daily-limit';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-freight-daily-limit';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.15-era-atlas';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.15-era-atlas';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-era-atlas';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.15-era-atlas';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.15-era-atlas';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.15-era-atlas';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.15-freight-daily-limit';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.15-freight-daily-limit';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.15-freight-daily-limit';
-import {normalizeDepotDock} from './projects.js?v=2026.11.15-freight-daily-limit';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.15-freight-daily-limit';
-import {normalizeStories} from './story-core.js?v=2026.11.15-freight-daily-limit';
-import {validInlandSave} from './inland.js?v=2026.11.15-freight-daily-limit';
+import {normalizeSea} from './sea-activities.js?v=2026.11.15-era-atlas';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.15-era-atlas';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.15-era-atlas';
+import {normalizeDepotDock} from './projects.js?v=2026.11.15-era-atlas';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.15-era-atlas';
+import {normalizeStories} from './story-core.js?v=2026.11.15-era-atlas';
+import {validInlandSave} from './inland.js?v=2026.11.15-era-atlas';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
@@ -53,6 +53,7 @@ export function parseState(raw,defaults){
  if(s.version>=3&&s.supplyCreditValue!==undefined&&(!finite(s.supplyCreditValue)||s.supplyCreditValue<0))bad();
  if(s.blessedSupplyDiscount!==undefined&&(!finite(s.blessedSupplyDiscount)||s.blessedSupplyDiscount<0||s.blessedSupplyDiscount>1e6))bad();
  if(s.version>=3&&s.discoveries&&(typeof s.discoveries!=='object'||Array.isArray(s.discoveries)))bad();
+ if(typeof s.investigationTarget==='string'&&Object.hasOwn(DISCOVERY_BY_ID,s.investigationTarget)&&!s.discoveries?.[s.investigationTarget])game.investigationTarget=s.investigationTarget;
  for(const [id,d]of Object.entries(s.discoveries||{}))if(Object.hasOwn(DISCOVERY_BY_ID,id)||Object.hasOwn(RETIRED_DISCOVERY_FAME,id)){if(!d||!finite(d.foundDay)||d.foundDay<0||!finite(d.foundAt)||d.foundAt<0)bad();game.discoveries[id]={foundDay:d.foundDay,foundAt:d.foundAt,catalogVersion:String(d.catalogVersion||'2026.11.06'),...(Number.isSafeInteger(d.blessingFame)&&d.blessingFame>0&&d.blessingFame<=Math.floor((DISCOVERY_BY_ID[id]?.fame||0)*.1)?{blessingFame:d.blessingFame}:{})};}
  delete game.supplyCreditDays;
  if(s.version===4){if(!Array.isArray(s.fleetShips)||s.fleetShips.length<1||s.fleetShips.length>5||new Set(s.fleetShips.map(p=>p?.id)).size!==s.fleetShips.length||s.fleetShips.some(p=>typeof p?.id!=='string'||!p.id.length||p.id.length>80||!Number.isInteger(p.tier)||p.tier<0||p.tier>19)||!s.fleetShips.some(p=>p.id===s.flagshipId)||s.fleetCount!==s.fleetShips.length||s.shipTier!==s.fleetShips.find(p=>p.id===s.flagshipId).tier)bad();}

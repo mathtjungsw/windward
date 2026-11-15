@@ -1,16 +1,16 @@
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.15-freight-daily-limit';
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.15-freight-daily-limit';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.15-freight-daily-limit';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-freight-daily-limit';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-freight-daily-limit';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.15-freight-daily-limit';
-import {applyRaftStart} from './raft-start.js?v=2026.11.15-freight-daily-limit';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.15-freight-daily-limit';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.15-era-atlas';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.15-era-atlas';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.15-era-atlas';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-era-atlas';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-era-atlas';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.15-era-atlas';
+import {applyRaftStart} from './raft-start.js?v=2026.11.15-era-atlas';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.15-era-atlas';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
 export const localSaveKey = uid => 'windward-account-v4:' + uid;
-const SAVE_SCHEMA_VERSION = 15;
+const SAVE_SCHEMA_VERSION = 16;
 
 export function accountName(value) {
   const name = String(value || '').normalize('NFKC').trim();

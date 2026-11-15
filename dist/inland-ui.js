@@ -1,7 +1,7 @@
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.15-freight-daily-limit';
-import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.15-freight-daily-limit';
-import {inlandHarborStorage} from './inland.js?v=2026.11.15-freight-daily-limit';
-import {INLAND_CITIES,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.15-freight-daily-limit';
+import {GOODS,PORT_BY_ID,harborMarket} from './data.js?v=2026.11.15-era-atlas';
+import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.15-era-atlas';
+import {inlandHarborStorage} from './inland.js?v=2026.11.15-era-atlas';
+import {INLAND_CITIES,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.15-era-atlas';
 
 const $=s=>document.querySelector(s),fmt=n=>Number(n).toLocaleString('ko-KR');
 const time=ms=>{const seconds=Math.max(0,Math.ceil(ms/1000));return seconds>=60?`${Math.floor(seconds/60)}분 ${seconds%60}초`:`${seconds}초`;};
@@ -117,7 +117,7 @@ export function createInlandUI(api){
    if(harbor&&!permitted(record.content,api.uid())){root.textContent='현재 항구의 교역이 제한되어 있어요.';return;}
    const owned=inlandWarehouse(api.game(),place);
    const row=(good,mode)=>`<p>${GOODS[good].name}${mode==='sell'?' · '+inlandAvailable(api.game(),place,good)+'상자':''} <button data-inland-trade="${mode}" data-good="${good}">${mode==='buy'?'구매':'판매'}</button></p>`;
-   const goods=harbor?PORT_BY_ID[city.port].market.filter(id=>!GOODS[id].premium&&!GOODS[id].legacy):Object.keys(city.goods);
+   const goods=harbor?harborMarket(PORT_BY_ID[city.port],api.now()).filter(id=>!GOODS[id].premium&&!GOODS[id].legacy):Object.keys(city.goods);
    root.innerHTML=`<p>거래한 화물은 ${harbor?'항구':'도시'} 창고에 들어갑니다.</p><h3>구매</h3>`+goods.map(good=>row(good,'buy')).join('')+
     '<h3>판매</h3>'+(Object.keys(owned).filter(good=>(harbor||!GOODS[good].premium&&!GOODS[good].legacy)&&inlandAvailable(api.game(),place,good)>0).map(good=>row(good,'sell')).join('')||'<p>판매할 화물이 없어요.</p>');
    root.querySelectorAll('[data-inland-trade]').forEach(button=>button.onclick=()=>quote(city,key,button.dataset.good,button.dataset.inlandTrade,record,harbor));

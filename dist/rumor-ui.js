@@ -1,13 +1,13 @@
-import {collectionArt} from './art.js?v=2026.11.15-freight-daily-limit';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-freight-daily-limit';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-freight-daily-limit';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.15-freight-daily-limit';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.15-freight-daily-limit';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.15-freight-daily-limit';
-import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
+import {collectionArt} from './art.js?v=2026.11.15-era-atlas';
+import {PORT_BY_ID} from './data.js?v=2026.11.15-era-atlas';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-era-atlas';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.15-era-atlas';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.15-era-atlas';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.15-era-atlas';
+import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.15-era-atlas';
 
-import {readRumor} from './discoveries.js?v=2026.11.15-freight-daily-limit';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
+import {readRumor} from './discoveries.js?v=2026.11.15-era-atlas';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.15-era-atlas';
 
 const labels={all:'읽은 소문',hidden:'숨긴 소문'};
 const headline=text=>text.length>28?text.slice(0,28).trimEnd()+'…':text;
@@ -111,7 +111,8 @@ export function createRumorUI(api){
     const statusLine=!entry.type&&status.owned?`<p>숙련도 ${level}/5 · 경험 ${fmt(s.rumorProgress.officerXP?.[entry.id]||0)} · 능력 ${100+(level-1)*10}%</p>`:'';
     const profile=!entry.type?OFFICER_HISTORY[entry.id]:null;
     const tile=Number(entry.id.slice(1))-1;
-    const history=profile?`<div class="officer-history"><div class="officer-portrait" style="background-position:${tile%6*20}% ${Math.floor(tile/6)*100/3}%" role="img" aria-label="${escape(entry.name)} 게임 삽화"></div><div><strong>${escape(profile[0])}</strong><p>${escape(profile[1])} · ${escape(profile[2])}</p><a href="${escape(profile[3])}" target="_blank" rel="noopener noreferrer">역사 자료</a><small> · 게임 삽화</small></div></div><details><summary>합류 이야기 · 창작</summary><p>${escape(entry.story)}</p></details>`:'';
+    const portrait=tile>=0&&tile<24?`<div class="officer-portrait" style="background-position:${tile%6*20}% ${Math.floor(tile/6)*100/3}%" role="img" aria-label="${escape(entry.name)} 게임 삽화"></div>`:'';
+    const history=profile?`<div class="officer-history">${portrait}<div><strong>${escape(profile[0])}</strong><p>${escape(profile[1])} · ${escape(profile[2])}</p><a href="${escape(profile[3])}" target="_blank" rel="noopener noreferrer">역사 자료</a>${portrait?'<small> · 게임 삽화</small>':''}</div></div><details><summary>합류 이야기 · 창작</summary><p>${escape(entry.story)}</p></details>`:'';
     let preview='';
     if(profile&&status.owned){
       const candidate={...s,rumorProgress:{...s.rumorProgress,active:equipped?null:entry.id}},before=ship(s),after=ship(candidate);

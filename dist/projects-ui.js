@@ -1,7 +1,7 @@
-import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.15-freight-daily-limit';
-import {fleetCount} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
-import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.15-freight-daily-limit';
-import {canalPassDiscount} from './canal-reservations.js?v=2026.11.15-freight-daily-limit';
+import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.15-era-atlas';
+import {fleetCount} from './ship-rules.js?v=2026.11.15-era-atlas';
+import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.15-era-atlas';
+import {canalPassDiscount} from './canal-reservations.js?v=2026.11.15-era-atlas';
 
 const $=s=>document.querySelector(s), fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const time=at=>at?new Date(at).toLocaleString('ko-KR',{dateStyle:'short',timeStyle:'short'}):'';
@@ -78,6 +78,7 @@ export function createProjectsUI(api){
           else{
             details+='<p>정박 중 · 공격 보호</p>';
             actions+=field(1,10,1000)+button('supply','보급 구매');
+            if(game.port===id&&ACTIVE_PORT_BY_ID[id])actions+=button('specialty-market','특산품·공용 납품');
             if(has('I053'))actions+=button('stock','보급 창고 증서 사용');
           }
         }
@@ -109,6 +110,7 @@ export function createProjectsUI(api){
     $('#project-list').onclick=()=>open(project.kind);
     document.querySelectorAll('[data-project-action]').forEach(b=>b.onclick=async()=>{
       const action=b.dataset.projectAction;
+      if(action==='specialty-market')return api.openSpecialty?.(project.id);
       if(action==='go'||action==='entrance')return api.go(project,action,view);
       const number=b.value?Number(b.value):Number($('#project-quantity')?.value);
       await api.action(project,action,number,()=>action==='transit'?api.close():inspect(id));

@@ -1,7 +1,7 @@
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-freight-daily-limit';
-import {ownershipRankChanges} from './port-rankings.js?v=2026.11.15-freight-daily-limit';
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.15-freight-daily-limit';
-import {blessingAt} from './blessings.js?v=2026.11.15-freight-daily-limit';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.15-era-atlas';
+import {ownershipRankChanges} from './port-rankings.js?v=2026.11.15-era-atlas';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.15-era-atlas';
+import {blessingAt} from './blessings.js?v=2026.11.15-era-atlas';
 async function bounded(task,ms=5000){let timer;try{return await Promise.race([task,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('network-timeout')),ms))]);}finally{clearTimeout(timer);}}
 // Economic writes share the same queue as autosave. Acknowledgement precedes UI state.
 export function installAtomicAccount(Type){
@@ -28,6 +28,7 @@ export function installAtomicAccount(Type){
    if(result?.ok===false)throw Error(result.error||'처리할 수 없어요.');
    if(result?.noWrite)return result;
    const sequence=(this.record.operationSequence||0)+1,id=this.session+':'+sequence,revision=this.revision+1,op={id,sequence,kind,key,sharedRevision:before.revision+1,...(protect&&result?.noviceTax?{noviceTax:true}:{}),...(this.record.schemaVersion>=13?{blessingStart:blessingAt(now)?.start||0}:{}),...(result?.npcStart?{npcStart:true}:{})},stamp=s.serverTimestamp();
+   if(Number.isSafeInteger(result?.eraWindow))op.marketEra=result.eraWindow;
    const ownerChanges=kind==='ports'?await bounded(ownershipRankChanges(this,key,before.content||{},content,id)):{};
    const graduated=protect?markNovice(game,this.record.noviceGraduated,ownsOrOwnedPort(ownerChanges['real/portRankings/'+this.uid])):undefined;
    const record={...this.record,schemaVersion:this.defenseEnabled?Math.max(6,this.record.schemaVersion):5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}),...(protect?{noviceGraduated:graduated}:{}),revision,session:this.session,data:JSON.stringify(game),leaseUntil:now+90000,updatedAt:stamp,operationSequence:sequence,lastOperation:op};

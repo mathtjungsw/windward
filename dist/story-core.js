@@ -1,6 +1,6 @@
-import {STORIES,STORY_BY_ID} from './story-catalog.js?v=2026.11.15-freight-daily-limit';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-freight-daily-limit';
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
+import {STORIES,STORY_BY_ID} from './story-catalog.js?v=2026.11.15-era-atlas';
+import {PORT_BY_ID} from './data.js?v=2026.11.15-era-atlas';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.15-era-atlas';
 
 const tradeKeys=new Set(STORIES.flatMap(story=>story.steps.filter(step=>step.kind==='buy'||step.kind==='sell').map(step=>[step.kind,step.port,step.good].join(':'))));
 const viewKeys=new Set(STORIES.flatMap(story=>story.steps.flatMap(step=>step.menus||[])));

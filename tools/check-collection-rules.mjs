@@ -4,6 +4,7 @@ import {promisify} from 'node:util';
 import {fileURLToPath} from 'node:url';
 import {readFile} from 'node:fs/promises';
 import {DISCOVERIES} from '../dist/discoveries-catalog.js';
+import {OFFICERS} from '../dist/rumor-catalog.js';
 import {UI_USAGE_IDS} from '../dist/ui-usage-ids.js';
 import {initialState} from '../dist/engine.js';
 import {usageDay} from '../dist/ui-usage.js';
@@ -30,13 +31,13 @@ await expect('gameV2/privateSaves/'+uid,200,{owner:true,method:'PUT',body:{revis
 const stamp={'.sv':'timestamp'},body={revision:14,updatedAt:stamp,discoveries:{[DISCOVERIES[0].id]:true},officers:{O001:true}};
 await expect(captain,200,{uid,method:'PUT',body});
 await expect(captain,200,{uid,method:'PUT',body:{...body,discoveries:Object.fromEntries(DISCOVERIES.map(entry=>[entry.id,true]))}});
-assert.equal(Object.keys((await expect(captain,200,{uid:other})).discoveries).length,102);
-await expect(captain,200,{uid,method:'PUT',body:{...body,officers:{O001:true,OS01:true,OS02:true}}});
-assert.equal((await expect(captain,200,{uid:other})).officers.O001,true);
+assert.equal(Object.keys((await expect(captain,200,{uid:other})).discoveries).length,DISCOVERIES.length);
+await expect(captain,200,{uid,method:'PUT',body:{...body,officers:Object.fromEntries(OFFICERS.map(entry=>[entry.id,true]))}});
+assert.equal(Object.keys((await expect(captain,200,{uid:other})).officers).length,OFFICERS.length);
 await expect(captain,401);
 await expect('gameV2/real/collections',401,{uid});
 await expect(captain,401,{uid:other,method:'PUT',body});
-for(const bad of [{...body,revision:13},{...body,discoveries:{'ruin-not-in-catalog':true}},{...body,officers:{O025:true}},{...body,officers:'private note'},{...body,cargo:'private note'}])
+for(const bad of [{...body,revision:13},{...body,discoveries:{'ruin-not-in-catalog':true}},{...body,officers:{O037:true}},{...body,officers:'private note'},{...body,cargo:'private note'}])
  await expect(captain,401,{uid,method:'PUT',body:bad});
 const rank='gameV2/real/overallRanking',mine=rank+'/captains/'+uid;
 await expect(rank,200,{owner:true,method:'PUT',body:{public:{top:{[uid]:{name:'검증 선장',rank:1,overallScore:500}},updatedAt:stamp},captains:{[uid]:{rank:1,overallScore:500}}}});

@@ -1,17 +1,17 @@
-import {requireCombatAllowed} from './blessings.js?v=2026.11.15-freight-daily-limit';
-import {shipyardVictory} from './historical-ships.js?v=2026.11.15-freight-daily-limit';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.15-freight-daily-limit';
-import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.15-freight-daily-limit';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-freight-daily-limit';
-import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.15-freight-daily-limit';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.15-freight-daily-limit';
-import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.15-freight-daily-limit';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-daily-limit';
-import {currentCanal} from './canal-reservations.js?v=2026.11.15-freight-daily-limit';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.15-era-atlas';
+import {shipyardVictory} from './historical-ships.js?v=2026.11.15-era-atlas';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.15-era-atlas';
+import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-era-atlas';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.15-era-atlas';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-era-atlas';
+import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.15-era-atlas';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.15-era-atlas';
+import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.15-era-atlas';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-era-atlas';
+import {currentCanal} from './canal-reservations.js?v=2026.11.15-era-atlas';
 export const COMBAT_RANGE=180,COMBAT_TIMEOUT=180000,PROTECTION_MS=120000;
 export function npcSlotChanges(game,uid,currentSlot){currentSlot??=null;const expected='npc:'+uid;if(currentSlot&&currentSlot!==expected)throw Error('선장 간 전투를 먼저 마치세요.');const next=game.npcBattle?expected:null;return currentSlot===next?{}:{['combatSlots/'+uid]:next};}
-export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-freight-daily-limit';
+export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-era-atlas';
 const copy=o=>structuredClone(o||{});
 export function splitCargo(cargo,limit){const taken={},rest={};for(const [id,c]of Object.entries(cargo||{}).sort(([a],[b])=>a.localeCompare(b))){const qty=Math.min(c.qty,Math.max(0,limit)),cost=c.qty?c.cost*qty/c.qty:0;if(qty)taken[id]={qty,cost};if(qty<c.qty)rest[id]={qty:c.qty-qty,cost:c.cost-cost};limit-=qty;}return {taken,rest};}
 export const cargoCount=c=>Object.values(c||{}).reduce((n,c)=>n+c.qty,0);

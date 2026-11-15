@@ -1,14 +1,14 @@
-import {shipyardTrade} from './historical-ships.js?v=2026.11.15-freight-daily-limit';
-import {recordTrade} from './rank-progress.js?v=2026.11.15-freight-daily-limit';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-freight-daily-limit';
-import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.15-freight-daily-limit';
-import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.15-freight-daily-limit';
-import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-freight-daily-limit';
-import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.15-freight-daily-limit';
-import {recordStoryTrade} from './story-core.js?v=2026.11.15-freight-daily-limit';
-import {harborOfficerRole} from './harbor-officers.js?v=2026.11.15-freight-daily-limit';
-import {noviceActive} from './novice.js?v=2026.11.15-freight-daily-limit';
-import {blessingBonus} from './blessings.js?v=2026.11.15-freight-daily-limit';
+import {shipyardTrade} from './historical-ships.js?v=2026.11.15-era-atlas';
+import {recordTrade} from './rank-progress.js?v=2026.11.15-era-atlas';
+import {PORT_BY_ID,PORT_GROWTH_GOODS,GOODS,harborMarket} from './data.js?v=2026.11.15-era-atlas';
+import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.15-era-atlas';
+import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.15-era-atlas';
+import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-era-atlas';
+import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.15-era-atlas';
+import {recordStoryTrade} from './story-core.js?v=2026.11.15-era-atlas';
+import {harborOfficerRole} from './harbor-officers.js?v=2026.11.15-era-atlas';
+import {noviceActive} from './novice.js?v=2026.11.15-era-atlas';
+import {blessingBonus} from './blessings.js?v=2026.11.15-era-atlas';
 export function captainTradeQuote(game,portId,goodId,qty,mode,item,now,rate,effectAt=now){
  const quote=tradeQuote(portId,goodId,qty,mode,item,now,rate);
  const bonus=mode==='sell'&&game?Math.floor(quote.total*saleBonus(game,portId,goodId)+1e-9):0;
@@ -24,24 +24,37 @@ export const investmentBase=id=>LARGE_PORTS.includes(id)?600000:200000;
 export function ownership(content={}){const entries=Object.entries(content.investors||{}).filter(([,n])=>Number.isSafeInteger(n)&&n>0),total=entries.reduce((a,[,n])=>a+n,0),owner=entries.find(([,n])=>n*2>total);return {total,ownerUid:content.developedOwner||owner?.[0]||null};}
 export function taxRate(content,uid,portId,game){const owner=ownership(content).ownerUid;return noviceActive(game)||NEUTRAL_PORTS.includes(portId)||!owner||owner===uid?0:Math.max(0,Math.min(30,content.rates?.[uid]??content.defaultRate??0));}
 export function permitted(content,uid){return !ownership(content).ownerUid||!(content.blacklist||[]).includes(uid);}
+export function specialtyTradePort(game,goodId){
+ const port=PORT_BY_ID[game.port];
+ if(port?.active&&port.depot&&!game.voyage&&goodId===PORT_GROWTH_GOODS[port.id])return port;
+ return tradingPort(game);
+}
 export function portGrowth(content,portId){
  const total=ownership(content).total,base=investmentBase(portId);
+ if(NEUTRAL_PORTS.includes(portId)||PORT_BY_ID[portId]?.depot){
+  const contribution=content.growthContribution||0;
+  return {stage:contribution>=300?2:0,total,contribution,next:Math.max(0,300-contribution),community:true};
+ }
+ if(PORT_BY_ID[portId]?.developable)return {stage:content.development?.level>=2?2:0,total,contribution:0,next:0,facility:true};
  const supported=!NEUTRAL_PORTS.includes(portId)&&!PORT_BY_ID[portId]?.depot&&!PORT_BY_ID[portId]?.developable;
  const contribution=content.growthContribution||0;
  const effective=stage=>total+Math.min(contribution,base*stage*.2);
  const factor=effective(5)>=base*5?5:effective(2)>=base*2?2:0;
  return {stage:supported?specialtyStage(factor):0,total,contribution,next:factor===5?0:Math.max(0,base*(factor===2?5:2)-effective(factor===2?5:2))};
 }
+export function specialtyLimit(good,stage){return stage<(good.unlockStage||1)?0:[0,50,100][stage];}
 export function portMarketItem(content,portId,goodId,revision){
  const item={...content.markets?.[goodId],revision},good=GOODS[goodId];
- if(good?.premium&&good.source===portId){item.specialtyLimit=[0,50,100][portGrowth(content,portId).stage];if(portDevelopment(content,portId)==='production')item.specialtyPeriod=6000000;}
+ if(good?.premium&&good.source===portId){item.specialtyLimit=specialtyLimit(good,portGrowth(content,portId).stage);if(portDevelopment(content,portId)==='production')item.specialtyPeriod=6000000;}
  return item;
 }
 function syncSpecialtyStock(content,portId,before,now,previousPeriod){
- const prior=[0,50,100][before],limit=[0,50,100][portGrowth(content,portId).stage];
- if(prior===limit&&previousPeriod===undefined)return;
+ const stage=portGrowth(content,portId).stage;
+ if(before===stage&&previousPeriod===undefined)return;
  for(const [id,good] of Object.entries(GOODS)){
   if(!good.premium||good.source!==portId)continue;
+  const prior=specialtyLimit(good,before),limit=specialtyLimit(good,stage);
+  if(prior===limit&&previousPeriod===undefined)continue;
   const item=content.markets?.[id];
   if(!item?.stockVersion&&item?.stock===undefined&&before===0&&limit===0)continue;
   if(!item&&prior!==0&&limit===0){
@@ -72,9 +85,10 @@ export function setPortDevelopment(game,content,uid,id,kind,now){
 }
 export function growthDeliveryInfo(content,portId,now,uid){
  const port=PORT_BY_ID[portId];
- if(!port||NEUTRAL_PORTS.includes(portId)||port.developable||port.depot||!Object.values(GOODS).some(g=>g.premium&&g.source===portId))return null;
+ if(!port||port.developable||port.depot&&!port.active)return null;
  const day=Math.floor((now+32400000)/86400000), entries=content.growthDelivery;
- return {day,good:port.specialty,quantity:10,reward:Math.max(100,GOODS[port.specialty].base*12),points:Math.round(investmentBase(portId)*.025),done:entries?.day===day&&entries.captains?.[uid]};
+ const community=NEUTRAL_PORTS.includes(portId)||port.depot,points=community?10:Math.round(investmentBase(portId)*.025);
+ return {day,good:port.specialty,quantity:10,reward:Math.max(100,GOODS[port.specialty].base*12),points,done:(community&&(content.growthContribution||0)>=300)||entries?.day===day&&entries.captains?.[uid]};
 }
 export function deliverForGrowth(game,content,uid,portId,now,expectedDay){
  const order=growthDeliveryInfo(content,portId,now,uid);
@@ -87,7 +101,7 @@ export function deliverForGrowth(game,content,uid,portId,now,expectedDay){
  game.money+=order.reward;
  if(content.growthDelivery?.day!==order.day)content.growthDelivery={day:order.day,captains:{}};
  content.growthDelivery.captains[uid]=true;
- content.growthContribution=Math.min(investmentBase(portId), (content.growthContribution||0)+order.points);
+ content.growthContribution=Math.min(NEUTRAL_PORTS.includes(portId)||PORT_BY_ID[portId].depot?300:investmentBase(portId), (content.growthContribution||0)+order.points);
  (game.portGrowthDeliveries??={})[portId]=(game.portGrowthDeliveries[portId]||0)+1;
  syncSpecialtyStock(content,portId,prior,now);
  return {message:'성장 납품 완료 · '+order.reward+' D 수령'};
@@ -120,8 +134,8 @@ export function withdrawInvestment(game,content,uid,portId,amount,now,revision,q
  if(!result.investors[uid])game.investedPorts=(game.investedPorts||[]).filter(id=>id!==portId);
  return {...result,message:'투자금 '+result.received.toLocaleString('ko-KR')+' D 수령'};
 }
-export function executeTrade(game,content,uid,portId,goodId,qty,mode,quote,now,revision,storage=null){const p=tradingPort(game),g=GOODS[goodId];if(p?.id!==portId||!g||!permitted(content,uid))throw Error('현재 입항한 항구의 교역 권한을 확인하세요.');if(p.developable&&(content.development?.level||0)<2)throw Error('교역소 2단계 확장 뒤 거래할 수 있어요.');if(mode==='buy'&&(g.legacy||!(p.market.includes(goodId)||g.premium&&g.source===portId)))throw Error('이 항구에서 구매할 수 없어요.');if(!quote||now-quote.at>5000||now<quote.at-1000||quote.revision!==revision)throw Error('시세가 바뀌었어요. 새 금액을 확인해 주세요.');
- const item=portMarketItem(content,portId,goodId,revision),actual=captainTradeQuote(game,portId,goodId,qty,mode,item,quote.at,taxRate(content,uid,portId,game),now);const live=tradeQuote(portId,goodId,qty,mode,item,now,taxRate(content,uid,portId,game));actual.next=live.next;if(actual.total!==quote.total||live.eventEnd!==actual.eventEnd)throw Error('시세가 바뀌었어요. 새 금액을 확인해 주세요.');const cargo=storage?.cargo||game.cargo,old=cargo[goodId]||{qty:0,cost:0};
+export function executeTrade(game,content,uid,portId,goodId,qty,mode,quote,now,revision,storage=null){const p=specialtyTradePort(game,goodId),g=GOODS[goodId];if(p?.id!==portId||!g||!permitted(content,uid))throw Error('현재 입항한 항구의 교역 권한을 확인하세요.');if(p.developable&&(content.development?.level||0)<2)throw Error('교역소 2단계 확장 뒤 거래할 수 있어요.');if(mode==='buy'&&(g.legacy||!(harborMarket(p,now).includes(goodId)||g.premium&&g.source===portId)))throw Error('이 시대에 이 항구에서 구매할 수 없어요.');if(!quote||now-quote.at>5000||now<quote.at-1000||quote.revision!==revision)throw Error('시세가 바뀌었어요. 새 금액을 확인해 주세요.');
+ const item=portMarketItem(content,portId,goodId,revision),actual=captainTradeQuote(game,portId,goodId,qty,mode,item,quote.at,taxRate(content,uid,portId,game),now);const live=tradeQuote(portId,goodId,qty,mode,item,now,taxRate(content,uid,portId,game));actual.next=live.next;if(actual.total!==quote.total||live.eventEnd!==actual.eventEnd||live.eraWindow!==actual.eraWindow)throw Error('시세가 바뀌었어요. 새 금액을 확인해 주세요.');const cargo=storage?.cargo||game.cargo,old=cargo[goodId]||{qty:0,cost:0};
  if(mode==='buy'){if(qty>(storage?.room??capacity(game)-usedSpace(game))||game.money<actual.total)throw Error('화물 공간과 두카트를 확인하세요.');game.money-=actual.total;cargo[goodId]={qty:old.qty+qty,cost:old.cost+actual.total};if(portId==='lisbon'&&goodId==='wine')game.boughtLisbonWine=true;}
  else{if((storage?.available??old.qty)<qty)throw Error('판매할 화물이 부족해요.');const cost=old.cost*qty/old.qty;game.money+=actual.total;game.profit+=actual.total-cost;if(old.qty===qty)delete cargo[goodId];else cargo[goodId]={qty:old.qty-qty,cost:old.cost-cost};if(portId!=='lisbon'&&goodId==='wine'&&game.boughtLisbonWine)game.soldAway=true;}
  const owner=ownership(content).ownerUid;if(owner&&!content.basicIncome?.period)advanceBasicIncome(content,portId,owner,now);if(owner&&actual.tax){content.treasury??={};const operator=content.harborOperator?.until>now?content.harborOperator.uid:null;const share=operator&&operator!==owner?Math.floor(actual.tax*.25):0;content.treasury[owner]=(content.treasury[owner]||0)+actual.tax-share;if(share)content.treasury[operator]=(content.treasury[operator]||0)+share;}
@@ -153,7 +167,7 @@ export function assignHarborOfficer(game,content,uid,id,officer,now){
 export function delegateTradePreview(game,uid,origin,dest,originContent,destContent,route,now){
  if(!route||origin.id===dest.id||!dest.active||dest.depot||!game.visited?.includes(dest.id)||!permitted(originContent,uid)||!permitted(destContent,uid))throw Error('항로와 양쪽 항구의 교역 가능 여부를 확인하세요.');
  const id=route.good,qty=route.qty,budget=route.budget;
- if(!Number.isSafeInteger(qty)||qty<1||qty>100||!Number.isSafeInteger(budget)||budget<1||budget>1e12||!origin.market.includes(id)||GOODS[id]?.premium)throw Error('교역품과 수량·예산을 확인하세요.');
+ if(!Number.isSafeInteger(qty)||qty<1||qty>100||!Number.isSafeInteger(budget)||budget<1||budget>1e12||!harborMarket(origin,now).includes(id)||GOODS[id]?.premium)throw Error('교역품과 수량·예산을 확인하세요.');
  const buy=tradeQuote(origin.id,id,qty,'buy',{...originContent.markets?.[id],ignoreEvent:true},now,taxRate(originContent,uid,origin.id,game)).total;
  const sell=tradeQuote(dest.id,id,qty,'sell',{...destContent.markets?.[id],ignoreEvent:true},now,taxRate(destContent,uid,dest.id,game)).total;
  const gross=Math.max(0,sell-buy),fee=Math.floor(gross/10);

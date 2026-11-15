@@ -1,4 +1,4 @@
-import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.15-freight-daily-limit';
+import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.15-era-atlas';
 
 export function createSeaActivityUI(api){
   let pending=false, timer, signature='';
