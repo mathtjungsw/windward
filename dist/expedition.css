@@ -261,3 +261,22 @@ button.shore-pin:focus-visible { outline:2px solid #265f65; outline-offset:2px; 
 .owned-captain-group summary{padding:.8rem .25rem;cursor:pointer;font-weight:600}
 .owned-captain-group .owned-port-row{padding-inline-start:.8rem}
 .map-controls #chart-style{font:600 11px var(--sans)}
+.album-quiz-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:.5rem; margin-block:.8rem; }
+.album-quiz-list button { display:grid; justify-items:start; min-height:52px; width:100%; margin:0; }
+.album-quiz-list span { font-size:.84rem; }
+.album-quiz-options { display:grid; gap:.45rem; margin:.8rem 0; padding:.65rem; border:1px solid var(--line); border-radius:.4rem; }
+.album-quiz-options label { padding:.55rem; border-radius:.3rem; background:#f4f1e5; }
+.album-quiz-options label:has(input:checked) { background:#e3efea; outline:1px solid #467472; }
+.discovery-photo img[src*="archive-discoveries"] { object-fit:contain; background:#e8e3d1; }
+.inland-road { fill:none; stroke:#82673e; stroke-width:1.6; stroke-dasharray:4 4; pointer-events:none; }
+.inland-marker { cursor:pointer; }
+.inland-marker rect { fill:#ecdfb9; stroke:#6c4e27; stroke-width:1.7; }
+#port-inland { width:auto; display:block; margin-top:.55rem; }
+#inland-content>section, #inland-content>article { padding:.5rem 0; border-bottom:1px solid var(--line); }
+#inland-content p>button { margin:.2rem; min-height:36px; }
+.harbor-arena-map { width:100%; max-height:300px; display:block; background:#c4dfe0; border:1px solid #7b9997; border-radius:8px; }
+.harbor-arena-map text { font:600 14px var(--sans); fill:#294f55; paint-order:stroke; stroke:#fff9eb; stroke-width:2px; }
+.harbor-impact { animation:harbor-impact .65s ease-out .45s both; transform-box:fill-box; transform-origin:center; }
+@keyframes harbor-impact { from { opacity:1; transform:scale(.6); } to { opacity:0; transform:scale(2); } }
+@media(prefers-reduced-motion:reduce){.harbor-impact{animation:none;opacity:.2}}
+.mail-unread { margin-inline:.5rem; padding:.15rem .4rem; background:#e3efea; border-radius:12px; }

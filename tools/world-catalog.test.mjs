@@ -42,12 +42,12 @@ test('all 28 new game berths are water points with connected ocean routes and va
  }
 });
 
-test('72 distinct active discovery records span all four kinds and award 22800 total fame',()=>{
- assert.equal(DISCOVERIES.length,72);assert.equal(Object.keys(DISCOVERY_BY_ID).length,72);
- assert.equal(new Set(DISCOVERIES.map(d=>d.point.join(','))).size,72);
- for(const [kind,count] of Object.entries({ruin:20,relic:24,animal:14,treasure:14}))assert.equal(DISCOVERIES.filter(d=>d.kind===kind).length,count);
- for(const [tier,count] of Object.entries({1:16,2:28,3:17,4:11}))assert.equal(DISCOVERIES.filter(d=>d.tier===Number(tier)).length,count);
- assert.equal(DISCOVERIES.reduce((n,d)=>n+d.fame,0),22800);
+test('102 distinct active discovery records span six kinds and award 33350 total fame',()=>{
+ assert.equal(DISCOVERIES.length,102);assert.equal(Object.keys(DISCOVERY_BY_ID).length,102);
+ assert.equal(new Set(DISCOVERIES.map(d=>d.point.join(','))).size,102);
+ for(const [kind,count] of Object.entries({ruin:25,relic:31,animal:14,treasure:14,book:14,nature:4}))assert.equal(DISCOVERIES.filter(d=>d.kind===kind).length,count);
+ for(const [tier,count] of Object.entries({1:17,2:42,3:28,4:15}))assert.equal(DISCOVERIES.filter(d=>d.tier===Number(tier)).length,count);
+ assert.equal(DISCOVERIES.reduce((n,d)=>n+d.fame,0),33350);
  assert.equal(DISCOVERY_BY_ID['ruin-itsukushima'],undefined);
  for(const d of DISCOVERIES){
   assert.equal(d.lon,d.point[0]);assert.equal(d.lat,d.point[1]);
@@ -86,7 +86,7 @@ test('the starter wine and dried fish cycle remains profitable before the first 
 });
 
 test('hard discoveries have one rumor, legendary discoveries two distinct active port rumors',()=>{
- assert.equal(RUMORS.length,39);assert.equal(Object.keys(RUMOR_BY_ID).length,39);
+ assert.equal(RUMORS.length,58);assert.equal(Object.keys(RUMOR_BY_ID).length,58);
  for(const d of DISCOVERIES){
   assert.equal(d.rumorIds.length,d.tier===4?2:d.tier===3?1:0);
   const rumors=d.rumorIds.map(id=>RUMOR_BY_ID[id]);

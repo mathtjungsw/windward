@@ -1,9 +1,9 @@
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.15-discovery-resume';
-import {distance,helmStep} from './engine.js?v=2026.11.15-discovery-resume';
-import {wrapPosition,mapDistance} from './world-wrap.js?v=2026.11.15-discovery-resume';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.15-inland-album';
+import {distance,helmStep} from './engine.js?v=2026.11.15-inland-album';
+import {wrapPosition,mapDistance} from './world-wrap.js?v=2026.11.15-inland-album';
 
 export const SIGHT_NM=180,DISCOVERY_NM=80,INFO_PRICE=100,INFO_RANGE=600;
-import {activeOfficer} from './rumor-progress.js?v=2026.11.15-discovery-resume';
+import {activeOfficer} from './rumor-progress.js?v=2026.11.15-inland-album';
 export const informationCost=s=>Math.ceil(INFO_PRICE*(1-(activeOfficer(s)?.infoDiscount||0)));
 export const START_PORTS=['lisbon','porto','seville'];
 export const worldId=value=>value==='real'?'real':'peace';

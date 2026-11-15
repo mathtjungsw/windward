@@ -1,6 +1,6 @@
-import {tradeEvent} from './market-events.js?v=2026.11.15-discovery-resume';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-discovery-resume';
-import {regionalFactor} from './regional-economy.js?v=2026.11.15-discovery-resume';
+import {tradeEvent} from './market-events.js?v=2026.11.15-inland-album';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-inland-album';
+import {regionalFactor} from './regional-economy.js?v=2026.11.15-inland-album';
 export const PREMIUM_STOCK_LIMIT=30,STOCK_PERIOD=7200000,MARKET_VERSION=3;
 // Version boundary is a fixed release epoch, never reset by a page reload.
 export const MARKET_V2_AT=1794293996252;
@@ -30,7 +30,7 @@ export function specialtyStock(item={},now,limit,period=STOCK_PERIOD){
 export function stockAt(item,good,now){return good.premium?stockState(item,now).stock:Infinity;}
 export function basePrice(portId,goodId,now){const p=PORT_BY_ID[portId],g=GOODS[goodId];if(!p||!g)throw Error('항구와 상품을 확인하세요.');const factor=regionalFactor(p,goodId,g);
  const phase=(p.pricePhase||0)*2+Object.keys(GOODS).indexOf(goodId);return g.base*factor*(1+.045*Math.sin(now/86400000*2*Math.PI+phase));}
-export function tradeQuote(portId,goodId,qty,mode,item={},now=Date.now(),taxRate=0){if(!Number.isInteger(qty)||qty<1||qty>1000||!['buy','sell'].includes(mode))throw Error('거래 수량을 확인하세요.');const g=GOODS[goodId],base=basePrice(portId,goodId,now),event=item.ignoreEvent?null:tradeEvent(portId,goodId,mode,now),factor=event?.type==='supply'?.95:event?.type==='demand'?1.1:1,start=pressureAt(item,now,mode),clamp=n=>Math.max(-PRESSURE_LIMIT,Math.min(PRESSURE_LIMIT,n)),unit=p=>mode==='buy'?Math.max(1,Math.ceil(base*(1+p/PRESSURE_SCALE)*factor)):Math.max(0,Math.floor(base*(1+p/PRESSURE_SCALE)*.88*factor));
+export function tradeQuote(portId,goodId,qty,mode,item={},now=Date.now(),taxRate=0,baseOverride=null){if(!Number.isInteger(qty)||qty<1||qty>1000||!['buy','sell'].includes(mode))throw Error('거래 수량을 확인하세요.');const g=GOODS[goodId],base=baseOverride??basePrice(portId,goodId,now),event=item.ignoreEvent?null:tradeEvent(portId,goodId,mode,now),factor=event?.type==='supply'?.95:event?.type==='demand'?1.1:1,start=pressureAt(item,now,mode),clamp=n=>Math.max(-PRESSURE_LIMIT,Math.min(PRESSURE_LIMIT,n)),unit=p=>mode==='buy'?Math.max(1,Math.ceil(base*(1+p/PRESSURE_SCALE)*factor)):Math.max(0,Math.floor(base*(1+p/PRESSURE_SCALE)*.88*factor));
  const gross=unit(start)*qty,end=clamp(start+(mode==='buy'?1:-1)*qty*PRESSURE_BOX),tax=Math.floor(gross*Math.max(0,Math.min(30,taxRate))/100),special=item.specialtyLimit!==undefined&&g.premium&&g.source===portId,stockRecord=special?specialtyStock(item,now,item.specialtyLimit,item.specialtyPeriod):g.premium?stockState(item,now):null,stock=stockRecord?.stock??Infinity;
  if(mode==='buy'&&special&&(!item.specialtyLimit||stock<30))throw Error('투자 성장과 재고 30상자 조건을 확인하세요.');
  if(mode==='buy'&&g.premium&&qty>stock)throw Error('한정 상품 재고가 부족해요.');const refilledAt=stockRecord?.stockAt??now;

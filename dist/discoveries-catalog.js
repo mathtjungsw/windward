@@ -1,6 +1,7 @@
 // Static discovery stories and game observation points.
-import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.15-discovery-resume';
-export const DISCOVERY_CATALOG_VERSION='2026.11.14-discoveries-72';
+import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.15-inland-album';
+import {LIBRARY_DISCOVERIES} from './discoveries-library.js?v=2026.11.15-inland-album';
+export const DISCOVERY_CATALOG_VERSION='2026.11.15-discoveries-102';
 export const RETIRED_DISCOVERY_FAME={'ruin-itsukushima':400};
 const source=(label,url)=>({label,url});
 const UNESCO=(id,label)=>source('UNESCO · '+label,'https://whc.unesco.org/en/list/'+id+'/');
@@ -62,7 +63,8 @@ export const ATLAS_ADDITIONS=[
  id,kind,name,region,point,description,sources:ref?[ref]:[],fiction:!ref,art,tier:position%2?2:1,hintPorts:[],hints:[]
 }));
 const fame=[0,50,150,400,1000],spot=[0,100,100,100,100],inspect=[0,60,60,60,60];
-export const DISCOVERIES=[...rows,...NEW_DISCOVERIES,...ATLAS_ADDITIONS].map(d=>({...d,lon:d.point[0],lat:d.point[1],fiction:!!d.fiction,fame:fame[d.tier],spotRadius:spot[d.tier],inspectRadius:inspect[d.tier],rumorIds:d.hintPorts.map((p,i)=>d.id+'-rumor-'+(i+1)),image:'assets/discoveries/'+d.id+'.svg'}));
+export const DISCOVERY_KINDS={ruin:'유적',relic:'유물',animal:'동물',treasure:'보물',book:'책·기록',nature:'자연'};
+export const DISCOVERIES=[...rows,...NEW_DISCOVERIES,...ATLAS_ADDITIONS,...LIBRARY_DISCOVERIES].map(d=>({...d,lon:d.point[0],lat:d.point[1],fiction:!!d.fiction,fame:fame[d.tier],spotRadius:spot[d.tier],inspectRadius:inspect[d.tier],rumorIds:d.hintPorts.map((p,i)=>d.id+'-rumor-'+(i+1)),image:'assets/discoveries/'+d.id+'.svg'}));
 export const DISCOVERY_BY_ID=Object.fromEntries(DISCOVERIES.map(d=>[d.id,d]));
 export const RUMORS=DISCOVERIES.flatMap(d=>d.hintPorts.map((portId,i)=>({id:d.rumorIds[i],portId,discoveryId:d.id,text:d.hints[i]})));
 export const RUMOR_BY_ID=Object.fromEntries(RUMORS.map(r=>[r.id,r]));

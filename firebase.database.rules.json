@@ -3,12 +3,78 @@
     ".read": false,
     ".write": false,
     "gameV2": {
-      "captainMail": {
+      "albumQuizDays": {
+      "$uid": {
+        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid",
+        "$kind": {
+          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && $kind.matches(/^(all|ruin|relic|animal|treasure|book|nature)$/) && newData.exists() && newData.parent().parent().parent().child('privateSaves').child($uid).child('updatedAt').val() == now && newData.parent().parent().parent().child('privateSaves').child($uid).child('lastOperation/kind').val() == 'personal' && newData.child('day').val() * 86400000 <= now + 32400000 && (newData.child('day').val() + 1) * 86400000 > now + 32400000 && ((!data.exists() || data.child('day').val() < newData.child('day').val()) ? !newData.child('choice').exists() && !newData.child('paid').exists() : data.child('day').val() == newData.child('day').val() && !data.child('choice').exists() && newData.child('choice').exists() && newData.child('paid').exists() && newData.child('question').val() == data.child('question').val() && newData.child('count').val() == data.child('count').val() && newData.child('reward').val() == data.child('reward').val() && newData.child('correct').val() == data.child('correct').val())",
+          ".validate": "newData.hasChildren(['day','question','count','reward','correct'])",
+          "day": {
+            ".validate": "newData.isNumber() && newData.val() % 1 == 0"
+          },
+          "question": {
+            ".validate": "newData.isString() && newData.val().length <= 100"
+          },
+          "correct": {
+            ".validate": "newData.isString() && newData.val().length <= 64"
+          },
+          "count": {
+            ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 1000000 && newData.val() % 1 == 0"
+          },
+          "reward": {
+            ".validate": "newData.isNumber() && newData.val() % 100 == 0 && (newData.parent().child('count').val() * 191 <= 2000 ? newData.val() == 1000 : newData.val() * 2 >= newData.parent().child('count').val() * 191 && (newData.val() - 100) * 2 < newData.parent().child('count').val() * 191)"
+          },
+          "choice": {
+            ".validate": "newData.isString() && newData.val().length <= 64"
+          },
+          "paid": {
+            ".validate": "newData.val() == (newData.parent().child('correct').val() == newData.parent().child('choice').val() ? newData.parent().child('reward').val() : 0)"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    },
+    "harborPresence": {
+      "$port": {
+        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
+        "$uid": {
+          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && ((root.child('gameV2/shared/ports').child($port).child('content').child('harborMatch').child('state').val() == 'active' && root.child('gameV2/shared/ports').child($port).child('content').child('harborMatch').child('end').val() + 60000 >= now && (root.child('gameV2/shared/ports').child($port).child('content').child('harborMatch').child('attacker').val() == $uid || root.child('gameV2/shared/ports').child($port).child('content').child('harborMatch').child('defender').val() == $uid)) || (root.child('gameV2/shared/ports').child($port).child('content').child('harborPractice').child('state').val() == 'active' && root.child('gameV2/shared/ports').child($port).child('content').child('harborPractice').child('end').val() + 60000 >= now && (root.child('gameV2/shared/ports').child($port).child('content').child('harborPractice').child('attacker').val() == $uid || root.child('gameV2/shared/ports').child($port).child('content').child('harborPractice').child('defender').val() == $uid)))",
+          ".validate": "newData.hasChildren(['at'])",
+          "at": {
+            ".validate": "newData.val() == now"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    },
+    "mailBlocks": {
+      "$owner": {
+        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $owner",
+        "$sender": {
+          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $sender",
+          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $owner && auth.uid != $sender",
+          ".validate": "newData.val() == true"
+        }
+      }
+    },
+    "mailUnread": {
+      "$owner": {
+        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $owner",
+        "$id": {
+          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && ((auth.uid == $owner && !newData.exists()) || (!data.exists() && !root.child('gameV2/captainMail').child($owner).child($id).exists() && newData.val() == true && newData.parent().parent().parent().child('captainMail').child($owner).child($id).child('from').val() == auth.uid && newData.parent().parent().parent().child('captainMail').child($owner).child($id).child('at').val() == now))"
+        }
+      }
+    },
+    "captainMail": {
         "$recipient": {
           ".read": "auth != null && auth.uid == $recipient && auth.token.firebase.sign_in_provider == 'google.com'",
           "$id": {
             ".read": "auth != null && auth.uid == data.child('from').val() && auth.token.firebase.sign_in_provider == 'google.com'",
-            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && $id.matches(/^[a-zA-Z0-9_-]{8,64}$/) && newData.child('from').val() != $recipient && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('updatedAt').val() == now && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'personal' && (!data.exists() ? auth.uid == newData.child('from').val() && newData.child('state').val() == 'pending' && newData.child('at').val() == now : newData.child('from').val() == data.child('from').val() && newData.child('at').val() == data.child('at').val() && newData.child('name').val() == data.child('name').val() && newData.child('body').val() == data.child('body').val() && newData.child('amount').val() == data.child('amount').val() && newData.child('closed').val() == now && ((auth.uid == $recipient && data.child('state').val() == 'pending' && now < data.child('at').val() + 172800000 && (newData.child('state').val() == 'accepted' || newData.child('state').val() == 'declined')) || (auth.uid == data.child('from').val() && ((data.child('state').val() == 'pending' && (newData.child('state').val() == 'cancelled' || (now >= data.child('at').val() + 172800000 && newData.child('state').val() == 'refunded'))) || (data.child('state').val() == 'declined' && newData.child('state').val() == 'refunded')))))",
+            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && $id.matches(/^[a-zA-Z0-9_-]{8,64}$/) && newData.child('from').val() != $recipient && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('updatedAt').val() == now && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'personal' && (!data.exists() ? !root.child('gameV2/mailBlocks').child($recipient).child(auth.uid).exists() && auth.uid == newData.child('from').val() && newData.child('state').val() == 'pending' && newData.child('at').val() == now : newData.child('from').val() == data.child('from').val() && newData.child('at').val() == data.child('at').val() && newData.child('name').val() == data.child('name').val() && newData.child('body').val() == data.child('body').val() && newData.child('amount').val() == data.child('amount').val() && newData.child('closed').val() == now && ((auth.uid == $recipient && data.child('state').val() == 'pending' && now < data.child('at').val() + 172800000 && (newData.child('state').val() == 'accepted' || newData.child('state').val() == 'declined')) || (auth.uid == data.child('from').val() && ((data.child('state').val() == 'pending' && (newData.child('state').val() == 'cancelled' || (now >= data.child('at').val() + 172800000 && newData.child('state').val() == 'refunded'))) || (data.child('state').val() == 'declined' && newData.child('state').val() == 'refunded')))))",
             ".validate": "newData.hasChildren(['from','name','body','at','amount','state'])",
             "from": {".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 128"},
             "name": {".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50"},
@@ -89,7 +155,7 @@
       "privateSaves": {
         "$uid": {
           ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid",
-          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && (((newData.child('schemaVersion').val() == 10 || (newData.child('schemaVersion').val() == 9 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 9) && data.child('schemaVersion').val() != 10) || (newData.child('schemaVersion').val() == 8 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 8) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 8)) || (newData.child('schemaVersion').val() == 7 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 7) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 7)) || (newData.child('schemaVersion').val() == 6 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 6) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 6))) && newData.child('defenseSeq').val() == (newData.parent().parent().child('fleetStates').child($uid).child('seq').exists()?newData.parent().parent().child('fleetStates').child($uid).child('seq').val():0)) || (!root.child('gameV2/config/minSchema').exists() && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 5) && (newData.child('schemaVersion').val() == 5 || (newData.child('schemaVersion').val() == 4 && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 4)))))",
+          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && (((newData.child('schemaVersion').val() == 11 || (newData.child('schemaVersion').val() == 10 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 10) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 10)) || (newData.child('schemaVersion').val() == 9 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 9) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 9)) || (newData.child('schemaVersion').val() == 8 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 8) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 8)) || (newData.child('schemaVersion').val() == 7 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 7) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 7)) || (newData.child('schemaVersion').val() == 6 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 6) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 6))) && newData.child('defenseSeq').val() == (newData.parent().parent().child('fleetStates').child($uid).child('seq').exists()?newData.parent().parent().child('fleetStates').child($uid).child('seq').val():0)) || (!root.child('gameV2/config/minSchema').exists() && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 5) && (newData.child('schemaVersion').val() == 5 || (newData.child('schemaVersion').val() == 4 && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 4)))))",
           ".validate": "newData.hasChildren(['revision','data','session','leaseUntil','updatedAt']) && newData.child('revision').val() == (data.child('revision').exists() ? data.child('revision').val() : 0) + 1 && (!newData.child('operationSequence').exists() || (newData.child('operationSequence').val() == (data.child('operationSequence').exists()?data.child('operationSequence').val():0) ? newData.child('lastOperation/id').val() == data.child('lastOperation/id').val() : (newData.child('session').val() == data.child('session').val() && newData.parent().parent().child('shared').child(newData.child('lastOperation/kind').val()).child(newData.child('lastOperation/key').val()).child('lastOperation/id').val() == newData.child('lastOperation/id').val() && newData.parent().parent().child('shared').child(newData.child('lastOperation/kind').val()).child(newData.child('lastOperation/key').val()).child('lastOperation/saveRevision').val() == newData.child('revision').val() && newData.parent().parent().child('shared').child(newData.child('lastOperation/kind').val()).child(newData.child('lastOperation/key').val()).child('revision').val() == newData.child('lastOperation/sharedRevision').val())))",
           "revision": {
             ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() % 1 == 0"
@@ -110,7 +176,7 @@
             ".validate": false
           },
           "schemaVersion": {
-            ".validate": "newData.val() == 4 || newData.val() == 5 || newData.val() == 6 || newData.val() == 7 || newData.val() == 8 || newData.val() == 9 || newData.val() == 10"
+            ".validate": "newData.val() == 4 || newData.val() == 5 || newData.val() == 6 || newData.val() == 7 || newData.val() == 8 || newData.val() == 9 || newData.val() == 10 || newData.val() == 11"
           },
           "operationSequence": {
             ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() % 1 == 0 && newData.val() >= (data.exists()?data.val():0) && newData.val() <= (data.exists()?data.val():0)+1"
@@ -183,7 +249,7 @@
               ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
             },
             "foundCount": {
-              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 72 && newData.val() % 1 == 0"
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 102 && newData.val() % 1 == 0"
             },
             "fame": {
               ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val() % 1 == 0"
@@ -246,7 +312,7 @@
             ".validate": "newData.hasChildren(['revision','updatedAt'])",
             "revision": {".validate": "newData.isNumber() && newData.val() >= 1 && newData.val()%1 == 0"},
             "updatedAt": {".validate": "newData.val() == now"},
-            "discoveries": {".validate":"newData.hasChildren()", "$id": {".validate": "$id.matches(/^(ruin-leptis|ruin-sabratha|ruin-dilmun|ruin-zanzibar-record|ruin-kotor-record|relic-cuneiform-record|relic-jikji-record|relic-andean-khipu|relic-papyrus-chart|relic-cargo-seals|relic-broken-hull|relic-sunken-jars|ruin-azores|ruin-carthage|ruin-kilwa|ruin-mahabalipuram|ruin-anse|ruin-rapanui|ruin-nanmadol|relic-compass|relic-chart|relic-astrolabe|relic-amphora|relic-seal|relic-bell|relic-carving|relic-pendant|animal-penguin-africa|animal-seal-med|animal-otter|animal-whaleshark|animal-iguana|animal-hector|animal-seal-hawaii|animal-penguin-nz|treasure-azores|treasure-gulf|treasure-madagascar|treasure-malacca|treasure-namib|treasure-atacama|treasure-andaman|treasure-pacific|relic-alaska-token|relic-pacific-chart|relic-amazon-weight|relic-andean-pottery|relic-timor-tool|relic-micronesia-marker|ruin-sganggwaay|ruin-fortjesus|ruin-skellig|ruin-butrint|ruin-galle|ruin-mozambique-island|ruin-portobelo|ruin-goree|animal-gray-whale|animal-manatee|animal-dugong|animal-green-turtle|animal-humboldt|animal-orca|treasure-faroe|treasure-socotra|treasure-mozambique-current|treasure-tasman|treasure-hudson|treasure-falklands|relic-kuril|relic-red-sea|relic-suriname)$/) && newData.val() == true"}},
+            "discoveries": {".validate":"newData.hasChildren()", "$id": {".validate": "$id.matches(/^(ruin-azores|ruin-carthage|ruin-kilwa|ruin-mahabalipuram|ruin-anse|ruin-rapanui|ruin-nanmadol|relic-compass|relic-chart|relic-astrolabe|relic-amphora|relic-seal|relic-bell|relic-carving|relic-pendant|animal-penguin-africa|animal-seal-med|animal-otter|animal-whaleshark|animal-iguana|animal-hector|animal-seal-hawaii|animal-penguin-nz|treasure-azores|treasure-gulf|treasure-madagascar|treasure-malacca|treasure-namib|treasure-atacama|treasure-andaman|treasure-pacific|relic-alaska-token|relic-pacific-chart|relic-amazon-weight|relic-andean-pottery|relic-timor-tool|relic-micronesia-marker|ruin-sganggwaay|ruin-fortjesus|ruin-skellig|ruin-butrint|ruin-galle|ruin-mozambique-island|ruin-portobelo|ruin-goree|animal-gray-whale|animal-manatee|animal-dugong|animal-green-turtle|animal-humboldt|animal-orca|treasure-faroe|treasure-socotra|treasure-mozambique-current|treasure-tasman|treasure-hudson|treasure-falklands|relic-kuril|relic-red-sea|relic-suriname|ruin-leptis|ruin-sabratha|ruin-dilmun|ruin-zanzibar-record|ruin-kotor-record|relic-cuneiform-record|relic-jikji-record|relic-andean-khipu|relic-papyrus-chart|relic-cargo-seals|relic-broken-hull|relic-sunken-jars|book-nanjung|book-donguibogam|book-rihla|book-geographia|book-ortelius|book-revolutions|relic-antikythera|relic-stick-chart|relic-uluburun|ruin-great-zimbabwe|book-hunminjeongeum|book-gutenberg|book-florentine|book-marco-polo|book-sidereus|book-fabrica|book-elements|book-bahriye|relic-rosetta|relic-vindolanda|relic-babylon-map|relic-armillary|nature-joggins|nature-whale-valley|nature-giants-causeway|nature-jeju-lava|ruin-cliff-palace|ruin-petra-water|ruin-mohenjo-daro|ruin-cahokia)$/) && newData.val() == true"}},
             "officers": {".validate":"newData.hasChildren()", "$id": {".validate": "$id.matches(/^(O0(0[1-9]|1[0-9]|2[0-4])|OS0[12])$/) && newData.val() == true"}},
             "$other": {".validate": false}
           }

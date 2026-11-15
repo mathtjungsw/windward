@@ -1,13 +1,13 @@
-import {collectionArt} from './art.js?v=2026.11.15-discovery-resume';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-discovery-resume';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-discovery-resume';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.15-discovery-resume';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.15-discovery-resume';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.15-discovery-resume';
-import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.15-discovery-resume';
+import {collectionArt} from './art.js?v=2026.11.15-inland-album';
+import {PORT_BY_ID} from './data.js?v=2026.11.15-inland-album';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-inland-album';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.15-inland-album';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.15-inland-album';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.15-inland-album';
+import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.15-inland-album';
 
-import {readRumor} from './discoveries.js?v=2026.11.15-discovery-resume';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.15-discovery-resume';
+import {readRumor} from './discoveries.js?v=2026.11.15-inland-album';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.15-inland-album';
 
 const labels={all:'읽은 소문',hidden:'숨긴 소문'};
 const headline=text=>text.length>28?text.slice(0,28).trimEnd()+'…':text;
@@ -21,6 +21,8 @@ export function createRumorUI(api){
   let pending=false,tavernOpen=null;
   function renderTavern(root){
     const game=get(),entries=rumorsAtTavern(game),notes=new Map(rumorNote(game).map(note=>[note.id,note]));
+    const extra=api.extraHarborRumor?.(game);
+    if(extra&&!entries.some(entry=>entry.id===extra.id))entries.push(extra);
     if(tavernOpen&&(tavernOpen.port!==game.port||!notes.has(tavernOpen.id)))tavernOpen=null;
     const section=document.createElement('section');
     section.className='rumor-panel';
@@ -41,7 +43,7 @@ export function createRumorUI(api){
       el.onclick=()=>{
         const id=el.dataset.tavernRumor;
         const wasRead=notes.has(id);
-        if(!wasRead&&!readRumor(get(),id)&&!readContractRumor(get(),id)){
+        if(!wasRead&&!readRumor(get(),id,api.extraHarborRumor?.(get())?.id)&&!readContractRumor(get(),id)){
           return api.toast('이 항구에 정상 정박한 뒤 소문을 들어 보세요.','error');
         }
         tavernOpen=tavernOpen?.id===id?null:{id,port:game.port};

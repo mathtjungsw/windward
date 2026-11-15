@@ -1,17 +1,19 @@
-import {CONTESTED_PORTS,battleWindow,harborOperator,harborBattleAction,militiaAction,createHarborPractice} from './harbor-battles.js?v=2026.11.15-discovery-resume';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-discovery-resume';
-import {returnReserve,reserveLoss} from './combat-core.js?v=2026.11.15-discovery-resume';
-import {PORTS,PORT_BY_ID,GOODS,registerDevelopedPorts} from './data.js?v=2026.11.15-discovery-resume';
-import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.15-discovery-resume';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-discovery-resume';
-import {ship,fleetMaxHP,fleetShips} from './ship-rules.js?v=2026.11.15-discovery-resume';
-import {capacity,usedSpace,tradingPort} from './engine.js?v=2026.11.15-discovery-resume';
-import {tradeQuote,specialtyStock} from './market-rules.js?v=2026.11.15-discovery-resume';
-import {invest,investmentWithdrawal,withdrawInvestment,portGrowth,portMarketItem,growthDeliveryInfo,deliverForGrowth,assignHarborOfficer,delegateTradePreview,portDevelopment,setPortDevelopment,ownership,taxRate,permitted,executeTrade,captainTradeQuote,changePortPolicy,withdrawTax,withdrawBasicIncome,investmentBase,NEUTRAL_PORTS} from './commerce.js?v=2026.11.15-discovery-resume';
-import {CANNONS,QUALITIES,cannonStats,buyCannon,equipCannon,upgradeCannon,sellCannon,gunWeight,currentHP} from './cannons.js?v=2026.11.15-discovery-resume';
-import {repairHull,coastalAction,playDice} from './activities.js?v=2026.11.15-discovery-resume';
-import {advanceBasicIncome,estimateBasicIncome,setIncomeOfficer} from './port-income.js?v=2026.11.15-discovery-resume';
-import {activeOfficer} from './rumor-progress.js?v=2026.11.15-discovery-resume';
+import {createHarborArena} from './harbor-arena.js?v=2026.11.15-inland-album';
+import {extraHarborRumor,harborOfficerRole,HARBOR_ROLE_LABEL,freeRecalledOfficer} from './harbor-officers.js?v=2026.11.15-inland-album';
+import {CONTESTED_PORTS,battleWindow,harborOperator,harborBattleAction,militiaAction,createHarborPractice,reconcileHarborLoss} from './harbor-battles.js?v=2026.11.15-inland-album';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-inland-album';
+import {returnReserve,reserveLoss} from './combat-core.js?v=2026.11.15-inland-album';
+import {PORTS,PORT_BY_ID,GOODS,registerDevelopedPorts} from './data.js?v=2026.11.15-inland-album';
+import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.15-inland-album';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-inland-album';
+import {ship,fleetMaxHP,fleetShips} from './ship-rules.js?v=2026.11.15-inland-album';
+import {capacity,usedSpace,tradingPort} from './engine.js?v=2026.11.15-inland-album';
+import {tradeQuote,specialtyStock} from './market-rules.js?v=2026.11.15-inland-album';
+import {invest,investmentWithdrawal,withdrawInvestment,portGrowth,portMarketItem,growthDeliveryInfo,deliverForGrowth,assignHarborOfficer,delegateTradePreview,portDevelopment,setPortDevelopment,ownership,taxRate,permitted,executeTrade,captainTradeQuote,changePortPolicy,withdrawTax,withdrawBasicIncome,investmentBase,NEUTRAL_PORTS} from './commerce.js?v=2026.11.15-inland-album';
+import {CANNONS,QUALITIES,cannonStats,buyCannon,equipCannon,upgradeCannon,sellCannon,gunWeight,currentHP} from './cannons.js?v=2026.11.15-inland-album';
+import {repairHull,coastalAction,playDice} from './activities.js?v=2026.11.15-inland-album';
+import {advanceBasicIncome,estimateBasicIncome,setIncomeOfficer} from './port-income.js?v=2026.11.15-inland-album';
+import {activeOfficer} from './rumor-progress.js?v=2026.11.15-inland-album';
 const developmentCost=(game,level)=>Math.ceil([400000,200000,300000,160000][level]*(1-(activeOfficer(game)?.developmentDiscount||0)))-(level>0&&game.rumorProgress?.items?.I054?300:0);
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const random=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
@@ -164,20 +166,26 @@ $('#growth-deliver')?.addEventListener('click',event=>{
   async function load(){try{const rows=await api.directory(cursor);for(const p of rows)people.set(p.id,p);cursor=rows.at(-1)?.id||cursor;more=rows.length===20;}catch{api.toast('선장 명부를 불러오지 못했어요.','error');more=false;}}
   for(const uid of new Set([...Object.keys(rates),...blocked]))people.set(uid,{name:c.investorNames?.[uid]||'선장 '+uid.slice(0,8)});await load();paint();
  }
+ const arena=createHarborArena({account,modal:api.modal,state:get,now,online:()=>api.online?.()||[],run});
  async function showHarborBattle(port){
   try{
    const {content:c}=await readPort(port.id),uid=account.uid,t=now(),game=get(),m=game.militia||{};
+   if(c.harborLosses?.[uid]){
+    await run('ports',port.id,(state,content)=>reconcileHarborLoss(state,content,uid));
+   }
    const operator=harborOperator(c,t),round=c.harborMatch,active=round?.state==='active'&&round.end>t,window=battleWindow(t);
    const control=(action,label,role='')=>`<button data-harbor-action="${action}" data-harbor-value="${role}">${label}</button>`;
    const troop=(action,label)=>`<button data-militia-action="${action}">${label}</button>`;
    api.modal('경합 항구 공방',port.name,`<p>매일 한국 시간 20~22시 · ${window.open?'신청 가능 시간':'공방 대기'}</p><p>현재 운영 ${esc(!operator?'없음':operator===uid?'나':c.harborOperator?.uid===operator?c.harborOperator.name:c.investorNames?.[operator]||'다른 선장')}</p>
    ${active?`<p>공격 선단 내구도 ${round.ship} · 포탑 ${round.fort} · 점령 진행 ${round.capture} · ${round.liveDefense?'직접 방어':'자동 포탑'}</p><p>종료 ${new Date(round.end).toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul'})}</p>`:'<p>공방 승자는 기간제 운영권을 얻습니다. 지분은 유지됩니다.</p>'}
    <div class="dialog-actions">${active&&round.attacker===uid?control('attack','안쪽 항로','channel')+control('attack','바깥 항로','outer')+control('attack','포탑 포격','fire')+control('attack','점령 유지','hold'):!active&&window.open&&operator!==uid?control('start','도전 시작'):round?.state==='active'&&!active?control('finish','시간 종료 처리'):''}
-   ${operator===uid?control(active?'defend':'defense','안쪽 포탑','channel')+control(active?'defend':'defense','바깥 포탑','outer')+control(active?'defend':'defense','점령지 포탑','hold'):''}<button id="harbor-round-refresh">새로고침</button><button id="harbor-practice">포탑 상대 연습</button></div>
+   ${operator===uid?control(active?'defend':'defense','안쪽 포탑','channel')+control(active?'defend':'defense','바깥 포탑','outer')+control(active?'defend':'defense','점령지 포탑','hold'):''}<button id="harbor-round-refresh">새로고침</button><button id="harbor-practice">포탑 상대 연습</button><button id="harbor-practice-friend">선장끼리 연습</button>${round?'<button id="harbor-arena-open">공방 해도·복귀</button>':''}</div>
    <h3>사병·선원</h3><p>대기 ${m.reserve||0}명 · 선단 호위 ${m.escort||0}명 · 이 항구 주둔 ${m.posts?.[port.id]||0}명</p><p>고용비 1명 100 D · 한국 시간 하루 10명 · 총 보유 30명</p><label>인원 <input id="militia-qty" type="number" min="1" max="10" value="5"></label><div class="dialog-actions">${troop('hire','고용')}${troop('escort','호위 배치')}${troop('reserve','호위 해제')}${troop('station','주둔')}${troop('recall','주둔 해제')}${troop('train',m.trainingDue?'훈련 확인':'선원 훈련 · 2,000 D')}</div>`,'wide');
    $('#harbor-round-refresh').onclick=()=>showHarborBattle(port);
    $('#harbor-practice').onclick=()=>showHarborPractice(port,createHarborPractice(port,account.name,now()));
-   document.querySelectorAll('[data-harbor-action]').forEach(b=>b.onclick=()=>run('ports',port.id,(state,content,time)=>harborBattleAction(state,content,uid,port.id,b.dataset.harborAction,b.dataset.harborValue,time,account.name),()=>showHarborBattle(port)));
+   $('#harbor-practice-friend').onclick=()=>arena.open(port,true,()=>showHarborBattle(port));
+   $('#harbor-arena-open')?.addEventListener('click',()=>arena.open(port,false,()=>showHarborBattle(port)));
+   document.querySelectorAll('[data-harbor-action]').forEach(b=>b.onclick=()=>run('ports',port.id,(state,content,time)=>harborBattleAction(state,content,uid,port.id,b.dataset.harborAction,b.dataset.harborValue,time,account.name),()=>b.dataset.harborAction==='start'?arena.open(port,false,()=>showHarborBattle(port)):showHarborBattle(port)));
    document.querySelectorAll('[data-militia-action]').forEach(b=>b.onclick=()=>{
     const qty=Number($('#militia-qty').value);
     run('ports',port.id,(state,content,time)=>militiaAction(state,content,uid,port.id,b.dataset.militiaAction,qty,time),()=>showHarborBattle(port));
@@ -201,14 +209,14 @@ $('#growth-deliver')?.addEventListener('click',event=>{
   try{
    const {content:c}=await readPort(port.id),game=get(),uid=account.uid;
    if(ownership(c).ownerUid!==uid)throw Error('현재 항구 소유권을 확인하세요.');
-   if(c.harborOperator?.until>now()&&c.harborOperator.uid!==uid)throw Error('다른 선장의 기간제 운영이 끝나면 상주 업무를 재개합니다.');
+   const suspended=c.harborOperator?.until>now()&&c.harborOperator.uid!==uid;
    const officer=c.harborOfficer?.owner===uid?c.harborOfficer.id:null;
    const current=game.delegateTrade?.origin===port.id?game.delegateTrade:null;
    const selected=new Set(Object.entries(game.harborOfficers||{}).filter(([id])=>id!==port.id).map(([,id])=>id));
    const roster=OFFICERS.filter(row=>game.rumorProgress?.officers?.includes(row.id)&&!selected.has(row.id));
    const ports=PORTS.filter(row=>row.id!==port.id&&!row.depot&&game.visited.includes(row.id));
    const ready=current&&now()>=current.due;
-   api.modal('부선장 상주·자동 교역',port.name,`<p>상주 중인 부선장은 승선할 수 없어요. 상주 보상 · 기본 세수 5% 추가.</p><label>부선장 <select id="harbor-officer-id"><option value="">배치 해제</option>${roster.map(row=>`<option value="${row.id}" ${row.id===officer?'selected':''}>${esc(row.name)}</option>`).join('')}</select></label><button id="harbor-officer-save">배치 변경</button>${officer?`<hr><h3>가상 교역 한 항로</h3><p>현실 4시간마다 · 최대 100상자 · 이익의 10% 수수료</p>${current?`<p>${esc(PORT_BY_ID[current.destination]?.name)} · ${esc(GOODS[current.good]?.name)} ${current.qty}상자 · ${ready?'정산 가능':'다음 정산 '+new Date(current.due).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})}</p><button id="delegate-settle" ${ready?'':'disabled'}>조회 시점 시세로 정산</button><button id="delegate-cancel">항로 중지</button>`:`<label>상대 항구 <select id="delegate-destination">${ports.map(row=>`<option value="${row.id}">${esc(row.name)}</option>`).join('')}</select></label><label>품목 <select id="delegate-good">${port.market.map(id=>`<option value="${id}">${esc(GOODS[id].name)}</option>`).join('')}</select></label><label>수량 <input id="delegate-qty" type="number" min="1" max="100" value="10"></label><label>매입 예산 <input id="delegate-budget" type="number" min="1" value="10000"></label><button id="delegate-start" ${ports.length&&!game.delegateTrade?'':'disabled'}>항로 설정</button>`}`:''}`,'medium');
+   api.modal('부선장 상주·자동 교역',port.name,`<p>상주 중인 부선장은 승선할 수 없어요.${officer?' · '+esc(HARBOR_ROLE_LABEL[c.harborOfficer?.role||harborOfficerRole(officer)]):''}</p>${suspended?'<p>기간제 운영 중이라 상주 효과와 가상 교역을 일시 정지했어요. 기존 부선장은 회수할 수 있어요.</p>':''}<label>부선장 <select id="harbor-officer-id"><option value="">배치 해제</option>${roster.map(row=>`<option value="${row.id}" ${row.id===officer?'selected':''}>${esc(row.name)} · ${esc(HARBOR_ROLE_LABEL[harborOfficerRole(row.id)])}</option>`).join('')}</select></label><button id="harbor-officer-save">배치 변경</button>${officer&&!suspended?`<hr><h3>가상 교역 한 항로</h3><p>현실 4시간마다 · 최대 100상자 · 이익의 10% 수수료</p>${current?`<p>${esc(PORT_BY_ID[current.destination]?.name)} · ${esc(GOODS[current.good]?.name)} ${current.qty}상자 · ${ready?'정산 가능':'다음 정산 '+new Date(current.due).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})}</p><button id="delegate-settle" ${ready?'':'disabled'}>조회 시점 시세로 정산</button><button id="delegate-cancel">항로 중지</button>`:`<label>상대 항구 <select id="delegate-destination">${ports.map(row=>`<option value="${row.id}">${esc(row.name)}</option>`).join('')}</select></label><label>품목 <select id="delegate-good">${port.market.map(id=>`<option value="${id}">${esc(GOODS[id].name)}</option>`).join('')}</select></label><label>수량 <input id="delegate-qty" type="number" min="1" max="100" value="10"></label><label>매입 예산 <input id="delegate-budget" type="number" min="1" value="10000"></label><button id="delegate-start" ${ports.length&&!game.delegateTrade?'':'disabled'}>항로 설정</button>`}`:''}`,'medium');
    $('#harbor-officer-save').onclick=()=>{
     const id=$('#harbor-officer-id').value;
     run('ports',port.id,(state,c,time)=>assignHarborOfficer(state,c,uid,port.id,id,time),()=>showHarborOfficer(port));
@@ -276,5 +284,23 @@ $('#growth-deliver')?.addEventListener('click',event=>{
  function showCasino(){api.modal('홀짝 주사위장','게임 두카트만 사용 · 5초 간격','<label>베팅 D <input id="dice-bet" type="number" min="10" max="500" step="10" value="100"></label><p>맞히면 베팅액 포함 1.9배 지급, 틀리면 베팅금 손실</p><button data-dice="odd">홀 선택·굴리기</button><button data-dice="even">짝 선택·굴리기</button><p id="business-result"></p>','small');document.querySelectorAll('[data-dice]').forEach(b=>b.onclick=()=>run('ports',get().port,(game,c,time)=>{if(!permitted(c,account.uid))throw Error('이 항구의 서비스 이용이 제한됐어요.');return playDice(game,b.dataset.dice,Number($('#dice-bet').value),time,Math.floor(random()*6)+1);},r=>{$('#business-result').textContent=r.message;}));}
  function showArmory(){const s=get();if(PORT_BY_ID[s.port]?.depot)return api.toast('조선 시설이 있는 항구에서 대포를 관리하세요.');const rows=fleetShips(s);api.modal('대포 장착과 선박 수리',`내구도 ${currentHP(s)}/${fleetMaxHP(s)} · 장착 무게 ${gunWeight(s)}`,`<button id="repair-hull" ${s.port?'':'disabled'}>항구에서 수리</button><p>대포는 선박 단계·포대 수·무게 한도를 모두 만족해야 장착할 수 있어요.</p><div class="ship-growth-grid">${(s.cannons||[]).map(g=>`<article class="growth-step"><strong>${esc(cannonStats(g).name)}</strong><p>피해 ${cannonStats(g).damage} · 명중 ${cannonStats(g).accuracy}% · ${cannonStats(g).reload}초</p><select data-gun-ship="${g.id}"><option value="">보관함 · 미장착</option>${rows.map((p,i)=>`<option value="${p.id}" ${g.shipId===p.id?'selected':''}>${i+1}호 · ${p.tier+1}단계</option>`).join('')}</select><button data-gun-upgrade="${g.id}">품질 개량</button><button data-gun-sell="${g.id}">매각 60%</button></article>`).join('')}</div><h3>대포 구입</h3><select id="gun-kind">${CANNONS.map(c=>`<option value="${c.id}">${esc(c.name)} · ${c.stage}단계부터</option>`).join('')}</select><select id="gun-quality">${QUALITIES.map((q,i)=>`<option value="${i}">${esc(q.name)} · 가격 ×${q.cost}</option>`).join('')}</select><button id="buy-gun" ${s.port?'':'disabled'}>가격 확인·구입</button><p id="business-result"></p>`,'wide');const action=fn=>run('ports',s.port,(game,c,time)=>{if(!game.port||game.voyage)throw Error('항구에 입항하세요.');if(!permitted(c,account.uid))throw Error('이 항구의 선박 서비스가 제한됐어요.');if(PORT_BY_ID[game.port]?.developable&&(c.development?.level||0)<3)throw Error('조선 시설 3단계 확장 뒤 이용할 수 있어요.');return fn(game,time);},showArmory);$('#repair-hull').onclick=()=>action(repairHull);$('#buy-gun').onclick=()=>{const kind=$('#gun-kind').value,quality=Number($('#gun-quality').value),price=cannonStats({kind,quality}).cost;api.modal('대포를 구입할까요?','대포 구입',`<p>${esc(cannonStats({kind,quality}).name)} · ${fmt(price)} D</p><button id="gun-confirm">구입 확인</button><p id="business-result"></p>`,'small');$('#gun-confirm').onclick=()=>action(game=>buyCannon(game,kind,quality));};document.querySelectorAll('[data-gun-ship]').forEach(b=>b.onchange=()=>action((game,time)=>{const r=equipCannon(game,b.dataset.gunShip,b.value,time);if(usedSpace(game)>capacity(game))throw Error('화물 공간이 부족해요.');return r;}));document.querySelectorAll('[data-gun-upgrade]').forEach(b=>b.onclick=()=>action(game=>upgradeCannon(game,b.dataset.gunUpgrade)));document.querySelectorAll('[data-gun-sell]').forEach(b=>b.onclick=()=>action(game=>sellCannon(game,b.dataset.gunSell)));}
  async function shipAction(fn){const id=get().port;if(!id||PORT_BY_ID[id]?.depot)return api.toast('항구에서 개량하세요.');return run('ports',id,(game,c,time)=>{if(game.port!==id||!permitted(c,account.uid))throw Error('현재 항구 서비스를 확인하세요.');if(PORT_BY_ID[id]?.developable&&(c.development?.level||0)<3)throw Error('조선 시설 3단계 확장 뒤 이용할 수 있어요.');return fn(game,time);});}
- return {shipAction,trade,showTradeRequest,harborMessage,observe,tradeAccess,displayUnit,showHub,showArmory,syncPorts,run,dispose:()=>{watchVersion++;stopWatch?.();stopRegistry?.();clearTimeout(registryTimer);}};
+ async function reconcileHarborRecords(){
+  if(!account.ready)return;
+  const uid=account.uid,game=get();
+  const stations=Object.entries(game.harborOfficers||{});
+  const logs=await Promise.allSettled(stations.map(async([port,id])=>({port,id,content:(await readPort(port)).content})));
+  if(account.uid!==uid||!account.ready)return;
+  const stale=logs.filter(row=>row.status==='fulfilled'&&(ownership(row.value.content).ownerUid!==uid||row.value.content.harborOfficer?.id!==row.value.id)).map(row=>row.value);
+  if(stale.length)await run('personal',uid,state=>{
+   let changed=false;
+   for(const row of stale)if(state.harborOfficers?.[row.port]===row.id)changed=freeRecalledOfficer(state,row.port)||changed;
+   return changed?{message:'소유권을 잃은 항구에서 부선장을 복귀시켰어요.'}:{noWrite:true,quiet:true};
+  });
+  if(game.harborChallengePort){
+   const port=game.harborChallengePort;
+   const {content}=await readPort(port);
+   if(content.harborLosses?.[uid])await run('ports',port,(state,live)=>reconcileHarborLoss(state,live,uid));
+  }
+ }
+ return {reconcileHarborRecords,extraRumor:game=>extraHarborRumor(game,content(game.port).content,account.uid,now()),shipAction,trade,showTradeRequest,harborMessage,observe,tradeAccess,displayUnit,showHub,showArmory,syncPorts,run,dispose:()=>{watchVersion++;stopWatch?.();stopRegistry?.();clearTimeout(registryTimer);}};
 }

@@ -3,7 +3,7 @@ const CAP_HOURS=72;
 const NEUTRAL=new Set(['lisbon','porto']);
 const MAJOR=new Set(['london','amsterdam','venice','alexandria','istanbul','macau','shanghai','nagasaki','havana','buenos','sydney']);
 
-export function basicIncomeRate(content,portId,owner=content.developedOwner||content.ownerUid){
+export function basicIncomeRate(content,portId,owner=content.developedOwner||content.ownerUid,now=Date.now()){
   if(NEUTRAL.has(portId))return 0;
   const base=portId.startsWith('depot-')?500:content.developedOwner?((content.development?.level||0)>=2?1000:500)+(content.advancedSupply?500:0):MAJOR.has(portId)?3000:1000;
   const bonus=owner&&content.officerIncome?.uid===owner?Math.max(0,Math.min(420,content.officerIncome.basis||0)):0;
@@ -11,11 +11,20 @@ export function basicIncomeRate(content,portId,owner=content.developedOwner||con
   const threshold=MAJOR.has(portId)?3000000:1000000;
   const developed=capital+Math.min(content.growthContribution||0,threshold*.2)>=threshold;
   const tourism=owner&&developed&&content.domestic?.kind==='tourism'?Math.min(200,Math.floor(base/10)):0;
-  const station=owner&&content.harborOfficer?.owner===owner?Math.floor(base*.05):0;
+  const grant=content.harborOperator,officer=content.harborOfficer;
+  const station=owner&&officer?.owner===owner&&(!officer.role||officer.role==='trade')&&!(grant?.until>now&&grant.uid!==owner)?Math.floor(base*.05):0;
   return Math.floor(base*(10000+bonus)/10000)+tourism+station;
 }
 function accruedUnits(period,now){
   return Math.min(period.rate*CAP_HOURS*HOUR,period.units+Math.max(0,now-period.at)*period.rate);
+}
+function currentUnits(content,id,period,now){
+ const until=content.harborOperator?.until;
+ if(until>period.at&&until<now&&basicIncomeRate(content,id,period.owner,until)!==period.rate){
+  const rate=basicIncomeRate(content,id,period.owner,until);
+  return Math.min(rate*CAP_HOURS*HOUR,accruedUnits(period,until)+(now-until)*rate);
+ }
+ return accruedUnits(period,now);
 }
 function validPeriod(period){
   return period&&typeof period.owner==='string'&&Number.isSafeInteger(period.at)&&period.at>=0&&
@@ -27,28 +36,28 @@ function previousUnits(content,uid){
 }
 export function initializeBasicIncome(content,portId,owner,at){
   if(!owner||validPeriod(content.basicIncome?.period)||!Number.isSafeInteger(at)||at<0)return false;
-  const rate=basicIncomeRate(content,portId,owner);
+  const rate=basicIncomeRate(content,portId,owner,at);
   if(!rate)return false;
   content.basicIncome={...content.basicIncome,period:{owner,at,rate,units:0}};
   return true;
 }
 export function estimateBasicIncome(content,portId,uid,owner,now){
-  const period=content.basicIncome?.period, own=owner===uid&&basicIncomeRate(content,portId,owner)>0;
+  const period=content.basicIncome?.period, own=owner===uid&&basicIncomeRate(content,portId,owner,now)>0;
   const active=own&&validPeriod(period)&&period.owner===uid;
-  return {active,canStart:own&&!active,rate:own?basicIncomeRate(content,portId,owner):0,
-    accrued:Math.floor(((active?accruedUnits(period,now):0)+previousUnits(content,uid))/HOUR)};
+  return {active,canStart:own&&!active,rate:own?basicIncomeRate(content,portId,owner,now):0,
+    accrued:Math.floor(((active?currentUnits(content,portId,period,now):0)+previousUnits(content,uid))/HOUR)};
 }
 export function advanceBasicIncome(content,portId,owner,now){
-  const current=content.basicIncome?.period, rate=owner?basicIncomeRate(content,portId,owner):0;
+  const current=content.basicIncome?.period, rate=owner?basicIncomeRate(content,portId,owner,now):0;
   if(!rate&&!validPeriod(current))return;
   const ledger=content.basicIncome??={};
   ledger.previous??={};
   if(validPeriod(current)&&current.owner!==owner){
     ledger.previous[current.owner]=Math.min(Number.MAX_SAFE_INTEGER,
-      previousUnits(content,current.owner)+accruedUnits(current,now));
+      previousUnits(content,current.owner)+currentUnits(content,portId,current,now));
   }
   if(rate){
-    ledger.period={owner,at:now,rate,units:validPeriod(current)&&current.owner===owner?accruedUnits(current,now):0};
+    ledger.period={owner,at:now,rate,units:validPeriod(current)&&current.owner===owner?currentUnits(content,portId,current,now):0};
   }else delete ledger.period;
 }
 export function claimBasicIncome(content,portId,uid,owner,now){

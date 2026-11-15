@@ -1,16 +1,17 @@
-import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.15-discovery-resume';
-import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.15-discovery-resume';
-import {regionalFactor} from './regional-economy.js?v=2026.11.15-discovery-resume';
-import {recordTrade} from './rank-progress.js?v=2026.11.15-discovery-resume';
-import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.15-discovery-resume';
-import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,STORED_SHIP_LIMIT,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.15-discovery-resume';
-import {parseState} from './save-game.js?v=2026.11.15-discovery-resume';
-import {gunWeight} from './cannons.js?v=2026.11.15-discovery-resume';
-import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.15-discovery-resume';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.15-discovery-resume';
-import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.15-discovery-resume';
-import {charterCargo} from './guild-contracts.js?v=2026.11.15-discovery-resume';
-export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.15-discovery-resume';
+import {inlandBlocksSailing} from './inland.js?v=2026.11.15-inland-album';
+import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.15-inland-album';
+import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.15-inland-album';
+import {regionalFactor} from './regional-economy.js?v=2026.11.15-inland-album';
+import {recordTrade} from './rank-progress.js?v=2026.11.15-inland-album';
+import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.15-inland-album';
+import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,STORED_SHIP_LIMIT,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.15-inland-album';
+import {parseState} from './save-game.js?v=2026.11.15-inland-album';
+import {gunWeight} from './cannons.js?v=2026.11.15-inland-album';
+import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.15-inland-album';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.15-inland-album';
+import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.15-inland-album';
+import {charterCargo} from './guild-contracts.js?v=2026.11.15-inland-album';
+export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.15-inland-album';
 
 export const SAVE_KEY='windward-save-v1';
 export const START_DATE=Date.UTC(1522,3,6);
@@ -196,7 +197,7 @@ export function recallShip(s,id,expectedPort){
  return {ok:true,message:vesselSpec(quote.vessel).name+'이(가) 항해 선단에 합류했어요.'};
 }
 export function sellPrice(portId,goodId,day){return Math.floor(price(portId,goodId,day)*0.88);}
-export const tradingPort=s=>s.voyage||PORT_BY_ID[s.port]?.depot?null:PORT_BY_ID[s.port]||null;
+export const tradingPort=s=>s.voyage||inlandBlocksSailing(s,Date.now())||PORT_BY_ID[s.port]?.depot?null:PORT_BY_ID[s.port]||null;
 export function buy(s,goodId,qty){
   qty=Math.floor(qty);
   if(GOODS[goodId]?.legacy || !tradingPort(s)?.market.includes(goodId) || !Number.isFinite(qty)||qty<=0)return {ok:false,error:'구매할 수량을 확인하세요.'};

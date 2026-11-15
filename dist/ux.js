@@ -1,12 +1,12 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.15-discovery-resume';
-import {shipArtPath} from './art.js?v=2026.11.15-discovery-resume';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.15-discovery-resume';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-discovery-resume';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.15-discovery-resume';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.15-discovery-resume';
-import {autoSupplyDays,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.15-discovery-resume';
-import {isTypingTarget} from './controls.js?v=2026.11.15-discovery-resume';
-import {validCard} from './social-core.js?v=2026.11.15-discovery-resume';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.15-inland-album';
+import {shipArtPath} from './art.js?v=2026.11.15-inland-album';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.15-inland-album';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-inland-album';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.15-inland-album';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.15-inland-album';
+import {autoSupplyDays,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.15-inland-album';
+import {isTypingTarget} from './controls.js?v=2026.11.15-inland-album';
+import {validCard} from './social-core.js?v=2026.11.15-inland-album';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -109,6 +109,8 @@ export function createUX(api){
   }
   function openMore(){
     restorePanel();$('#quick-content').innerHTML='<div class="quick-links"><button data-menu="guild">항구 조합</button><button data-menu="items">아이템 가방</button><button data-menu="atlas">항구 찾기</button><button data-menu="officers">부선장 명부</button><button data-menu="cargo">화물</button><button data-menu="mail">외교 서신</button><button data-menu="menuFinder">메뉴 찾기</button><button data-menu="suggestions">개선 제안 게시판</button><button data-menu="ownedPorts">소유 항구 현황</button><button data-menu="projects">공동 사업</button><button data-menu="sea">해상 활동</button><button data-menu="shore">상륙 탐사</button><button data-menu="saleSearch">내 물품 최고가 판매처</button><button data-menu="business">항구 투자·활동</button><button data-menu="guns">대포·수리</button><button data-menu="combat">선장 전투</button><button data-menu="collection">수집 도감</button><button data-menu="ship">내 배 보기</button><button data-menu="captains">전체 선장</button><button data-menu="globe">세계 지구본</button><button data-menu="rank">랭킹</button><button data-menu="story">항해자의 이야기</button><button data-menu="chat">채팅</button><button data-menu="journal">항해일지</button><button data-menu="editQuick">바로가기 편집</button><button data-menu="settings">조작·화면 설정</button><button data-menu="help">도움말</button></div>';
+    const unread=api.onMailUnread?.()||0;
+    if(unread)$('#quick-content [data-menu="mail"]').textContent='외교 서신 · '+Math.min(99,unread)+(unread>99?'+':'');
     openSheet('더보기','more');
     $('#quick-content').querySelectorAll('[data-menu]').forEach(b=>b.onclick=()=>{
       closeSheet();const key=b.dataset.menu;

@@ -1,8 +1,8 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.15-discovery-resume';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-discovery-resume';
-import {segmentDistance} from './voyage-core.js?v=2026.11.15-discovery-resume';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.15-discovery-resume';
-import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.15-discovery-resume';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.15-inland-album';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-inland-album';
+import {segmentDistance} from './voyage-core.js?v=2026.11.15-inland-album';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.15-inland-album';
+import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.15-inland-album';
 const shipTrace=s=>(s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0)+(explorationGear(s)?.spotBonus||0);
 export const explorationAllowed=s=>!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{
@@ -25,4 +25,4 @@ export function inspectDiscovery(s,nav,id,now=Date.now()){
  recordGuildObjective(s,'survey',id,now);
  return {ok:true,discovery:d,...discoveryStats(s)};
 }
-export function readRumor(s,id){const r=RUMOR_BY_ID[id];if(!r||s.port!==r.portId||s.voyage||!explorationAllowed(s))return false;s.rumors??=[];if(!s.rumors.includes(id))s.rumors.push(id);return true;}
+export function readRumor(s,id,extra=null){const r=RUMOR_BY_ID[id];if(!r||s.port!==r.portId&&extra!==id||s.voyage||!explorationAllowed(s))return false;s.rumors??=[];if(!s.rumors.includes(id))s.rumors.push(id);return true;}

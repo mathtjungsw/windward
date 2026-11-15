@@ -48,6 +48,27 @@ async function expeditionPage(mode){
  `;
  return (await fixturePage(game)).replace('account.seenVersion=RELEASE;beginPlaying('+JSON.stringify(game)+');',()=>`account.seenVersion=RELEASE;beginPlaying(${JSON.stringify(game)});${fixture}`);
 }
+async function inlandAlbumPreview(){
+ const game=initialState(),port=PORTS.find(p=>p.id==='seville');
+ Object.assign(game,{port:port.id,position:[port.lon,port.lat],money:30000});
+ game.visited.push(port.id);
+ for(const entry of DISCOVERIES)game.discoveries[entry.id]={foundDay:1,foundAt:1000};
+ const marker='beginPlaying('+JSON.stringify(game)+');';
+ const mock=`
+   const records=new Map();account.ready=true;account.uid='local-inland-album';account.save=()=>{};
+   combat.releaseIfPort=async()=>{};
+   account.readShared=async (kind,key)=>structuredClone(records.get(kind+'/'+key)||{revision:0,content:{}});
+   account.atomicAction=async (kind,key,mutate)=>{
+    const copy=structuredClone(state),record=await account.readShared(kind,key);
+    const result=await mutate(copy,record.content,guildTime(),record.revision);
+    if(result.ok===false)throw Error(result.error);
+    if(!result.noWrite){records.set(kind+'/'+key,{revision:record.revision+1,content:record.content});account.applyGame(copy);}
+    return result;
+   };
+   window.windwardInlandQA={game:()=>state,advance:ms=>{account.serverOffset=(account.serverOffset||0)+ms;},showCity:()=>inlandUI.open('cordoba'),showQuiz:()=>albumQuiz.menu()};
+ `;
+ return (await fixturePage(game)).replace(marker,()=>marker+mock);
+}
 
 async function rumorPreviewPage(porto,shore=false,beach=false,guild=false,projects=false,depot=false){
   const game=initialState();
@@ -193,6 +214,7 @@ const server=createServer(async(req,res)=>{
     if(useEmulators&&url.pathname==='/account.js')return reply(res,'.js',await emulatorAccount());
     const manual={...initialState(),port:null,controlMode:'manual'};
     if(url.pathname==='/__qa/development')return reply(res,'.html',await developmentPreviewPage());
+    if(url.pathname==='/__qa/inland-album')return reply(res,'.html',await inlandAlbumPreview());
     if(url.pathname==='/__qa/expedition')return reply(res,'.html',await expeditionPage(url.searchParams.get('mode')));
     if(url.pathname==='/__qa/harbor')return reply(res,'.html',await fixturePage({...manual,position:[url.searchParams.has('near')?-9.44:-10.1,41]}));
     if(url.pathname==='/__qa/trade')return reply(res,'.html',await fixturePage({...manual,position:[-9.44,41],cargo:{wine:{qty:10,cost:310}},boughtLisbonWine:true,money:2090}));

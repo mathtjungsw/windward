@@ -6,26 +6,60 @@ export function createCaptainsMail(api){
  const a=api.account;
  const path=(recipient,id='')=>'captainMail/'+recipient+(id?'/'+id:'');
  const reference=(recipient,id)=>a.sdk.ref(a.db,'gameV2/'+path(recipient,id));
+ const unreadPath=(uid,id)=>'mailUnread/'+uid+(id?'/'+id:'');
+ const blockPath=(uid,target)=>'mailBlocks/'+uid+(target?'/'+target:'');
+ const ref=path=>a.sdk.ref(a.db,'gameV2/'+path);
+ let unread={},unsubscribe=null,watchedUid=null;
+ const updateBadges=()=>api.onUnread?.(Object.keys(unread).length);
+ function watch(){
+  if(!a.ready||watchedUid===a.uid)return;
+  unsubscribe?.();watchedUid=a.uid;
+  unsubscribe=a.sdk.onValue(ref(unreadPath(a.uid)),snap=>{unread=snap.val()||{};updateBadges();},()=>{unread={};updateBadges();});
+ }
+ async function markRead(uid,id){
+  if(!unread[id])return;
+  await a.sdk.set(ref(unreadPath(uid,id)),null);
+ }
+ function blockButton(uid,name,target){
+  if(!target||target===uid)return;
+  const button=document.createElement('button');
+  button.hidden=true;
+  const reference=ref(blockPath(uid,target));
+  a.sdk.get(reference).then(snap=>{
+   if(!button.isConnected)return;
+   let blocked=snap.val()===true;
+   const update=()=>{button.textContent=blocked?'서신 차단 해제':'서신 차단';button.ariaLabel=name+' '+button.textContent;};
+   update();button.hidden=false;
+   button.onclick=async()=>{
+    button.disabled=true;
+    try{await a.sdk.set(reference,blocked?null:true);blocked=!blocked;update();api.toast(blocked?'이 선장의 새 서신을 차단했어요.':'서신 차단을 해제했어요.');}
+    catch(error){api.toast(error.message,'error');}finally{button.disabled=false;}
+   };
+  }).catch(()=>{});
+  return button;
+ }
  function compose(recipient,name){
   api.modal('외교 서신',name,'<label>서신 <textarea id="mail-body" maxlength="300" rows="4"></textarea></label><label>첨부 두카트 <input id="mail-amount" type="number" min="0" max="100000" value="0"></label><p>첨부금은 수락 전까지 보류해요. 거절 또는 48시간 만료 후 보낸 편지함에서 반환받을 수 있어요.</p><button id="mail-send">서신 보내기</button><button id="mail-back">편지함</button>','small');
   $('#mail-back').onclick=open;
   const id=crypto.randomUUID();
   $('#mail-send').onclick=()=>{
    const body=$('#mail-body').value.trim(),amount=Number($('#mail-amount').value);
-   api.run('personal',a.uid,(game,_c,now)=>{
+   api.run('personal',a.uid,async(game,_c,now)=>{
     if(!recipient||recipient===a.uid||!body||body.length>300||!Number.isSafeInteger(amount)||amount<0||amount>100000||amount>game.money)throw Error('서신 문구와 첨부 금액을 확인하세요.');
+    if((await a.sdk.get(ref(blockPath(recipient,a.uid)))).val())throw Error('현재 서신을 보낼 수 없어요.');
     const out=game.mailSent??={};
     if(out[id])throw Error('이미 보낸 서신이에요.');
     if(Object.values(out).some(item=>item.to===recipient&&now-item.at<60000))throw Error('같은 선장에게는 1분 뒤 다시 보낼 수 있어요.');
     if(Object.keys(out).length>=60)throw Error('보낸 편지함에서 완료된 항목을 정리하세요.');
     out[id]={to:recipient,name,at:now};
     game.money-=amount;
-    return {message:'외교 서신을 보냈어요.',extras:{[path(recipient,id)]:{from:a.uid,name:a.name,body,amount,at:a.sdk.serverTimestamp(),state:'pending'}}};
+    return {message:'외교 서신을 보냈어요.',extras:{[path(recipient,id)]:{from:a.uid,name:a.name,body,amount,at:a.sdk.serverTimestamp(),state:'pending'},[unreadPath(recipient,id)]:true}};
    },()=>open('sent'));
   };
  }
  async function open(mode='received'){
   if(!a.ready)return api.toast('로그인한 뒤 서신을 이용하세요.');
+  watch();
   const uid=a.uid;
   api.modal('외교 서신','선장 편지함','<div class="dialog-actions"><button id="mail-received">받은 서신</button><button id="mail-sent">보낸 서신</button><button id="mail-new">서신 작성</button></div><div id="mail-list">불러오는 중…</div>','medium');
   $('#mail-received').onclick=()=>open();$('#mail-sent').onclick=()=>open('sent');$('#mail-new').onclick=directory;
@@ -52,8 +86,16 @@ export function createCaptainsMail(api){
      const button=(action,label)=>`<button data-mail-id="${id}" data-mail-action="${action}">${label}</button>`;
      const choices=mode==='received'?isPending&&!expired?button('accepted',letter.amount?money(letter.amount)+' 받기':'확인')+button('declined','거절'):'':
       isPending&&!expired?button('cancelled','취소·반환'):letter.state==='declined'||isPending&&expired?button('refunded','반환받기'):button('remove','보낸 목록에서 지우기');
-     return `<article class="sale-search-row"><strong>${esc(toName||letter.name)}</strong><p>${esc(letter.body)}</p><p>${money(letter.amount)} · ${status}</p>${choices}${mode==='received'?button('reply','답장'):''}</article>`;
+     return `<article class="sale-search-row"><details data-mail-read="${id}"><summary><strong>${esc(toName||letter.name)}</strong>${mode==='received'&&unread[id]?'<span class="mail-unread">읽지 않음</span>':''} · ${money(letter.amount)} · ${status}</summary><p>${esc(letter.body)}</p>${choices}${mode==='received'?button('reply','답장')+'<span data-mail-block></span>':''}</details></article>`;
     }).join('')||'<p>표시할 서신이 없어요.</p>';
+    if(mode==='received')for(const details of list.querySelectorAll('[data-mail-read]'))details.addEventListener('toggle',()=>{
+     if(!details.open)return;
+     const id=details.dataset.mailRead,letter=rows.find(row=>row.id===id)?.letter;
+     if(!letter)return;
+     if(unread[id])markRead(uid,id).then(()=>details.querySelector('.mail-unread')?.remove()).catch(()=>{});
+     const target=details.querySelector('[data-mail-block]');
+     if(target&&!target.firstElementChild){const button=blockButton(uid,letter.name,letter.from);if(button)target.append(button);}
+    });
     if(rows.length>size){const more=document.createElement('button');more.textContent='20건 더 보기';more.onclick=()=>paint(size+20);list.append(more);}
    }
    paint(limit);
@@ -99,5 +141,5 @@ export function createCaptainsMail(api){
   more.onclick=load;
   await load();
  }
- return {open};
+ return {open,watch,unreadCount:()=>Object.keys(unread).length,blockButton:(target,name)=>a.ready?blockButton(a.uid,name,target):null};
 }

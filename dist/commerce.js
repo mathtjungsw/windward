@@ -1,11 +1,12 @@
-import {shipyardTrade} from './historical-ships.js?v=2026.11.15-discovery-resume';
-import {recordTrade} from './rank-progress.js?v=2026.11.15-discovery-resume';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-discovery-resume';
-import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.15-discovery-resume';
-import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.15-discovery-resume';
-import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-discovery-resume';
-import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.15-discovery-resume';
-import {recordStoryTrade} from './story-core.js?v=2026.11.15-discovery-resume';
+import {shipyardTrade} from './historical-ships.js?v=2026.11.15-inland-album';
+import {recordTrade} from './rank-progress.js?v=2026.11.15-inland-album';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-inland-album';
+import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.15-inland-album';
+import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.15-inland-album';
+import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-inland-album';
+import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.15-inland-album';
+import {recordStoryTrade} from './story-core.js?v=2026.11.15-inland-album';
+import {harborOfficerRole} from './harbor-officers.js?v=2026.11.15-inland-album';
 export function captainTradeQuote(game,portId,goodId,qty,mode,item,now,rate){
  const quote=tradeQuote(portId,goodId,qty,mode,item,now,rate);
  const bonus=mode==='sell'&&game?Math.floor(quote.total*saleBonus(game,portId,goodId)+1e-9):0;
@@ -115,10 +116,10 @@ export function withdrawInvestment(game,content,uid,portId,amount,now,revision,q
  if(!result.investors[uid])game.investedPorts=(game.investedPorts||[]).filter(id=>id!==portId);
  return {...result,message:'투자금 '+result.received.toLocaleString('ko-KR')+' D 수령'};
 }
-export function executeTrade(game,content,uid,portId,goodId,qty,mode,quote,now,revision){const p=tradingPort(game),g=GOODS[goodId];if(p?.id!==portId||!g||!permitted(content,uid))throw Error('현재 입항한 항구의 교역 권한을 확인하세요.');if(p.developable&&(content.development?.level||0)<2)throw Error('교역소 2단계 확장 뒤 거래할 수 있어요.');if(mode==='buy'&&(g.legacy||!(p.market.includes(goodId)||g.premium&&g.source===portId)))throw Error('이 항구에서 구매할 수 없어요.');if(!quote||now-quote.at>5000||now<quote.at-1000||quote.revision!==revision)throw Error('시세가 바뀌었어요. 새 금액을 확인해 주세요.');
- const item=portMarketItem(content,portId,goodId,revision),actual=captainTradeQuote(game,portId,goodId,qty,mode,item,quote.at,taxRate(content,uid,portId));const live=tradeQuote(portId,goodId,qty,mode,item,now,taxRate(content,uid,portId));actual.next=live.next;if(actual.total!==quote.total||live.eventEnd!==actual.eventEnd)throw Error('시세가 바뀌었어요. 새 금액을 확인해 주세요.');const old=game.cargo[goodId]||{qty:0,cost:0};
- if(mode==='buy'){if(usedSpace(game)+qty>capacity(game)||game.money<actual.total)throw Error('화물 공간과 두카트를 확인하세요.');game.money-=actual.total;game.cargo[goodId]={qty:old.qty+qty,cost:old.cost+actual.total};if(portId==='lisbon'&&goodId==='wine')game.boughtLisbonWine=true;}
- else{if(old.qty<qty)throw Error('판매할 화물이 부족해요.');const cost=old.cost*qty/old.qty;game.money+=actual.total;game.profit+=actual.total-cost;if(old.qty===qty)delete game.cargo[goodId];else game.cargo[goodId]={qty:old.qty-qty,cost:old.cost-cost};if(portId!=='lisbon'&&goodId==='wine'&&game.boughtLisbonWine)game.soldAway=true;}
+export function executeTrade(game,content,uid,portId,goodId,qty,mode,quote,now,revision,storage=null){const p=tradingPort(game),g=GOODS[goodId];if(p?.id!==portId||!g||!permitted(content,uid))throw Error('현재 입항한 항구의 교역 권한을 확인하세요.');if(p.developable&&(content.development?.level||0)<2)throw Error('교역소 2단계 확장 뒤 거래할 수 있어요.');if(mode==='buy'&&(g.legacy||!(p.market.includes(goodId)||g.premium&&g.source===portId)))throw Error('이 항구에서 구매할 수 없어요.');if(!quote||now-quote.at>5000||now<quote.at-1000||quote.revision!==revision)throw Error('시세가 바뀌었어요. 새 금액을 확인해 주세요.');
+ const item=portMarketItem(content,portId,goodId,revision),actual=captainTradeQuote(game,portId,goodId,qty,mode,item,quote.at,taxRate(content,uid,portId));const live=tradeQuote(portId,goodId,qty,mode,item,now,taxRate(content,uid,portId));actual.next=live.next;if(actual.total!==quote.total||live.eventEnd!==actual.eventEnd)throw Error('시세가 바뀌었어요. 새 금액을 확인해 주세요.');const cargo=storage?.cargo||game.cargo,old=cargo[goodId]||{qty:0,cost:0};
+ if(mode==='buy'){if(qty>(storage?.room??capacity(game)-usedSpace(game))||game.money<actual.total)throw Error('화물 공간과 두카트를 확인하세요.');game.money-=actual.total;cargo[goodId]={qty:old.qty+qty,cost:old.cost+actual.total};if(portId==='lisbon'&&goodId==='wine')game.boughtLisbonWine=true;}
+ else{if((storage?.available??old.qty)<qty)throw Error('판매할 화물이 부족해요.');const cost=old.cost*qty/old.qty;game.money+=actual.total;game.profit+=actual.total-cost;if(old.qty===qty)delete cargo[goodId];else cargo[goodId]={qty:old.qty-qty,cost:old.cost-cost};if(portId!=='lisbon'&&goodId==='wine'&&game.boughtLisbonWine)game.soldAway=true;}
  const owner=ownership(content).ownerUid;if(owner&&!content.basicIncome?.period)advanceBasicIncome(content,portId,owner,now);if(owner&&actual.tax){content.treasury??={};const operator=content.harborOperator?.until>now?content.harborOperator.uid:null;const share=operator&&operator!==owner?Math.floor(actual.tax*.25):0;content.treasury[owner]=(content.treasury[owner]||0)+actual.tax-share;if(share)content.treasury[operator]=(content.treasury[operator]||0)+share;}
  if(actual.voucher)delete game.rumorProgress.vouchers[mode];
  content.markets??={};content.markets[goodId]=actual.next;game.trades++;if(!game.explorationLockedUntilSailing)shipyardTrade(game,goodId);recordTrade(game,goodId,mode,mode==='sell'?actual.total-old.cost*qty/old.qty:0,now);recordStoryTrade(game,portId,goodId,qty,mode);return {ok:true,...actual};
@@ -126,12 +127,13 @@ export function executeTrade(game,content,uid,portId,goodId,qty,mode,quote,now,r
 export function changePortPolicy(content,uid,defaultRate,rates,blacklist){if(ownership(content).ownerUid!==uid)throw Error('현재 소유자만 변경할 수 있어요.');if(!Number.isFinite(defaultRate)||defaultRate<0||defaultRate>30||Object.keys(rates).length>100||Object.values(rates).some(n=>!Number.isFinite(n)||n<0||n>30)||blacklist.length>20)throw Error('세율 0~30%, 제한 선장 최대 20명을 확인하세요.');content.defaultRate=defaultRate;content.rates=rates;content.blacklist=blacklist;return {ok:true};}
 export function assignHarborOfficer(game,content,uid,id,officer,now){
  if(game.port!==id||game.voyage||ownership(content).ownerUid!==uid)throw Error('소유 항구에 정박하세요.');
+ if(officer&&content.harborOperator?.until>now&&content.harborOperator.uid!==uid)throw Error('기간제 운영이 끝나면 새로 배치할 수 있어요.');
  const stations=game.harborOfficers??={};
  if(officer&&(!game.rumorProgress?.officers?.includes(officer)||Object.entries(stations).some(([port,x])=>port!==id&&x===officer)))throw Error('고용 중인 부선장의 배치 상태를 확인하세요.');
  advanceBasicIncome(content,id,uid,now);
  if(officer){
   stations[id]=officer;
-  content.harborOfficer={owner:uid,id:officer};
+  content.harborOfficer={owner:uid,id:officer,role:harborOfficerRole(officer)};
   if(game.rumorProgress.active===officer){
    const previous=activeOfficer(game)?.hullBonus||0;
    game.rumorProgress.active=null;
