@@ -1,13 +1,14 @@
-import {ship,fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.15-search-manual-protection';
-import {usedSpace,capacity,usedCargo,supplyCost} from './engine.js?v=2026.11.15-search-manual-protection';
-import {currentHP} from './cannons.js?v=2026.11.15-search-manual-protection';
-import {activeOfficer,couponAmount,consumeCoupon} from './rumor-progress.js?v=2026.11.15-search-manual-protection';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-search-manual-protection';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-search-manual-protection';
-export function repairHull(s){if(!s.port||s.voyage)throw Error('항구에서 수리하세요.');const max=fleetMaxHP(s),missing=max-currentHP(s);if(!missing)throw Error('이미 수리가 끝났어요.');const officer=activeOfficer(s), indian=['인도양','아라비아해','벵골만','라카디브해'].includes(PORT_BY_ID[s.port]?.sea);
+import {ship,fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.15-server-blessings';
+import {usedSpace,capacity,usedCargo,supplyCost} from './engine.js?v=2026.11.15-server-blessings';
+import {currentHP} from './cannons.js?v=2026.11.15-server-blessings';
+import {activeOfficer,couponAmount,consumeCoupon} from './rumor-progress.js?v=2026.11.15-server-blessings';
+import {PORT_BY_ID} from './data.js?v=2026.11.15-server-blessings';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-server-blessings';
+import {blessingBonus} from './blessings.js?v=2026.11.15-server-blessings';
+export function repairHull(s,at){if(!s.port||s.voyage)throw Error('항구에서 수리하세요.');const max=fleetMaxHP(s),missing=max-currentHP(s);if(!missing)throw Error('이미 수리가 끝났어요.');const officer=activeOfficer(s), indian=['인도양','아라비아해','벵골만','라카디브해'].includes(PORT_BY_ID[s.port]?.sea);
  const discount=officer?.repairDiscount||(indian?officer?.indianRepairDiscount||0:0);
  const price=Math.max(1,Math.ceil(Math.min(3000,Math.max(100,fleetAppraisal(s)*.02))*missing/max*(1-discount)));
- const cost=price-couponAmount(s,'repair',price);if(s.money<cost)throw Error('수리할 두카트가 부족해요.');s.money-=cost;s.hullHP=max;consumeCoupon(s,'repair');return {ok:true,cost};}
+ const net=price-couponAmount(s,'repair',price),discountTotal=blessingBonus(net,'repair',at),cost=net-discountTotal;if(s.money<cost)throw Error('수리할 두카트가 부족해요.');s.money-=cost;s.hullHP=max;consumeCoupon(s,'repair');return {ok:true,cost,message:'선박 수리 · '+cost.toLocaleString('ko-KR')+' D'+(discountTotal?' · 축복 할인 '+discountTotal+' D':'')};}
 export function useRepairKit(s,id){
  const p=s.rumorProgress, max=fleetMaxHP(s), hp=currentHP(s);
  if(id!=='I013'||!p?.items[id]||s.battleId||s.npcBattle||s.raidId||s.voyage?.kind||hp<=0)throw Error('전투와 구조가 끝난 뒤 수리 도구를 사용할 수 있어요.');

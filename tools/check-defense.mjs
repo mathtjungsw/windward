@@ -22,6 +22,9 @@ export function patchFor(game,room,result,uid,key,beforeSave,beforeRevision=0){c
 export function first(f,key='raid',uid='a',time=Date.now()){const game=structuredClone(f.games[uid]),o=openOfflineRaid(game,f.states.b,{uid,name:uid.toUpperCase()},{uid:'b',session:'b-session'},key,time),r=advanceOfflineRaid(game,o.room,o.node,uid,{kind:'fire',gunId:uid+'-gun',autoDefense:true},time,[0,0],()=>true,f.states[uid]);return {game,room:o.room,r,patch:patchFor(game,o.room,r,uid,key,f.saves[uid])};}
 const apply=(patch,uid='a')=>req('gameV2',{uid,method:'PATCH',body:patch});
 let f=await reset(),shot=first(f);
+await req('gameV2/serverBlessings/current',{admin:true,method:'PUT',body:{effect:'peace',start:Date.now()}});
+assert.equal((await apply(shot.patch)).status,401,'peace blocks opening an offline raid');
+await req('gameV2/serverBlessings',{admin:true,method:'DELETE'});
 assert.equal((await apply(shot.patch)).status,200,'first shot and automatic defense are one paired operation');
 assert.equal((await apply(shot.patch)).status,401,'duplicate receipt cannot replay');
 const skilled=first(await reset({officers:{a:'O003',b:'O010'}}),'skilled');

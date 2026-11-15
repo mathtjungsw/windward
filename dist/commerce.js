@@ -1,19 +1,22 @@
-import {shipyardTrade} from './historical-ships.js?v=2026.11.15-search-manual-protection';
-import {recordTrade} from './rank-progress.js?v=2026.11.15-search-manual-protection';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-search-manual-protection';
-import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.15-search-manual-protection';
-import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.15-search-manual-protection';
-import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-search-manual-protection';
-import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.15-search-manual-protection';
-import {recordStoryTrade} from './story-core.js?v=2026.11.15-search-manual-protection';
-import {harborOfficerRole} from './harbor-officers.js?v=2026.11.15-search-manual-protection';
-import {noviceActive} from './novice.js?v=2026.11.15-search-manual-protection';
-export function captainTradeQuote(game,portId,goodId,qty,mode,item,now,rate){
+import {shipyardTrade} from './historical-ships.js?v=2026.11.15-server-blessings';
+import {recordTrade} from './rank-progress.js?v=2026.11.15-server-blessings';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-server-blessings';
+import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.15-server-blessings';
+import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.15-server-blessings';
+import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-server-blessings';
+import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.15-server-blessings';
+import {recordStoryTrade} from './story-core.js?v=2026.11.15-server-blessings';
+import {harborOfficerRole} from './harbor-officers.js?v=2026.11.15-server-blessings';
+import {noviceActive} from './novice.js?v=2026.11.15-server-blessings';
+import {blessingBonus} from './blessings.js?v=2026.11.15-server-blessings';
+export function captainTradeQuote(game,portId,goodId,qty,mode,item,now,rate,effectAt=now){
  const quote=tradeQuote(portId,goodId,qty,mode,item,now,rate);
  const bonus=mode==='sell'&&game?Math.floor(quote.total*saleBonus(game,portId,goodId)+1e-9):0;
  const albumDiscount=mode==='buy'&&game?.albumRewards?.titleActive&&game.albumRewards.title&&!GOODS[goodId]?.premium?Math.floor(quote.gross*.01):0;
  const voucher=tradeVoucher(game,mode,portId,goodId,qty,quote.total-albumDiscount);
- return {...quote,noviceTax:noviceActive(game),voucher,albumDiscount,bonus:bonus+(mode==='sell'?voucher:0),total:quote.total-albumDiscount+bonus+(mode==='sell'?voucher:-voucher)};
+ const net=quote.total-albumDiscount+bonus+(mode==='sell'?voucher:-voucher);
+ const blessing=mode==='sell'?blessingBonus(net,'trade',effectAt):0;
+ return {...quote,noviceTax:noviceActive(game),voucher,albumDiscount,bonus:bonus+(mode==='sell'?voucher:0),blessing,total:net+blessing};
 }
 export const NEUTRAL_PORTS=['lisbon','porto'];
 export const LARGE_PORTS=['london','amsterdam','venice','alexandria','istanbul','macau','shanghai','nagasaki','havana','buenos','sydney'];
@@ -118,7 +121,7 @@ export function withdrawInvestment(game,content,uid,portId,amount,now,revision,q
  return {...result,message:'투자금 '+result.received.toLocaleString('ko-KR')+' D 수령'};
 }
 export function executeTrade(game,content,uid,portId,goodId,qty,mode,quote,now,revision,storage=null){const p=tradingPort(game),g=GOODS[goodId];if(p?.id!==portId||!g||!permitted(content,uid))throw Error('현재 입항한 항구의 교역 권한을 확인하세요.');if(p.developable&&(content.development?.level||0)<2)throw Error('교역소 2단계 확장 뒤 거래할 수 있어요.');if(mode==='buy'&&(g.legacy||!(p.market.includes(goodId)||g.premium&&g.source===portId)))throw Error('이 항구에서 구매할 수 없어요.');if(!quote||now-quote.at>5000||now<quote.at-1000||quote.revision!==revision)throw Error('시세가 바뀌었어요. 새 금액을 확인해 주세요.');
- const item=portMarketItem(content,portId,goodId,revision),actual=captainTradeQuote(game,portId,goodId,qty,mode,item,quote.at,taxRate(content,uid,portId,game));const live=tradeQuote(portId,goodId,qty,mode,item,now,taxRate(content,uid,portId,game));actual.next=live.next;if(actual.total!==quote.total||live.eventEnd!==actual.eventEnd)throw Error('시세가 바뀌었어요. 새 금액을 확인해 주세요.');const cargo=storage?.cargo||game.cargo,old=cargo[goodId]||{qty:0,cost:0};
+ const item=portMarketItem(content,portId,goodId,revision),actual=captainTradeQuote(game,portId,goodId,qty,mode,item,quote.at,taxRate(content,uid,portId,game),now);const live=tradeQuote(portId,goodId,qty,mode,item,now,taxRate(content,uid,portId,game));actual.next=live.next;if(actual.total!==quote.total||live.eventEnd!==actual.eventEnd)throw Error('시세가 바뀌었어요. 새 금액을 확인해 주세요.');const cargo=storage?.cargo||game.cargo,old=cargo[goodId]||{qty:0,cost:0};
  if(mode==='buy'){if(qty>(storage?.room??capacity(game)-usedSpace(game))||game.money<actual.total)throw Error('화물 공간과 두카트를 확인하세요.');game.money-=actual.total;cargo[goodId]={qty:old.qty+qty,cost:old.cost+actual.total};if(portId==='lisbon'&&goodId==='wine')game.boughtLisbonWine=true;}
  else{if((storage?.available??old.qty)<qty)throw Error('판매할 화물이 부족해요.');const cost=old.cost*qty/old.qty;game.money+=actual.total;game.profit+=actual.total-cost;if(old.qty===qty)delete cargo[goodId];else cargo[goodId]={qty:old.qty-qty,cost:old.cost-cost};if(portId!=='lisbon'&&goodId==='wine'&&game.boughtLisbonWine)game.soldAway=true;}
  const owner=ownership(content).ownerUid;if(owner&&!content.basicIncome?.period)advanceBasicIncome(content,portId,owner,now);if(owner&&actual.tax){content.treasury??={};const operator=content.harborOperator?.until>now?content.harborOperator.uid:null;const share=operator&&operator!==owner?Math.floor(actual.tax*.25):0;content.treasury[owner]=(content.treasury[owner]||0)+actual.tax-share;if(share)content.treasury[operator]=(content.treasury[operator]||0)+share;}

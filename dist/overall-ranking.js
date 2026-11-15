@@ -1,4 +1,4 @@
-import {RANK_DEFINITIONS,RANK_GROUPS} from './rank-metrics.js?v=2026.11.15-search-manual-protection';
+import {RANK_DEFINITIONS,RANK_GROUPS} from './rank-metrics.js?v=2026.11.15-server-blessings';
 
 const baseline={money:2400,visited:1,fleetGrowth:1};
 const groups=RANK_GROUPS.filter(([id])=>id!=='overall');

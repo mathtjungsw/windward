@@ -1,0 +1,83 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {initialState,makeRoute,voyageEstimate,advanceVoyage,resupply,unloadSupply,beginRescue,parseSavedGame} from '../dist/engine.js';
+import {captainTradeQuote,executeTrade} from '../dist/commerce.js';
+import {inspectDiscovery,discoveryStats} from '../dist/discoveries.js';
+import {DISCOVERY_BY_ID} from '../dist/discoveries-catalog.js';
+import {INLAND_CITIES,inlandHaulQuote,startInlandHaul} from '../dist/inland.js';
+import {createHarborPractice} from '../dist/harbor-battles.js';
+import {repairHull} from '../dist/activities.js';
+import {openBattle} from '../dist/combat-core.js';
+const releases=JSON.parse(await readFile(new URL('../docs/releases.json',import.meta.url),'utf8'));
+const {BLESSINGS,blessingAt,blessingAvailability,blessingDay,blessingNextDay,setBlessing,setBlessingClock,withBlessingEnd}=await import('../dist/blessings.js?v='+releases.find(row=>row.published).id);
+const now=Date.parse('2026-11-15T13:00:00Z');
+const use=(effect,at=now)=>setBlessing(effect?withBlessingEnd({effect,start:at,day:blessingDay(at)}):null);
+test.beforeEach(()=>{use(null);setBlessingClock(()=>now);});
+test.afterEach(()=>{use(null);setBlessingClock(Date.now);});
+
+test('twelve selections share the Korean daily window and exact 12-hour interval',()=>{
+ assert.equal(Object.keys(BLESSINGS).length,12);
+ use('trade');const record=blessingAt(now);
+ assert.equal(blessingAt(now-1),null);
+ assert.equal(blessingAt(record.end),null);
+ const midnight=blessingNextDay(now);
+ assert.equal(blessingDay(midnight),record.day+1);
+ assert.equal(blessingAvailability(record,midnight),record.end);
+ assert.equal(blessingAvailability(record,record.end),record.end);
+});
+test('wind starts and expires inside an estimate or movement step',()=>{
+ const game=initialState(),route=makeRoute([[-20,39],[-18,39]]);
+ const nav={};
+ const base=voyageEstimate(game,route,0,now);
+ use('wind',now-43200000+600);
+ const forecast=voyageEstimate(game,route,0,now);
+ assert.ok(Math.abs(base.seconds-forecast.seconds-.06)<.001);
+ game.voyage={...route,travelled:0,foodRemaining:10,sections:[{start:0,end:route.total,river:false}]};
+ const moved=advanceVoyage(game,nav,1,null,now);
+ assert.ok(Math.abs(moved.miles-42.4)<.001);
+ const canal={...route,sections:[{start:0,end:route.total,river:true}],canal:'canal-suez'};
+ use('river');
+ assert.equal(voyageEstimate(game,canal,0,now).days,route.total/36);
+ use('crew');
+ assert.ok(Math.abs(voyageEstimate(game,route,0,now).food-base.food*.9)<.001);
+});
+test('trade bonus is paid once and expired quotes require confirmation',()=>{
+ const game={...initialState(),port:'seville',cargo:{wine:{qty:20,cost:100}}},ledger={investors:{owner:300000},defaultRate:10};
+ use('trade',now-43200000+100);
+ const q=captainTradeQuote(game,'seville','wine',20,'sell',{},now,10);
+ const raw=captainTradeQuote(game,'seville','wine',20,'sell',{},now,10,now+150);
+ assert.equal(q.tax,raw.tax);
+ assert.equal(q.total,raw.total+Math.floor(raw.total*.02));
+ assert.throws(()=>executeTrade(structuredClone(game),structuredClone(ledger),'trader','seville','wine',20,'sell',q,now+150,0),/시세/);
+ executeTrade(game,ledger,'trader','seville','wine',20,'sell',q,now,0);
+ assert.equal(ledger.treasury.owner,q.tax);
+ assert.equal(game.profit,q.total-100);
+});
+test('discounted supply cannot be returned for full-rate credit after expiry',()=>{
+ const game=initialState();game.food=0;use('harvest');
+ const refill=resupply(game,10,now);
+ assert.equal(refill.cost,27);
+ const resumed=parseSavedGame(game);
+ use(null);assert.equal(unloadSupply(resumed,10),true);assert.equal(resumed.supplyCreditValue,27);
+ const dock=initialState();dock.hullHP=0;use('repair');
+ assert.ok(repairHull(dock,now).cost>0);
+});
+test('fame is saved once, and a caravan keeps quoted duration at reservation',()=>{
+ const g=initialState(),d=DISCOVERY_BY_ID['relic-compass'];
+ g.position=d.point;
+ use('fame');assert.equal(inspectDiscovery(g,{clear:()=>true},d.id,now).blessingFame,5);
+ use(null);assert.equal(discoveryStats(parseSavedGame(g)).fame,55);
+ const city=INLAND_CITIES.cordoba;g.port=city.port;g.inland={tier:0,warehouses:{[city.port]:{leather:{qty:10,cost:90}}}};
+ use('caravan',now-43200000+100);const q=inlandHaulQuote(g,city,10,now);
+ assert.equal(q.duration,51000);
+ assert.throws(()=>startInlandHaul(g,city,city.port,'leather',10,now+100,q),/새 견적/);
+ startInlandHaul(g,city,city.port,'leather',10,now,q);
+ assert.equal(g.inland.haul.duration,51000);
+});
+test('peace blocks new combat but preserves harbor practice',()=>{
+ use('peace');
+ assert.throws(()=>openBattle('duel','a','b',{}, {},now),/전투 금지령/);
+ const practice=createHarborPractice('jamestown','선장',now);
+ assert.equal(practice.open().state,'active');
+});

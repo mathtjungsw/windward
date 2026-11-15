@@ -1,9 +1,10 @@
-import {seaSector} from './presence-core.js?v=2026.11.15-search-manual-protection';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.15-search-manual-protection';
-import {fleetMaxHP} from './ship-rules.js?v=2026.11.15-search-manual-protection';
-import {combatProfile,openBattle,fireCannon,settlementFor,cargoCount,addCargo} from './combat-core.js?v=2026.11.15-search-manual-protection';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-search-manual-protection';
-import {refundCanalTolls} from './canal-reservations.js?v=2026.11.15-search-manual-protection';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.15-server-blessings';
+import {seaSector} from './presence-core.js?v=2026.11.15-server-blessings';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.15-server-blessings';
+import {fleetMaxHP} from './ship-rules.js?v=2026.11.15-server-blessings';
+import {combatProfile,openBattle,fireCannon,settlementFor,cargoCount,addCargo} from './combat-core.js?v=2026.11.15-server-blessings';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-server-blessings';
+import {refundCanalTolls} from './canal-reservations.js?v=2026.11.15-server-blessings';
 const copy=o=>structuredClone(o||{}),cargo=json=>JSON.parse(json||'{}');
 export const emptyDefenseAck=()=>({seq:0,cash:0,kills:0,lootJSON:'{}',lostReserveId:''});
 function cargoDifference(total,claimed){const out={};for(const [id,c]of Object.entries(total)){const old=claimed[id]||{qty:0,cost:0},qty=c.qty-old.qty,cost=c.cost-old.cost;if(qty<0||cost<-.0001)throw Error('전투 정산 순서가 맞지 않아요.');if(qty)out[id]={qty,cost:Math.max(0,cost)};}return out;}
@@ -25,6 +26,7 @@ export function defenseFromGame(game,old={},meta={},now=Date.now()){
 }
 export function targetProfile(node,now){const pending=node.pendingLootCount??cargoCount(cargoDifference((node.lootTotals||{}),cargo(node.claimedLootJSON)));return {...(node.skill?{skill:node.skill}:{}),name:node.name,point:[...node.point],hp:node.hp,maxHP:node.maxHP,guns:Object.values(node.guns||{}).sort((a,b)=>a.slot-b.slot),at:now,protected:node.protected||!!node.portId||node.rescuePending||now<node.protectedUntil||node.hp<=0||!node.bank,lootRoom:Math.max(0,node.lootRoom-pending),repair:node.repair};}
 export function openOfflineRaid(game,node,attacker,defender,id,now,clear=()=>true,attackerNode=null){
+ requireCombatAllowed(now);
  if(node.activeRaidId&&node.raidUntil>now)throw Error('이 배는 이미 교전 중이에요.');const a=combatProfile(game,attacker.name,now);if(attackerNode?.skill)a.skill=attackerNode.skill;const b=targetProfile(node,now);if(node.session!==defender.session)throw Error('상대 배의 접속 상태가 바뀌었어요.');
  const room=openBattle('free',attacker.uid,defender.uid,{[attacker.uid]:a,[defender.uid]:b},{[attacker.uid]:copy(game.battleReserve),[defender.uid]:copy(node.bank)},now,clear);Object.assign(room,{id,offline:true,defender:defender.uid,defenderSession:node.session,events:[]});game.raidId=id;
  return {room,node:{...copy(node),activeRaidId:id,raidUntil:room.deadline}};

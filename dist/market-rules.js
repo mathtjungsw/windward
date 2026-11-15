@@ -1,6 +1,6 @@
-import {tradeEvent} from './market-events.js?v=2026.11.15-search-manual-protection';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-search-manual-protection';
-import {regionalFactor} from './regional-economy.js?v=2026.11.15-search-manual-protection';
+import {tradeEvent} from './market-events.js?v=2026.11.15-server-blessings';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-server-blessings';
+import {regionalFactor} from './regional-economy.js?v=2026.11.15-server-blessings';
 export const PREMIUM_STOCK_LIMIT=30,STOCK_PERIOD=7200000,MARKET_VERSION=3;
 // Version boundary is a fixed release epoch, never reset by a page reload.
 export const MARKET_V2_AT=1794293996252;

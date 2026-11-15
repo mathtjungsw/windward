@@ -1,7 +1,7 @@
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.15-search-manual-protection';
-import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.15-search-manual-protection';
-import {inlandHarborStorage} from './inland.js?v=2026.11.15-search-manual-protection';
-import {INLAND_CITIES,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.15-search-manual-protection';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.15-server-blessings';
+import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.15-server-blessings';
+import {inlandHarborStorage} from './inland.js?v=2026.11.15-server-blessings';
+import {INLAND_CITIES,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.15-server-blessings';
 
 const $=s=>document.querySelector(s),fmt=n=>Number(n).toLocaleString('ko-KR');
 const time=ms=>{const seconds=Math.max(0,Math.ceil(ms/1000));return seconds>=60?`${Math.floor(seconds/60)}분 ${seconds%60}초`:`${seconds}초`;};
@@ -100,13 +100,14 @@ export function createInlandUI(api){
  function haul(city,from,good,initial=1){
   const game=api.game(),max=inlandAvailable(game,from,good);
   api.modal('육상 운송 예약',GOODS[good].name,`<label>수량 <input id="inland-qty" type="number" inputmode="numeric" min="1" max="${max}" value="${Math.min(max,initial)}"></label><p id="inland-estimate"></p><button id="inland-apply">예약 확정</button><button id="inland-back">창고로</button>`,'small');
+  let shown=null;
   const input=$('#inland-qty'),button=$('#inland-apply'),paint=()=>{
-   try{const qty=input.valueAsNumber;if(qty>max)throw Error();const q=inlandHaulQuote(game,city,qty);$('#inland-estimate').textContent=`적재 이동 ${q.loads}회 + 빈 복귀 ${q.loads-1}회 · ${time(q.elapsed)} · 보급비 ${money(q.cost)}`;button.disabled=false;}
-   catch{$('#inland-estimate').textContent='출발 창고의 사용 가능 수량을 확인해 주세요.';button.disabled=true;}
+   try{const qty=input.valueAsNumber;if(qty>max)throw Error();const q=inlandHaulQuote(game,city,qty,api.now());shown=q;$('#inland-estimate').textContent=`적재 이동 ${q.loads}회 + 빈 복귀 ${q.loads-1}회 · ${time(q.elapsed)} · 보급비 ${money(q.cost)}`;button.disabled=false;}
+   catch{shown=null;$('#inland-estimate').textContent='출발 창고의 사용 가능 수량을 확인해 주세요.';button.disabled=true;}
   };
   input.oninput=paint;paint();
   $('#inland-back').onclick=back(city,'storage');
-  button.onclick=()=>{const qty=input.valueAsNumber;return run((g,_c,t)=>startInlandHaul(g,city,from,good,qty,t),back(city,'storage'));};
+  button.onclick=async()=>{const qty=input.valueAsNumber,expected=shown;if(!expected)return;await run((g,_c,t)=>startInlandHaul(g,city,from,good,qty,t,expected),back(city,'storage'));if(button.isConnected)paint();};
  }
  async function market(city,root,harbor=false){
   const key=harbor?city.port:'inland-'+city.id,place=harbor?city.port:city.id;

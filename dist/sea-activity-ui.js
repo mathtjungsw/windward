@@ -1,4 +1,4 @@
-import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.15-search-manual-protection';
+import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.15-server-blessings';
 
 export function createSeaActivityUI(api){
   let pending=false, timer, signature='';

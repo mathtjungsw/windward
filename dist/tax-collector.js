@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.15-search-manual-protection';
-import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.15-search-manual-protection';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-search-manual-protection';
+import {ownership} from './commerce.js?v=2026.11.15-server-blessings';
+import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.15-server-blessings';
+import {PORT_BY_ID} from './data.js?v=2026.11.15-server-blessings';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;

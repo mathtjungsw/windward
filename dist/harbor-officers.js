@@ -1,6 +1,6 @@
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-search-manual-protection';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.15-search-manual-protection';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-search-manual-protection';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-server-blessings';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.15-server-blessings';
+import {PORT_BY_ID} from './data.js?v=2026.11.15-server-blessings';
 
 export function harborOfficerRole(id){
  const entry=OFFICERS.find(row=>row.id===id);

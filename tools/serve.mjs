@@ -48,7 +48,7 @@ async function expeditionPage(mode){
  `;
  return (await fixturePage(game)).replace('account.seenVersion=RELEASE;beginPlaying('+JSON.stringify(game)+');',()=>`account.seenVersion=RELEASE;beginPlaying(${JSON.stringify(game)});${fixture}`);
 }
-async function inlandAlbumPreview(suez=false){
+async function inlandAlbumPreview(suez=false,blessing=false){
  const game=initialState(),port=PORTS.find(p=>p.id===(suez?'alexandria':'seville'));
  Object.assign(game,{port:port.id,position:[port.lon,port.lat],money:30000});
  game.visited.push(port.id);
@@ -71,6 +71,16 @@ async function inlandAlbumPreview(suez=false){
     return result;
    };
    window.windwardInlandQA={game:()=>state,advance:ms=>{account.serverOffset=(account.serverOffset||0)+ms;},showCity:()=>inlandUI.open('cordoba'),showQuiz:()=>albumQuiz.menu()};
+   if(${blessing}){
+    const server=new Map([['gameV2/real/overallRanking/public',{updatedAt:Date.now()-5000,top:{[account.uid]:{rank:1,name:'시험 선장',overallScore:100}}}]]);
+    const listeners=new Map(),snap=val=>({val:()=>val??null});
+    account.sdk={ref:(_db,path)=>path,get:async path=>snap(server.get(path)),serverTimestamp:()=>Date.now(),
+     update:async(path,updates)=>{for(const [key,value] of Object.entries(updates)){const ref=path+'/'+key;server.set(ref,value);listeners.get(ref)?.(snap(value));}},
+     onValue:(path,callback)=>{listeners.set(path,callback);callback(snap(server.get(path)));return ()=>listeners.delete(path);}
+    };
+    fleet.uid=account.uid;rankings.path='gameV2/real';fleet.sdk=account.sdk;
+    blessings.connect();
+   }
  `;
  return (await fixturePage(game)).replace(marker,()=>marker+mock);
 }
@@ -219,7 +229,7 @@ const server=createServer(async(req,res)=>{
     if(useEmulators&&url.pathname==='/account.js')return reply(res,'.js',await emulatorAccount());
     const manual={...initialState(),port:null,controlMode:'manual'};
     if(url.pathname==='/__qa/development')return reply(res,'.html',await developmentPreviewPage());
-    if(url.pathname==='/__qa/inland-album')return reply(res,'.html',await inlandAlbumPreview(url.searchParams.has('suez')));
+    if(url.pathname==='/__qa/inland-album')return reply(res,'.html',await inlandAlbumPreview(url.searchParams.has('suez'),url.searchParams.has('blessing')));
     if(url.pathname==='/__qa/expedition')return reply(res,'.html',await expeditionPage(url.searchParams.get('mode')));
     if(url.pathname==='/__qa/harbor')return reply(res,'.html',await fixturePage({...manual,position:[url.searchParams.has('near')?-9.44:-10.1,41]}));
     if(url.pathname==='/__qa/trade')return reply(res,'.html',await fixturePage({...manual,position:[-9.44,41],cargo:{wine:{qty:10,cost:310}},boughtLisbonWine:true,money:2090}));

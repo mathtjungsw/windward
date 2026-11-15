@@ -1,7 +1,8 @@
-import {GOODS} from './data.js?v=2026.11.15-search-manual-protection';
-import {capacity,usedSpace} from './engine.js?v=2026.11.15-search-manual-protection';
-import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.15-search-manual-protection';
-import {recordTrade} from './rank-progress.js?v=2026.11.15-search-manual-protection';
+import {GOODS} from './data.js?v=2026.11.15-server-blessings';
+import {capacity,usedSpace} from './engine.js?v=2026.11.15-server-blessings';
+import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.15-server-blessings';
+import {recordTrade} from './rank-progress.js?v=2026.11.15-server-blessings';
+import {blessingRate} from './blessings.js?v=2026.11.15-server-blessings';
 
 export const INLAND_CITIES={
  cordoba:{id:'cordoba',name:'코르도바',port:'seville',point:[-4.7794,37.8847],path:[[-5.6,37.53],[-5.16,37.77]],seconds:60,terrain:0,goods:{leather:.83,oliveoil:.87}},
@@ -116,17 +117,18 @@ export function inlandTrade(game,city,good,qty,mode,content,revision,now,quote){
  game.trades++;recordTrade(game,good,mode,profit,now);
  return {message:`${qty}상자 ${mode==='buy'?'구매':'판매'} · ${current.total.toLocaleString('ko-KR')} D`,...current};
 }
-export function inlandHaulQuote(game,city,qty){
+export function inlandHaulQuote(game,city,qty,at){
  if(!quantity(qty))fail('운송 수량을 1~2,000상자로 입력해 주세요.');
- const step=inlandVehicle(game),duration=routeDuration(city,game)*1000;
+ const step=inlandVehicle(game),duration=Math.max(30,Math.ceil(routeDuration(city,game)*(1-blessingRate('caravan',at))))*1000;
  const loads=Math.ceil(qty/step.load),legs=loads*2-1,legCost=8+Math.ceil(duration/30000)*2;
  return {load:step.load,loads,legs,duration,legCost,cost:legs*legCost,elapsed:legs*duration};
 }
-export function startInlandHaul(game,city,from,good,qty,now){
+export function startInlandHaul(game,city,from,good,qty,now,expected=null){
  if(!docked(game,city)||!Object.hasOwn(GOODS,good)||![city.id,city.port].includes(from))fail('연결 항구의 창고나 도시에서 예약해 주세요.');
  settleInlandHaul(game,now);
  if(game.inland?.haul?.phase==='running')fail('진행 중인 육상 운송을 먼저 마쳐 주세요.');
- const to=from===city.id?city.port:city.id,quote=inlandHaulQuote(game,city,qty);
+ const to=from===city.id?city.port:city.id,quote=inlandHaulQuote(game,city,qty,now);
+ if(expected&&(expected.duration!==quote.duration||expected.cost!==quote.cost))fail('운송 시간과 보급비가 바뀌었어요. 새 견적을 확인해 주세요.');
  if(qty>inlandAvailable(game,from,good)||qty>inlandFree(game,to))fail('출발지의 화물과 도착지 창고 공간을 확인하세요.');
  if(game.money<quote.legCost)fail('첫 구간의 보급비가 필요해요.');
  game.money-=quote.legCost;

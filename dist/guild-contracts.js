@@ -1,10 +1,11 @@
-import {shipyardReport} from './historical-ships.js?v=2026.11.15-search-manual-protection';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.15-search-manual-protection';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-search-manual-protection';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-search-manual-protection';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-search-manual-protection';
+import {blessingBonus} from './blessings.js?v=2026.11.15-server-blessings';
+import {shipyardReport} from './historical-ships.js?v=2026.11.15-server-blessings';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.15-server-blessings';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-server-blessings';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-server-blessings';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-server-blessings';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-search-manual-protection';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-server-blessings';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[
@@ -172,7 +173,8 @@ export function charterAction(game,action,id,now,{findRoute,room,baseFame,findPo
   const sale=type.kind==='delivery'?(typeof trade==='function'?trade(row):null):null;
   if(type.kind==='delivery'&&!sale?.ok)throw Error('조합 납품의 현재 판매 견적을 확인하세요.');
   const base=row.reward, officerBonus=type.kind?0:Math.floor(base*(activeOfficer(game)?.guildBonus||0));
-  const itemBonus=type.kind?0:couponAmount(game,'guild',base), reward=base+officerBonus+itemBonus+(row.storyBonus||0)+(row.domesticBonus||0);
+  const itemBonus=type.kind?0:couponAmount(game,'guild',base), net=base+officerBonus+itemBonus+(row.storyBonus||0)+(row.domesticBonus||0);
+  const blessing=['pirate'].includes(type.kind)?0:blessingBonus(net,'guild',now),reward=net+blessing;
   game.money+=reward;
   if(itemBonus>0)consumeCoupon(game,'guild');
   book.completed=Math.min(1e9,(book.completed||0)+1);
@@ -189,5 +191,5 @@ export function charterAction(game,action,id,now,{findRoute,room,baseFame,findPo
   addOfficerExperience(game,25+GUILD_TYPES[row.tier].fame);
   book.earned=Math.min(1e9,book.earned+GUILD_TYPES[row.tier].fame);
   closeCharter(book,row,now,'complete');
-  return {message:(report?'보고 완료':'납품 완료')+' · '+(sale?'판매 '+sale.total+' D + 조합 보수 ':'')+reward+' D · 명성 +'+type.fame};
+  return {message:(report?'보고 완료':'납품 완료')+' · '+(sale?'판매 '+sale.total+' D + 조합 보수 ':'')+reward+' D'+(blessing?' · 축복 +'+blessing+' D':'')+' · 명성 +'+type.fame};
 }

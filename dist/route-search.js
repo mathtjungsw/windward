@@ -1,11 +1,11 @@
-import {canDepart,voyageEstimate,ship} from './engine.js?v=2026.11.15-search-manual-protection';
+import {canDepart,voyageEstimate,ship} from './engine.js?v=2026.11.15-server-blessings';
 
 const number=n=>Math.round(n).toLocaleString('ko-KR');
-export function summarizeSearchRoute(game,port,route,canalNames={},preliminary=false){
+export function summarizeSearchRoute(game,port,route,canalNames={},preliminary=false,at){
  if(port.id===game.port&&!game.voyage)return {distance:0,text:'정박 중 · 0해리'};
  const suffix=preliminary?' · 운하 확인 전, 우회 기준':'';
  if(!route)return {distance:Infinity,text:'현재 선단으로 갈 수 있는 항로를 찾지 못했어요.'+suffix};
- const estimate=voyageEstimate(game,route),depart=canDepart(game,route),needed=estimate.food+ship(game).reserve;
+ const estimate=voyageEstimate(game,route,0,at),depart=canDepart(game,route,at),needed=estimate.food+ship(game).reserve;
  const routeNames=(route.passages||[]).map(pass=>canalNames[pass.id]).filter(Boolean);
  const passage=routeNames.length?' · '+routeNames.join('·')+' 경유 · 통행료 '+number(route.tollTotal||0)+' D':'';
  const supply=!depart.ok&&game.food+1e-8<needed?` · 직항 보급 부족 (필요 ${needed.toFixed(1)}일분 / 현재 ${game.food.toFixed(1)}일분)`:!depart.ok?' · '+depart.error:'';

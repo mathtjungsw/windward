@@ -1,20 +1,20 @@
-import {noviceActive} from './novice.js?v=2026.11.15-search-manual-protection';
-import {createHarborArena} from './harbor-arena.js?v=2026.11.15-search-manual-protection';
-import {extraHarborRumor,harborOfficerRole,HARBOR_ROLE_LABEL,freeRecalledOfficer} from './harbor-officers.js?v=2026.11.15-search-manual-protection';
-import {CONTESTED_PORTS,battleWindow,harborOperator,harborBattleAction,militiaAction,createHarborPractice,reconcileHarborLoss} from './harbor-battles.js?v=2026.11.15-search-manual-protection';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-search-manual-protection';
-import {returnReserve,reserveLoss} from './combat-core.js?v=2026.11.15-search-manual-protection';
-import {PORTS,PORT_BY_ID,GOODS,registerDevelopedPorts} from './data.js?v=2026.11.15-search-manual-protection';
-import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.15-search-manual-protection';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-search-manual-protection';
-import {ship,fleetMaxHP,fleetShips} from './ship-rules.js?v=2026.11.15-search-manual-protection';
-import {capacity,usedSpace,tradingPort} from './engine.js?v=2026.11.15-search-manual-protection';
-import {tradeQuote,specialtyStock} from './market-rules.js?v=2026.11.15-search-manual-protection';
-import {invest,investmentWithdrawal,withdrawInvestment,portGrowth,portMarketItem,growthDeliveryInfo,deliverForGrowth,assignHarborOfficer,delegateTradePreview,portDevelopment,setPortDevelopment,ownership,taxRate,permitted,executeTrade,captainTradeQuote,changePortPolicy,withdrawTax,withdrawBasicIncome,investmentBase,NEUTRAL_PORTS} from './commerce.js?v=2026.11.15-search-manual-protection';
-import {CANNONS,QUALITIES,cannonStats,buyCannon,equipCannon,upgradeCannon,sellCannon,gunWeight,currentHP} from './cannons.js?v=2026.11.15-search-manual-protection';
-import {repairHull,coastalAction,playDice} from './activities.js?v=2026.11.15-search-manual-protection';
-import {advanceBasicIncome,estimateBasicIncome,setIncomeOfficer} from './port-income.js?v=2026.11.15-search-manual-protection';
-import {activeOfficer} from './rumor-progress.js?v=2026.11.15-search-manual-protection';
+import {noviceActive} from './novice.js?v=2026.11.15-server-blessings';
+import {createHarborArena} from './harbor-arena.js?v=2026.11.15-server-blessings';
+import {extraHarborRumor,harborOfficerRole,HARBOR_ROLE_LABEL,freeRecalledOfficer} from './harbor-officers.js?v=2026.11.15-server-blessings';
+import {CONTESTED_PORTS,battleWindow,harborOperator,harborBattleAction,militiaAction,createHarborPractice,reconcileHarborLoss} from './harbor-battles.js?v=2026.11.15-server-blessings';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-server-blessings';
+import {returnReserve,reserveLoss} from './combat-core.js?v=2026.11.15-server-blessings';
+import {PORTS,PORT_BY_ID,GOODS,registerDevelopedPorts} from './data.js?v=2026.11.15-server-blessings';
+import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.15-server-blessings';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-server-blessings';
+import {ship,fleetMaxHP,fleetShips} from './ship-rules.js?v=2026.11.15-server-blessings';
+import {capacity,usedSpace,tradingPort} from './engine.js?v=2026.11.15-server-blessings';
+import {tradeQuote,specialtyStock} from './market-rules.js?v=2026.11.15-server-blessings';
+import {invest,investmentWithdrawal,withdrawInvestment,portGrowth,portMarketItem,growthDeliveryInfo,deliverForGrowth,assignHarborOfficer,delegateTradePreview,portDevelopment,setPortDevelopment,ownership,taxRate,permitted,executeTrade,captainTradeQuote,changePortPolicy,withdrawTax,withdrawBasicIncome,investmentBase,NEUTRAL_PORTS} from './commerce.js?v=2026.11.15-server-blessings';
+import {CANNONS,QUALITIES,cannonStats,buyCannon,equipCannon,upgradeCannon,sellCannon,gunWeight,currentHP} from './cannons.js?v=2026.11.15-server-blessings';
+import {repairHull,coastalAction,playDice} from './activities.js?v=2026.11.15-server-blessings';
+import {advanceBasicIncome,estimateBasicIncome,setIncomeOfficer} from './port-income.js?v=2026.11.15-server-blessings';
+import {activeOfficer} from './rumor-progress.js?v=2026.11.15-server-blessings';
 const developmentCost=(game,level)=>Math.ceil([400000,200000,300000,160000][level]*(1-(activeOfficer(game)?.developmentDiscount||0)))-(level>0&&game.rumorProgress?.items?.I054?300:0);
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const random=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
@@ -71,7 +71,7 @@ export function createBusiness(api){const account=api.account,get=api.getState,c
  async function readPort(id){const c=await account.readShared('ports',id);caches.set(id,c);return c;}
  async function trade(mode,id){if(pending)return;const p=tradingPort(get());if(!p)return api.toast('항구에 입항하세요.');api.pause();tradeState={mode,id,port:p.id,qty:1};try{const {content}=await readPort(p.id);if(!permitted(content,account.uid))return api.toast('이 항구에서는 현재 내 화물을 거래할 수 없어요.');paintTrade();}catch(e){api.toast(e.message,'error');}}
  function paintTrade(){const t=tradeState;if(!t)return;const s=get(),p=PORT_BY_ID[t.port],c=content(t.port),g=GOODS[t.id],max=t.mode==='sell'?s.cargo[t.id]?.qty||0:Math.max(0,Math.min(1000,capacity(s)-usedSpace(s),g.premium?specialtyStock(portMarketItem(c.content,p.id,t.id,c.revision),now(),[0,50,100][portGrowth(c.content,p.id).stage],portDevelopment(c.content,p.id)==='production'?6000000:undefined).stock:Infinity));let q,error='';try{q=captainTradeQuote(s,p.id,t.id,t.qty,t.mode,portMarketItem(c.content,p.id,t.id,c.revision),now(),taxRate(c.content,account.uid,p.id,s));}catch(e){error=e.message;}
- api.modal(`${g.name} ${t.mode==='sell'?'판매':'구매'}`,`${p.name} · 현실 시간 공동 시세`,`<p>${t.mode==='sell'?'이번 판매는 전량 같은 단가로 정산합니다.':'이번 구매는 전량 같은 단가로 정산합니다.'}</p><label>수량 <input id="market-qty" type="number" min="1" max="${max}" value="${t.qty}" inputmode="numeric"></label><div class="dialog-actions">${[1,5,10,max].map(n=>`<button data-market-qty="${n}">${n===max?'최대':n}</button>`).join('')}</div><div id="market-quote">${q?`<p>현재 단가 ${fmt(q.unit)} D · ${t.qty}상자</p><p>상품 총액 ${fmt(q.gross)} D · 세금 ${fmt(q.tax)} D${q.noviceTax?' · 초보 선장 면세':''}${q.albumDiscount?' · 도감 할인 '+fmt(q.albumDiscount)+' D':''}${q.bonus?' · 선장 보너스 +'+fmt(q.bonus)+' D':''}</p><h3>${t.mode==='sell'?'받는':'지불할'} 금액 ${fmt(q.total)} D</h3><p>다음 ${t.mode==='sell'?'판매':'구매'} 예상 단가 ${fmt(q.afterUnit)} D/상자 · 구매·판매 시세는 따로 변하고 현실 시간으로 회복</p>`:esc(error)}</div><button id="market-confirm" data-trade-mode="${t.mode}" class="primary-button" ${q&&max?'':'disabled'}>표시 금액으로 ${t.mode==='sell'?'판매':'구매'}</button><p id="business-result" role="status">견적 유효 5초 · 시세가 달라지면 재확인합니다.</p>`,'small');
+ api.modal(`${g.name} ${t.mode==='sell'?'판매':'구매'}`,`${p.name} · 현실 시간 공동 시세`,`<p>${t.mode==='sell'?'이번 판매는 전량 같은 단가로 정산합니다.':'이번 구매는 전량 같은 단가로 정산합니다.'}</p><label>수량 <input id="market-qty" type="number" min="1" max="${max}" value="${t.qty}" inputmode="numeric"></label><div class="dialog-actions">${[1,5,10,max].map(n=>`<button data-market-qty="${n}">${n===max?'최대':n}</button>`).join('')}</div><div id="market-quote">${q?`<p>현재 단가 ${fmt(q.unit)} D · ${t.qty}상자</p><p>상품 총액 ${fmt(q.gross)} D · 세금 ${fmt(q.tax)} D${q.noviceTax?' · 초보 선장 면세':''}${q.albumDiscount?' · 도감 할인 '+fmt(q.albumDiscount)+' D':''}${q.bonus?' · 선장 보너스 +'+fmt(q.bonus)+' D':''}${q.blessing?' · 축복 +'+fmt(q.blessing)+' D':''}</p><h3>${t.mode==='sell'?'받는':'지불할'} 금액 ${fmt(q.total)} D</h3><p>다음 ${t.mode==='sell'?'판매':'구매'} 예상 단가 ${fmt(q.afterUnit)} D/상자 · 구매·판매 시세는 따로 변하고 현실 시간으로 회복</p>`:esc(error)}</div><button id="market-confirm" data-trade-mode="${t.mode}" class="primary-button" ${q&&max?'':'disabled'}>표시 금액으로 ${t.mode==='sell'?'판매':'구매'}</button><p id="business-result" role="status">견적 유효 5초 · 시세가 달라지면 재확인합니다.</p>`,'small');
  const update=n=>{t.qty=Math.max(1,Math.min(max,Math.floor(n)||1));paintTrade();};$('#market-qty').onchange=e=>update(Number(e.target.value));document.querySelectorAll('[data-market-qty]').forEach(b=>b.onclick=()=>update(Number(b.dataset.marketQty)));
  $('#market-confirm').onclick=async()=>{const result=await run('ports',p.id,(game,c,time,revision)=>executeTrade(game,c,account.uid,p.id,t.id,t.qty,t.mode,q,time,revision));if(result){api.onTradeComplete?.(t.mode);await readPort(p.id);paintTrade();$('#business-result').textContent='거래 완료 · '+fmt(result.total)+' D';}else{try{await readPort(p.id);paintTrade();$('#business-result').textContent='새 견적을 확인한 뒤 다시 확정하세요.';}catch{}}};
  }

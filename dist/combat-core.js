@@ -1,16 +1,17 @@
-import {shipyardVictory} from './historical-ships.js?v=2026.11.15-search-manual-protection';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.15-search-manual-protection';
-import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-search-manual-protection';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.15-search-manual-protection';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-search-manual-protection';
-import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.15-search-manual-protection';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.15-search-manual-protection';
-import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.15-search-manual-protection';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-search-manual-protection';
-import {currentCanal} from './canal-reservations.js?v=2026.11.15-search-manual-protection';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.15-server-blessings';
+import {shipyardVictory} from './historical-ships.js?v=2026.11.15-server-blessings';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.15-server-blessings';
+import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-server-blessings';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.15-server-blessings';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-server-blessings';
+import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.15-server-blessings';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.15-server-blessings';
+import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.15-server-blessings';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-server-blessings';
+import {currentCanal} from './canal-reservations.js?v=2026.11.15-server-blessings';
 export const COMBAT_RANGE=180,COMBAT_TIMEOUT=180000,PROTECTION_MS=120000;
 export function npcSlotChanges(game,uid,currentSlot){currentSlot??=null;const expected='npc:'+uid;if(currentSlot&&currentSlot!==expected)throw Error('선장 간 전투를 먼저 마치세요.');const next=game.npcBattle?expected:null;return currentSlot===next?{}:{['combatSlots/'+uid]:next};}
-export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-search-manual-protection';
+export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-server-blessings';
 const copy=o=>structuredClone(o||{});
 export function splitCargo(cargo,limit){const taken={},rest={};for(const [id,c]of Object.entries(cargo||{}).sort(([a],[b])=>a.localeCompare(b))){const qty=Math.min(c.qty,Math.max(0,limit)),cost=c.qty?c.cost*qty/c.qty:0;if(qty)taken[id]={qty,cost};if(qty<c.qty)rest[id]={qty:c.qty-qty,cost:c.cost-cost};limit-=qty;}return {taken,rest};}
 export const cargoCount=c=>Object.values(c||{}).reduce((n,c)=>n+c.qty,0);
@@ -21,7 +22,7 @@ export const reserveCargo=r=>typeof r?.cargoJSON==='string'?JSON.parse(r.cargoJS
 export function returnReserve(game){const r=game.battleReserve;if(!r)return;game.money+=r.money;addCargo(game.cargo,reserveCargo(r));delete game.battleReserve;}
 export function combatProfile(game,name,now,nav){const skill=officerSnapshot(game,nav);return {name,point:[...game.position],hp:currentHP(game),maxHP:fleetMaxHP(game),guns:(game.cannons||[]).filter(g=>g.shipId).map(g=>({...g})),...(skill?{skill}:{}),at:now,protected:!!game.port||!!game.depotDock||!!game.voyage?.kind||!!currentCanal(game.voyage)||!!game.npcBattle||!!game.raidId||!game.battleReserve||now<(game.defeatProtectionUntil||0),lootRoom:Math.max(0,50-cargoCount(game.lootClaims)),repair:Math.max(100,Math.min(3000,Math.ceil(fleetAppraisal(game)*.02)))};}
 export function combatEligible(a,b,now,clear=()=>true){if(a.protected||b.protected)throw Error('항구·구조·전투 준비·패전 보호 상태에서는 공격할 수 없어요.');if(now-a.at>45000||now-b.at>45000)throw Error('접속 확인이 오래된 선장이에요.');if(mapDistance(a.point,b.point)>COMBAT_RANGE||!clear(a.point,b.point))throw Error('같은 바닷길의 시야 180해리 안에서 접근하세요.');}
-export function openBattle(mode,a,b,profiles,reserves,now,clear){if(a===b||!['duel','free'].includes(mode))throw Error('대결 대상을 확인하세요.');combatEligible(profiles[a],profiles[b],now,clear);for(const id of [a,b]){const r=reserves[id];if(!r?.id||!Number.isInteger(r.money)||r.money<0||r.money>2000)throw Error('선장의 전투 정산 준비를 확인하세요.');let cargo;try{cargo=reserveCargo(r);}catch{throw Error('정산 보관 화물을 확인하세요.');}if(!cargo||typeof cargo!=='object'||Array.isArray(cargo)||cargoCount(cargo)>5||Object.values(cargo).some(c=>!Number.isInteger(c.qty)||c.qty<0||!Number.isFinite(c.cost)||c.cost<0))throw Error('정산 보관 화물을 확인하세요.');}const players={};for(const id of [a,b]){const p=copy(profiles[id]);players[id]={...p,hp:mode==='duel'?p.maxHP:p.hp,beforeHP:p.hp};}return {mode,a,b,status:'active',players,reserves:copy(reserves),createdAt:now,lastAt:now,deadline:now+COMBAT_TIMEOUT,sequence:0,claimed:{},event:{text:mode==='duel'?'합의 결투 시작 · 대포 성능 강화':'해상 전투 시작',at:now,sequence:0}};}
+export function openBattle(mode,a,b,profiles,reserves,now,clear){requireCombatAllowed(now);if(a===b||!['duel','free'].includes(mode))throw Error('대결 대상을 확인하세요.');combatEligible(profiles[a],profiles[b],now,clear);for(const id of [a,b]){const r=reserves[id];if(!r?.id||!Number.isInteger(r.money)||r.money<0||r.money>2000)throw Error('선장의 전투 정산 준비를 확인하세요.');let cargo;try{cargo=reserveCargo(r);}catch{throw Error('정산 보관 화물을 확인하세요.');}if(!cargo||typeof cargo!=='object'||Array.isArray(cargo)||cargoCount(cargo)>5||Object.values(cargo).some(c=>!Number.isInteger(c.qty)||c.qty<0||!Number.isFinite(c.cost)||c.cost<0))throw Error('정산 보관 화물을 확인하세요.');}const players={};for(const id of [a,b]){const p=copy(profiles[id]);players[id]={...p,hp:mode==='duel'?p.maxHP:p.hp,beforeHP:p.hp};}return {mode,a,b,status:'active',players,reserves:copy(reserves),createdAt:now,lastAt:now,deadline:now+COMBAT_TIMEOUT,sequence:0,claimed:{},event:{text:mode==='duel'?'합의 결투 시작 · 대포 성능 강화':'해상 전투 시작',at:now,sequence:0}};}
 export function settleBattle(room,winner,now,reason='승부 결정'){if(room.status!=='active'||![room.a,room.b].includes(winner))throw Error('이미 정산된 전투예요.');const loser=winner===room.a?room.b:room.a,w=room.reserves[winner],l=room.reserves[loser],loot=splitCargo(reserveCargo(l),room.players[winner].lootRoom);room.status='closed';room.winner=winner;room.loser=loser;room.closedAt=now;room.reason=reason;return room;}
 export function settlementFor(room,winner=room.winner){const loser=winner===room.a?room.b:room.a,w=room.reserves[winner],l=room.reserves[loser],loot=splitCargo(reserveCargo(l),room.players[winner].lootRoom);return {
  [winner]:{money:w.money+l.money,cargo:copy(reserveCargo(w)),loot:loot.taken,hp:room.mode==='duel'?room.players[winner].beforeHP:room.players[winner].hp,defeated:false},
@@ -50,6 +51,7 @@ export function finishExpired(room,uid,now,positions,surrender=false){if(room.st
 export function claimBattle(game,room,uid,now){if(room.status!=='closed'||room.claimed?.[uid]||![room.a,room.b].includes(uid))throw Error('받을 전투 정산이 없어요.');if(game.battleReserve?.id!==room.reserves[uid].id)throw Error('보관 정산금이 일치하지 않아요. 원본 기록을 유지합니다.');const result=settlementFor(room)[uid];game.money+=result.money;addCargo(game.cargo,result.cargo);game.lootClaims??={};addCargo(game.lootClaims,result.loot);delete game.battleReserve;delete game.battleId;game.hullHP=result.hp;for(const g of game.cannons||[]){const used=room.players[uid].guns?.find(p=>p.id===g.id);if(used)g.readyAt=Math.max(g.readyAt||0,used.readyAt||0);}room.claimed??={};room.claimed[uid]=true;recordBattleWin(game,room,uid,now);if(result.defeated){const repair=Math.min(game.money,room.players[uid].repair);game.money-=repair;game.defeatProtectionUntil=now+PROTECTION_MS;}return {ok:true,broken:result.defeated,message:result.defeated?'패전 정산 완료 · 방문한 항구로 구조합니다.':'승리 정산 완료 · 획득 화물은 항구에서 수령하세요.'};}
 export function defeatNPC(game,now){returnReserve(game);const money=Math.min(2000,Math.floor(game.money*.1)),qty=cargoAtRisk(game);game.money-=money;game.cargo=splitCargo(game.cargo,qty).rest;const repair=Math.min(game.money,Math.max(100,Math.min(3000,Math.ceil(fleetAppraisal(game)*.02))));game.money-=repair;game.hullHP=fleetMaxHP(game);game.defeatProtectionUntil=now+PROTECTION_MS;delete game.npcBattle;return {ok:true,broken:true,message:'패전 · 돈 '+money+' D와 화물 '+qty+'상자 손실 · 구조합니다.'};}
 export function fireAtPirate(game,zoneId,gunId,now,rolls,clear=()=>true,coastDistance=()=>Infinity,riverAt=()=>null){
+ if(!game.npcBattle)requireCombatAllowed(now);
  const zone=PIRATE_ZONES.find(z=>z.id===zoneId);
  if(!zone||game.port||game.depotDock||game.voyage?.kind||currentCanal(game.voyage)||mapDistance(game.position,zone.point)>COMBAT_RANGE||!clear(game.position,zone.point))throw Error('해적선이 같은 바닷길의 시야 안에 있어야 해요.');
  if(now<(game.pirateRespawns?.[zoneId]||0))throw Error('이 해적은 토벌한 뒤 30분 동안 다시 나타나지 않아요.');

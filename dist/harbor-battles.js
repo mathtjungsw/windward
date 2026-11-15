@@ -1,6 +1,7 @@
-import {ownership} from './commerce.js?v=2026.11.15-search-manual-protection';
-import {advanceBasicIncome} from './port-income.js?v=2026.11.15-search-manual-protection';
-import {noviceActive} from './novice.js?v=2026.11.15-search-manual-protection';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.15-server-blessings';
+import {ownership} from './commerce.js?v=2026.11.15-server-blessings';
+import {advanceBasicIncome} from './port-income.js?v=2026.11.15-server-blessings';
+import {noviceActive} from './novice.js?v=2026.11.15-server-blessings';
 
 const HOUR=3600000, DAY=24*HOUR, WINDOW=2*HOUR;
 export const CONTESTED_PORTS=['jamestown','georgetown-ascension','sanjuan-robinson','portvila'];
@@ -18,7 +19,7 @@ export function harborOperator(content,now){
 function mustDock(game,port){
  if(!CONTESTED_PORTS.includes(port)||game.port!==port||game.voyage||game.npcBattle||game.battleId||game.raidId)throw Error('해당 경합 항구에 정박한 뒤 이용하세요.');
 }
-export function harborBattleAction(game,content,uid,port,action,value,now,name){
+export function harborBattleAction(game,content,uid,port,action,value,now,name,practice=false){
  const operator=harborOperator(content,now),battle=content.harborMatch,window=battleWindow(now);
  mustDock(game,port);
  if(action==='defense'){
@@ -27,6 +28,7 @@ export function harborBattleAction(game,content,uid,port,action,value,now,name){
   return {message:'다음 공방의 포탑 배치를 저장했어요.'};
  }
  if(action==='start'){
+  if(!practice)requireCombatAllowed(now);
   if(noviceActive(game))throw Error('초보 보호를 졸업하면 공개 공방에 도전할 수 있어요. 공방 연습은 이용할 수 있습니다.');
   if(!window.open||operator===uid||content.harborOperator?.until>now||content.harborCooldown>now||battle?.end>now&&battle.state==='active')throw Error('도전 가능한 시간과 항구 운영 상태를 확인하세요.');
   const assigned=Math.min(10,game.militia?.escort||0);
@@ -161,7 +163,7 @@ export function harborPracticeAction(game,content,uid,port,action,value,now,pres
 export function createHarborPractice(port,name,start){
  const uid='practice',game={port,militia:{escort:5}},content={};
  const simTime=battleWindow(start).start;
- harborBattleAction(game,content,uid,port,'start','',simTime,name);
+ harborBattleAction(game,content,uid,port,'start','',simTime,name,true);
  return {
   open:()=>({...content.harborMatch}),
   act:(value,now)=>harborBattleAction(game,content,uid,port,'attack',value,simTime+Math.max(0,now-start),name)

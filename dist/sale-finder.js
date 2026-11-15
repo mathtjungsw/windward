@@ -1,5 +1,5 @@
-import {PORTS,GOODS} from './data.js?v=2026.11.15-search-manual-protection';
-import {taxRate,permitted,captainTradeQuote,NEUTRAL_PORTS} from './commerce.js?v=2026.11.15-search-manual-protection';
+import {PORTS,GOODS} from './data.js?v=2026.11.15-server-blessings';
+import {taxRate,permitted,captainTradeQuote,NEUTRAL_PORTS} from './commerce.js?v=2026.11.15-server-blessings';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const SALE_SEARCH_NOTICE='지금 검색한 시점에 조회한 시세 기준 최고가입니다. 시세와 세금은 실제 판매할 때 달라질 수 있어요.';
 export function ownedTradeGoods(game){const result={};for(const cargo of [game.cargo,JSON.parse(game.battleReserve?.cargoJSON||'{}')])for(const [id,c]of Object.entries(cargo||{}))if(GOODS[id]&&c.qty>0)result[id]=(result[id]||0)+c.qty;return result;}
@@ -171,7 +171,7 @@ export function createSaleFinder(api){
        if(lookup)void lookup(row.port).then(result=>{if(current()&&article.isConnected)routeInfo.textContent=result.text+(!known.has(row.port.id)?' · 항구 정보 필요':'');});
        article.append(
        element('strong',`${index+1}. ${row.port.name}${known.has(row.port.id)?'':' · 미발견'}`),
-       element('p',`${row.quote.eventEnd?'행사 시세 · ':''}판매가 ${fmt(row.quote.unit)} D/상자 · 세율 ${row.rate}%${row.quote.noviceTax?' · 초보 선장 면세':''}${row.quote.bonus?' · 보너스 +'+fmt(row.quote.bonus)+' D':''} · ${qty}상자 수령 ${fmt(row.quote.total)} D`),
+       element('p',`${row.quote.eventEnd?'행사 시세 · ':''}판매가 ${fmt(row.quote.unit)} D/상자 · 세율 ${row.rate}%${row.quote.noviceTax?' · 초보 선장 면세':''}${row.quote.bonus?' · 보너스 +'+fmt(row.quote.bonus)+' D':''}${row.quote.blessing?' · 축복 +'+fmt(row.quote.blessing)+' D':''} · ${qty}상자 수령 ${fmt(row.quote.total)} D`),
        routeInfo,lookButton(row.port),depart
       );
       target.append(article);

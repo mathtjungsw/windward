@@ -1,70 +1,71 @@
-import {createCaptainsMail} from './captains-mail.js?v=2026.11.15-search-manual-protection';
-import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.15-search-manual-protection';
-import {regionalEvent} from './market-events.js?v=2026.11.15-search-manual-protection';
-import {createUiUsage} from './ui-usage.js?v=2026.11.15-search-manual-protection';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-search-manual-protection';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.15-search-manual-protection';
-import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.15-search-manual-protection';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.15-search-manual-protection';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.15-search-manual-protection';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.15-search-manual-protection';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.15-search-manual-protection';
-import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.15-search-manual-protection';
-import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.15-search-manual-protection';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.15-search-manual-protection';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.15-search-manual-protection';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.15-search-manual-protection';
-import {createCommunity} from './community.js?v=2026.11.15-search-manual-protection';
-import {createTaxCollector} from './tax-collector.js?v=2026.11.15-search-manual-protection';
-import {createStoryUI} from './story-ui.js?v=2026.11.15-search-manual-protection';
-import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.15-search-manual-protection';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.15-search-manual-protection';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.15-search-manual-protection';
-import {createCombat} from './combat-ui.js?v=2026.11.15-search-manual-protection';
-import {createBusiness} from './business-ui.js?v=2026.11.15-search-manual-protection';
-import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.15-search-manual-protection';
-import {createInlandUI} from './inland-ui.js?v=2026.11.15-search-manual-protection';
-import {INLAND_CITIES,INLAND_PORTS,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.15-search-manual-protection';
-import {createExpansion} from './expansion-ui.js?v=2026.11.15-search-manual-protection';
-import {gameStats} from './public-stats.js?v=2026.11.15-search-manual-protection';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.15-search-manual-protection';
-import {shipGlyph} from './art.js?v=2026.11.15-search-manual-protection';
-import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.15-search-manual-protection';
-import {RELEASE} from './release-notes.js?v=2026.11.15-search-manual-protection';
-import {createUX} from './ux.js?v=2026.11.15-search-manual-protection';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.15-search-manual-protection';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.15-search-manual-protection';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.15-search-manual-protection';
-import {AtlasView} from './atlas-view.js?v=2026.11.15-search-manual-protection';
-import {FleetPresence} from './multiplayer.js?v=2026.11.15-search-manual-protection';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.15-search-manual-protection';
-import {CaptainChat} from './chat.js?v=2026.11.15-search-manual-protection';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.15-search-manual-protection';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.15-search-manual-protection';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.15-search-manual-protection';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-search-manual-protection';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.15-search-manual-protection';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.15-search-manual-protection';
-import {CaptainRankings} from './rankings.js?v=2026.11.15-search-manual-protection';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.15-search-manual-protection';
+import {createCaptainsMail} from './captains-mail.js?v=2026.11.15-server-blessings';
+import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.15-server-blessings';
+import {regionalEvent} from './market-events.js?v=2026.11.15-server-blessings';
+import {createUiUsage} from './ui-usage.js?v=2026.11.15-server-blessings';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-server-blessings';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.15-server-blessings';
+import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.15-server-blessings';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.15-server-blessings';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.15-server-blessings';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.15-server-blessings';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.15-server-blessings';
+import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.15-server-blessings';
+import {createBlessings} from './blessings-ui.js?v=2026.11.15-server-blessings';
+import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.15-server-blessings';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.15-server-blessings';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.15-server-blessings';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.15-server-blessings';
+import {createCommunity} from './community.js?v=2026.11.15-server-blessings';
+import {createTaxCollector} from './tax-collector.js?v=2026.11.15-server-blessings';
+import {createStoryUI} from './story-ui.js?v=2026.11.15-server-blessings';
+import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.15-server-blessings';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.15-server-blessings';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.15-server-blessings';
+import {createCombat} from './combat-ui.js?v=2026.11.15-server-blessings';
+import {createBusiness} from './business-ui.js?v=2026.11.15-server-blessings';
+import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.15-server-blessings';
+import {createInlandUI} from './inland-ui.js?v=2026.11.15-server-blessings';
+import {INLAND_CITIES,INLAND_PORTS,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.15-server-blessings';
+import {createExpansion} from './expansion-ui.js?v=2026.11.15-server-blessings';
+import {gameStats} from './public-stats.js?v=2026.11.15-server-blessings';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.15-server-blessings';
+import {shipGlyph} from './art.js?v=2026.11.15-server-blessings';
+import {inspectDiscovery,explorationAllowed,discoveryStats} from './discoveries.js?v=2026.11.15-server-blessings';
+import {RELEASE} from './release-notes.js?v=2026.11.15-server-blessings';
+import {createUX} from './ux.js?v=2026.11.15-server-blessings';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.15-server-blessings';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.15-server-blessings';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.15-server-blessings';
+import {AtlasView} from './atlas-view.js?v=2026.11.15-server-blessings';
+import {FleetPresence} from './multiplayer.js?v=2026.11.15-server-blessings';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.15-server-blessings';
+import {CaptainChat} from './chat.js?v=2026.11.15-server-blessings';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.15-server-blessings';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.15-server-blessings';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.15-server-blessings';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.15-server-blessings';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.15-server-blessings';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.15-server-blessings';
+import {CaptainRankings} from './rankings.js?v=2026.11.15-server-blessings';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.15-server-blessings';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.15-search-manual-protection';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.15-search-manual-protection';
-import {portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.15-search-manual-protection';
-import {createGuildUI} from './guild-ui.js?v=2026.11.15-search-manual-protection';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.15-search-manual-protection';
-import {ownership} from './commerce.js?v=2026.11.15-search-manual-protection';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.15-search-manual-protection';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.15-search-manual-protection';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.15-search-manual-protection';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.15-search-manual-protection';
-import {createShoreUI} from './shore-ui.js?v=2026.11.15-search-manual-protection';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.15-search-manual-protection';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.15-search-manual-protection';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.15-search-manual-protection';
-import {useRepairKit} from './activities.js?v=2026.11.15-search-manual-protection';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.15-search-manual-protection';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.15-search-manual-protection';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.15-server-blessings';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.15-server-blessings';
+import {portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.15-server-blessings';
+import {createGuildUI} from './guild-ui.js?v=2026.11.15-server-blessings';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.15-server-blessings';
+import {ownership} from './commerce.js?v=2026.11.15-server-blessings';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.15-server-blessings';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,normalizeDepotDock} from './projects.js?v=2026.11.15-server-blessings';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.15-server-blessings';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.15-server-blessings';
+import {createShoreUI} from './shore-ui.js?v=2026.11.15-server-blessings';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.15-server-blessings';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.15-server-blessings';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.15-server-blessings';
+import {useRepairKit} from './activities.js?v=2026.11.15-server-blessings';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.15-server-blessings';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.15-server-blessings';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -142,6 +143,7 @@ account.onCommitted=(game,revision)=>{
 const fleet=new FleetPresence({storage,readStats:()=>committedStats,readShip:()=>({position:[...state.position],angle:ownShipAngle,money:state.money,profit:state.profit,visited:state.visited.length,shipTier:shipTier(state),fleetCount:fleetCount(state),fleetTiers:orderedFleet(state).map(p=>p.tier),fleetKinds:Object.fromEntries(orderedFleet(state).flatMap((v,i)=>v.kind?[[i,v.kind]]:[])),status:state.port?'정박':paused||modal.open||document.hidden||(!state.voyage&&!manualActive)?'멈춤':'항해'}),onChange:()=>{renderFleetStatus();renderRanks();renderPeers();renderMinimap();},onStatus:status=>{fleetStatus=status;if(status==='online'){chat.connect();rankings.visible=!$('#body-rank-card')?.hidden;rankings.connect();}else if(status==='offline'){chat.disconnect();rankings.disconnect();}renderFleetStatus();renderRanks();renderChatConnection();}});
 const chat=new CaptainChat({fleet,onChange:messages=>renderChat(messages),onStatus:text=>{$('#chat-status').textContent=text;renderChatConnection();}});
 const rankings=new CaptainRankings(fleet,()=>renderRanks());
+const blessings=createBlessings({account,now:guildTime,modal:showModal,changed:()=>{if(playing){renderHUD();renderPanel();}}});
 const visibleShips=()=>shipsInSight(fleet.captains(),state.position,SIGHT_NM);
 
 
@@ -197,6 +199,7 @@ function showAccount(){
       if(account.dirty)await account.flush();
       await fleet.publishSummary();
       await fleet.stop();
+      blessings.disconnect();
       await account.close();
       location.reload();
     } catch {
@@ -209,6 +212,7 @@ function showAccount(){
 function showPatchNotes(){ux?.patchNotes(false);}
 const uiUsage=createUiUsage({account,enabled:()=>playing&&!sessionBlocked});
 function beginPlaying(game){
+  blessings.connect();
   sailingClock.reset(performance.now());
   manualTrail=[];state=game;normalizeDepotDock(state);const navigationNotice=reconcileNavigation(state,nav);if(navigationNotice)toast(navigationNotice);if(state.port&&ACTIVE_PORT_BY_ID[state.port])state.legacyHarbor=false;exploration=new Exploration(state.explored);exploration.seed(state);selected=state.port||state.voyage?.target||'lisbon';planned=null;paused=!!game.offlinePaused&&!!game.voyage;delete game.offlinePaused;playing=true;sessionBlocked=false;lastPanelPort=null;manualActive=false;manualTarget=null;manualChannel=null;departedPort=null;heldKeys.clear();
   settleGuildDeadlines();uiUsage.entered?.();mail.watch();setTimeout(()=>business?.reconcileHarborRecords().catch(()=>{}),1100);setTimeout(()=>taxCollector?.tick(true),100);
@@ -342,7 +346,7 @@ function renderFleetStatus(){
   $('#fleet-btn').textContent=labels[fleetStatus]||'함께 항해';$('#fleet-btn').classList.toggle('online',fleetStatus==='online');
   if($('#fleet-live-list'))renderFleetList();
 }
-function setupRankControls(){const tabs=$('.rank-tabs');tabs.className='rank-controls';tabs.innerHTML=`<div class="rank-groups" role="group" aria-label="랭킹 분야">${RANK_GROUPS.map(([id,label])=>`<button data-rank-group="${id}">${label}</button>`).join('')}</div><label class="rank-choice">순위 기준 <select id="rank-metric-select"></select></label><p class="rank-notice">각 기준 상위 5명 · 오프라인 기록 유지</p>`;document.querySelectorAll('[data-rank-group]').forEach(b=>b.onclick=()=>{const metric=RANK_DEFINITIONS.find(m=>m.group===b.dataset.rankGroup).id;rankMetric=metric;rankings.select(metric);renderRanks();});$('#rank-metric-select').onchange=e=>{rankMetric=e.target.value;rankings.select(rankMetric);renderRanks();};paintRankControls();}
+function setupRankControls(){const tabs=$('.rank-tabs');tabs.className='rank-controls';tabs.innerHTML=`<div class="rank-groups" role="group" aria-label="랭킹 분야">${RANK_GROUPS.map(([id,label])=>`<button data-rank-group="${id}">${label}</button>`).join('')}</div><label class="rank-choice">순위 기준 <select id="rank-metric-select"></select></label><p class="rank-notice">각 기준 상위 5명 · 오프라인 기록 유지</p><button type="button" class="service-button" id="rank-blessing" hidden>오늘의 축복</button>`;document.querySelectorAll('[data-rank-group]').forEach(b=>b.onclick=()=>{const metric=RANK_DEFINITIONS.find(m=>m.group===b.dataset.rankGroup).id;rankMetric=metric;rankings.select(metric);renderRanks();});$('#rank-blessing').onclick=()=>blessings.open();$('#rank-metric-select').onchange=e=>{rankMetric=e.target.value;rankings.select(rankMetric);renderRanks();};paintRankControls();}
 function paintRankControls(){const select=$('#rank-metric-select');if(!select)return;const definition=RANK_BY_ID[rankMetric],group=definition.group;if(select.dataset.group!==group){select.dataset.group=group;select.innerHTML=RANK_DEFINITIONS.filter(m=>m.group===group).map(m=>`<option value="${m.id}">${m.label}</option>`).join('');}select.value=rankMetric;document.querySelectorAll('[data-rank-group]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.rankGroup===group)));const notice=$('.rank-notice');notice.textContent=['pirateKills','fleetDefeats','duelWins','tradedGoodCount','bestTradeProfit'].includes(rankMetric)?'각 기준 상위 5명 · 새 횟수·최고 기록은 이번 업데이트부터 집계':'각 기준 상위 5명 · 기존 기록 포함 · 오프라인 유지';}
 let ranksPaintKey='';
 function renderRanks(){
@@ -358,6 +362,7 @@ function renderRanks(){
   if(!top.length){const empty=document.createElement('li');empty.textContent='선장들의 기록을 기다리는 중…';root.append(empty);}
   }
   const me=ranks.find(p=>p.id===id),mine=me?.rank||rankings.myRanks[rankMetric];$('#my-rank').textContent=rankings.path?`내 순위 ${mine?mine+'위':'조회하기 ↓'} · 전체 선장 기준`:'서버 순위 연결 중…';
+  const decree=$('#rank-blessing');if(decree){decree.hidden=rankMetric!=='overallScore';decree.textContent=me?.rank===1?'오늘의 축복 선택':'오늘의 축복';}
 
 $$('[data-rank]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.rank===rankMetric)));
 }
@@ -645,7 +650,8 @@ function changed(){community?.syncOwnership().catch(()=>{});settleGuildDeadlines
 function inspectNearby(id){
   if(!nav)return;stopForUI();paused=!!state.voyage;
   const result=inspectDiscovery(state,nav,id,guildTime());if(!result.ok){toast(result.error,'error');return;}
-  log(`${result.discovery.name} 발견 · 명성 +${result.discovery.fame}`,'discovery');changed();expansion.found(result.discovery);toast(`✦ ${result.discovery.name} · 명성 +${result.discovery.fame}`,'discovery');account.flush();
+  const fame=result.discovery.fame+result.blessingFame;
+  log(`${result.discovery.name} 발견 · 명성 +${fame}`,'discovery');changed();expansion.found({...result.discovery,fame});toast(`✦ ${result.discovery.name} · 명성 +${fame}`,'discovery');account.flush();
 }
 async function approachDiscovery(d){
  const fail=message=>{
@@ -990,7 +996,7 @@ function findPortRoute(game,point){
  return calculate();
 }
 function searchRoutes(){
- const game=structuredClone(state);
+ const game=structuredClone(state),checkedAt=guildTime();
  const names=Object.fromEntries(CANALS.map(c=>[c.id,PROJECT_BY_ID[c.id].name]));
  return createRouteLookup(async()=>{
   if(game.useCanals===false)return {canalData:new Map(),preliminary:false};
@@ -1001,7 +1007,7 @@ function searchRoutes(){
   }catch{return {canalData:new Map(),preliminary:true};}
  },async(port,{canalData,preliminary})=>{
   const route=port.id===game.port&&!game.voyage?null:await routeWithCanals(game,portPoint(port),canalData);
-  return summarizeSearchRoute(game,port,route,names,preliminary);
+  return summarizeSearchRoute(game,port,route,names,preliminary,checkedAt);
  });
 }
 function planDestination(target,point,scroll=true,depot=null){
