@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {initialState,parseSavedGame,Navigator,makeRoute,voyageEstimate,advanceVoyage} from '../dist/engine.js';
 import {createChartDetail} from '../dist/chart-waterways.js';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView} from '../dist/projects.js';
+import {CANALS,PROJECTS,PROJECT_BY_ID,freightSources,projectAction,projectView} from '../dist/projects.js';
 import {ITEMS,OFFICERS} from '../dist/rumor-catalog.js';
 import {RELEASE} from '../dist/release-notes.js';
 const {PORTS,GOODS,ACTIVE_PORT_BY_ID,registerDevelopedPorts,DEPOT_SITES}=await import('../dist/data.js?v='+RELEASE);
@@ -60,6 +60,31 @@ test('cooperative freight caps concurrent demand, preserves remaining cargo and 
   projectAction(a,content,'a',port,'renew',0,start+4,chart);
   assert.equal(projectAction(b,content,'b',port,'claim',1,start+5,chart).reward,1080);
   assert.throws(()=>projectAction(b,content,'b',port,'claim',1,start+6,chart),/보수/);
+});
+
+test('freight destinations block purchase while supplied cargo can still be sold or delivered',()=>{
+  for(const project of PROJECTS.filter(project=>project.kind==='freight')){
+    const {id,port,good,goal}=project;
+    const game=asCaptain(port),market={},freight={};
+    assert.ok(!ACTIVE_PORT_BY_ID[port].market.includes(good),id);
+    const sources=freightSources(project);
+    assert.ok(sources.length&&sources.every(source=>source.id!==port&&source.market.includes(good)),id);
+
+    const localQuote=captainTradeQuote(game,port,good,1,'buy',{},start,0);
+    assert.throws(()=>executeTrade(game,market,'a',port,good,1,'buy',localQuote,start,0),/구매할 수 없어요/);
+
+    game.port=sources[0].id;
+    const sourceQuote=captainTradeQuote(game,game.port,good,1,'buy',{},start,0);
+    executeTrade(game,{},'a',game.port,good,1,'buy',sourceQuote,start,0);
+    game.port=port;
+    const sale=captainTradeQuote(game,port,good,1,'sell',{},start,0);
+    assert.equal(executeTrade(game,market,'a',port,good,1,'sell',sale,start,0).ok,true);
+
+    game.cargo[good]={qty:goal,cost:goal*10};
+    projectAction(game,freight,'a',id,'renew',0,start,chart);
+    assert.equal(projectAction(game,freight,'a',id,'deliver',goal,start,chart).qty,goal);
+    assert.equal(projectAction(game,freight,'a',id,'claim',1,start,chart).reward,project.reward);
+  }
 });
 
 test('project refunds use actual stakes, and the last investor opens construction once',()=>{

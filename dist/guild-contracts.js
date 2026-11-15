@@ -1,11 +1,11 @@
-import {blessingBonus} from './blessings.js?v=2026.11.15-server-blessings';
-import {shipyardReport} from './historical-ships.js?v=2026.11.15-server-blessings';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.15-server-blessings';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-server-blessings';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-server-blessings';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-server-blessings';
+import {blessingBonus} from './blessings.js?v=2026.11.15-freight-purchase-fix';
+import {shipyardReport} from './historical-ships.js?v=2026.11.15-freight-purchase-fix';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.15-freight-purchase-fix';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.15-freight-purchase-fix';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-purchase-fix';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-freight-purchase-fix';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-server-blessings';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-freight-purchase-fix';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[

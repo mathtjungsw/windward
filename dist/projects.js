@@ -1,19 +1,22 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES} from './data.js?v=2026.11.15-server-blessings';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.15-server-blessings';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-server-blessings';
-import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.15-server-blessings';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-server-blessings';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.15-server-blessings';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-server-blessings';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS,PORTS} from './data.js?v=2026.11.15-freight-purchase-fix';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.15-freight-purchase-fix';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-purchase-fix';
+import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.15-freight-purchase-fix';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-freight-purchase-fix';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.15-freight-purchase-fix';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-freight-purchase-fix';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));
-const freight=[
-  ['porto','wine',40,4800],['alexandria','timber',60,8400],['goa','cotton',60,8400],
-  ['nagasaki','silk',80,13200],['havana','cacao',80,13200],['sydney','grain',80,11200]
-].filter(([port])=>ACTIVE_PORT_BY_ID[port]).map(([port,good,goal,reward])=>({
+const freight=FREIGHT_ORDERS.filter(([port])=>ACTIVE_PORT_BY_ID[port]).map(([port,good,goal,reward])=>({
   id:'freight-'+port,kind:'freight',name:ACTIVE_PORT_BY_ID[port].name+' 공동 수송',port,good,goal,reward
 }));
+export function freightSources(project){
+  const destination=ACTIVE_PORT_BY_ID[project.port],target=[destination.lon,destination.lat];
+  return PORTS.filter(port=>port.id!==project.port&&port.market.includes(project.good))
+    .map(port=>({port,miles:mapDistance(target,[port.lon,port.lat])}))
+    .sort((a,b)=>a.miles-b.miles).slice(0,3).map(row=>row.port);
+}
 export const CANALS=[
   {id:'canal-suez',kind:'canal',name:'수에즈 운하',cost:6000000,duration:12*HOUR,path:[[32.31,31.32],[32.31,30.85],[32.34,30.57],[32.38,30.28],[32.54,29.9]]},
   {id:'canal-panama',kind:'canal',name:'파나마 운하',cost:10000000,duration:24*HOUR,path:[[-79.914,9.415],[-79.916,9.276],[-79.803,9.152],[-79.677,9.097],[-79.562,8.87]]}

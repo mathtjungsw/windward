@@ -18,7 +18,7 @@ test('supply and local demand multiply even for imported stock; Europe pays for 
  for(const p of PORTS)for(const id of p.market)for(let h=0;h<24;h+=3){const time=Date.UTC(2026,10,10,h),buy=tradeQuote(p.id,id,1,'buy',{},time,0),sell=tradeQuote(p.id,id,1,'sell',{},time,0);assert.ok(sell.total<buy.total,'same-port resale cannot mint cash');}
 });
 test('eight representative two-way routes retain margins through a full real day, including 10% destination tax',()=>{
- const routes=[['lisbon','porto','wine','driedfish'],['london','havana','wool','cacao'],['london','macau','wool','porcelain'],['venice','goa','glass','porcelain'],['goa','zanzibar','cotton','cloves'],['muscat','goa','dates','cotton'],['london','nagasaki','wool','porcelain'],['lisbon','recife','wine','dyewood']];
+ const routes=[['lisbon','porto','wine','driedfish'],['london','cartagena','wool','cacao'],['london','macau','wool','porcelain'],['venice','goa','glass','porcelain'],['batavia','zanzibar','coffee','cloves'],['muscat','goa','dates','porcelain'],['london','nagasaki','wool','porcelain'],['lisbon','recife','wine','dyewood']];
  for(const [a,b,out,back]of routes)for(const [source,dest,id]of [[a,b,out],[b,a,back]]){assert.ok(byId[source].market.includes(id));for(let h=0;h<24;h++){const t=Date.UTC(2026,10,10,h),cost=tradeQuote(source,id,1,'buy',{},t).total,revenue=tradeQuote(dest,id,1,'sell',{},t,10).total;assert.ok(revenue>cost,`${source}→${dest}/${id}, hour ${h}: ${revenue-cost}`);}}
 });
 test('old capped stock does not turn past full-stock time into twenty extra boxes; partial interval survives',()=>{

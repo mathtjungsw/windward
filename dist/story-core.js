@@ -1,6 +1,6 @@
-import {STORIES,STORY_BY_ID} from './story-catalog.js?v=2026.11.15-server-blessings';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-server-blessings';
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.15-server-blessings';
+import {STORIES,STORY_BY_ID} from './story-catalog.js?v=2026.11.15-freight-purchase-fix';
+import {PORT_BY_ID} from './data.js?v=2026.11.15-freight-purchase-fix';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.15-freight-purchase-fix';
 
 const tradeKeys=new Set(STORIES.flatMap(story=>story.steps.filter(step=>step.kind==='buy'||step.kind==='sell').map(step=>[step.kind,step.port,step.good].join(':'))));
 const viewKeys=new Set(STORIES.flatMap(story=>story.steps.flatMap(step=>step.menus||[])));

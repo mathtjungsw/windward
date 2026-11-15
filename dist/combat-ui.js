@@ -1,12 +1,12 @@
-import {requireCombatAllowed} from './blessings.js?v=2026.11.15-server-blessings';
-import {assertFreeCombat} from './novice.js?v=2026.11.15-server-blessings';
-import {createOfflineCombat} from './offline-combat.js?v=2026.11.15-server-blessings';
-import {createMapCombat} from './combat-map.js?v=2026.11.15-server-blessings';
-import {fleetMaxHP} from './ship-rules.js?v=2026.11.15-server-blessings';
-import {combatProfile,combatEligible,reserveLoss,returnReserve,openBattle,fireCannon,finishExpired,claimBattle,fireAtPirate,defeatNPC,npcSlotChanges,PIRATE_ZONES,cargoCount,addCargo} from './combat-core.js?v=2026.11.15-server-blessings';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.15-server-blessings';
-import {usedSpace,capacity} from './engine.js?v=2026.11.15-server-blessings';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-server-blessings';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.15-freight-purchase-fix';
+import {assertFreeCombat} from './novice.js?v=2026.11.15-freight-purchase-fix';
+import {createOfflineCombat} from './offline-combat.js?v=2026.11.15-freight-purchase-fix';
+import {createMapCombat} from './combat-map.js?v=2026.11.15-freight-purchase-fix';
+import {fleetMaxHP} from './ship-rules.js?v=2026.11.15-freight-purchase-fix';
+import {combatProfile,combatEligible,reserveLoss,returnReserve,openBattle,fireCannon,finishExpired,claimBattle,fireAtPirate,defeatNPC,npcSlotChanges,PIRATE_ZONES,cargoCount,addCargo} from './combat-core.js?v=2026.11.15-freight-purchase-fix';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.15-freight-purchase-fix';
+import {usedSpace,capacity} from './engine.js?v=2026.11.15-freight-purchase-fix';
+import {mapDistance} from './world-wrap.js?v=2026.11.15-freight-purchase-fix';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const roll=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
 export function createCombat(api){

@@ -1,4 +1,4 @@
-import {CoastalDetail} from './coastal-detail.js?v=2026.11.15-server-blessings';
+import {CoastalDetail} from './coastal-detail.js?v=2026.11.15-freight-purchase-fix';
 
 // Connect world-grid cells through narrow waters using shore-checked waypoints.
 export const COARSE_CONNECTIONS=[

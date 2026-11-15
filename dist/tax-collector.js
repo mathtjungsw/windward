@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.15-server-blessings';
-import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.15-server-blessings';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-server-blessings';
+import {ownership} from './commerce.js?v=2026.11.15-freight-purchase-fix';
+import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.15-freight-purchase-fix';
+import {PORT_BY_ID} from './data.js?v=2026.11.15-freight-purchase-fix';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;

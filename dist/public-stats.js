@@ -1,11 +1,11 @@
-import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.15-server-blessings';
-import {GOODS} from './data.js?v=2026.11.15-server-blessings';
-import {Exploration} from './voyage-core.js?v=2026.11.15-server-blessings';
-import {explorationStats} from './exploration-score.js?v=2026.11.15-server-blessings';
-import {discoveryStats} from './discoveries.js?v=2026.11.15-server-blessings';
-import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.15-server-blessings';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-server-blessings';
-import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.15-server-blessings';
+import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.15-freight-purchase-fix';
+import {GOODS} from './data.js?v=2026.11.15-freight-purchase-fix';
+import {Exploration} from './voyage-core.js?v=2026.11.15-freight-purchase-fix';
+import {explorationStats} from './exploration-score.js?v=2026.11.15-freight-purchase-fix';
+import {discoveryStats} from './discoveries.js?v=2026.11.15-freight-purchase-fix';
+import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.15-freight-purchase-fix';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.15-freight-purchase-fix';
+import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.15-freight-purchase-fix';
 export function collectionRankStats(game){
  const progress=game.rumorProgress,acquired=new Set(progress?.acquiredItems||[]),officers=new Set(progress?.officers||[]);
  return {shoreCompleted:game.shoreProgress?.count||0,rareFinds:DISCOVERIES.filter(d=>d.tier>=3&&game.discoveries?.[d.id]).length,

@@ -1,5 +1,5 @@
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-server-blessings';
-import {GUILD_TYPES,guildObjective,isGuildReport} from './guild-contracts.js?v=2026.11.15-server-blessings';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-freight-purchase-fix';
+import {GUILD_TYPES,guildObjective,isGuildReport} from './guild-contracts.js?v=2026.11.15-freight-purchase-fix';
 
 const escape=text=>String(text).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const clock=new Intl.DateTimeFormat('ko-KR',{dateStyle:'short',timeStyle:'short',timeZone:'Asia/Seoul'});

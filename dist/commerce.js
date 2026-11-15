@@ -1,14 +1,14 @@
-import {shipyardTrade} from './historical-ships.js?v=2026.11.15-server-blessings';
-import {recordTrade} from './rank-progress.js?v=2026.11.15-server-blessings';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-server-blessings';
-import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.15-server-blessings';
-import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.15-server-blessings';
-import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-server-blessings';
-import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.15-server-blessings';
-import {recordStoryTrade} from './story-core.js?v=2026.11.15-server-blessings';
-import {harborOfficerRole} from './harbor-officers.js?v=2026.11.15-server-blessings';
-import {noviceActive} from './novice.js?v=2026.11.15-server-blessings';
-import {blessingBonus} from './blessings.js?v=2026.11.15-server-blessings';
+import {shipyardTrade} from './historical-ships.js?v=2026.11.15-freight-purchase-fix';
+import {recordTrade} from './rank-progress.js?v=2026.11.15-freight-purchase-fix';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-freight-purchase-fix';
+import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.15-freight-purchase-fix';
+import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.15-freight-purchase-fix';
+import {advanceBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-freight-purchase-fix';
+import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.15-freight-purchase-fix';
+import {recordStoryTrade} from './story-core.js?v=2026.11.15-freight-purchase-fix';
+import {harborOfficerRole} from './harbor-officers.js?v=2026.11.15-freight-purchase-fix';
+import {noviceActive} from './novice.js?v=2026.11.15-freight-purchase-fix';
+import {blessingBonus} from './blessings.js?v=2026.11.15-freight-purchase-fix';
 export function captainTradeQuote(game,portId,goodId,qty,mode,item,now,rate,effectAt=now){
  const quote=tradeQuote(portId,goodId,qty,mode,item,now,rate);
  const bonus=mode==='sell'&&game?Math.floor(quote.total*saleBonus(game,portId,goodId)+1e-9):0;

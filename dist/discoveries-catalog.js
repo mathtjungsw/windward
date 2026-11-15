@@ -1,6 +1,6 @@
 // Static discovery stories and game observation points.
-import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.15-server-blessings';
-import {LIBRARY_DISCOVERIES} from './discoveries-library.js?v=2026.11.15-server-blessings';
+import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.15-freight-purchase-fix';
+import {LIBRARY_DISCOVERIES} from './discoveries-library.js?v=2026.11.15-freight-purchase-fix';
 export const DISCOVERY_CATALOG_VERSION='2026.11.15-discoveries-102';
 export const RETIRED_DISCOVERY_FAME={'ruin-itsukushima':400};
 const source=(label,url)=>({label,url});
