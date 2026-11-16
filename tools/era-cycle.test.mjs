@@ -10,17 +10,30 @@ import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID} from '../dist/discoveries-catal
 import {hasClues,inspectDiscovery} from '../dist/discoveries.js';
 import {ITEMS,OFFICER_BY_ID} from '../dist/rumor-catalog.js';
 
-const {ERAS,ERA_PERIOD,configureEra,eraAt,eraAvailable}=await import('../dist/era-cycle.js?v='+RELEASE);
+const {ERAS,ERA_PERIOD,LEGACY_ERA_PERIOD,configureEra,eraAt,eraAvailable}=await import('../dist/era-cycle.js?v='+RELEASE);
 const {GOODS,PORTS,PORT_BY_ID,PORT_GROWTH_GOODS,harborMarket,registerDevelopedPorts}=await import('../dist/data.js?v='+RELEASE);
 const {ERA_GOODS}=await import('../dist/era-goods.js?v='+RELEASE);
 const start=Date.UTC(2026,10,14,15);
-test('all four boundaries rotate the markets and reset to the first era',()=>{
- configureEra(start);
+test('the legacy era ends at its announced time and the new sequence uses five 24-hour windows',()=>{
+ const switchAt=start+4*LEGACY_ERA_PERIOD;
+ configureEra(start,{at:switchAt,first:5});
+ assert.equal(eraAt(switchAt-1).id,4);
+ assert.equal(eraAt(switchAt-1).end,switchAt);
+ assert.equal(eraAt(switchAt-1).next.id,5);
+ assert.deepEqual([0,1,2,3,4,5].map(i=>eraAt(switchAt+i*ERA_PERIOD).id),[5,1,2,3,4,5]);
+ assert.equal(eraAt(switchAt).window,switchAt);
+ assert.equal(ERA_PERIOD,86400000);
+ configureEra(start,{at:start,first:1});
  try{
-  assert.deepEqual([0,1,2,3,4].map(i=>eraAt(start+i*ERA_PERIOD).id),[1,2,3,4,1]);
+  assert.deepEqual([0,1,2,3,4,5].map(i=>eraAt(start+i*ERA_PERIOD).id),[1,2,3,4,5,1]);
   for(const [id,good] of Object.entries(ERA_GOODS))for(const port of good.ports){
    const p=PORT_BY_ID[port];assert.ok(p,port);
-   for(let i=0;i<4;i++)assert.equal(harborMarket(p,start+i*ERA_PERIOD).includes(id),!good.era||i+1===good.era,id);
+   for(let i=0;i<5;i++)assert.equal(harborMarket(p,start+i*ERA_PERIOD).includes(id),!good.era||i+1===good.era,id);
+  }
+  for(const p of PORTS){
+   const windows=ERAS.map((_,i)=>harborMarket(p,start+i*ERA_PERIOD));
+   assert.ok(windows.every(list=>p.market.every(id=>list.includes(id))),p.id+' lost basic goods');
+   assert.equal(new Set(windows.map(list=>list.slice().sort().join(','))).size,5,p.id);
   }
   assert.ok(!eraAvailable({era:2},start+ERA_PERIOD-1));
   assert.ok(eraAvailable({era:2},start+ERA_PERIOD));
@@ -29,7 +42,7 @@ test('all four boundaries rotate the markets and reset to the first era',()=>{
 
 test('a quote at the boundary expires while cargo remains saleable at its recorded cost',()=>{
  const game={...initialState(),port:'chennai',money:9000},content={};
- configureEra(start);
+ configureEra(start,{at:start,first:1});
  try{
   const boundary=start+ERA_PERIOD;
   const quote=captainTradeQuote(game,'chennai','rice',2,'buy',{},boundary-500,0);
@@ -64,17 +77,17 @@ test('historic cards point to distinct, credited WebP evidence and a small local
  }
 });
 
-test('ancient works and their tavern rumors remain discoverable across all four eras',()=>{
- const museum=ERA_DISCOVERIES.filter(d=>d.media.license==='CC0 1.0'&&d.media.url.startsWith('https://clevelandart.org/art/'));
- assert.equal(DISCOVERIES.length,215);
+test('ancient works and their tavern rumors remain discoverable across all five eras',()=>{
+ const museum=ERA_DISCOVERIES.filter(d=>d.era!==5&&d.media.license==='CC0 1.0'&&d.media.url.startsWith('https://clevelandart.org/art/'));
+ assert.equal(DISCOVERIES.length,225);
  assert.equal(museum.length,24);
  assert.equal(museum.filter(d=>d.kind==='book').length,18);
  assert.equal(museum.filter(d=>!d.era).length,21);
  const ids=['era-al-jazari-automata','era-rashid-chronicles','era-sadi-gulistan','era-angkor','era-prambanan',
   'era-ayutthaya','era-trowulan','era-mamallapuram-rathas','era-gangaikonda','era-brhadisvara','era-polonnaruwa','era-song-illustration'];
- configureEra(start);
+ configureEra(start,{at:start,first:1});
  try{
-  for(let i=0;i<4;i++){
+  for(let i=0;i<5;i++){
    const now=start+i*ERA_PERIOD;
    for(const id of ids){
     const discovery=DISCOVERY_BY_ID[id],game=initialState();
@@ -97,18 +110,31 @@ test('eight new natural landforms are represented by source photos and clues in 
  const ids=['geiranger-fjord','nile-delta','halong-karst','wadden-tidal-flats','kilauea-shield',
   'belize-blue-hole','lencois-dune-lagoons','jeju-jusangjeolli'];
  assert.equal(DISCOVERIES.filter(d=>d.kind==='nature').length,18);
- configureEra(start);
+ configureEra(start,{at:start,first:1});
  try{
   for(const slug of ids){
    const entry=DISCOVERY_BY_ID['era-'+slug];
    assert.equal(entry.kind,'nature',slug);
    assert.ok(entry.place&&entry.media.file,slug);
-   for(let i=0;i<4;i++){
+   for(let i=0;i<5;i++){
     const now=start+i*ERA_PERIOD;
     assert.ok(eraAvailable(entry,now)&&eraAvailable(RUMOR_BY_ID[entry.rumorIds[0]],now),slug);
    }
   }
  }finally{configureEra(null);}
+});
+
+test('all new photos, trade goods, officers and equipment have a fifth-era entry',()=>{
+ const discoveries=ERA_DISCOVERIES.filter(d=>d.era===5);
+ const goods=Object.values(ERA_GOODS).filter(g=>g.era===5);
+ const officers=Object.values(OFFICER_BY_ID).filter(o=>o.era===5);
+ const gear=ITEMS.filter(item=>item.era===5);
+ assert.equal(discoveries.length,10);
+ assert.equal(goods.length,14);
+ assert.equal(officers.length,4);
+ assert.equal(gear.length,6);
+ assert.ok(discoveries.every(d=>d.media&&d.sources.length));
+ for(const item of gear)for(const id of item.sellGoods||[])assert.ok(GOODS[id],id);
 });
 
 test('open depots unlock and sell their own regional item through public deliveries',()=>{
@@ -130,6 +156,6 @@ test('open depots unlock and sell their own regional item through public deliver
 
 test('all announcements use distinct compact WebP hero images',async()=>{
  const assets=await Promise.all(ERAS.map(era=>readFile(new URL(`../dist/assets/era-heroes/${era.art}.webp`,import.meta.url))));
- assert.equal(new Set(assets.map(bytes=>bytes.toString('base64'))).size,4);
+ assert.equal(new Set(assets.map(bytes=>bytes.toString('base64'))).size,5);
  assert.ok(assets.every(bytes=>bytes.subarray(8,12).toString()==='WEBP'&&bytes.length<250000));
 });

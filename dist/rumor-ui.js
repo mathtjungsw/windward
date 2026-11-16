@@ -1,13 +1,13 @@
-import {collectionArt} from './art.js?v=2026.11.16-port-dividends';
-import {PORT_BY_ID} from './data.js?v=2026.11.16-port-dividends';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.16-port-dividends';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.16-port-dividends';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.16-port-dividends';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.16-port-dividends';
-import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.16-port-dividends';
+import {collectionArt} from './art.js?v=2026.11.16-five-eras';
+import {PORT_BY_ID} from './data.js?v=2026.11.16-five-eras';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.16-five-eras';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.16-five-eras';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.16-five-eras';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.16-five-eras';
+import {rumorNote,setRumorHidden,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.16-five-eras';
 
-import {readRumor} from './discoveries.js?v=2026.11.16-port-dividends';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.16-port-dividends';
+import {readRumor} from './discoveries.js?v=2026.11.16-five-eras';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.16-five-eras';
 
 const labels={all:'읽은 소문',hidden:'숨긴 소문'};
 const headline=text=>text.length>28?text.slice(0,28).trimEnd()+'…':text;

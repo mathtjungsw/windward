@@ -1,6 +1,6 @@
-import {STORIES,STORY_BY_ID} from './story-catalog.js?v=2026.11.16-port-dividends';
-import {PORT_BY_ID} from './data.js?v=2026.11.16-port-dividends';
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.16-port-dividends';
+import {STORIES,STORY_BY_ID} from './story-catalog.js?v=2026.11.16-five-eras';
+import {PORT_BY_ID} from './data.js?v=2026.11.16-five-eras';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.16-five-eras';
 
 const tradeKeys=new Set(STORIES.flatMap(story=>story.steps.filter(step=>step.kind==='buy'||step.kind==='sell').map(step=>[step.kind,step.port,step.good].join(':'))));
 const viewKeys=new Set(STORIES.flatMap(story=>story.steps.flatMap(step=>step.menus||[])));

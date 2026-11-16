@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.16-port-dividends';
-import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.16-port-dividends';
-import {PORT_BY_ID} from './data.js?v=2026.11.16-port-dividends';
+import {ownership} from './commerce.js?v=2026.11.16-five-eras';
+import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.16-five-eras';
+import {PORT_BY_ID} from './data.js?v=2026.11.16-five-eras';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;

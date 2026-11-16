@@ -8,19 +8,44 @@ const groups={
  spice:[['madder','꼭두서니 염료',94,'marseille istanbul',4],['cochineal','코치닐 염료',156,'veracruz acapulco',4],['dyed-indigo-cloth','쪽물 염색천',122,'chennai goa',4],['turmeric','강황',78,'chennai colombo',2],['frankincense','유향',135,'aden muscat',1],['myrrh','몰약',148,'aden jeddah',1],['cardamom','카르다몸',113,'chennai goa',1],['gum-arabic','아라비아고무',71,'dakar alexandria',4],['camphor','장뇌',137,'malacca batavia',2]],
  driedfish:[['molasses','사탕수수 당밀',62,'havana recife',4],['dried-fig','말린 무화과',59,'marseille istanbul'],['salt-cod','소금에 절인 대구',61,'halifax lisbon',2],['dried-shrimp','말린 새우',61,'manila macau'],['beeswax','밀랍',78,'dakar bordeaux'],['salt-beef','소금에 절인 쇠고기',68,'buenos dublin'],['raisins','건포도',62,'seville marseille'],['aged-vinegar','숙성 식초',55,'bordeaux venice']]
 };
-export const ERA_GOODS=Object.fromEntries(Object.entries(groups).flatMap(([family,rows])=>rows.map(([id,name,base,ports,era])=>[id,{name,base,ports:ports.split(' '),era,family,icon:'◈',color:'#476c65'}])));
+const fifthGroups={
+ tea:[['wuyi-black-tea','무이산 홍차',142,'macau',5],['songluo-green-tea','송라 녹차',126,'shanghai',5],['pressed-tea','압축 차',116,'wuhan',5]],
+ porcelain:[['export-punch-bowl','수출용 펀치 사발',168,'macau shanghai',5],['enamel-porcelain','채색 수출 자기',192,'macau',5],['delftware','델프트 채색 도기',135,'amsterdam',5]],
+ silk:[['painted-fan','채색 부채',129,'macau manila',5]],
+ sugar:[['sugar-loaf','원뿔형 정제 설탕',96,'amsterdam bordeaux',5],['cane-syrup','사탕수수 시럽',70,'havana belem portlouis',5]],
+ coffee:[['roasted-coffee','볶은 커피콩',113,'batavia aden',5]],
+ spice:[['nutmeg-mace','육두구 겉껍질 향료',128,'bandaneira ternate',5]],
+ wool:[['striped-wool','줄무늬 모직물',119,'london bordeaux',5]],
+ timber:[['ship-blocks','범선 도르래 목구',99,'london amsterdam',5]],
+ oliveoil:[['coconut-oil','코코넛 기름',69,'colombo suva apia',5]]
+};
+export const ERA_GOODS=Object.fromEntries([...Object.entries(groups),...Object.entries(fifthGroups)].flatMap(([family,rows])=>rows.map(([id,name,base,ports,era])=>[id,{name,base,ports:ports.split(' '),era,family,icon:'◈',color:'#476c65'}])));
 
 const targetPorts={
  1:['zanzibar','goa','chennai','colombo','aden','muscat'],
  2:['lisbon','porto','seville','cape','malacca','ternate'],
  3:['manila','acapulco','callao','macau','shanghai','busan'],
- 4:['amsterdam','london','bordeaux','havana','halifax','nagasaki','veracruz']
+ 4:['amsterdam','london','bordeaux','havana','halifax','nagasaki','veracruz'],
+ 5:['london','amsterdam','porto','halifax','boston','havana','rio','cape','portlouis','zanzibar','goa','malacca','manila','nagasaki','honolulu','sydney','batavia','cartagena']
 };
+const regionalImports={
+ '유럽':[['dates','sandalwood'],['pepper','cloves'],['silk','silver'],['cacao','indigo'],['tea','porcelain']],
+ '아프리카':[['cotton','dates'],['driedfish','timber'],['copper','glass'],['sugar','coffee'],['tea','porcelain']],
+ '아시아':[['oliveoil','dates'],['timber','cinnamon'],['silver','cacao'],['coffee','indigo'],['glass','sugar']],
+ '북아메리카':[['salt','oliveoil'],['timber','pepper'],['silver','porcelain'],['indigo','coffee'],['tea','glass']],
+ '남아메리카':[['oliveoil','dates'],['timber','pepper'],['silk','porcelain'],['coffee','indigo'],['tea','glass']],
+ '오세아니아':[['cotton','oliveoil'],['timber','pepper'],['silver','porcelain'],['sugar','coffee'],['tea','glass']]
+};
+export function regionalEraGoods(port,era){
+ const region=regionalImports[port.region]||regionalImports['유럽'];
+ return era?.version===2&&era.id?region[era.id-1]:[];
+}
 export function eraTradeFactor(port,id,mode,era){
+ const regional=regionalEraGoods(port,era).includes(id);
  const item=ERA_GOODS[id];
- if(!item)return 1;
+ if(!item)return regional?(mode==='sell'?1.06:1.03):1;
  const source=item.ports.includes(port.id);
  if(mode==='buy')return source&&era&&item.era===era.id?0.94:1;
  if(source)return 1;
- return era&&item.era===era.id&&targetPorts[era.id].includes(port.id)?1.11:1;
+ return era&&item.era===era.id&&targetPorts[era.id]?.includes(port.id)?1.11:1;
 }

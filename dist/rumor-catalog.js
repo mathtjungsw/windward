@@ -330,7 +330,33 @@ for(const [id,name,port,tavern,cargo,era,type,effects,effect] of eraEquipment){
  ITEMS.push({id,name,port,tavern,cost:2800,stage:7,era,type,title,story,
   challenge:{ports:[tavern,port],cargo,qty:8,guild:2},effect,...effects});
 }
+OFFICERS.push(
+ {id:'O037',name:'조지 앤슨',port:'london',tavern:'manila',cost:30000,era:5,
+  title:'세 바다를 지난 선장의 기록',story:'태평양을 건넌 뒤 리스본 앞바다를 지나 돌아간 원정 일지를 아는 사람이 런던에 있대요.',
+  challenge:{ports:['manila','cape','london'],cargo:'silver',qty:12,discoveries:12},effect:'원양 항해 식량 소모 5% 감소 · 표류 화물 회수 시간 8% 단축',openSeaSupply:.05,salvageSpeed:.08},
+ {id:'O038',name:'비투스 베링',port:'seward',tavern:'nagasaki',cost:30000,era:5,
+  title:'북쪽 해안의 구름 사이',story:'나가사키의 선원이 북태평양 안개 사이로 높은 산을 봤대요. 그 바다의 항로를 그리고 있다는 사람이 있어요.',
+  challenge:{ports:['nagasaki','seward'],cargo:'wool',qty:12,discoveries:10},effect:'발견물 흔적 확인 거리 +11해리 · 원양 항해 식량 소모 3% 감소',spotBonus:11,openSeaSupply:.03},
+ {id:'O039',name:'블라스 데 레소',port:'cartagena',tavern:'seville',cost:30000,era:5,
+  title:'카르타헤나 만의 불빛',story:'세비야에 온 배가 카르타헤나의 좁은 만을 지나며 불빛을 세었다더군요. 그 방비를 아는 사람을 만나 보세요.',
+  challenge:{ports:['seville','havana','cartagena'],cargo:'timber',qty:14,pirates:4},effect:'연안 해적전 반격 피해 5% 감소 · 해적전 명중률 +2%p',npcCoastDefense:.05,npcAccuracy:2},
+ {id:'O040',name:'에드워드 버넌',port:'havana',tavern:'london',cost:15000,era:5,
+  title:'카리브해 항구의 약도',story:'런던에서 카리브해 항구의 바닷길과 요새를 표시한 약도가 돌았대요. 아바나에서 그 기록을 아는 선원을 찾는대요.',
+  challenge:{ports:['london','cartagena','havana'],cargo:'copper',qty:10,pirates:3},effect:'해적전 첫 포격 명중률 +4%p',npcFirstAccuracy:4}
+);
+const fifthGear=[
+ ['I099','차 상자용 습기막이','macau','malacca','tea','trade',{sellBonus:.02,sellGoods:['tea','wuyi-black-tea','songluo-green-tea','pressed-tea']},'차 4종 세후 판매 +2%','젖지 않은 찻잎','말라카를 지난 짐 가운데 안쪽 찻잎이 물기를 먹지 않은 상자가 있었대요.'],
+ ['I100','자기 포장용 볏짚 격자','shanghai','manila','porcelain','trade',{capacity:3,sellBonus:.01,sellGoods:['export-punch-bowl','enamel-porcelain']},'화물 적재 +3상자 · 수출용 펀치 사발·채색 수출 자기 세후 판매 +1%','부서지지 않은 사발','마닐라에 닿은 짐 속에서 볏짚으로 짠 격자가 나왔다더군요.'],
+ ['I101','갈고리 달린 설탕 운반대','havana','recife','sugar','trade',{capacity:2,sellBonus:.015,sellGoods:['sugar','sugar-loaf','cane-syrup']},'화물 적재 +2상자 · 설탕과 시럽 품목 세후 판매 +1.5%','상자를 들 때 남는 자국','헤시피의 하역 일지에는 설탕 짐의 바닥을 들지 않고 옮기는 방법이 적혀 있대요.'],
+ ['I102','접이식 나침반 해시계','amsterdam','london','copper','explore',{spotBonus:10,seaVision:5},'발견물 흔적 확인 거리 +10해리 · 해상 활동 인지 거리 +5해리','바늘과 해 그림자','런던에서 바늘이 돌아가는 작은 기구를 봤는데 뚜껑 안에 해 눈금도 있었대요.'],
+ ['I103','북태평양 표류 기록판','seward','vancouver','timber','explore',{salvageSpeed:.14,spotBonus:6},'표류 화물 회수 시간 14% 단축 · 발견물 흔적 확인 거리 +6해리','차가운 물에 남긴 표시','밴쿠버에 온 배가 차가운 물에 뜬 짐 옆에 새긴 표식을 보고 위치를 찾았대요.'],
+ ['I104','섬 항로 구조 부표','suva','apia','wool','explore',{rescueSpeed:.12,seaVision:6},'해상 구조 시간 12% 단축 · 해상 활동 인지 거리 +6해리','파도 뒤에 나타난 표지','아피아의 선원이 큰 파도 뒤에도 모습을 다시 드러낸 표식을 봤대요.']
+];
+for(const [id,name,port,tavern,cargo,type,effects,effect,title,story] of fifthGear){
+ ITEMS.push({id,name,port,tavern,cost:3000,stage:8,era:5,type,title,story,
+  challenge:{ports:[tavern,port],cargo,qty:9,guild:2},effect,...effects});
+}
 export const OFFICER_BY_ID = Object.fromEntries(OFFICERS.map(x=>[x.id,x]));
 export const ITEM_BY_ID = Object.fromEntries(ITEMS.map(x=>[x.id,x]));
 export const MEDITERRANEAN_PORTS = new Set(['marseille','venice','athens','istanbul','alexandria']);
-import {EXTRA_ITEMS} from './item-catalog-extra.js?v=2026.11.16-port-dividends';
+import {EXTRA_ITEMS} from './item-catalog-extra.js?v=2026.11.16-five-eras';

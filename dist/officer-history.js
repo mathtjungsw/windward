@@ -36,5 +36,9 @@ export const OFFICER_HISTORY={
   O033:['Marcus Vipsanius Agrippa','기원전 1세기 로마','옥타비아누스의 함대를 이끌었어요. 카시우스 디오는 악티움 해전 전후 아그리파가 참여한 해상 작전을 기록했어요.','https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Cassius_Dio/50*.html'],
   O034:['Vasco da Gama','15~16세기 포르투갈','1497년 포르투갈에서 떠나 아프리카 남쪽 곶을 돌아 1498년 인도 캘리컷에 도착했어요.','https://cultura.marinha.pt/pt/museumarinha_web/multimedia_web/Paginas/DiaDaMarinha-ExposicaoVascoDaGama.aspx'],
   O035:['Jacques Cartier','16세기 프랑스','프랑스에서 북아메리카로 세 차례 항해했어요. 1535년 두 번째 항해에서는 세인트로렌스강을 거슬러 올라갔어요.','https://parks.canada.ca/lhn-nhs/qc/cartierbrebeuf/culture/histoire-history/evenement-event/cartier/b'],
-  O036:['Abel Janszoon Tasman','17세기 네덜란드','1642년 바타비아에서 출항한 일지에는 오늘날 태즈메이니아와 뉴질랜드에 이른 항해가 기록돼 있어요.','https://www.nla.gov.au/sites/default/files/blogs/m_1558_abel_tasman.pdf']
+  O036:['Abel Janszoon Tasman','17세기 네덜란드','1642년 바타비아에서 출항한 일지에는 오늘날 태즈메이니아와 뉴질랜드에 이른 항해가 기록돼 있어요.','https://www.nla.gov.au/sites/default/files/blogs/m_1558_abel_tasman.pdf'],
+  O037:['George Anson','18세기 영국','1740년에 출항해 1744년에 돌아오는 세계일주 원정대를 이끌었어요. 원정의 항해기가 출판됐어요.','https://rgssa.org.au/heritage/treasures/anson-george-a-voyage-around-the-world-1740-1744'],
+  O038:['Vitus Bering','18세기 덴마크·러시아','러시아의 원정대를 이끈 덴마크 출신 항해가예요. 1741년 원정은 북태평양을 건너 오늘날 알래스카 해역에 도달했어요.','https://home.nps.gov/places/bering-expedition-landing-site.htm'],
+  O039:['Blas de Lezo','18세기 스페인','1741년 카르타헤나 데 인디아스 방어를 지휘한 스페인 해군 지휘관이에요.','https://armada.defensa.gob.es/ArmadaPortal/page/Portal/ArmadaEspannola/cienciaorgano/prefLang-es/01cienciamuseo--02museo--06prensa-museo-naval--01noticias--2013--09--NT-151-blasdelezo-es'],
+  O040:['Edward Vernon','18세기 영국','영국 해군 지휘관으로 1739년 카리브해의 포르토벨로를 공격한 함대를 이끌었어요.','https://www.rmg.co.uk/collections/objects/rmgc-object-11846']
 };

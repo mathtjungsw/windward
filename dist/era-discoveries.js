@@ -4127,3 +4127,357 @@ ERA_DISCOVERIES.push(
     ]
   }
 );
+
+// Fifth era archive cards use licensed photos and manuscript scans.
+ERA_DISCOVERIES.push(
+  {
+    "id": "era-hurd-silver-teapot",
+    "kind": "relic",
+    "name": "보스턴의 제이컵 허드 은 찻주전자",
+    "anchor": "boston",
+    "era": 5,
+    "description": "1740년 무렵 보스턴의 은세공인 제이컵 허드가 만든 찻주전자다. 당시 북아메리카에서도 은으로 차를 내는 도구를 만들었다.",
+    "image": "assets/era-discoveries/hurd-silver-teapot.webp",
+    "thumbnail": "assets/era-discoveries/hurd-silver-teapot-thumb.webp",
+    "media": {
+      "author": "Cleveland Museum of Art · 소장 자료",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "url": "https://clevelandart.org/art/1920.225"
+    },
+    "sources": [
+      {
+        "label": "클리블랜드 미술관 · 1920.225",
+        "url": "https://clevelandart.org/art/1920.225"
+      }
+    ],
+    "place": "북아메리카 보스턴",
+    "hints": [
+      "신대륙 보스턴에서 은을 두드려 만든 찻주전자 이야기가 들려왔어요. 보스턴에서 들은 이야기예요."
+    ],
+    "region": "북아메리카",
+    "point": [
+      -69.66359,
+      42.5
+    ],
+    "tier": 2,
+    "hintPorts": [
+      "boston"
+    ]
+  },
+  {
+    "id": "era-chantilly-tea-service",
+    "kind": "relic",
+    "name": "샹티이의 가키에몬풍 다기",
+    "anchor": "bordeaux",
+    "era": 5,
+    "description": "1730년 무렵 프랑스에서 만든 차 도구 모음이다. 일본 가키에몬풍 채색과 유럽 은그릇에서 가져온 형태가 한 세트에 들어 있다.",
+    "image": "assets/era-discoveries/chantilly-tea-service.webp",
+    "thumbnail": "assets/era-discoveries/chantilly-tea-service-thumb.webp",
+    "media": {
+      "author": "Cleveland Museum of Art · 소장 자료",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "url": "https://clevelandart.org/art/1944.228"
+    },
+    "sources": [
+      {
+        "label": "클리블랜드 미술관 · 1944.228",
+        "url": "https://clevelandart.org/art/1944.228"
+      }
+    ],
+    "place": "프랑스 샹티이",
+    "hints": [
+      "프랑스 찻잔에 일본풍 꽃이 그려져 있고 받침은 은쟁반을 닮았대요. 보르도에서 들은 이야기예요."
+    ],
+    "region": "유럽",
+    "point": [
+      -0.90813,
+      45.41989
+    ],
+    "tier": 2,
+    "hintPorts": [
+      "bordeaux"
+    ]
+  },
+  {
+    "id": "era-staffordshire-salt-glaze",
+    "kind": "relic",
+    "name": "스태퍼드셔 소금 유약 주전자",
+    "anchor": "london",
+    "era": 5,
+    "description": "1745년 무렵 스태퍼드셔에서 만든 찻주전자다. 소금 유약으로 마감한 그릇은 차를 내는 현지 도자기의 한 예다.",
+    "image": "assets/era-discoveries/staffordshire-salt-glaze.webp",
+    "thumbnail": "assets/era-discoveries/staffordshire-salt-glaze-thumb.webp",
+    "media": {
+      "author": "Cleveland Museum of Art · 소장 자료",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "url": "https://clevelandart.org/art/1946.278"
+    },
+    "sources": [
+      {
+        "label": "클리블랜드 미술관 · 1946.278",
+        "url": "https://clevelandart.org/art/1946.278"
+      }
+    ],
+    "place": "영국 스태퍼드셔",
+    "hints": [
+      "잉글랜드에서 소금 유약으로 표면을 입힌 찻주전자를 봤대요. 런던에서 들은 이야기예요."
+    ],
+    "region": "유럽",
+    "point": [
+      -0.1022,
+      50.52573
+    ],
+    "tier": 2,
+    "hintPorts": [
+      "london"
+    ]
+  },
+  {
+    "id": "era-lafontaine-export-plate",
+    "kind": "relic",
+    "name": "라퐁텐 우화 수출 접시",
+    "anchor": "macau",
+    "era": 5,
+    "description": "1750년 무렵 중국에서 유럽 시장을 겨냥해 만든 접시다. 프랑스 판화에 실린 라퐁텐의 우화 한 장면을 표면에 옮겼다.",
+    "image": "assets/era-discoveries/lafontaine-export-plate.webp",
+    "thumbnail": "assets/era-discoveries/lafontaine-export-plate-thumb.webp",
+    "media": {
+      "author": "Cleveland Museum of Art · 소장 자료",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "url": "https://clevelandart.org/art/1970.48"
+    },
+    "sources": [
+      {
+        "label": "클리블랜드 미술관 · 1970.48",
+        "url": "https://clevelandart.org/art/1970.48"
+      }
+    ],
+    "place": "중국의 유럽 수출용 자기",
+    "hints": [
+      "중국에서 만든 접시에 프랑스에서 건너온 통 제작자의 우화가 그려져 있었대요. 마카오에서 들은 이야기예요."
+    ],
+    "region": "아시아",
+    "point": [
+      113.18816,
+      21.65025
+    ],
+    "tier": 2,
+    "hintPorts": [
+      "macau"
+    ]
+  },
+  {
+    "id": "era-covered-export-milk-jug",
+    "kind": "relic",
+    "name": "1749년식 수출용 우유 주전자",
+    "anchor": "shanghai",
+    "era": 5,
+    "description": "1749년에 제작된 뚜껑 달린 중국산 수출 자기다. 우유를 따르는 형태는 유럽의 차 도구에 맞춘 수출품의 한 예다.",
+    "image": "assets/era-discoveries/covered-export-milk-jug.webp",
+    "thumbnail": "assets/era-discoveries/covered-export-milk-jug-thumb.webp",
+    "media": {
+      "author": "Cleveland Museum of Art · 소장 자료",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "url": "https://clevelandart.org/art/1955.345"
+    },
+    "sources": [
+      {
+        "label": "클리블랜드 미술관 · 1955.345",
+        "url": "https://clevelandart.org/art/1955.345"
+      }
+    ],
+    "place": "중국 수출 도자기",
+    "hints": [
+      "중국의 도자기 짐 가운데 찻물이 아니라 우유를 담으라는 주전자가 섞여 있었대요. 상하이에서 들은 이야기예요."
+    ],
+    "region": "아시아",
+    "point": [
+      122.11086,
+      30.96395
+    ],
+    "tier": 2,
+    "hintPorts": [
+      "shanghai"
+    ]
+  },
+  {
+    "id": "era-dutch-market-saucer",
+    "kind": "relic",
+    "name": "네덜란드 시장용 중국 받침 접시",
+    "anchor": "amsterdam",
+    "era": 5,
+    "description": "1750년 무렵 중국에서 네덜란드 시장에 맞춰 만든 자기 접시다. 작은 받침 접시의 형태가 주문 시장의 용도에 대응했다.",
+    "image": "assets/era-discoveries/dutch-market-saucer.webp",
+    "thumbnail": "assets/era-discoveries/dutch-market-saucer-thumb.webp",
+    "media": {
+      "author": "Cleveland Museum of Art · 소장 자료",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "url": "https://clevelandart.org/art/1961.174"
+    },
+    "sources": [
+      {
+        "label": "클리블랜드 미술관 · 1961.174",
+        "url": "https://clevelandart.org/art/1961.174"
+      }
+    ],
+    "place": "중국산, 네덜란드 시장용",
+    "hints": [
+      "네덜란드로 보내는 자기에 작은 받침 접시 모양을 주문했다는 이야기가 있어요. 암스테르담에서 들은 이야기예요."
+    ],
+    "region": "유럽",
+    "point": [
+      3.01104,
+      52.77631
+    ],
+    "tier": 2,
+    "hintPorts": [
+      "amsterdam"
+    ]
+  },
+  {
+    "id": "era-nolli-plan-rome",
+    "kind": "book",
+    "name": "놀리의 로마 대지도",
+    "anchor": "venice",
+    "era": 5,
+    "description": "측량가 조반니 바티스타 놀리가 1748년에 공개한 로마 지도다. 도시 전체 지도는 동판으로 인쇄한 12장으로 구성되며 사진에는 그중 한 장이 보인다.",
+    "image": "assets/era-discoveries/nolli-plan-rome.webp",
+    "thumbnail": "assets/era-discoveries/nolli-plan-rome-thumb.webp",
+    "media": {
+      "author": "Cleveland Museum of Art · 소장 자료",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "url": "https://clevelandart.org/art/2020.276.15"
+    },
+    "sources": [
+      {
+        "label": "클리블랜드 미술관 · 2020.276.15",
+        "url": "https://clevelandart.org/art/2020.276.15"
+      }
+    ],
+    "place": "이탈리아 로마",
+    "hints": [
+      "로마의 골목과 건물 안쪽까지 맞추려 여러 장의 동판을 이었다는 기록이 있대요. 베네치아에서 들은 이야기예요."
+    ],
+    "region": "유럽",
+    "point": [
+      12.35,
+      44.31667
+    ],
+    "tier": 2,
+    "hintPorts": [
+      "venice"
+    ]
+  },
+  {
+    "id": "era-augsburg-compass-dial",
+    "kind": "relic",
+    "name": "아우크스부르크 추정 나침반 해시계",
+    "anchor": "amsterdam",
+    "era": 5,
+    "description": "18세기 전반에 만든 은제 기구다. 나침반과 해시계를 한 물건에 두어 방위와 해 그림자를 함께 살필 수 있게 했다.",
+    "image": "assets/era-discoveries/augsburg-compass-dial.webp",
+    "thumbnail": "assets/era-discoveries/augsburg-compass-dial-thumb.webp",
+    "media": {
+      "author": "Cleveland Museum of Art · 소장 자료",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "url": "https://clevelandart.org/art/1916.358"
+    },
+    "sources": [
+      {
+        "label": "클리블랜드 미술관 · 1916.358",
+        "url": "https://clevelandart.org/art/1916.358"
+      }
+    ],
+    "place": "독일 아우크스부르크 추정",
+    "hints": [
+      "방위를 맞춘 뒤 해 그림자를 살피는 작은 은제 기구가 독일에서 왔대요. 암스테르담에서 들은 이야기예요."
+    ],
+    "region": "유럽",
+    "point": [
+      5.84003,
+      51.85369
+    ],
+    "tier": 2,
+    "hintPorts": [
+      "amsterdam"
+    ]
+  },
+  {
+    "id": "era-meissen-painted-saucer",
+    "kind": "relic",
+    "name": "마이센의 채색 자기 받침",
+    "anchor": "amsterdam",
+    "era": 5,
+    "description": "1723년 무렵 마이센에서 만든 자기 받침이다. 공방은 동아시아 도자기에서 영감을 얻어 인물과 풍경을 채색하는 방식을 발전시켰다.",
+    "image": "assets/era-discoveries/meissen-painted-saucer.webp",
+    "thumbnail": "assets/era-discoveries/meissen-painted-saucer-thumb.webp",
+    "media": {
+      "author": "Cleveland Museum of Art · 소장 자료",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "url": "https://clevelandart.org/art/1919.186"
+    },
+    "sources": [
+      {
+        "label": "클리블랜드 미술관 · 1919.186",
+        "url": "https://clevelandart.org/art/1919.186"
+      }
+    ],
+    "place": "독일 마이센",
+    "hints": [
+      "잔 받침에 먼 동쪽의 풍경과 인물이 그려진 독일산 자기가 들어왔대요. 암스테르담에서 들은 이야기예요."
+    ],
+    "region": "유럽",
+    "point": [
+      3.67419,
+      53.61644
+    ],
+    "tier": 2,
+    "hintPorts": [
+      "amsterdam"
+    ]
+  },
+  {
+    "id": "era-anson-voyage",
+    "kind": "book",
+    "name": "앤슨의 세계일주 항해기",
+    "anchor": "london",
+    "era": 5,
+    "description": "1740~1744년 조지 앤슨의 항해를 리처드 월터가 정리한 기록이다. 1748년 런던에서 처음 출간되었고, 사진은 훗날 나온 재판본의 표제지다.",
+    "image": "assets/era-discoveries/anson-voyage.webp",
+    "thumbnail": "assets/era-discoveries/anson-voyage-thumb.webp",
+    "place": "영국 런던",
+    "hints": [
+      "런던에서 남아메리카 남쪽과 태평양을 지난 원정의 항해기가 인쇄됐대요. 런던에서 들은 이야기예요."
+    ],
+    "media": {
+      "author": "Project Gutenberg · 재판본 스캔",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "url": "https://www.gutenberg.org/files/47130/47130-h/47130-h.htm"
+    },
+    "sources": [
+      {
+        "label": "남호주 왕립지리학회 · 항해기 초판",
+        "url": "https://rgssa.org.au/heritage/treasures/anson-george-a-voyage-around-the-world-1740-1744"
+      }
+    ],
+    "region": "유럽",
+    "point": [
+      1.01498,
+      50.81374
+    ],
+    "tier": 2,
+    "hintPorts": [
+      "london"
+    ]
+  }
+);

@@ -24,6 +24,15 @@ nextTrade['privateSaves/a'].lastOperation.marketEra=0;
 assert.equal((await apply('a',nextTrade)).status,401,'the server rejects an expired era quote');
 nextTrade['privateSaves/a'].lastOperation.marketEra=1;
 assert.equal((await apply('a',nextTrade)).status,200,'the same trade succeeds in the current era');
+const cycleAt=Date.now()-86400000-5000;
+assert.equal((await req('releaseStatus',{admin:true,method:'PUT',body:{eraStart:epoch,eraCycle:{at:cycleAt,first:5}}})).status,200);
+const dailyTrade=await prepare('a','ports','porto',{markets:{wine:{pressure:8200,at:Date.now()}}});
+for(const expired of [1,cycleAt,cycleAt+86400001]){
+ dailyTrade['privateSaves/a'].lastOperation.marketEra=expired;
+ assert.equal((await apply('a',dailyTrade)).status,401,'only the aligned current 24-hour window is valid');
+}
+dailyTrade['privateSaves/a'].lastOperation.marketEra=cycleAt+86400000;
+assert.equal((await apply('a',dailyTrade)).status,200,'a trade in the new active window commits');
 await req('releaseStatus',{admin:true,method:'DELETE'});
 const aRace=await prepare('a','ports','porto',{tradeWinner:'a'}),bRace=await prepare('b','ports','porto',{tradeWinner:'b'});const race=await Promise.all([apply('a',aRace),apply('b',bRace)]);assert.deepEqual(race.map(r=>r.status).sort(),[200,401],'one port revision wins a race');
 assert.equal((await req('gameV2/privateSaves/b',{uid:'a'})).status,401,'no cross-private reads');

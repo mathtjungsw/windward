@@ -1,4 +1,4 @@
-import {CoastalDetail} from './coastal-detail.js?v=2026.11.16-port-dividends';
+import {CoastalDetail} from './coastal-detail.js?v=2026.11.16-five-eras';
 
 // Connect world-grid cells through narrow waters using shore-checked waypoints.
 export const COARSE_CONNECTIONS=[

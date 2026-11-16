@@ -1,8 +1,8 @@
-import {seaSector} from './presence-core.js?v=2026.11.16-port-dividends';
-import {openOfflineRaid,advanceOfflineRaid} from './defense-core.js?v=2026.11.16-port-dividends';
-import {readDefense,refreshDefense,publishDefense} from './defense-account.js?v=2026.11.16-port-dividends';
-import {cannonStats} from './cannons.js?v=2026.11.16-port-dividends';
-import {mapDistance} from './world-wrap.js?v=2026.11.16-port-dividends';
+import {seaSector} from './presence-core.js?v=2026.11.16-five-eras';
+import {openOfflineRaid,advanceOfflineRaid} from './defense-core.js?v=2026.11.16-five-eras';
+import {readDefense,refreshDefense,publishDefense} from './defense-account.js?v=2026.11.16-five-eras';
+import {cannonStats} from './cannons.js?v=2026.11.16-five-eras';
+import {mapDistance} from './world-wrap.js?v=2026.11.16-five-eras';
 const roll=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
 export function createOfflineCombat(api){
  const a=api.account;let room=null,id=null,roomOff=null,connectionOff=null,ownOff=null,connection=null,working=false,lastAuto=0,lastError=0;

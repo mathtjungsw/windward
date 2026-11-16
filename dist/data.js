@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.16-port-dividends';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.16-port-dividends';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.16-port-dividends';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.16-port-dividends';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.16-port-dividends';
-import {ERA_GOODS} from './era-goods.js?v=2026.11.16-port-dividends';
-import {eraAt} from './era-cycle.js?v=2026.11.16-port-dividends';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.16-five-eras';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.16-five-eras';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.16-five-eras';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.16-five-eras';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.16-five-eras';
+import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.16-five-eras';
+import {eraAt} from './era-cycle.js?v=2026.11.16-five-eras';
 Object.assign(GOODS,PREMIUM_GOODS,ERA_GOODS);
 
 export {GOODS};
@@ -62,7 +62,7 @@ for(const [id,g] of Object.entries(ERA_GOODS))for(const port of g.ports){
 }
 const eraHighlights={pepper:2,cloves:2,nutmeg:2,cinnamon:2,silver:3,cacao:4,coffee:4,indigo:4,sandalwood:1};
 export const PORT_GROWTH_GOODS=Object.fromEntries(Object.values(PORT_BY_ID).map(port=>{
- const material=port.id==='nagasaki'?'imari':(unmatched.get(port.id)?.[0]||port.specialty),base=GOODS[material];
+ const material=port.id==='nagasaki'?'imari':(unmatched.get(port.id)?.find(id=>GOODS[id].era!==5)||port.specialty),base=GOODS[material];
  const id='growth-'+port.id;
  GOODS[id]={name:port.name+' 특선 '+base.name,base:Math.round(base.base*1.6),icon:base.icon,color:base.color,premium:true,source:port.id,unlockStage:2};
  return [port.id,id];
@@ -70,9 +70,11 @@ export const PORT_GROWTH_GOODS=Object.fromEntries(Object.values(PORT_BY_ID).map(
 export const harborMarket=(port,now)=>{
  const era=eraAt(now);
  if(!era)return port.market;
- return [...port.market,...(unmatched.get(port.id)||[]).filter(id=>!GOODS[id].era||GOODS[id].era===era.id)];
+ return [...new Set([...port.market,...(unmatched.get(port.id)||[]).filter(id=>!GOODS[id].era||GOODS[id].era===era.id),
+  ...(port.depot?[]:regionalEraGoods(port,era).filter(id=>!GOODS[id].legacy))])];
 };
-export const harborSupply=(port,id)=>port.economy?.stock?.[id]||(unmatched.get(port.id)?.includes(id)?'local':null);
+export const harborSupply=(port,id,now)=>port.economy?.stock?.[id]||(unmatched.get(port.id)?.includes(id)?'local':
+ !port.depot&&regionalEraGoods(port,eraAt(now)).includes(id)?'import':null);
 export const eraMarketBoost=(id,mode,era)=>era&&eraHighlights[id]===era.id&&mode==='sell'?1.04:1;
 export function registerDevelopedPorts(registry={},now=Date.now()){
   const added=[];

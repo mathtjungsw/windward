@@ -247,8 +247,8 @@ test('distance gear expires at the exact mileage used by preview and runtime',()
   assert.deepEqual(game.rumorProgress.distanceGear,{});
 });
 
-test('98 unique item IDs, partial trade voucher settlement and item record limits survive save normalization',()=>{
-  assert.deepEqual(ITEMS.filter(x=>!x.scenario).map(x=>x.id).sort(),Array.from({length:98},(_,i)=>'I'+String(i+1).padStart(3,'0')));
+test('104 unique item IDs, partial trade voucher settlement and item record limits survive save normalization',()=>{
+  assert.deepEqual(ITEMS.filter(x=>!x.scenario).map(x=>x.id).sort(),Array.from({length:104},(_,i)=>'I'+String(i+1).padStart(3,'0')));
   const game=asCaptain('amsterdam');
   game.rumorProgress=normalizeRumorProgress(game);
   game.rumorProgress.items.I018=1;game.rumorProgress.items.I024=1;
