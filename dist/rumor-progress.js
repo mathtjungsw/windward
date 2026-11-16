@@ -1,8 +1,8 @@
-import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.16-trade-save';
-import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.16-trade-save';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.16-trade-save';
-import {eraAvailable} from './era-cycle.js?v=2026.11.16-trade-save';
-import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.16-trade-save';
+import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.16-rumor-filters';
+import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.16-rumor-filters';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.16-rumor-filters';
+import {eraAvailable} from './era-cycle.js?v=2026.11.16-rumor-filters';
+import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.16-rumor-filters';
 
 export const isConsumable=entry=>['supply','repair','coupon','extension','shore-consumable','distance','trade-voucher','activity','project','facility'].includes(entry?.type);
 export const itemLimit=entry=>isConsumable(entry)?20:1;
@@ -63,9 +63,9 @@ function progress(game){return game.rumorProgress??=normalizeRumorProgress(game)
 function rumorDetails(id){
   if(id===TURTLE_RUMOR.id)return TURTLE_RUMOR;
   const entry=byId[id];
-  if(entry)return {id,text:entry.story,port:entry.tavern};
+  if(entry)return {id,text:entry.story,port:entry.tavern,era:entry.era};
   const old=RUMOR_BY_ID[id];
-  return {id,text:old.text,port:old.portId};
+  return {id,text:old.text,port:old.portId,era:old.era};
 }
 const sortRumors=entries=>entries.sort((a,b)=>a.text.localeCompare(b.text,'ko'));
 export function rumorsAtTavern(game){
@@ -95,6 +95,7 @@ export function setRumorHidden(game,id,hidden){
   return true;
 }
 const safeDock=game=>!!game.port&&!game.voyage&&!game.explorationLockedUntilSailing&&!game.battleId&&!game.npcBattle&&!game.raidId;
+export const canHearTavernRumor=game=>safeDock(game)&&!game.shoreTrip;
 export function rumorRequirement(game,entry){
   const rule=entry.type||entry.scenario?{stage:entry.stage,ports:0}:OFFICER_REQUIREMENTS[entry.cost];
   const visitCount=new Set(game.visited.filter(id=>PORT_BY_ID[id]?.active)).size;
@@ -296,4 +297,4 @@ export function contractDescription(entry){
   if(entry.scenario)return '항해자의 이야기 완료 보상입니다. 획득 후 기존 장비 칸 또는 동행 부선장으로 선택하세요.';
   return entry.challenge.ports.map(id=>PORT_BY_ID[id]?.name).join(' · ')+' 방문, '+GOODS[entry.challenge.cargo].name+' '+entry.challenge.qty+'상자 납품';
 }
-import {CANAL_IDS} from './canal-reservations.js?v=2026.11.16-trade-save';
+import {CANAL_IDS} from './canal-reservations.js?v=2026.11.16-rumor-filters';

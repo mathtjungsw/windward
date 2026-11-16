@@ -1,6 +1,8 @@
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.16-trade-save';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.16-trade-save';
-import {PORT_BY_ID} from './data.js?v=2026.11.16-trade-save';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.16-rumor-filters';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.16-rumor-filters';
+import {PORT_BY_ID} from './data.js?v=2026.11.16-rumor-filters';
+import {eraAvailable} from './era-cycle.js?v=2026.11.16-rumor-filters';
+import {canHearTavernRumor} from './rumor-progress.js?v=2026.11.16-rumor-filters';
 
 export function harborOfficerRole(id){
  const entry=OFFICERS.find(row=>row.id===id);
@@ -14,11 +16,14 @@ export function availableHarborOfficer(content,uid,now){
  const entry=content.harborOfficer,grant=content.harborOperator;
  return uid&&entry?.owner===uid&&!(grant?.until>now&&grant.uid!==uid)?entry:null;
 }
-export function extraHarborRumor(game,content,uid,now){
+export function extraHarborRumor(game,content,uid,now,keepId){
  const station=availableHarborOfficer(content,uid,now),port=PORT_BY_ID[game.port];
- if(!port||station?.role!=='explore'||game.voyage||game.harborOfficers?.[port.id]!==station.id)return null;
+ if(!port||station?.role!=='explore'||!canHearTavernRumor(game)||game.harborOfficers?.[port.id]!==station.id)return null;
  const region=port.region;
- return Object.values(RUMOR_BY_ID).find(row=>row.portId!==port.id&&PORT_BY_ID[row.portId]?.region===region&&!(game.rumors||[]).includes(row.id)&&!game.discoveries?.[row.discoveryId])||null;
+ const localCandidate=row=>row&&row.portId!==port.id&&PORT_BY_ID[row.portId]?.region===region&&eraAvailable(row,now);
+ const kept=RUMOR_BY_ID[keepId];
+ if(localCandidate(kept)&&game.rumors?.includes(keepId))return kept;
+ return Object.values(RUMOR_BY_ID).find(row=>localCandidate(row)&&!game.rumors?.includes(row.id)&&!game.discoveries?.[row.discoveryId])||null;
 }
 export function freeRecalledOfficer(game,port){
  if(!game.harborOfficers?.[port])return false;

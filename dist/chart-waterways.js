@@ -1,4 +1,4 @@
-import {CoastalDetail} from './coastal-detail.js?v=2026.11.16-trade-save';
+import {CoastalDetail} from './coastal-detail.js?v=2026.11.16-rumor-filters';
 
 // Connect world-grid cells through narrow waters using shore-checked waypoints.
 export const COARSE_CONNECTIONS=[

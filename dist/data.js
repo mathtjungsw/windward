@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.16-trade-save';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.16-trade-save';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.16-trade-save';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.16-trade-save';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.16-trade-save';
-import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.16-trade-save';
-import {eraAt} from './era-cycle.js?v=2026.11.16-trade-save';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.16-rumor-filters';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.16-rumor-filters';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.16-rumor-filters';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.16-rumor-filters';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.16-rumor-filters';
+import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.16-rumor-filters';
+import {eraAt} from './era-cycle.js?v=2026.11.16-rumor-filters';
 Object.assign(GOODS,PREMIUM_GOODS,ERA_GOODS);
 
 export {GOODS};

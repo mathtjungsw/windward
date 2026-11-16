@@ -7,13 +7,31 @@ import {captainTradeQuote,deliverForGrowth,executeTrade,portMarketItem} from '..
 import {ERA_DISCOVERIES} from '../dist/era-discoveries.js';
 import {collectionArt} from '../dist/art.js';
 import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID} from '../dist/discoveries-catalog.js';
-import {hasClues,inspectDiscovery} from '../dist/discoveries.js';
+import {hasClues,inspectDiscovery,readRumor} from '../dist/discoveries.js';
+import {extraHarborRumor} from '../dist/harbor-officers.js';
 import {ITEMS,OFFICER_BY_ID} from '../dist/rumor-catalog.js';
 
 const {ERAS,ERA_PERIOD,LEGACY_ERA_PERIOD,configureEra,eraAt,eraAvailable}=await import('../dist/era-cycle.js?v='+RELEASE);
 const {GOODS,PORTS,PORT_BY_ID,PORT_GROWTH_GOODS,harborMarket,registerDevelopedPorts}=await import('../dist/data.js?v='+RELEASE);
 const {ERA_GOODS}=await import('../dist/era-goods.js?v='+RELEASE);
 const start=Date.UTC(2026,10,14,15);
+test('the stationed officer in Jeddah skips unavailable eras and keeps the rumor open after reading it',()=>{
+ const target=Object.values(RUMOR_BY_ID).find(r=>r.era===2&&PORT_BY_ID[r.portId]?.region===PORT_BY_ID.jeddah.region);
+ assert.ok(target);
+ const game={...initialState(),port:'jeddah',harborOfficers:{jeddah:'O017'},
+  rumors:Object.keys(RUMOR_BY_ID).filter(id=>id!==target.id)};
+ const book={harborOfficer:{owner:'captain',id:'O017',role:'explore'}};
+ configureEra(start,{at:start,first:1});
+ try{
+  assert.equal(extraHarborRumor(game,book,'captain',start),null);
+  const second=start+ERA_PERIOD;
+  assert.equal(extraHarborRumor(game,book,'captain',second)?.id,target.id);
+  assert.equal(readRumor(game,target.id,target.id,start),false);
+  assert.equal(readRumor(game,target.id,target.id,second),true);
+  assert.equal(extraHarborRumor(game,book,'captain',second,target.id)?.id,target.id);
+  assert.equal(extraHarborRumor(game,book,'captain',start,target.id),null);
+ }finally{configureEra(null);}
+});
 test('the legacy era ends at its announced time and the new sequence uses five 24-hour windows',()=>{
  const switchAt=start+4*LEGACY_ERA_PERIOD;
  configureEra(start,{at:switchAt,first:5});

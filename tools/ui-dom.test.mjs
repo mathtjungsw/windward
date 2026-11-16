@@ -227,7 +227,7 @@ test('mobile geography is visible above all fog copies and can be disabled and r
  $('#ux-settings').click();const box=$('#place-names');assert.ok(box.checked);box.checked=false;box.dispatchEvent(new window.Event('change',{bubbles:true}));assert.equal($('#map-labels').children.length,0);box.checked=true;box.dispatchEvent(new window.Event('change',{bubbles:true}));assert.ok($('#map-labels').children.length>0);$('#modal').close();Object.assign(app.screen,size);Object.assign(app.camera,saved);app.applyCamera();
 });
 
-test('rumor note opens on desktop and mobile and restores a hidden tavern rumor',()=>{
+test('the note filters read rumors by completion on desktop and mobile, including previously hidden rumors',()=>{
   window.happyDOM.setViewport({width:1280,height:844});
   app.beginPlaying(initialState());
   $('#modal').close();
@@ -240,16 +240,27 @@ test('rumor note opens on desktop and mobile and restores a hidden tavern rumor'
   assert.equal($('#tavern-tab').classList.contains('active'),true);
   assert.match($('#tavern-content .tavern-rumor-text').textContent,/포르투 부두/);
   assert.equal($('[data-tavern-rumor="I008"]').getAttribute('aria-expanded'),'true');
+  const known=app.state.rumorProgress;
+  known.hidden.push('I008');
+  known.read.push('I001');
+  known.acquiredItems.push('I001');
   $('#rumor-note-tab').click();
-  $('[data-note-hide="I008"]').click();
-  assert.equal($('[data-note-hide="I008"]'),null);
-  $('[data-note-filter="hidden"]').click();
-  assert.ok($('[data-note-hide="I008"]'));
-  $('[data-note-hide="I008"]').click();
+  assert.ok($('[data-note-entry="I008"]'));
+  assert.ok($('[data-note-entry="I001"]'));
+  assert.equal($('[data-note-entry="I002"]'),null);
+  assert.equal($('[data-note-hide]'),null);
+  assert.equal($('[data-note-filter="hidden"]'),null);
+  $('[data-note-filter="pending"]').click();
+  assert.ok($('[data-note-entry="I008"]'));
+  assert.equal($('[data-note-entry="I001"]'),null);
+  $('[data-note-filter="complete"]').click();
+  assert.ok($('[data-note-entry="I001"] .rumor-complete'));
+  assert.equal($('[data-note-entry="I008"]'),null);
   $('#close-modal').click();
   window.happyDOM.setViewport({width:390,height:844});
   $('#rumor-note-tab').click();
-  assert.ok($('[data-note-hide="I008"]'));
+  assert.ok($('[data-note-entry="I008"]'));
+  assert.equal($('[data-note-filter="all"]').getAttribute('aria-pressed'),'true');
   assert.doesNotMatch($('#modal-content').textContent,/예비 노|아이템|부선장|발견물|진행 보기/);
   assert.equal($('[data-note-contract]'),null);
   $('#modal').close();
@@ -278,7 +289,13 @@ test('the tavern mixes discovery and recruitment rumors with the same presentati
   assert.ok(entries.some(x=>x.dataset.tavernRumor===discovery.id));
   assert.ok(entries.some(x=>x.dataset.tavernRumor==='O014'));
   assert.ok(entries.every(x=>/^소문 [0-9]+$/.test(x.textContent)));
-  entries.find(x=>x.dataset.tavernRumor===discovery.id).click();
+  const originalNumber=entries.find(x=>x.dataset.tavernRumor===discovery.id).textContent;
+  $('[data-tavern-filter="complete"]').click();
+  assert.match($('#tavern-content .rumor-panel').textContent,/완료한 소문이 없어요/);
+  $('[data-tavern-filter="pending"]').click();
+  assert.equal($(`[data-tavern-rumor="${discovery.id}"]`).textContent,originalNumber,'unread rumors are available in the tavern');
+  assert.equal(app.state.rumors.includes(discovery.id),false);
+  $(`[data-tavern-rumor="${discovery.id}"]`).click();
   assert.ok(app.state.rumors.includes(discovery.id));
   assert.equal($('.tavern-rumor-text').textContent,discovery.text);
   assert.equal($('#modal').open,false);
@@ -287,6 +304,12 @@ test('the tavern mixes discovery and recruitment rumors with the same presentati
   assert.equal(document.querySelectorAll('#tavern-content .tavern-rumor-text').length,1);
   assert.doesNotMatch($('.tavern-rumor-text').textContent,new RegExp(discovery.text.slice(0,12)));
   app.state.discoveries[discovery.discoveryId]={foundDay:1,foundAt:1};
+  app.renderPanel();
+  assert.equal($('[data-tavern-filter="pending"]').getAttribute('aria-pressed'),'true');
+  assert.equal($(`[data-tavern-rumor="${discovery.id}"]`),null);
+  $('[data-tavern-filter="complete"]').click();
+  assert.equal($(`[data-tavern-rumor="${discovery.id}"]`).textContent,originalNumber+' · 완료');
+  assert.equal($('[data-tavern-rumor="O014"]'),null);
   $('#rumor-note-tab').click();
   assert.equal($('#modal-content').querySelectorAll('.rumor-note-row').length,2);
   const completed=$('[data-note-entry="'+discovery.id+'"]');

@@ -1,10 +1,10 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.16-trade-save';
-import {mapDistance} from './world-wrap.js?v=2026.11.16-trade-save';
-import {segmentDistance} from './voyage-core.js?v=2026.11.16-trade-save';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.16-trade-save';
-import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.16-trade-save';
-import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.16-trade-save';
-import {eraAvailable} from './era-cycle.js?v=2026.11.16-trade-save';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.16-rumor-filters';
+import {mapDistance} from './world-wrap.js?v=2026.11.16-rumor-filters';
+import {segmentDistance} from './voyage-core.js?v=2026.11.16-rumor-filters';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.16-rumor-filters';
+import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.16-rumor-filters';
+import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.16-rumor-filters';
+import {eraAvailable} from './era-cycle.js?v=2026.11.16-rumor-filters';
 const shipTrace=s=>(s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0)+(explorationGear(s)?.spotBonus||0);
 export const explorationAllowed=s=>!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{
@@ -29,4 +29,4 @@ export function inspectDiscovery(s,nav,id,now=Date.now()){
  recordGuildObjective(s,'survey',id,now);
  return {ok:true,discovery:d,blessingFame,...discoveryStats(s)};
 }
-export function readRumor(s,id,extra=null){const r=RUMOR_BY_ID[id];if(!r||!eraAvailable(r)||s.port!==r.portId&&extra!==id||s.voyage||!explorationAllowed(s))return false;s.rumors??=[];if(!s.rumors.includes(id))s.rumors.push(id);return true;}
+export function readRumor(s,id,extra=null,now){const r=RUMOR_BY_ID[id];if(!r||!eraAvailable(r,now)||s.port!==r.portId&&extra!==id||s.voyage||!explorationAllowed(s))return false;s.rumors??=[];if(!s.rumors.includes(id))s.rumors.push(id);return true;}

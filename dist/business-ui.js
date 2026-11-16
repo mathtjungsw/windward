@@ -1,20 +1,20 @@
-import {noviceActive} from './novice.js?v=2026.11.16-trade-save';
-import {createHarborArena} from './harbor-arena.js?v=2026.11.16-trade-save';
-import {extraHarborRumor,harborOfficerRole,HARBOR_ROLE_LABEL,freeRecalledOfficer} from './harbor-officers.js?v=2026.11.16-trade-save';
-import {CONTESTED_PORTS,battleWindow,harborOperator,harborBattleAction,militiaAction,createHarborPractice,reconcileHarborLoss} from './harbor-battles.js?v=2026.11.16-trade-save';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.16-trade-save';
-import {returnReserve,reserveLoss} from './combat-core.js?v=2026.11.16-trade-save';
-import {PORTS,PORT_BY_ID,GOODS,registerDevelopedPorts} from './data.js?v=2026.11.16-trade-save';
-import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.16-trade-save';
-import {mapDistance} from './world-wrap.js?v=2026.11.16-trade-save';
-import {ship,fleetMaxHP,fleetShips} from './ship-rules.js?v=2026.11.16-trade-save';
-import {capacity,usedSpace,tradingPort} from './engine.js?v=2026.11.16-trade-save';
-import {tradeQuote,specialtyStock} from './market-rules.js?v=2026.11.16-trade-save';
-import {invest,investmentWithdrawal,withdrawInvestment,portGrowth,portMarketItem,specialtyLimit,specialtyTradePort,growthDeliveryInfo,deliverForGrowth,assignHarborOfficer,delegateTradePreview,portDevelopment,setPortDevelopment,ownership,taxRate,permitted,executeTrade,captainTradeQuote,changePortPolicy,withdrawTax,withdrawBasicIncome,investmentBase,NEUTRAL_PORTS} from './commerce.js?v=2026.11.16-trade-save';
-import {CANNONS,QUALITIES,cannonStats,buyCannon,equipCannon,upgradeCannon,sellCannon,gunWeight,currentHP} from './cannons.js?v=2026.11.16-trade-save';
-import {repairHull,coastalAction,playDice} from './activities.js?v=2026.11.16-trade-save';
-import {advanceBasicIncome,dividendRate,dividendsEnabled,estimateBasicIncome,pendingTradeTax,setIncomeOfficer} from './port-income.js?v=2026.11.16-trade-save';
-import {activeOfficer} from './rumor-progress.js?v=2026.11.16-trade-save';
+import {noviceActive} from './novice.js?v=2026.11.16-rumor-filters';
+import {createHarborArena} from './harbor-arena.js?v=2026.11.16-rumor-filters';
+import {extraHarborRumor,harborOfficerRole,HARBOR_ROLE_LABEL,freeRecalledOfficer} from './harbor-officers.js?v=2026.11.16-rumor-filters';
+import {CONTESTED_PORTS,battleWindow,harborOperator,harborBattleAction,militiaAction,createHarborPractice,reconcileHarborLoss} from './harbor-battles.js?v=2026.11.16-rumor-filters';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.16-rumor-filters';
+import {returnReserve,reserveLoss} from './combat-core.js?v=2026.11.16-rumor-filters';
+import {PORTS,PORT_BY_ID,GOODS,registerDevelopedPorts} from './data.js?v=2026.11.16-rumor-filters';
+import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.16-rumor-filters';
+import {mapDistance} from './world-wrap.js?v=2026.11.16-rumor-filters';
+import {ship,fleetMaxHP,fleetShips} from './ship-rules.js?v=2026.11.16-rumor-filters';
+import {capacity,usedSpace,tradingPort} from './engine.js?v=2026.11.16-rumor-filters';
+import {tradeQuote,specialtyStock} from './market-rules.js?v=2026.11.16-rumor-filters';
+import {invest,investmentWithdrawal,withdrawInvestment,portGrowth,portMarketItem,specialtyLimit,specialtyTradePort,growthDeliveryInfo,deliverForGrowth,assignHarborOfficer,delegateTradePreview,portDevelopment,setPortDevelopment,ownership,taxRate,permitted,executeTrade,captainTradeQuote,changePortPolicy,withdrawTax,withdrawBasicIncome,investmentBase,NEUTRAL_PORTS} from './commerce.js?v=2026.11.16-rumor-filters';
+import {CANNONS,QUALITIES,cannonStats,buyCannon,equipCannon,upgradeCannon,sellCannon,gunWeight,currentHP} from './cannons.js?v=2026.11.16-rumor-filters';
+import {repairHull,coastalAction,playDice} from './activities.js?v=2026.11.16-rumor-filters';
+import {advanceBasicIncome,dividendRate,dividendsEnabled,estimateBasicIncome,pendingTradeTax,setIncomeOfficer} from './port-income.js?v=2026.11.16-rumor-filters';
+import {activeOfficer} from './rumor-progress.js?v=2026.11.16-rumor-filters';
 const developmentCost=(game,level)=>Math.ceil([400000,200000,300000,160000][level]*(1-(activeOfficer(game)?.developmentDiscount||0)))-(level>0&&game.rumorProgress?.items?.I054?300:0);
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const random=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
@@ -319,5 +319,5 @@ $('#growth-deliver')?.addEventListener('click',event=>{
    if(content.harborLosses?.[uid])await run('ports',port,(state,live)=>reconcileHarborLoss(state,live,uid));
   }
  }
- return {reconcileHarborRecords,extraRumor:game=>extraHarborRumor(game,content(game.port).content,account.uid,now()),shipAction,trade,showTradeRequest,harborMessage,observe,tradeAccess,displayUnit,showHub,showDepotMarket,showArmory,syncPorts,run,dispose:()=>{watchVersion++;stopWatch?.();stopRegistry?.();clearTimeout(registryTimer);}};
+ return {reconcileHarborRecords,extraRumor:(game,keepId)=>extraHarborRumor(game,content(game.port).content,account.uid,now(),keepId),shipAction,trade,showTradeRequest,harborMessage,observe,tradeAccess,displayUnit,showHub,showDepotMarket,showArmory,syncPorts,run,dispose:()=>{watchVersion++;stopWatch?.();stopRegistry?.();clearTimeout(registryTimer);}};
 }
