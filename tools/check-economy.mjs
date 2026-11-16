@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {initialState} from '../dist/engine.js';
+import {configurePortDividends,creditTradeDividends,claimTradeTax} from '../dist/port-income.js';
 import {reserveLoss,combatProfile,openBattle,fireCannon,claimBattle,finishExpired} from '../dist/combat-core.js';
 const namespace='demo-windward-economy',base='http://127.0.0.1:9000/',stamp={'.sv':'timestamp'};
 function token(uid){const t=Math.floor(Date.now()/1000),enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url');return enc({alg:'none',typ:'JWT'})+'.'+enc({aud:namespace,iss:`https://securetoken.google.com/${namespace}`,sub:uid,user_id:uid,iat:t,exp:t+3600,auth_time:t,firebase:{sign_in_provider:'google.com',identities:{}}})+'.';}
@@ -81,4 +82,17 @@ assert.equal((await req('gameV2/combatInvites/a/b',{admin:true,method:'PUT',body
 room=openBattle('duel','a','b',profiles,reserves,Date.now());
 patch=await prepare('a','battles','novice-duel',room,{'combatSlots/a':'novice-duel','combatSlots/b':'novice-duel'});
 assert.equal((await apply('a',patch)).status,200,'novice can join a consented duel');
-console.log('PASS: isolated atomic market, concurrency, vaults, two-participant battle, immutable settlement, claims and replay rules');
+const taxAt=Date.now()-1000,dividendBook={investors:{a:300000,c:100000}};
+configurePortDividends(taxAt);
+creditTradeDividends(dividendBook,'bordeaux',null,102,taxAt);
+const paid=claimTradeTax(dividendBook,'c');
+assert.equal(paid,26);
+games.c.money+=paid;
+const dividendPatch=await prepare('c','ports','bordeaux',dividendBook);
+dividendPatch['privateSaves/c'].lastOperation.blessingStart=0;
+const invalidDividend=structuredClone(dividendPatch);
+invalidDividend['shared/ports/bordeaux'].content.taxDividend.rates.c=5001;
+assert.equal((await apply('c',invalidDividend)).status,401,'a new dividend rate must fit the ledger bounds');
+assert.equal((await apply('c',dividendPatch)).status,200,'a minority dividend can be written with its paid balance');
+assert.equal((await apply('c',dividendPatch)).status,401,'a minority dividend cannot replay');
+console.log('PASS: isolated atomic market, investor dividends, concurrency, vaults, two-participant battle, immutable settlement, claims and replay rules');

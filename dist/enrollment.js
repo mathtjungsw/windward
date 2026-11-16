@@ -1,5 +1,5 @@
-import {parseSavedGame} from './engine.js?v=2026.11.15-era-atlas';
-import {reserveLoss} from './combat-core.js?v=2026.11.15-era-atlas';
+import {parseSavedGame} from './engine.js?v=2026.11.16-port-dividends';
+import {reserveLoss} from './combat-core.js?v=2026.11.16-port-dividends';
 
 // One-time registration conserves total cash and cargo, including existing
 // escrow. It does not award/refund anything or move a captain to a new port.

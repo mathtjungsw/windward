@@ -1,7 +1,7 @@
-import {GOODS,PORT_BY_ID,harborMarket} from './data.js?v=2026.11.15-era-atlas';
-import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.15-era-atlas';
-import {inlandHarborStorage} from './inland.js?v=2026.11.15-era-atlas';
-import {INLAND_CITIES,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.15-era-atlas';
+import {GOODS,PORT_BY_ID,harborMarket} from './data.js?v=2026.11.16-port-dividends';
+import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.16-port-dividends';
+import {inlandHarborStorage} from './inland.js?v=2026.11.16-port-dividends';
+import {INLAND_CITIES,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.16-port-dividends';
 
 const $=s=>document.querySelector(s),fmt=n=>Number(n).toLocaleString('ko-KR');
 const time=ms=>{const seconds=Math.max(0,Math.ceil(ms/1000));return seconds>=60?`${Math.floor(seconds/60)}분 ${seconds%60}초`:`${seconds}초`;};

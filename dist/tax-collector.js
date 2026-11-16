@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.15-era-atlas';
-import {claimBasicIncome,estimateBasicIncome} from './port-income.js?v=2026.11.15-era-atlas';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-era-atlas';
+import {ownership} from './commerce.js?v=2026.11.16-port-dividends';
+import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.16-port-dividends';
+import {PORT_BY_ID} from './data.js?v=2026.11.16-port-dividends';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;
@@ -14,7 +14,8 @@ export function normalizeCollector(value){
  const visits=Object.fromEntries(Object.entries(value.visits||{}).filter(([id,time])=>PORT_BY_ID[id]&&validTime(time)));
  const remainder=Number.isInteger(value.remainder)&&value.remainder>=0&&value.remainder<100?value.remainder:0;
  const receipts=(value.receipts||[]).filter(row=>PORT_BY_ID[row.port]&&validTime(row.at)&&['gross','fee','net'].every(key=>Number.isSafeInteger(row[key])&&row[key]>=0)&&row.net+row.fee===row.gross).slice(0,20);
- return {boughtAt:value.boughtAt,routeAt:value.routeAt,order,visits,remainder,receipts,
+ const clearedPorts=[...new Set(Array.isArray(value.clearedPorts)?value.clearedPorts:[])].filter(id=>Object.hasOwn(PORT_BY_ID,id));
+ return {boughtAt:value.boughtAt,routeAt:value.routeAt,order,visits,remainder,receipts,...(clearedPorts.length?{clearedPorts}:{}),
   gross:Number.isSafeInteger(value.gross)?Math.max(0,value.gross):0,
   fees:Number.isSafeInteger(value.fees)?Math.max(0,value.fees):0};
 }
@@ -54,18 +55,22 @@ export function collectPortTaxes(game,content,uid,port,dueAt,now){
  const visit=collectorVisits(collector,now).find(row=>row.port===port&&row.pending&&row.at===dueAt);
  if(!visit)throw Error('아직 방문 시각이 아니거나 이미 징수한 항구예요.');
  const owner=port.startsWith('depot-')?content.registeredOwner:ownership(content).ownerUid;
- if(owner!==uid||content.ownerSince>dueAt){
+ const shared=dividendsEnabled(port,now);
+ if(!shared&&(owner!==uid||content.ownerSince>dueAt)){
   collector.visits[port]=dueAt;
   return {message:'소유 기간을 확인해 이번 징수는 건너뛰었어요.',gross:0};
  }
  const income=estimateBasicIncome(content,port,uid,owner,now);
  const basic=income.canStart||income.accrued?claimBasicIncome(content,port,uid,owner,now):0;
- const trade=content.treasury?.[uid]||0;
+ const trade=pendingTradeTax(content,uid);
  const gross=basic+trade;
  const feeUnits=gross*5+collector.remainder;
  const fee=Math.floor(feeUnits/100),net=gross-fee;
  if(!Number.isSafeInteger(gross)||game.money+net>1e12)throw Error('보유금 한도를 확인한 뒤 세금을 수령하세요.');
- if(content.treasury)content.treasury[uid]=0;
+ if(trade)claimTradeTax(content,uid);
+ if(shared&&!income.active&&!gross&&!(content.harborOperator?.uid===uid&&content.harborOperator.until>now)){
+  collector.clearedPorts=[...new Set([...(collector.clearedPorts||[]),port])];
+ }
  game.money+=net;
  collector.remainder=feeUnits%100;collector.visits[port]=dueAt;
  collector.gross+=gross;collector.fees+=fee;
@@ -75,10 +80,22 @@ export function collectPortTaxes(game,content,uid,port,dueAt,now){
 }
 
 export function createTaxCollector(api){
- let running=false,lastCheck=0;
+ let running=false,lastCheck=0,seedOwner=null,seedPorts=[];
  const time=at=>new Date(at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'short',timeStyle:'short'});
  const fmt=n=>Number(n||0).toLocaleString('ko-KR');
- async function myPorts(){return (await api.owned()).filter(row=>row.ownerUid===api.account.uid).map(row=>row.id);}
+ async function myPorts(){
+  const uid=api.account.uid;
+  const owned=(await api.owned()).filter(row=>row.ownerUid===uid).map(row=>row.id);
+  if(!dividendsEnabled('london',api.now()))return owned;
+  if(seedOwner!==uid){
+   const snapshot=await api.account.sdk.get(api.account.sdk.ref(api.account.db,'gameV2/taxDividendPorts/'+uid));
+   seedPorts=Object.keys(snapshot.val()||{});seedOwner=uid;
+  }
+  const game=api.game();
+  const cleared=new Set(game.taxCollector?.clearedPorts||[]);
+  const history=[...seedPorts,...(game.taxDividendPorts||[])].filter(id=>!cleared.has(id));
+  return [...new Set([...owned,...history,...(game.investedPorts||[])])].filter(id=>Object.hasOwn(PORT_BY_ID,id));
+ }
  async function tick(force=false){
   if(running||!api.game().taxCollector||!api.account.ready||api.account.busy||api.account.economicUncertain||!navigator.onLine||!force&&Date.now()-lastCheck<30000)return;
   running=true;lastCheck=Date.now();
@@ -102,7 +119,7 @@ export function createTaxCollector(api){
   const rows=collectorVisits(collector,api.now());
   const receipts=collector?.receipts||[];
   const description='<p>계정당 가상 1척 · 항구마다 현실 30분 · 징수액의 5% 수수료</p><p class="modal-meta">오프라인분은 다음 접속 때 장부의 귀속액을 합산 정산해요. 기본 세수는 기존 72시간 적립 한도를 따릅니다.</p>';
-  api.modal('세금 징수선','소유 항구 자동 순회',description+(collector?`
+  api.modal('세금 징수선','투자 항구와 미수령 세금 자동 순회',description+(collector?`
    <p>누적 징수 ${fmt(collector.gross)} D · 누적 수수료 ${fmt(collector.fees)} D</p>
    <h3>다음 방문과 순회 목록</h3>${rows.map(row=>`<p>${PORT_BY_ID[row.port].name} · ${row.pending?'정산 대기':time(row.next)}</p>`).join('')||'<p>내 소유 항구가 생기면 순회를 시작해요.</p>'}
    <h3>최근 징수 영수증</h3><div class="tax-receipts">${receipts.map(row=>`<article><strong>${PORT_BY_ID[row.port].name} · ${time(row.at)}</strong><small>징수 ${fmt(row.gross)} / 수수료 ${fmt(row.fee)} / 실수령 ${fmt(row.net)} D</small></article>`).join('')||'<p>아직 징수한 세금이 없어요.</p>'}</div>`:

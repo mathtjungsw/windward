@@ -2,6 +2,81 @@ const HOUR=3600000;
 const CAP_HOURS=72;
 const NEUTRAL=new Set(['lisbon','porto']);
 const MAJOR=new Set(['london','amsterdam','venice','alexandria','istanbul','macau','shanghai','nagasaki','havana','buenos','sydney']);
+let dividendStart=0;
+export function configurePortDividends(at){
+  dividendStart=Number.isSafeInteger(at)&&at>0?at:0;
+}
+export function dividendsEnabled(portId,now){
+  return dividendStart>0&&now>=dividendStart&&!NEUTRAL.has(portId)&&!portId.startsWith('depot-')&&!portId.startsWith('developed-');
+}
+const cleanAmount=value=>Math.round(value*1e6)/1e6;
+const assets=(content)=>Object.entries(content.investors||{}).filter(([,amount])=>Number.isSafeInteger(amount)&&amount>0);
+export function dividendRate(content,portId){
+  const total=assets(content).reduce((sum,[,amount])=>sum+amount,0);
+  const base=MAJOR.has(portId)?3000:1000;
+  const boost=Math.min(.5,total/(MAJOR.has(portId)?600000:200000)*.05);
+  return {total,boost,rate:total?base*(1+boost):0};
+}
+function dividendRates(content,id,owner,now){
+  const {total,rate}=dividendRate(content,id);
+  if(!total)return {};
+  const rates=Object.fromEntries(assets(content).map(([uid,amount])=>[uid,rate*(amount/total)]));
+  if(owner)rates[owner]=(rates[owner]||0)+Math.max(0,basicIncomeRate(content,id,owner,now)-(MAJOR.has(id)?3000:1000));
+  return rates;
+}
+function accountAt(content,uid,rate,at,now){
+  const pending=content.taxDividend?.basic?.[uid]||0;
+  return cleanAmount(pending+Math.max(0,Math.min(rate*CAP_HOURS-Math.max(0,pending),rate*Math.max(0,now-at)/HOUR)));
+}
+function advanceDividends(content,id,owner,now){
+  const ledger=content.taxDividend??={at:dividendStart};
+  if(!ledger.rates){
+    const legacy=content.basicIncome?.period;
+    if(validPeriod(legacy)){
+      const old=content.basicIncome.previous??={};
+      old[legacy.owner]=previousUnits(content,legacy.owner)+currentUnits(content,id,legacy,Math.max(dividendStart,legacy.at));
+      delete content.basicIncome.period;
+    }
+  }
+  const rates=ledger.rates||dividendRates(content,id,owner,now);
+  const at=ledger.at;
+  ledger.basic??={};
+  for(const [uid,rate] of Object.entries(rates)){
+    const value=accountAt(content,uid,rate,at,now);
+    if(value)ledger.basic[uid]=value;
+  }
+  ledger.at=Math.max(at,now);
+  ledger.rates=dividendRates(content,id,owner,now);
+}
+function addTradeDividend(content,uid,amount){
+  if(!amount)return;
+  const ledger=content.taxDividend;
+  ledger.trade??={};
+  ledger.trade[uid]=cleanAmount((ledger.trade[uid]||0)+amount);
+}
+export function creditTradeDividends(content,id,owner,amount,now){
+  advanceDividends(content,id,owner,now);
+  const {total}=dividendRate(content,id);
+  if(!total)return;
+  const operator=content.harborOperator?.until>now?content.harborOperator.uid:null;
+  const service=operator&&operator!==owner?Math.floor(amount*.25):0;
+  if(service)addTradeDividend(content,operator,service);
+  for(const [uid,capital] of assets(content))addTradeDividend(content,uid,(amount-service)*(capital/total));
+}
+export const pendingTradeTax=(content,uid)=>Math.max(0,Math.round((content.treasury?.[uid]||0)+(content.taxDividend?.trade?.[uid]||0)));
+export function claimTradeTax(content,uid){
+  const amount=pendingTradeTax(content,uid);
+  if(!amount)return 0;
+  const legacy=content.treasury?.[uid]||0;
+  if(legacy)content.treasury[uid]=0;
+  if(content.taxDividend){
+    const trade=content.taxDividend.trade??={};
+    const remainder=cleanAmount(legacy+(trade[uid]||0)-amount);
+    if(remainder)trade[uid]=remainder;
+    else delete trade[uid];
+  }
+  return amount;
+}
 
 export function basicIncomeRate(content,portId,owner=content.developedOwner||content.ownerUid,now=Date.now()){
   if(NEUTRAL.has(portId))return 0;
@@ -42,12 +117,21 @@ export function initializeBasicIncome(content,portId,owner,at){
   return true;
 }
 export function estimateBasicIncome(content,portId,uid,owner,now){
+  if(dividendsEnabled(portId,now)){
+    const ledger=content.taxDividend;
+    const legacy=content.basicIncome?.period;
+    const oldUnits=previousUnits(content,uid)+(validPeriod(legacy)&&legacy.owner===uid?currentUnits(content,portId,legacy,Math.max(dividendStart,legacy.at)):0);
+    const rate=dividendRates(content,portId,owner,now)[uid]||0;
+    const amount=accountAt(content,uid,ledger?.rates?.[uid]??(ledger?0:rate),ledger?.at??dividendStart,now);
+    return {active:rate>0,canStart:false,rate,accrued:Math.max(0,Math.round(amount+oldUnits/HOUR))};
+  }
   const period=content.basicIncome?.period, own=owner===uid&&basicIncomeRate(content,portId,owner,now)>0;
   const active=own&&validPeriod(period)&&period.owner===uid;
   return {active,canStart:own&&!active,rate:own?basicIncomeRate(content,portId,owner,now):0,
     accrued:Math.floor(((active?currentUnits(content,portId,period,now):0)+previousUnits(content,uid))/HOUR)};
 }
 export function advanceBasicIncome(content,portId,owner,now){
+  if(dividendsEnabled(portId,now))return advanceDividends(content,portId,owner,now);
   const current=content.basicIncome?.period, rate=owner?basicIncomeRate(content,portId,owner,now):0;
   if(!rate&&!validPeriod(current))return;
   const ledger=content.basicIncome??={};
@@ -61,6 +145,16 @@ export function advanceBasicIncome(content,portId,owner,now){
   }else delete ledger.period;
 }
 export function claimBasicIncome(content,portId,uid,owner,now){
+  if(dividendsEnabled(portId,now)){
+    advanceDividends(content,portId,owner,now);
+    const ledger=content.taxDividend,old=previousUnits(content,uid)/HOUR;
+    const due=cleanAmount((ledger.basic?.[uid]||0)+old);
+    const amount=Math.max(0,Math.round(due));
+    if(!amount)throw Error('수령할 기본 세수가 없어요.');
+    if(content.basicIncome?.previous)delete content.basicIncome.previous[uid];
+    ledger.basic[uid]=cleanAmount(due-amount);
+    return amount;
+  }
   const status=estimateBasicIncome(content,portId,uid,owner,now);
   if(!status.canStart&&!status.accrued)throw Error('수령할 기본 세수가 없어요.');
   advanceBasicIncome(content,portId,owner,now);

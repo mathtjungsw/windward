@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.15-era-atlas';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.15-era-atlas';
-import {mapDistance} from './world-wrap.js?v=2026.11.15-era-atlas';
-import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.15-era-atlas';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.15-era-atlas';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.15-era-atlas';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.15-era-atlas';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.16-port-dividends';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.16-port-dividends';
+import {mapDistance} from './world-wrap.js?v=2026.11.16-port-dividends';
+import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.16-port-dividends';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.16-port-dividends';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.16-port-dividends';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.16-port-dividends';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));

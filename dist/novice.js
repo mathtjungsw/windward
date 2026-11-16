@@ -1,4 +1,4 @@
-import {fleetShips,highestOwnedTier,storedShips} from './ship-rules.js?v=2026.11.15-era-atlas';
+import {fleetShips,highestOwnedTier,storedShips} from './ship-rules.js?v=2026.11.16-port-dividends';
 
 export const NOVICE_MAX_SHIPS=2,NOVICE_MAX_STAGE=10;
 export const NOVICE_ATTACK_MESSAGE='초보 선장 보호 중인 선단은 자유 공격을 시작하거나 받을 수 없어요. 합의 결투는 이용할 수 있어요.';

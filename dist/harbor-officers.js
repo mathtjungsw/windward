@@ -1,6 +1,6 @@
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.15-era-atlas';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.15-era-atlas';
-import {PORT_BY_ID} from './data.js?v=2026.11.15-era-atlas';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.16-port-dividends';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.16-port-dividends';
+import {PORT_BY_ID} from './data.js?v=2026.11.16-port-dividends';
 
 export function harborOfficerRole(id){
  const entry=OFFICERS.find(row=>row.id===id);

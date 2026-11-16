@@ -1,4 +1,4 @@
-import {harborGoal,harborPresenceOutcome,harborPracticeAction,settleHarborConnection,harborBattleAction} from './harbor-battles.js?v=2026.11.15-era-atlas';
+import {harborGoal,harborPresenceOutcome,harborPracticeAction,settleHarborConnection,harborBattleAction} from './harbor-battles.js?v=2026.11.16-port-dividends';
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

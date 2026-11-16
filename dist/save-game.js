@@ -1,18 +1,18 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.15-era-atlas';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.15-era-atlas';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-era-atlas';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.15-era-atlas';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.15-era-atlas';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.16-port-dividends';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.16-port-dividends';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.16-port-dividends';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.16-port-dividends';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.16-port-dividends';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.15-era-atlas';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.16-port-dividends';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.15-era-atlas';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.15-era-atlas';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.15-era-atlas';
-import {normalizeDepotDock} from './projects.js?v=2026.11.15-era-atlas';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.15-era-atlas';
-import {normalizeStories} from './story-core.js?v=2026.11.15-era-atlas';
-import {validInlandSave} from './inland.js?v=2026.11.15-era-atlas';
+import {normalizeSea} from './sea-activities.js?v=2026.11.16-port-dividends';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.16-port-dividends';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.16-port-dividends';
+import {normalizeDepotDock} from './projects.js?v=2026.11.16-port-dividends';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.16-port-dividends';
+import {normalizeStories} from './story-core.js?v=2026.11.16-port-dividends';
+import {validInlandSave} from './inland.js?v=2026.11.16-port-dividends';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;

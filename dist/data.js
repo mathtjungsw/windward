@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.15-era-atlas';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.15-era-atlas';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.15-era-atlas';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.15-era-atlas';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.15-era-atlas';
-import {ERA_GOODS} from './era-goods.js?v=2026.11.15-era-atlas';
-import {eraAt} from './era-cycle.js?v=2026.11.15-era-atlas';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.16-port-dividends';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.16-port-dividends';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.16-port-dividends';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.16-port-dividends';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.16-port-dividends';
+import {ERA_GOODS} from './era-goods.js?v=2026.11.16-port-dividends';
+import {eraAt} from './era-cycle.js?v=2026.11.16-port-dividends';
 Object.assign(GOODS,PREMIUM_GOODS,ERA_GOODS);
 
 export {GOODS};

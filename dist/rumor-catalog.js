@@ -333,4 +333,4 @@ for(const [id,name,port,tavern,cargo,era,type,effects,effect] of eraEquipment){
 export const OFFICER_BY_ID = Object.fromEntries(OFFICERS.map(x=>[x.id,x]));
 export const ITEM_BY_ID = Object.fromEntries(ITEMS.map(x=>[x.id,x]));
 export const MEDITERRANEAN_PORTS = new Set(['marseille','venice','athens','istanbul','alexandria']);
-import {EXTRA_ITEMS} from './item-catalog-extra.js?v=2026.11.15-era-atlas';
+import {EXTRA_ITEMS} from './item-catalog-extra.js?v=2026.11.16-port-dividends';

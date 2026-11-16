@@ -1,8 +1,8 @@
-import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.15-era-atlas';
-import {GOODS} from './data.js?v=2026.11.15-era-atlas';
-import {explorationGear} from './rumor-progress.js?v=2026.11.15-era-atlas';
-import {shipGlyph} from './art.js?v=2026.11.15-era-atlas';
-import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.15-era-atlas';
+import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.16-port-dividends';
+import {GOODS} from './data.js?v=2026.11.16-port-dividends';
+import {explorationGear} from './rumor-progress.js?v=2026.11.16-port-dividends';
+import {shipGlyph} from './art.js?v=2026.11.16-port-dividends';
+import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.16-port-dividends';
 
 const button=(title,action,target='')=>`<button type="button" class="service-button" data-shore-action="${action}" data-shore-target="${target}">${title}</button>`;
 const nodes=['harbor','market','site','ridge'];

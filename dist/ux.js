@@ -1,12 +1,12 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.15-era-atlas';
-import {shipArtPath} from './art.js?v=2026.11.15-era-atlas';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.15-era-atlas';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.15-era-atlas';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.15-era-atlas';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.15-era-atlas';
-import {autoSupplyDays,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.15-era-atlas';
-import {isTypingTarget} from './controls.js?v=2026.11.15-era-atlas';
-import {validCard} from './social-core.js?v=2026.11.15-era-atlas';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.16-port-dividends';
+import {shipArtPath} from './art.js?v=2026.11.16-port-dividends';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.16-port-dividends';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.16-port-dividends';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.16-port-dividends';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.16-port-dividends';
+import {autoSupplyDays,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.16-port-dividends';
+import {isTypingTarget} from './controls.js?v=2026.11.16-port-dividends';
+import {validCard} from './social-core.js?v=2026.11.16-port-dividends';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
