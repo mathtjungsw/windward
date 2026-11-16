@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.16-rumor-filters';
-import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.16-rumor-filters';
-import {PORT_BY_ID} from './data.js?v=2026.11.16-rumor-filters';
+import {ownership} from './commerce.js?v=2026.11.16-rumor-filters.1';
+import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.16-rumor-filters.1';
+import {PORT_BY_ID} from './data.js?v=2026.11.16-rumor-filters.1';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;

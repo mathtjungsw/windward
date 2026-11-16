@@ -1,7 +1,7 @@
-import {requireCombatAllowed} from './blessings.js?v=2026.11.16-rumor-filters';
-import {ownership} from './commerce.js?v=2026.11.16-rumor-filters';
-import {advanceBasicIncome} from './port-income.js?v=2026.11.16-rumor-filters';
-import {noviceActive} from './novice.js?v=2026.11.16-rumor-filters';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.16-rumor-filters.1';
+import {ownership} from './commerce.js?v=2026.11.16-rumor-filters.1';
+import {advanceBasicIncome} from './port-income.js?v=2026.11.16-rumor-filters.1';
+import {noviceActive} from './novice.js?v=2026.11.16-rumor-filters.1';
 
 const HOUR=3600000, DAY=24*HOUR, WINDOW=2*HOUR;
 export const CONTESTED_PORTS=['jamestown','georgetown-ascension','sanjuan-robinson','portvila'];

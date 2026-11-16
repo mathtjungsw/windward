@@ -88,6 +88,7 @@ dialog#modal[data-size=wide]{width:min(960px,calc(100vw - 32px));max-width:calc(
 /* Read rumors stay in the notebook without taking space on the chart. */
 .rumor-note-tabs { flex-wrap: wrap; }
 .rumor-note-tabs button,.rumor-note-row button,#rumor-note-tab { min-height:44px; }
+#modal-content .rumor-note-tabs button[aria-pressed=true] { background:#286777; color:#fffdf4; border-color:#286777; }
 .rumor-note-row {
  display:grid;
  grid-template-columns:minmax(0,1fr) auto;

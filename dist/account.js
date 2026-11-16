@@ -1,11 +1,11 @@
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.16-rumor-filters';
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.16-rumor-filters';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.16-rumor-filters';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.16-rumor-filters';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.16-rumor-filters';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.16-rumor-filters';
-import {applyRaftStart} from './raft-start.js?v=2026.11.16-rumor-filters';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.16-rumor-filters';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.16-rumor-filters.1';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.16-rumor-filters.1';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.16-rumor-filters.1';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.16-rumor-filters.1';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.16-rumor-filters.1';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.16-rumor-filters.1';
+import {applyRaftStart} from './raft-start.js?v=2026.11.16-rumor-filters.1';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.16-rumor-filters.1';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';

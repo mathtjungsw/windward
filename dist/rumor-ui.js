@@ -1,14 +1,14 @@
-import {collectionArt} from './art.js?v=2026.11.16-rumor-filters';
-import {PORT_BY_ID} from './data.js?v=2026.11.16-rumor-filters';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.16-rumor-filters';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.16-rumor-filters';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.16-rumor-filters';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.16-rumor-filters';
-import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.16-rumor-filters';
+import {collectionArt} from './art.js?v=2026.11.16-rumor-filters.1';
+import {PORT_BY_ID} from './data.js?v=2026.11.16-rumor-filters.1';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.16-rumor-filters.1';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.16-rumor-filters.1';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.16-rumor-filters.1';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.16-rumor-filters.1';
+import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.16-rumor-filters.1';
 
-import {readRumor} from './discoveries.js?v=2026.11.16-rumor-filters';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.16-rumor-filters';
-import {eraAvailable} from './era-cycle.js?v=2026.11.16-rumor-filters';
+import {readRumor} from './discoveries.js?v=2026.11.16-rumor-filters.1';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.16-rumor-filters.1';
+import {eraAvailable} from './era-cycle.js?v=2026.11.16-rumor-filters.1';
 
 const labels={all:'전체',pending:'미완료',complete:'완료'};
 const inFilter=(filter,complete)=>filter==='all'||(filter==='complete')===!!complete;
@@ -17,7 +17,7 @@ const headline=text=>text.length>28?text.slice(0,28).trimEnd()+'…':text;
 const escape=text=>String(text??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const button=(label,attr='')=>`<button class="service-button" type="button" ${attr}>${escape(label)}</button>`;
 const filterButtons=(scope,current)=>Object.entries(labels).map(([id,label])=>
-  button(label,`data-${scope}-filter="${id}" aria-pressed="${id===current}"`)).join('');
+  `<button type="button" data-${scope}-filter="${id}" aria-pressed="${id===current}">${label}</button>`).join('');
 const portName=id=>PORT_BY_ID[id]?.name||id;
 const fmt=n=>n.toLocaleString('ko-KR');
 

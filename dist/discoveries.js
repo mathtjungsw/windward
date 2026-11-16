@@ -1,10 +1,10 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.16-rumor-filters';
-import {mapDistance} from './world-wrap.js?v=2026.11.16-rumor-filters';
-import {segmentDistance} from './voyage-core.js?v=2026.11.16-rumor-filters';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.16-rumor-filters';
-import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.16-rumor-filters';
-import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.16-rumor-filters';
-import {eraAvailable} from './era-cycle.js?v=2026.11.16-rumor-filters';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.16-rumor-filters.1';
+import {mapDistance} from './world-wrap.js?v=2026.11.16-rumor-filters.1';
+import {segmentDistance} from './voyage-core.js?v=2026.11.16-rumor-filters.1';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.16-rumor-filters.1';
+import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.16-rumor-filters.1';
+import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.16-rumor-filters.1';
+import {eraAvailable} from './era-cycle.js?v=2026.11.16-rumor-filters.1';
 const shipTrace=s=>(s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0)+(explorationGear(s)?.spotBonus||0);
 export const explorationAllowed=s=>!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{

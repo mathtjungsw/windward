@@ -1,8 +1,8 @@
-import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.16-rumor-filters';
-import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.16-rumor-filters';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.16-rumor-filters';
-import {eraAvailable} from './era-cycle.js?v=2026.11.16-rumor-filters';
-import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.16-rumor-filters';
+import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.16-rumor-filters.1';
+import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.16-rumor-filters.1';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.16-rumor-filters.1';
+import {eraAvailable} from './era-cycle.js?v=2026.11.16-rumor-filters.1';
+import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.16-rumor-filters.1';
 
 export const isConsumable=entry=>['supply','repair','coupon','extension','shore-consumable','distance','trade-voucher','activity','project','facility'].includes(entry?.type);
 export const itemLimit=entry=>isConsumable(entry)?20:1;
@@ -297,4 +297,4 @@ export function contractDescription(entry){
   if(entry.scenario)return '항해자의 이야기 완료 보상입니다. 획득 후 기존 장비 칸 또는 동행 부선장으로 선택하세요.';
   return entry.challenge.ports.map(id=>PORT_BY_ID[id]?.name).join(' · ')+' 방문, '+GOODS[entry.challenge.cargo].name+' '+entry.challenge.qty+'상자 납품';
 }
-import {CANAL_IDS} from './canal-reservations.js?v=2026.11.16-rumor-filters';
+import {CANAL_IDS} from './canal-reservations.js?v=2026.11.16-rumor-filters.1';

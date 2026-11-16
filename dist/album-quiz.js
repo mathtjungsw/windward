@@ -1,5 +1,5 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS} from './discoveries-catalog.js?v=2026.11.16-rumor-filters';
-import {discoveryStats} from './discoveries.js?v=2026.11.16-rumor-filters';
+import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS} from './discoveries-catalog.js?v=2026.11.16-rumor-filters.1';
+import {discoveryStats} from './discoveries.js?v=2026.11.16-rumor-filters.1';
 
 export const QUIZ_KINDS={all:'전체 도감',...DISCOVERY_KINDS};
 const DAY=86400000, KST=9*3600000;

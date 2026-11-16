@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.16-rumor-filters';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.16-rumor-filters';
-import {mapDistance} from './world-wrap.js?v=2026.11.16-rumor-filters';
-import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.16-rumor-filters';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.16-rumor-filters';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.16-rumor-filters';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.16-rumor-filters';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.16-rumor-filters.1';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.16-rumor-filters.1';
+import {mapDistance} from './world-wrap.js?v=2026.11.16-rumor-filters.1';
+import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.16-rumor-filters.1';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.16-rumor-filters.1';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.16-rumor-filters.1';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.16-rumor-filters.1';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));

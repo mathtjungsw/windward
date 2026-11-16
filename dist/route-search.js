@@ -1,4 +1,4 @@
-import {canDepart,voyageEstimate,ship} from './engine.js?v=2026.11.16-rumor-filters';
+import {canDepart,voyageEstimate,ship} from './engine.js?v=2026.11.16-rumor-filters.1';
 
 const number=n=>Math.round(n).toLocaleString('ko-KR');
 export function summarizeSearchRoute(game,port,route,canalNames={},preliminary=false,at){

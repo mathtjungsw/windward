@@ -1,7 +1,7 @@
-import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.16-rumor-filters';
-import {fleetCount} from './ship-rules.js?v=2026.11.16-rumor-filters';
-import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.16-rumor-filters';
-import {canalPassDiscount} from './canal-reservations.js?v=2026.11.16-rumor-filters';
+import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.16-rumor-filters.1';
+import {fleetCount} from './ship-rules.js?v=2026.11.16-rumor-filters.1';
+import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.16-rumor-filters.1';
+import {canalPassDiscount} from './canal-reservations.js?v=2026.11.16-rumor-filters.1';
 
 const $=s=>document.querySelector(s), fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const time=at=>at?new Date(at).toLocaleString('ko-KR',{dateStyle:'short',timeStyle:'short'}):'';

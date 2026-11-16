@@ -1,12 +1,12 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.16-rumor-filters';
-import {shipArtPath} from './art.js?v=2026.11.16-rumor-filters';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.16-rumor-filters';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.16-rumor-filters';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.16-rumor-filters';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.16-rumor-filters';
-import {autoSupplyDays,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.16-rumor-filters';
-import {isTypingTarget} from './controls.js?v=2026.11.16-rumor-filters';
-import {validCard} from './social-core.js?v=2026.11.16-rumor-filters';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.16-rumor-filters.1';
+import {shipArtPath} from './art.js?v=2026.11.16-rumor-filters.1';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.16-rumor-filters.1';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.16-rumor-filters.1';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.16-rumor-filters.1';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.16-rumor-filters.1';
+import {autoSupplyDays,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.16-rumor-filters.1';
+import {isTypingTarget} from './controls.js?v=2026.11.16-rumor-filters.1';
+import {validCard} from './social-core.js?v=2026.11.16-rumor-filters.1';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');

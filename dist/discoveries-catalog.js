@@ -1,7 +1,7 @@
 // Static discovery stories and game observation points.
-import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.16-rumor-filters';
-import {LIBRARY_DISCOVERIES} from './discoveries-library.js?v=2026.11.16-rumor-filters';
-import {ERA_DISCOVERIES} from './era-discoveries.js?v=2026.11.16-rumor-filters';
+import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.16-rumor-filters.1';
+import {LIBRARY_DISCOVERIES} from './discoveries-library.js?v=2026.11.16-rumor-filters.1';
+import {ERA_DISCOVERIES} from './era-discoveries.js?v=2026.11.16-rumor-filters.1';
 export const DISCOVERY_CATALOG_VERSION='2026.11.15-era-preview';
 export const RETIRED_DISCOVERY_FAME={'ruin-itsukushima':400};
 const source=(label,url)=>({label,url});
