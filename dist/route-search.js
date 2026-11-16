@@ -1,4 +1,4 @@
-import {canDepart,voyageEstimate,ship} from './engine.js?v=2026.11.16-five-eras';
+import {canDepart,voyageEstimate,ship} from './engine.js?v=2026.11.16-trade-save';
 
 const number=n=>Math.round(n).toLocaleString('ko-KR');
 export function summarizeSearchRoute(game,port,route,canalNames={},preliminary=false,at){

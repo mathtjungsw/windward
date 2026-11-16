@@ -33,6 +33,27 @@ for(const expired of [1,cycleAt,cycleAt+86400001]){
 }
 dailyTrade['privateSaves/a'].lastOperation.marketEra=cycleAt+86400000;
 assert.equal((await apply('a',dailyTrade)).status,200,'a trade in the new active window commits');
+const receiptUntil=Date.now()+600000;
+assert.equal((await req('gameV2/receiptConfig/a',{admin:true,method:'PUT',body:receiptUntil})).status,200);
+assert.equal((await req('gameV2/receiptConfig/a',{uid:'a'})).value,receiptUntil);
+assert.equal((await req('gameV2/receiptConfig/a',{uid:'b'})).status,401);
+const observedTrade=await prepare('a','ports','porto',{markets:{wine:{pressure:8300,at:Date.now()}}});
+const observedOp=observedTrade['privateSaves/a'].lastOperation;
+observedOp.marketEra=cycleAt+86400000;
+const receiptPath='operationReceipts/a/'+observedOp.sequence;
+const receipt={at:stamp,proof:observedOp.id,key:'porto',type:'sell',good:'wine',qty:4,amount:100};
+assert.equal((await apply('a',observedTrade)).status,401,'a configured trade requires its receipt');
+assert.equal((await req('gameV2/'+receiptPath,{uid:'a',method:'PUT',body:receipt})).status,401,'a receipt cannot be added independently');
+observedOp.receipt=true;
+const forgedReceipt={...observedTrade,[receiptPath]:{...receipt,proof:'invalid'}};
+assert.equal((await apply('a',forgedReceipt)).status,401,'receipt must match the saved operation');
+observedTrade[receiptPath]=receipt;
+assert.equal((await apply('a',observedTrade)).status,200,'the trade and server-timestamped receipt commit together');
+assert.equal((await req('gameV2/'+receiptPath,{uid:'a'})).status,401);
+assert.equal((await req('gameV2/'+receiptPath,{uid:'b'})).status,401);
+assert.equal((await req('gameV2/'+receiptPath,{admin:true})).value.amount,100);
+assert.equal((await apply('a',observedTrade)).status,401,'duplicate receipt and trade are rejected');
+await req('gameV2/receiptConfig/a',{admin:true,method:'DELETE'});
 await req('releaseStatus',{admin:true,method:'DELETE'});
 const aRace=await prepare('a','ports','porto',{tradeWinner:'a'}),bRace=await prepare('b','ports','porto',{tradeWinner:'b'});const race=await Promise.all([apply('a',aRace),apply('b',bRace)]);assert.deepEqual(race.map(r=>r.status).sort(),[200,401],'one port revision wins a race');
 assert.equal((await req('gameV2/privateSaves/b',{uid:'a'})).status,401,'no cross-private reads');

@@ -1,14 +1,14 @@
-import {shipyardTrade} from './historical-ships.js?v=2026.11.16-five-eras';
-import {recordTrade} from './rank-progress.js?v=2026.11.16-five-eras';
-import {PORT_BY_ID,PORT_GROWTH_GOODS,GOODS,harborMarket} from './data.js?v=2026.11.16-five-eras';
-import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.16-five-eras';
-import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.16-five-eras';
-import {advanceBasicIncome,claimBasicIncome,claimTradeTax,creditTradeDividends,dividendsEnabled} from './port-income.js?v=2026.11.16-five-eras';
-import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.16-five-eras';
-import {recordStoryTrade} from './story-core.js?v=2026.11.16-five-eras';
-import {harborOfficerRole} from './harbor-officers.js?v=2026.11.16-five-eras';
-import {noviceActive} from './novice.js?v=2026.11.16-five-eras';
-import {blessingBonus} from './blessings.js?v=2026.11.16-five-eras';
+import {shipyardTrade} from './historical-ships.js?v=2026.11.16-trade-save';
+import {recordTrade} from './rank-progress.js?v=2026.11.16-trade-save';
+import {PORT_BY_ID,PORT_GROWTH_GOODS,GOODS,harborMarket} from './data.js?v=2026.11.16-trade-save';
+import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.16-trade-save';
+import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.16-trade-save';
+import {advanceBasicIncome,claimBasicIncome,claimTradeTax,creditTradeDividends,dividendsEnabled} from './port-income.js?v=2026.11.16-trade-save';
+import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.16-trade-save';
+import {recordStoryTrade} from './story-core.js?v=2026.11.16-trade-save';
+import {harborOfficerRole} from './harbor-officers.js?v=2026.11.16-trade-save';
+import {noviceActive} from './novice.js?v=2026.11.16-trade-save';
+import {blessingBonus} from './blessings.js?v=2026.11.16-trade-save';
 export function captainTradeQuote(game,portId,goodId,qty,mode,item,now,rate,effectAt=now){
  const quote=tradeQuote(portId,goodId,qty,mode,item,now,rate);
  const bonus=mode==='sell'&&game?Math.floor(quote.total*saleBonus(game,portId,goodId)+1e-9):0;
@@ -154,7 +154,7 @@ export function executeTrade(game,content,uid,portId,goodId,qty,mode,quote,now,r
   if(owner&&actual.tax){content.treasury??={};const operator=content.harborOperator?.until>now?content.harborOperator.uid:null;const share=operator&&operator!==owner?Math.floor(actual.tax*.25):0;content.treasury[owner]=(content.treasury[owner]||0)+actual.tax-share;if(share)content.treasury[operator]=(content.treasury[operator]||0)+share;}
  }
  if(actual.voucher)delete game.rumorProgress.vouchers[mode];
- content.markets??={};content.markets[goodId]=actual.next;game.trades++;if(!game.explorationLockedUntilSailing)shipyardTrade(game,goodId);recordTrade(game,goodId,mode,mode==='sell'?actual.total-old.cost*qty/old.qty:0,now);recordStoryTrade(game,portId,goodId,qty,mode);return {ok:true,...actual};
+ content.markets??={};content.markets[goodId]=actual.next;game.trades++;if(!game.explorationLockedUntilSailing)shipyardTrade(game,goodId);recordTrade(game,goodId,mode,mode==='sell'?actual.total-old.cost*qty/old.qty:0,now);recordStoryTrade(game,portId,goodId,qty,mode);return {ok:true,...actual,receipt:{type:mode,good:goodId,qty,amount:actual.total}};
 }
 export function changePortPolicy(content,uid,defaultRate,rates,blacklist){if(ownership(content).ownerUid!==uid)throw Error('현재 소유자만 변경할 수 있어요.');if(!Number.isFinite(defaultRate)||defaultRate<0||defaultRate>30||Object.keys(rates).length>100||Object.values(rates).some(n=>!Number.isFinite(n)||n<0||n>30)||blacklist.length>20)throw Error('세율 0~30%, 제한 선장 최대 20명을 확인하세요.');content.defaultRate=defaultRate;content.rates=rates;content.blacklist=blacklist;return {ok:true};}
 export function assignHarborOfficer(game,content,uid,id,officer,now){

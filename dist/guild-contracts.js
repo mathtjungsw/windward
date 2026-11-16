@@ -1,11 +1,11 @@
-import {blessingBonus} from './blessings.js?v=2026.11.16-five-eras';
-import {shipyardReport} from './historical-ships.js?v=2026.11.16-five-eras';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.16-five-eras';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.16-five-eras';
-import {mapDistance} from './world-wrap.js?v=2026.11.16-five-eras';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.16-five-eras';
+import {blessingBonus} from './blessings.js?v=2026.11.16-trade-save';
+import {shipyardReport} from './historical-ships.js?v=2026.11.16-trade-save';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.16-trade-save';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.16-trade-save';
+import {mapDistance} from './world-wrap.js?v=2026.11.16-trade-save';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.16-trade-save';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.16-five-eras';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.16-trade-save';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[

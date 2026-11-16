@@ -1,5 +1,5 @@
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.16-five-eras';
-import {GUILD_TYPES,guildObjective,isGuildReport} from './guild-contracts.js?v=2026.11.16-five-eras';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.16-trade-save';
+import {GUILD_TYPES,guildObjective,isGuildReport} from './guild-contracts.js?v=2026.11.16-trade-save';
 
 const escape=text=>String(text).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const clock=new Intl.DateTimeFormat('ko-KR',{dateStyle:'short',timeStyle:'short',timeZone:'Asia/Seoul'});

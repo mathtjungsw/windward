@@ -1,10 +1,10 @@
-import {ship,fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.16-five-eras';
-import {usedSpace,capacity,usedCargo,supplyCost} from './engine.js?v=2026.11.16-five-eras';
-import {currentHP} from './cannons.js?v=2026.11.16-five-eras';
-import {activeOfficer,couponAmount,consumeCoupon} from './rumor-progress.js?v=2026.11.16-five-eras';
-import {PORT_BY_ID} from './data.js?v=2026.11.16-five-eras';
-import {mapDistance} from './world-wrap.js?v=2026.11.16-five-eras';
-import {blessingBonus} from './blessings.js?v=2026.11.16-five-eras';
+import {ship,fleetMaxHP,fleetAppraisal} from './ship-rules.js?v=2026.11.16-trade-save';
+import {usedSpace,capacity,usedCargo,supplyCost} from './engine.js?v=2026.11.16-trade-save';
+import {currentHP} from './cannons.js?v=2026.11.16-trade-save';
+import {activeOfficer,couponAmount,consumeCoupon} from './rumor-progress.js?v=2026.11.16-trade-save';
+import {PORT_BY_ID} from './data.js?v=2026.11.16-trade-save';
+import {mapDistance} from './world-wrap.js?v=2026.11.16-trade-save';
+import {blessingBonus} from './blessings.js?v=2026.11.16-trade-save';
 export function repairHull(s,at){if(!s.port||s.voyage)throw Error('항구에서 수리하세요.');const max=fleetMaxHP(s),missing=max-currentHP(s);if(!missing)throw Error('이미 수리가 끝났어요.');const officer=activeOfficer(s), indian=['인도양','아라비아해','벵골만','라카디브해'].includes(PORT_BY_ID[s.port]?.sea);
  const discount=officer?.repairDiscount||(indian?officer?.indianRepairDiscount||0:0);
  const price=Math.max(1,Math.ceil(Math.min(3000,Math.max(100,fleetAppraisal(s)*.02))*missing/max*(1-discount)));

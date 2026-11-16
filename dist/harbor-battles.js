@@ -1,7 +1,7 @@
-import {requireCombatAllowed} from './blessings.js?v=2026.11.16-five-eras';
-import {ownership} from './commerce.js?v=2026.11.16-five-eras';
-import {advanceBasicIncome} from './port-income.js?v=2026.11.16-five-eras';
-import {noviceActive} from './novice.js?v=2026.11.16-five-eras';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.16-trade-save';
+import {ownership} from './commerce.js?v=2026.11.16-trade-save';
+import {advanceBasicIncome} from './port-income.js?v=2026.11.16-trade-save';
+import {noviceActive} from './novice.js?v=2026.11.16-trade-save';
 
 const HOUR=3600000, DAY=24*HOUR, WINDOW=2*HOUR;
 export const CONTESTED_PORTS=['jamestown','georgetown-ascension','sanjuan-robinson','portvila'];

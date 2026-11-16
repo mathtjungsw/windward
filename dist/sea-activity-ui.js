@@ -1,4 +1,4 @@
-import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.16-five-eras';
+import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.16-trade-save';
 
 export function createSeaActivityUI(api){
   let pending=false, timer, signature='';

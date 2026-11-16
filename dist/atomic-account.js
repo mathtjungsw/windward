@@ -1,7 +1,7 @@
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.16-five-eras';
-import {ownershipRankChanges} from './port-rankings.js?v=2026.11.16-five-eras';
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.16-five-eras';
-import {blessingAt} from './blessings.js?v=2026.11.16-five-eras';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.16-trade-save';
+import {ownershipRankChanges} from './port-rankings.js?v=2026.11.16-trade-save';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.16-trade-save';
+import {blessingAt} from './blessings.js?v=2026.11.16-trade-save';
 async function bounded(task,ms=5000){let timer;try{return await Promise.race([task,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('network-timeout')),ms))]);}finally{clearTimeout(timer);}}
 // Economic writes share the same queue as autosave. Acknowledgement precedes UI state.
 export function installAtomicAccount(Type){
@@ -37,6 +37,13 @@ export function installAtomicAccount(Type){
    const journal='windward-economic-pending:'+this.uid;try{this.storage.setItem(journal,JSON.stringify({id,sequence,revision,kind,key}));}catch{throw Error('처리 전 기기 기록을 보관할 수 없어요.');}
    let confirmed=record;
    const changes={...ownerChanges,...(result?.extras||{}),['privateSaves/'+this.uid]:record,[path]:shared};if(result?.registry)changes['harborRegistry/'+result.registry.id]=result.registry;
+   if(now<(this.receiptsUntil||0)){
+    const receipt=result?.receipt;
+    if(receipt){
+     op.receipt=true;
+     changes['operationReceipts/'+this.uid+'/'+sequence]={...receipt,key,at:stamp,proof:id};
+    }
+   }
    let timeout;
    try{await Promise.race([s.update(s.ref(this.db,root),changes),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('ack-timeout')),20000);})]);}
    catch(error){let observed;const uncertain=()=>{this.economicUncertain=true;this.ready=false;this.onUncertain?.();};try{observed=await this.readConfirmedSave();}catch{uncertain();throw Error('결과 확인 중이에요. 새로고침하면 서버 기록으로 이어집니다.');}

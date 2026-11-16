@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.16-five-eras';
-import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.16-five-eras';
-import {PORT_BY_ID} from './data.js?v=2026.11.16-five-eras';
+import {ownership} from './commerce.js?v=2026.11.16-trade-save';
+import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.16-trade-save';
+import {PORT_BY_ID} from './data.js?v=2026.11.16-trade-save';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;
@@ -76,7 +76,7 @@ export function collectPortTaxes(game,content,uid,port,dueAt,now){
  collector.gross+=gross;collector.fees+=fee;
  collector.receipts.unshift({port,at:now,scheduledAt:dueAt,gross,fee,net});
  collector.receipts=collector.receipts.slice(0,20);
- return {message:PORT_BY_ID[port].name+' · 징수 '+gross+' D / 수수료 '+fee+' D / 수령 '+net+' D',gross,fee,net};
+ return {message:PORT_BY_ID[port].name+' · 징수 '+gross+' D / 수수료 '+fee+' D / 수령 '+net+' D',gross,fee,net,...(net?{receipt:{type:'collector',amount:net}}:{})};
 }
 
 export function createTaxCollector(api){

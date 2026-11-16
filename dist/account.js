@@ -1,16 +1,16 @@
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.16-five-eras';
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.16-five-eras';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.16-five-eras';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.16-five-eras';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.16-five-eras';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.16-five-eras';
-import {applyRaftStart} from './raft-start.js?v=2026.11.16-five-eras';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.16-five-eras';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.16-trade-save';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.16-trade-save';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.16-trade-save';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.16-trade-save';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.16-trade-save';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.16-trade-save';
+import {applyRaftStart} from './raft-start.js?v=2026.11.16-trade-save';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.16-trade-save';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
 export const localSaveKey = uid => 'windward-account-v4:' + uid;
-const SAVE_SCHEMA_VERSION = 18;
+const SAVE_SCHEMA_VERSION = 19;
 
 export function accountName(value) {
   const name = String(value || '').normalize('NFKC').trim();
@@ -127,6 +127,7 @@ export class CaptainAccount {
     const checkpoint=this.defenseEnabled?(await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/privateNavigation/'+uid))).val():null;
     const corinth=this.defenseEnabled?(await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/corinthRefunds/'+uid))).val():null;
     const portRank=this.defenseEnabled?(await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/real/portRankings/'+uid))).val():null;
+    this.receiptsUntil=this.defenseEnabled?Number((await this.sdk.get(this.sdk.ref(this.db,GAME_ROOT+'/receiptConfig/'+uid))).val())||0:0;
     let block, recovered;
     const result = await this.sdk.runTransaction(ref, current => {
       current ??= observed;
