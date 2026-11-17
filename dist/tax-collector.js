@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.17-harbor-development';
-import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.17-harbor-development';
-import {PORT_BY_ID} from './data.js?v=2026.11.17-harbor-development';
+import {ownership} from './commerce.js?v=2026.11.17-promoted-ports-and-content';
+import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.17-promoted-ports-and-content';
+import {PORT_BY_ID} from './data.js?v=2026.11.17-promoted-ports-and-content';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;

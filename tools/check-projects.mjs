@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {initialState} from '../dist/engine.js';
 import {changeDepotPromotion,nextFreightParticipation,projectAction,PROJECT_BY_ID} from '../dist/projects.js';
+import {ownershipRankChanges} from '../dist/port-rankings.js';
 
 const namespace='demo-windward-projects',url='http://127.0.0.1:9000/',timestamp={'.sv':'timestamp'};
 const project='freight-porto',path='shared/projects/'+project;
@@ -21,6 +22,8 @@ const rules=JSON.parse(await readFile(new URL('../firebase.database.rules.json',
 assert.equal((await request('.settings/rules',{admin:true,method:'PUT',body:rules})).status,200);
 assert.equal((await request('gameV2',{admin:true,method:'DELETE'})).status,200);
 for(const uid of ['test-alice','test-bob']){
+  assert.equal((await request('gameV2/accounts/'+uid,{admin:true,method:'PUT',body:{name:uid}})).status,200);
+  assert.equal((await request('gameV2/real/portRankings/'+uid,{admin:true,method:'PUT',body:{name:uid,ownedPortCount:0,revision:1,updatedAt:timestamp}})).status,200);
   const game=initialState();
   game.port='porto';
   game.money=500000;
@@ -31,13 +34,16 @@ for(const uid of ['test-alice','test-bob']){
 async function prepare(uid,action,amount,key=project){
   const node='shared/projects/'+key;
   const [personal,shared]=await Promise.all([request('gameV2/privateSaves/'+uid,{uid}),request('gameV2/'+node,{uid})]);
-  const old=personal.value,current=shared.value||{revision:0,content:{}},game=JSON.parse(old.data),content=current.content;
+  const old=personal.value,current=shared.value||{revision:0,content:{}},game=JSON.parse(old.data),content=structuredClone(current.content);
   const vote=action.startsWith('promotion-')?(await request('gameV2/depotPromotionVotes/'+key+'/'+uid,{uid})).value:0;
   const result=action.startsWith('promotion-')?changeDepotPromotion(game,content,uid,PROJECT_BY_ID[key],action,Date.now(),false,vote,amount):projectAction(game,content,uid,key,action,amount,Date.now());
   const sequence=old.operationSequence+1,id=uid+':'+sequence,revision=old.revision+1,sharedRevision=current.revision+1;
   const receipt={id,sequence,kind:'projects',key,sharedRevision,...(old.schemaVersion>=13?{blessingStart:0}:{})};
   const record={revision:sharedRevision,content:{...content,_version:1},updatedAt:timestamp,lastOperation:{id,uid,sequence,saveRevision:revision}};
-  return {result,patch:{['privateSaves/'+uid]:{...old,revision,operationSequence:sequence,lastOperation:receipt,data:JSON.stringify(game),updatedAt:timestamp},[node]:record,...result.extras,...(result.registry?{['harborRegistry/'+key]:result.registry}:{})}};
+  const sdk={ref:(_db,path)=>path,get:async path=>({val:()=>(undefined)}),serverTimestamp:()=>timestamp};
+  sdk.get=async path=>{const {value}=await request(path,{uid});return {val:()=>value};};
+  const rank=key.startsWith('depot-')?await ownershipRankChanges({uid,name:uid,sdk},key,current.content,content,id,'projects'):{};
+  return {result,patch:{['privateSaves/'+uid]:{...old,revision,operationSequence:sequence,lastOperation:receipt,data:JSON.stringify(game),updatedAt:timestamp},[node]:record,...rank,...result.extras,...(result.registry?{['harborRegistry/'+key]:result.registry}:{})}};
 }
 const commit=(uid,body)=>request('gameV2',{uid,method:'PATCH',body});
 const alice='test-alice',bob='test-bob';
@@ -130,6 +136,21 @@ assert.equal((await commit(alice,majorityUpgrade.patch)).status,200);
 const majorityPort=(await request('gameV2/shared/projects/'+depot+'/content',{uid:alice})).value;
 assert.ok(majorityPort.basicIncome.previous[alice]>=0);
 assert.equal(majorityPort.taxDividend.rates[alice]+majorityPort.taxDividend.rates[bob],500);
+const bobSave=(await request('gameV2/privateSaves/'+bob,{uid:bob})).value;
+const bobGame=JSON.parse(bobSave.data);bobGame.port=depot;
+await request('gameV2/privateSaves/'+bob,{admin:true,method:'PATCH',body:{data:JSON.stringify(bobGame)}});
+const aliceRank='real/portRankings/'+alice,bobRank='real/portRankings/'+bob;
+const count=async key=>(await request('gameV2/'+key,{uid:alice})).value.ownedPortCount;
+assert.equal(await count(aliceRank),0);
+for(const uid of [alice,bob])assert.equal((await commit(uid,(await prepare(uid,'promotion-vote',1,depot)).patch)).status,200);
+const rankedUpgrade=(await prepare(bob,'promotion-confirm',1,depot)).patch;
+assert.equal(rankedUpgrade[aliceRank].ownedPortCount,1);
+const missingRank=structuredClone(rankedUpgrade);delete missingRank[aliceRank];
+assert.equal((await commit(bob,missingRank)).status,401);
+assert.equal((await commit(bob,rankedUpgrade)).status,200);
+assert.equal((await commit(bob,rankedUpgrade)).status,401);
+assert.equal(await count(aliceRank),1);
+assert.equal(await count(bobRank),0);
 console.log('PASS: promotion votes are weighted, require a strict majority, and preserve capital, stock and unsettled dividends. Only one competing confirmation can charge.');
 console.log('PASS: local Firebase projects use individual reads, atomic shared revisions, cargo limits, and one-time split rewards.');
 

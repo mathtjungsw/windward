@@ -1,11 +1,11 @@
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.17-harbor-development';
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.17-harbor-development';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.17-harbor-development';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.17-harbor-development';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.17-harbor-development';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.17-harbor-development';
-import {applyRaftStart} from './raft-start.js?v=2026.11.17-harbor-development';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.17-harbor-development';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.17-promoted-ports-and-content';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.17-promoted-ports-and-content';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.17-promoted-ports-and-content';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.17-promoted-ports-and-content';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.17-promoted-ports-and-content';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.17-promoted-ports-and-content';
+import {applyRaftStart} from './raft-start.js?v=2026.11.17-promoted-ports-and-content';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.17-promoted-ports-and-content';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';

@@ -10,10 +10,11 @@ import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID} from '../dist/discoveries-catal
 import {hasClues,inspectDiscovery,readRumor} from '../dist/discoveries.js';
 import {extraHarborRumor} from '../dist/harbor-officers.js';
 import {ITEMS,OFFICER_BY_ID} from '../dist/rumor-catalog.js';
+import {recordTrade} from '../dist/rank-progress.js';
 
 const {ERAS,ERA_PERIOD,LEGACY_ERA_PERIOD,configureEra,eraAt,eraAvailable}=await import('../dist/era-cycle.js?v='+RELEASE);
 const {GOODS,PORTS,PORT_BY_ID,PORT_GROWTH_GOODS,harborMarket,registerDevelopedPorts}=await import('../dist/data.js?v='+RELEASE);
-const {ERA_GOODS}=await import('../dist/era-goods.js?v='+RELEASE);
+const {ERA_GOODS,REGIONAL_GOOD_IDS}=await import('../dist/era-goods.js?v='+RELEASE);
 const start=Date.UTC(2026,10,14,15);
 test('the stationed officer in Jeddah skips unavailable eras and keeps the rumor open after reading it',()=>{
  const target=Object.values(RUMOR_BY_ID).find(r=>r.era===2&&PORT_BY_ID[r.portId]?.region===PORT_BY_ID.jeddah.region);
@@ -97,7 +98,7 @@ test('historic cards point to distinct, credited WebP evidence and a small local
 
 test('ancient works and their tavern rumors remain discoverable across all five eras',()=>{
  const museum=ERA_DISCOVERIES.filter(d=>d.era!==5&&d.media.license==='CC0 1.0'&&d.media.url.startsWith('https://clevelandart.org/art/'));
- assert.equal(DISCOVERIES.length,225);
+ assert.equal(DISCOVERIES.length,237);
  assert.equal(museum.length,24);
  assert.equal(museum.filter(d=>d.kind==='book').length,18);
  assert.equal(museum.filter(d=>!d.era).length,21);
@@ -127,7 +128,7 @@ test('ancient works and their tavern rumors remain discoverable across all five 
 test('eight new natural landforms are represented by source photos and clues in every era',()=>{
  const ids=['geiranger-fjord','nile-delta','halong-karst','wadden-tidal-flats','kilauea-shield',
   'belize-blue-hole','lencois-dune-lagoons','jeju-jusangjeolli'];
- assert.equal(DISCOVERIES.filter(d=>d.kind==='nature').length,18);
+ assert.equal(DISCOVERIES.filter(d=>d.kind==='nature').length,21);
  configureEra(start,{at:start,first:1});
  try{
   for(const slug of ids){
@@ -148,11 +149,34 @@ test('all new photos, trade goods, officers and equipment have a fifth-era entry
  const officers=Object.values(OFFICER_BY_ID).filter(o=>o.era===5);
  const gear=ITEMS.filter(item=>item.era===5);
  assert.equal(discoveries.length,10);
- assert.equal(goods.length,14);
+ assert.equal(goods.length,16);
  assert.equal(officers.length,4);
  assert.equal(gear.length,6);
  assert.ok(discoveries.every(d=>d.media&&d.sources.length));
  for(const item of gear)for(const id of item.sellGoods||[])assert.ok(GOODS[id],id);
+});
+
+test('all 129 regular goods can be collected and restored across five trade eras',()=>{
+ const game=initialState(),ids=Object.keys(GOODS).filter(id=>!GOODS[id].legacy&&!GOODS[id].premium);
+ assert.equal(ids.length,129);
+ assert.equal(REGIONAL_GOOD_IDS.length,15);
+ try{
+  configureEra(start,{at:start,first:1});
+  for(const id of REGIONAL_GOOD_IDS){
+   const good=ERA_GOODS[id];
+   for(const pid of good.markets)assert.ok(PORT_BY_ID[pid]?.active,pid);
+   for(let i=0;i<5;i++){
+    const at=start+i*ERA_PERIOD;
+    for(const pid of good.ports)assert.equal(harborMarket(PORT_BY_ID[pid],at).includes(id),!good.era||good.era===i+1,id+':'+pid);
+   }
+   const at=start+((good.era||1)-1)*ERA_PERIOD;
+   const buy=captainTradeQuote(game,good.ports[0],id,10,'buy',{},at,0);
+   assert.ok(good.markets.some(pid=>captainTradeQuote(game,pid,id,10,'sell',{},at,0).total>buy.total),id);
+  }
+  for(const id of ids)recordTrade(game,id,'buy',0,start);
+  recordTrade(game,REGIONAL_GOOD_IDS[0],'sell',10,start);
+  assert.deepEqual(parseSavedGame(JSON.stringify(game)).rankProgress.tradedGoods,ids);
+ }finally{configureEra(null);}
 });
 
 test('open depots unlock and sell their own regional item through public deliveries',()=>{

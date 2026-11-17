@@ -1,5 +1,5 @@
-import {PORT_BY_ID,PORTS} from './data.js?v=2026.11.17-harbor-development';
-import {CONTESTED_PORTS} from './harbor-battles.js?v=2026.11.17-harbor-development';
+import {PORT_BY_ID,PORTS} from './data.js?v=2026.11.17-promoted-ports-and-content';
+import {CONTESTED_PORTS} from './harbor-battles.js?v=2026.11.17-promoted-ports-and-content';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function suggestionDraft(title,body){title=String(title||'').trim();body=String(body||'').trim();if(!title||title.length>50||!body||body.length>1200||/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(title+body))throw Error('제목 1~50자, 내용 1~1,200자로 작성하세요.');return {title,body};}
 export function createCommunity(api){
@@ -25,7 +25,7 @@ export function createCommunity(api){
   return Promise.all(PORTS.filter(p=>p.depot&&p.ownerUid).map(async p=>{
    let ownerName=p.ownerUid===a.uid?a.name:null;
    if(!ownerName)try{ownerName=(await s.get(ref('rankings/'+p.ownerUid+'/name'))).val();}catch{}
-   return {id:p.id,portName:p.name,ownerUid:p.ownerUid,ownerName:ownerName||'소유 선장',share:p.ownerShare,defaultRate:0,kind:'depot'};
+   return {id:p.id,portName:p.name,ownerUid:p.ownerUid,ownerName:ownerName||'소유 선장',share:p.ownerShare,defaultRate:0,kind:'depot',promotionLevel:p.promotionLevel||0};
   }));
  }
  let ownershipRows=new Map(),ownershipRead=null,ownershipUid=null,ownershipAt=0;
@@ -57,7 +57,8 @@ export function createCommunity(api){
  function ownedRow(port){
   const row=document.createElement('article'),summary=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small'),button=document.createElement('button');
   row.className='owned-port-row';summary.className='owned-port-summary';name.textContent=port.portName;
-  const share=port.kind==='developed'?'개발 항구':(port.kind==='depot'?'공동 보급항 · ':'')+'지분 '+Number(port.share).toFixed(2)+'%';
+  const depotStage=port.promotionLevel?'개발 '+port.promotionLevel+'단계'+(port.promotionLevel===1?' · 경영 수는 2단계부터':''):'공동 보급항';
+  const share=port.kind==='developed'?'개발 항구':(port.kind==='depot'?depotStage+' · ':'')+'지분 '+Number(port.share).toFixed(2)+'%';
   const owner=ownedView==='ports'?port.ownerName+(port.ownerUid===a.uid?' (나)':'')+' · ':'';
   detail.textContent=(port.operatorOnly?'과반 소유자 없음':owner+share+' · 기본 세율 '+port.defaultRate+'%')+(port.operatorName&&port.operatorUntil>Date.now()&&port.operatorUid!==port.ownerUid?' · 운영 '+port.operatorName:'');
   button.textContent='지도에서 보기';

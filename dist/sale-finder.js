@@ -1,5 +1,5 @@
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.17-harbor-development';
-import {taxRate,permitted,captainTradeQuote,NEUTRAL_PORTS} from './commerce.js?v=2026.11.17-harbor-development';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.17-promoted-ports-and-content';
+import {taxRate,permitted,captainTradeQuote,NEUTRAL_PORTS} from './commerce.js?v=2026.11.17-promoted-ports-and-content';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const SALE_SEARCH_NOTICE='지금 검색한 시점에 조회한 시세 기준 최고가입니다. 시세와 세금은 실제 판매할 때 달라질 수 있어요.';
 export function ownedTradeGoods(game){const result={};for(const cargo of [game.cargo,JSON.parse(game.battleReserve?.cargoJSON||'{}')])for(const [id,c]of Object.entries(cargo||{}))if(GOODS[id]&&c.qty>0)result[id]=(result[id]||0)+c.qty;return result;}

@@ -1,4 +1,4 @@
-import {canDepart,voyageEstimate,ship} from './engine.js?v=2026.11.17-harbor-development';
+import {canDepart,voyageEstimate,ship} from './engine.js?v=2026.11.17-promoted-ports-and-content';
 
 const number=n=>Math.round(n).toLocaleString('ko-KR');
 export function summarizeSearchRoute(game,port,route,canalNames={},preliminary=false,at){

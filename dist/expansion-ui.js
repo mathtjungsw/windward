@@ -1,20 +1,20 @@
-import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.17-harbor-development';
-import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.17-harbor-development';
-import {historicalArt} from './historical-ship-art.js?v=2026.11.17-harbor-development';
-import {vesselGunLimits} from './cannons.js?v=2026.11.17-harbor-development';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.17-harbor-development';
-import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.17-harbor-development';
-import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.17-harbor-development';
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.17-harbor-development';
-import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,STORED_SHIP_LIMIT,storedShips} from './ship-rules.js?v=2026.11.17-harbor-development';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-harbor-development';
-import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.17-harbor-development';
-import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS as KINDS} from './discoveries-catalog.js?v=2026.11.17-harbor-development';
-import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.17-harbor-development';
-import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.17-harbor-development';
-import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.17-harbor-development';
-import {lastSeenText} from './captain-time.js?v=2026.11.17-harbor-development';
-import {nextShipEndsProtection} from './novice.js?v=2026.11.17-harbor-development';
+import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.17-promoted-ports-and-content';
+import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.17-promoted-ports-and-content';
+import {historicalArt} from './historical-ship-art.js?v=2026.11.17-promoted-ports-and-content';
+import {vesselGunLimits} from './cannons.js?v=2026.11.17-promoted-ports-and-content';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
+import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.17-promoted-ports-and-content';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.17-promoted-ports-and-content';
+import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,storedShips} from './ship-rules.js?v=2026.11.17-promoted-ports-and-content';
+import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
+import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.17-promoted-ports-and-content';
+import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS as KINDS} from './discoveries-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.17-promoted-ports-and-content';
+import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.17-promoted-ports-and-content';
+import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.17-promoted-ports-and-content';
+import {lastSeenText} from './captain-time.js?v=2026.11.17-promoted-ports-and-content';
+import {nextShipEndsProtection} from './novice.js?v=2026.11.17-promoted-ports-and-content';
 const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createExpansion(api){
@@ -137,7 +137,7 @@ export function createExpansion(api){
       <div><strong>${esc(vesselSpec(v).name)}</strong><small>${v.tier+1}단계 · 내구도 ${Math.round(v.health*100)}%</small></div>
       <button type="button" data-recall-vessel="${esc(v.id)}" ${id!==s.port||s.voyage?'disabled':''}>${id===s.port?'선단에 복귀':'이 항구에서 회수'}</button></article>`).join('')}</section>`;
   }).join('');
-  api.onModal('항구에 맡긴 배',`보관 ${stored.length}/${STORED_SHIP_LIMIT}척 · 항해 ${fleetCount(s)}/${fleetLimit(s)}척`,
+  api.onModal('항구에 맡긴 배',`보관 ${stored.length}척 · 항해 ${fleetCount(s)}/${fleetLimit(s)}척`,
     `<div class="dialog-actions"><button id="stored-back">내 선단으로</button><button id="stored-shipyard">역사 선박 조선소</button></div>
     <p>${here&&!s.voyage?'현재 '+esc(here.name)+'에 정박 중이에요. ':'항해 중이에요. '}배를 맡긴 항구에 입항하면 회수할 수 있어요.</p>
     ${cards||'<p>아직 맡겨 둔 배가 없어요. 항구에 정박한 뒤 내 선단에서 ‘이 항구에 맡기기’를 선택하세요.</p>'}`,'medium');

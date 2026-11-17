@@ -1,7 +1,7 @@
-import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.17-harbor-development';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-harbor-development';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.17-harbor-development';
-import {activeOfficer,explorationGear,equippedGear,addOfficerExperience} from './rumor-progress.js?v=2026.11.17-harbor-development';
+import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.17-promoted-ports-and-content';
+import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.17-promoted-ports-and-content';
+import {activeOfficer,explorationGear,equippedGear,addOfficerExperience} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
 
 export const SHORE_SITES={
   porto:{market:'강가 마을',site:'언덕의 옛 창고',ridge:'소나무 고갯길',good:'wine',theme:'green'},

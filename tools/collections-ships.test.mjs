@@ -151,6 +151,21 @@ test('storage enforces docking, cargo capacity, single active vessel and unique 
  assert.equal(reloaded.storedShips.length,0);
  assert.throws(()=>recallShip(reloaded,'flag','lisbon'),/찾을 수 없어요/);
 });
+test('ships beyond the former port storage limit survive save and can be recalled',()=>{
+ const game=initialState();
+ syncFleet(game,[{id:'flag',tier:19},{id:'next',tier:5}],'flag');
+ game.storedShips=Array.from({length:24},(_,i)=>({id:'parked-'+i,tier:5,port:'lisbon',health:1}));
+ assert.equal(storeShip(game,'next','lisbon').ok,true);
+ const restored=parseSavedGame(JSON.stringify(game));
+ assert.equal(restored.storedShips.length,25);
+ assert.equal(recallShip(restored,'next','lisbon').ok,true);
+ assert.equal(restored.storedShips.length,24);
+});
+test('ships stored at a promoted harbor can load before the harbor registry arrives',()=>{
+ const game=initialState();
+ game.storedShips=[{id:'parked',tier:5,port:'depot-reykjavik',health:1}];
+ assert.deepEqual(parseSavedGame(JSON.stringify(game)).storedShips,game.storedShips);
+});
 test('each discovery has geographic study context and all historical ships have a sized photo',async()=>{
  for(const d of DISCOVERIES){
   const study=discoveryStudy(d.id);

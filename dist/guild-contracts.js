@@ -1,11 +1,11 @@
-import {blessingBonus} from './blessings.js?v=2026.11.17-harbor-development';
-import {shipyardReport} from './historical-ships.js?v=2026.11.17-harbor-development';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.17-harbor-development';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.17-harbor-development';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-harbor-development';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.17-harbor-development';
+import {blessingBonus} from './blessings.js?v=2026.11.17-promoted-ports-and-content';
+import {shipyardReport} from './historical-ships.js?v=2026.11.17-promoted-ports-and-content';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.17-promoted-ports-and-content';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.17-harbor-development';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[

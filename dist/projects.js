@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.17-harbor-development';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.17-harbor-development';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-harbor-development';
-import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.17-harbor-development';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.17-harbor-development';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.17-harbor-development';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome,advanceBasicIncome,pendingTradeTax,claimTradeTax} from './port-income.js?v=2026.11.17-harbor-development';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.17-promoted-ports-and-content';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.17-promoted-ports-and-content';
+import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
+import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.17-promoted-ports-and-content';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.17-promoted-ports-and-content';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome,advanceBasicIncome,pendingTradeTax,claimTradeTax} from './port-income.js?v=2026.11.17-promoted-ports-and-content';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));

@@ -1,4 +1,4 @@
-import {EXPLORATION_MASK as mask} from './exploration-mask.js?v=2026.11.17-harbor-development';
+import {EXPLORATION_MASK as mask} from './exploration-mask.js?v=2026.11.17-promoted-ports-and-content';
 const bits=Uint8Array.from(atob(mask.bits),c=>c.charCodeAt(0));
 export const SCORE_VERSION=mask.version;
 let total=0;

@@ -1,18 +1,18 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.17-harbor-development';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.17-harbor-development';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.17-harbor-development';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.17-harbor-development';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.17-harbor-development';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.17-promoted-ports-and-content';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.17-promoted-ports-and-content';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.17-promoted-ports-and-content';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.17-promoted-ports-and-content';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.17-harbor-development';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.17-harbor-development';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.17-harbor-development';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.17-harbor-development';
-import {normalizeDepotDock} from './projects.js?v=2026.11.17-harbor-development';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.17-harbor-development';
-import {normalizeStories} from './story-core.js?v=2026.11.17-harbor-development';
-import {validInlandSave} from './inland.js?v=2026.11.17-harbor-development';
+import {normalizeSea} from './sea-activities.js?v=2026.11.17-promoted-ports-and-content';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.17-promoted-ports-and-content';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.17-promoted-ports-and-content';
+import {normalizeDepotDock} from './projects.js?v=2026.11.17-promoted-ports-and-content';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.17-promoted-ports-and-content';
+import {normalizeStories} from './story-core.js?v=2026.11.17-promoted-ports-and-content';
+import {validInlandSave} from './inland.js?v=2026.11.17-promoted-ports-and-content';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
@@ -59,11 +59,11 @@ export function parseState(raw,defaults){
  if(s.version===4){if(!Array.isArray(s.fleetShips)||s.fleetShips.length<1||s.fleetShips.length>5||new Set(s.fleetShips.map(p=>p?.id)).size!==s.fleetShips.length||s.fleetShips.some(p=>typeof p?.id!=='string'||!p.id.length||p.id.length>80||!Number.isInteger(p.tier)||p.tier<0||p.tier>19)||!s.fleetShips.some(p=>p.id===s.flagshipId)||s.fleetCount!==s.fleetShips.length||s.shipTier!==s.fleetShips.find(p=>p.id===s.flagshipId).tier)bad();}
  if(s.version===4)syncFleet(game,s.fleetShips.map(p=>({id:p.id,tier:p.tier,...(historicalKind(p.kind,p.tier)?{kind:p.kind}:{}),...(Number.isSafeInteger(p.costBasis)&&p.costBasis>=0&&p.costBasis<=1e8?{costBasis:p.costBasis}:{})})),s.flagshipId);else syncFleet(game,Array.from({length:game.fleetCount},(_,i)=>({id:'vessel-'+i,tier:game.shipTier})));
  if(s.storedShips!==undefined){
-  if(!Array.isArray(s.storedShips)||s.storedShips.length>STORED_SHIP_LIMIT)bad();
+  if(!Array.isArray(s.storedShips))bad();
   const vesselIds=new Set(game.fleetShips.map(v=>v.id));
   game.storedShips=s.storedShips.map(v=>{
    if(typeof v?.id!=='string'||!v.id.length||v.id.length>80||vesselIds.has(v.id)||
-    !Number.isInteger(v.tier)||v.tier<0||v.tier>=SHIPS.length||!Object.hasOwn(PORT_BY_ID,v.port)||PORT_BY_ID[v.port].depot||
+    !Number.isInteger(v.tier)||v.tier<0||v.tier>=SHIPS.length||!Object.hasOwn(PORT_BY_ID,v.port)||
     !finite(v.health)||v.health<0||v.health>1||(v.kind!==undefined&&!historicalKind(v.kind,v.tier))||
     (v.costBasis!==undefined&&(!Number.isSafeInteger(v.costBasis)||v.costBasis<0||v.costBasis>1e8)))bad();
    vesselIds.add(v.id);
@@ -81,7 +81,7 @@ export function parseState(raw,defaults){
  for(const key of ['lootClaims'])if(s[key]!==undefined){const c=s[key];if(!c||typeof c!=='object'||Array.isArray(c)||Object.entries(c).some(([id,v])=>!Object.hasOwn(GOODS,id)||!Number.isInteger(v.qty)||v.qty<0||!finite(v.cost)||v.cost<0)||Object.values(c).reduce((n,v)=>n+v.qty,0)>50)bad();}
  if(s.battleReserve!==undefined){const r=s.battleReserve;let c;try{c=JSON.parse(r.cargoJSON);}catch{bad();}if(typeof r.id!=='string'||r.id.length>80||!Number.isInteger(r.money)||r.money<0||r.money>2000||!c||typeof c!=='object'||Array.isArray(c)||Object.entries(c).some(([id,v])=>!Object.hasOwn(GOODS,id)||!Number.isInteger(v.qty)||v.qty<0||!finite(v.cost)||v.cost<0)||Object.values(c).reduce((n,v)=>n+v.qty,0)>5)bad();}
  if(s.npcBattle!==undefined&&(!PIRATE_IDS.has(s.npcBattle?.zoneId)||!finite(s.npcBattle.hp)||s.npcBattle.hp<0||s.npcBattle.hp>500||!finite(s.npcBattle.readyAt)||(s.npcBattle.turtleGuard!==undefined&&typeof s.npcBattle.turtleGuard!=='boolean')||['shots','hits'].some(key=>s.npcBattle[key]!==undefined&&(!Number.isSafeInteger(s.npcBattle[key])||s.npcBattle[key]<0))))bad();
- if(s.rankProgress!==undefined){const p=s.rankProgress;if(!p||p.version!==1||!finite(p.since)||p.since<0||!Array.isArray(p.tradedGoods)||p.tradedGoods.length>128||p.tradedGoods.some(id=>!Object.hasOwn(GOODS,id))||['pirateKills','fleetDefeats','duelWins','bestTradeProfit'].some(k=>!Number.isSafeInteger(p[k])||p[k]<0||p[k]>1e12))bad();game.rankProgress={...p,tradedGoods:[...new Set(p.tradedGoods)]};}
+ if(s.rankProgress!==undefined){const p=s.rankProgress;if(!p||p.version!==1||!finite(p.since)||p.since<0||!Array.isArray(p.tradedGoods)||p.tradedGoods.length>Object.keys(GOODS).length||p.tradedGoods.some(id=>!Object.hasOwn(GOODS,id))||['pirateKills','fleetDefeats','duelWins','bestTradeProfit'].some(k=>!Number.isSafeInteger(p[k])||p[k]<0||p[k]>1e12))bad();game.rankProgress={...p,tradedGoods:[...new Set(p.tradedGoods)]};}
  if(s.defenseAck!==undefined){const a=s.defenseAck;let loot;try{loot=JSON.parse(a.lootJSON);}catch{bad();}if(!a||['seq','cash','kills'].some(k=>!Number.isSafeInteger(a[k])||a[k]<0||a[k]>1e12)||typeof a.lostReserveId!=='string'||a.lostReserveId.length>80||!loot||Object.entries(loot).some(([id,c])=>!Object.hasOwn(GOODS,id)||!Number.isSafeInteger(c.qty)||c.qty<0||!finite(c.cost)||c.cost<0))bad();}
  if(s.raidId!==undefined&&(typeof s.raidId!=='string'||s.raidId.length>80))bad();
  // Defaults describe new captains; an old save must not inherit their grant marker.

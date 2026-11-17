@@ -1,5 +1,5 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS} from './discoveries-catalog.js?v=2026.11.17-harbor-development';
-import {discoveryStats} from './discoveries.js?v=2026.11.17-harbor-development';
+import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS} from './discoveries-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {discoveryStats} from './discoveries.js?v=2026.11.17-promoted-ports-and-content';
 
 export const QUIZ_KINDS={all:'전체 도감',...DISCOVERY_KINDS};
 const DAY=86400000, KST=9*3600000;

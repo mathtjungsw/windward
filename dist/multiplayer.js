@@ -1,9 +1,9 @@
-import {watchSectorPages} from './sector-pages.js?v=2026.11.17-harbor-development';
-import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.17-harbor-development';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-harbor-development';
-import {REAL_WORLD_ROOT} from './account.js?v=2026.11.17-harbor-development';
-import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.17-harbor-development';
-import {CaptainRoster} from './captains.js?v=2026.11.17-harbor-development';
+import {watchSectorPages} from './sector-pages.js?v=2026.11.17-promoted-ports-and-content';
+import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.17-promoted-ports-and-content';
+import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
+import {REAL_WORLD_ROOT} from './account.js?v=2026.11.17-promoted-ports-and-content';
+import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.17-promoted-ports-and-content';
+import {CaptainRoster} from './captains.js?v=2026.11.17-promoted-ports-and-content';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{

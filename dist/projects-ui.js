@@ -1,7 +1,7 @@
-import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.17-harbor-development';
-import {fleetCount} from './ship-rules.js?v=2026.11.17-harbor-development';
-import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,depotPromotion,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.17-harbor-development';
-import {canalPassDiscount} from './canal-reservations.js?v=2026.11.17-harbor-development';
+import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.17-promoted-ports-and-content';
+import {fleetCount} from './ship-rules.js?v=2026.11.17-promoted-ports-and-content';
+import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,depotPromotion,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.17-promoted-ports-and-content';
+import {canalPassDiscount} from './canal-reservations.js?v=2026.11.17-promoted-ports-and-content';
 
 const $=s=>document.querySelector(s), fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const time=at=>at?new Date(at).toLocaleString('ko-KR',{dateStyle:'short',timeStyle:'short'}):'';
@@ -112,7 +112,7 @@ export function createProjectsUI(api){
       }
       if(view.balance)actions+=button('dividend',`수입 ${fmt(view.balance)} D 받기`);
     }
-    api.modal(promotion?.level?project.site.cityName+'항':project.name,promotion?.level?'개발 항구 · '+promotion.level+'단계':labels[project.kind],`${details}<div class="project-actions">${actions}</div>
+    api.modal(promotion?.level?project.site.cityName:project.name,promotion?.level?'개발 항구 · '+promotion.level+'단계':labels[project.kind],`${details}<div class="project-actions">${actions}</div>
       <p id="business-result" role="status"></p><button id="project-list">사업 목록</button>`,'wide');
     $('#project-list').onclick=()=>open(project.kind);
     document.querySelectorAll('[data-project-action]').forEach(b=>b.onclick=async()=>{

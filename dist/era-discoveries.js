@@ -4481,3 +4481,443 @@ ERA_DISCOVERIES.push(
     ]
   }
 );
+
+// Coastal observations and historical records.
+export const COASTAL_OBSERVATIONS=[
+  {
+    "id": "era-selden-map",
+    "kind": "book",
+    "name": "셀던의 중국 지도",
+    "anchor": "macau",
+    "era": 3,
+    "description": "연안의 항구들을 잇는 항로를 그려 당시 동아시아 바닷길을 보여 주는 지도예요.",
+    "image": "assets/era-discoveries/selden-map.webp",
+    "thumbnail": "assets/era-discoveries/selden-map-thumb.webp",
+    "media": {
+      "author": "Unknown authorUnknown author",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "url": "https://commons.wikimedia.org/wiki/File:Selden_map.jpg",
+      "file": "Selden_map.jpg"
+    },
+    "sources": [
+      {
+        "label": "역사·자연 자료",
+        "url": "https://www.bodleian.ox.ac.uk/about/libraries/our-work/selden-map-conservation"
+      }
+    ],
+    "region": "아시아",
+    "place": "중국 푸젠성 취안저우 항로 · 옥스퍼드 보들리언 도서관",
+    "point": [
+      118.9,
+      24.45
+    ],
+    "tier": 3,
+    "hintPorts": [
+      "macau"
+    ],
+    "hints": [
+      "푸젠 연안 근처에서 배가 드나드는 길을 선으로 그은 옛 지도 이야기가 들려요."
+    ]
+  },
+  {
+    "id": "era-rekidai-hoan",
+    "kind": "book",
+    "name": "류큐 왕국의 역대보안",
+    "anchor": "nagasaki",
+    "era": 1,
+    "description": "섬 왕국이 여러 나라와 주고받은 외교문서를 모은 기록이에요.",
+    "image": "assets/era-discoveries/rekidai-hoan.webp",
+    "thumbnail": "assets/era-discoveries/rekidai-hoan-thumb.webp",
+    "media": {
+      "author": "Wikimedia Commons",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "url": "https://commons.wikimedia.org/wiki/File:Book_from_the_Ryukyu_Kingdom_(ca._1600).jpg",
+      "file": "Book_from_the_Ryukyu_Kingdom_(ca._1600).jpg"
+    },
+    "sources": [
+      {
+        "label": "역사·자연 자료",
+        "url": "https://www.pref.okinawa.jp/_res/projects/default_project/_page_/001/009/665/web_rekidaihoan_english_1.pdf"
+      }
+    ],
+    "region": "아시아",
+    "place": "일본 오키나와의 옛 류큐 왕국 외교 문서",
+    "point": [
+      127.57,
+      26.15
+    ],
+    "tier": 3,
+    "hintPorts": [
+      "nagasaki"
+    ],
+    "hints": [
+      "오키나와 근해에 섬 왕국을 드나들던 외교문서의 사본 이야기가 남았어요."
+    ]
+  },
+  {
+    "id": "era-panama-viejo",
+    "kind": "ruin",
+    "name": "파나마 비에호",
+    "anchor": "callao",
+    "era": 2,
+    "description": "태평양을 향한 옛 도시의 석조 탑과 거리의 흔적이에요.",
+    "image": "assets/era-discoveries/panama-viejo.webp",
+    "thumbnail": "assets/era-discoveries/panama-viejo-thumb.webp",
+    "media": {
+      "author": "Melpanama",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "url": "https://commons.wikimedia.org/wiki/File:Torre_de_panama_viejo.jpg",
+      "file": "Torre_de_panama_viejo.jpg"
+    },
+    "sources": [
+      {
+        "label": "역사·자연 자료",
+        "url": "https://whc.unesco.org/document/1440"
+      }
+    ],
+    "region": "북아메리카",
+    "place": "파나마시티의 태평양 연안",
+    "point": [
+      -79.70863,
+      8.7443
+    ],
+    "sitePoint": [
+      -79.484,
+      9.005
+    ],
+    "tier": 4,
+    "hintPorts": [
+      "callao",
+      "acapulco"
+    ],
+    "hints": [
+      "지협 남쪽 파나마만에 옛 도시의 석조 탑 흔적이 남았대요.",
+      "파나마시티의 태평양 연안 부근에서 같은 바닷길을 따라 조사할 수 있어요."
+    ]
+  },
+  {
+    "id": "era-suakin",
+    "kind": "ruin",
+    "name": "수아킨의 산호석 항구",
+    "anchor": "jeddah",
+    "era": null,
+    "description": "붉은 바다로 이어지는 섬 항구에 산호석 건물의 흔적이 남아 있어요.",
+    "image": "assets/era-discoveries/suakin.webp",
+    "thumbnail": "assets/era-discoveries/suakin-thumb.webp",
+    "media": {
+      "author": "Bertramz",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "url": "https://commons.wikimedia.org/wiki/File:Suakin,el-Geyf_mosque.jpg",
+      "file": "Suakin,el-Geyf_mosque.jpg"
+    },
+    "sources": [
+      {
+        "label": "역사·자연 자료",
+        "url": "https://www.wmf.org/monuments/suakin"
+      }
+    ],
+    "region": "아프리카",
+    "place": "수단 홍해 연안 수아킨섬",
+    "point": [
+      37.49,
+      19.19
+    ],
+    "sitePoint": [
+      37.339,
+      19.11
+    ],
+    "tier": 2,
+    "hintPorts": [],
+    "hints": []
+  },
+  {
+    "id": "era-makassar-fort",
+    "kind": "ruin",
+    "name": "마카사르 로테르담 요새",
+    "anchor": "ternate",
+    "era": 4,
+    "description": "고와 왕국의 방어 거점에서 네덜란드의 동인도 교역 거점으로 바뀐 해안 요새예요.",
+    "image": "assets/era-discoveries/makassar-fort.webp",
+    "thumbnail": "assets/era-discoveries/makassar-fort-thumb.webp",
+    "media": {
+      "author": "Sanko.",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "url": "https://commons.wikimedia.org/wiki/File:Fort_Rotterdam,_Makassar,_Indonesia_-_20100227-02.jpg",
+      "file": "Fort_Rotterdam,_Makassar,_Indonesia_-_20100227-02.jpg"
+    },
+    "sources": [
+      {
+        "label": "역사·자연 자료",
+        "url": "https://disbudpar.sulselprov.go.id/page/wisata/4/fortrotterdammakassar"
+      }
+    ],
+    "region": "아시아",
+    "place": "인도네시아 술라웨시섬 마카사르",
+    "point": [
+      119.23168,
+      -4.99215
+    ],
+    "sitePoint": [
+      119.405,
+      -5.134
+    ],
+    "tier": 3,
+    "hintPorts": [
+      "ternate"
+    ],
+    "hints": [
+      "술라웨시 남서쪽 바다에서 향신료 창고가 있던 돌 요새를 찾아보세요."
+    ]
+  },
+  {
+    "id": "era-magellan-shore",
+    "kind": "nature",
+    "name": "마젤란 해협의 해안 지형",
+    "anchor": "ushuaia",
+    "era": null,
+    "description": "긴 해협을 따라 굽이진 해안과 여러 섬이 이어져요.",
+    "image": "assets/era-discoveries/magellan-shore.webp",
+    "thumbnail": "assets/era-discoveries/magellan-shore-thumb.webp",
+    "media": {
+      "author": "Jacques Descloitres, MODIS Rapid Response Team, NASA/GSFC",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "url": "https://commons.wikimedia.org/wiki/File:StraitOfMagellan.jpg",
+      "file": "StraitOfMagellan.jpg"
+    },
+    "sources": [
+      {
+        "label": "역사·자연 자료",
+        "url": "https://www.directemar.cl/directemar/general-information-on-the-strait-of-magellan"
+      }
+    ],
+    "region": "남아메리카",
+    "place": "칠레 파타고니아와 티에라델푸에고 사이",
+    "point": [
+      -68.35,
+      -52.48
+    ],
+    "tier": 3,
+    "hintPorts": [
+      "ushuaia"
+    ],
+    "hints": [
+      "남아메리카 남단에서 굽이진 해협의 동쪽 입구를 찾아보세요."
+    ]
+  },
+  {
+    "id": "era-aldabra-atoll",
+    "kind": "nature",
+    "name": "알다브라 환초",
+    "anchor": "toamasina",
+    "era": null,
+    "description": "산호가 이룬 낮은 섬들이 넓고 얕은 석호를 둘러싼 모습이에요.",
+    "image": "assets/era-discoveries/aldabra-atoll.webp",
+    "thumbnail": "assets/era-discoveries/aldabra-atoll-thumb.webp",
+    "media": {
+      "author": "NASA Earth Observatory image by Wanmei Liang, using Landsat data from the U.S. Geological Survey",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "url": "https://commons.wikimedia.org/wiki/File:An_Outpost_for_Evolution_at_Aldabra_Atoll.jpg",
+      "file": "An_Outpost_for_Evolution_at_Aldabra_Atoll.jpg"
+    },
+    "sources": [
+      {
+        "label": "역사·자연 자료",
+        "url": "https://whc.unesco.org/en/list/185/"
+      }
+    ],
+    "region": "아프리카",
+    "place": "세이셸 알다브라 환초",
+    "point": [
+      46.46894,
+      -9.42
+    ],
+    "sitePoint": [
+      46.37,
+      -9.42
+    ],
+    "tier": 4,
+    "hintPorts": [
+      "toamasina",
+      "zanzibar"
+    ],
+    "hints": [
+      "마다가스카르 북쪽 바다에 석호를 둥글게 감싼 산호섬이 있대요.",
+      "세이셸 알다브라 환초 부근에서 같은 바닷길을 따라 조사할 수 있어요."
+    ]
+  },
+  {
+    "id": "era-cape-fur-seal",
+    "kind": "animal",
+    "name": "케이프물개",
+    "anchor": "walvisbay",
+    "era": null,
+    "description": "바위와 모래가 있는 해안에 무리 지어 쉬는 남부 아프리카의 물개예요.",
+    "image": "assets/era-discoveries/cape-fur-seal.webp",
+    "thumbnail": "assets/era-discoveries/cape-fur-seal-thumb.webp",
+    "media": {
+      "author": "25-south.com",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "url": "https://commons.wikimedia.org/wiki/File:Cape_fur_seal_(Arctocephalus_pusillus_pusillus)_Cape_Cross_Namibia.jpg",
+      "file": "Cape fur seal (Arctocephalus pusillus pusillus) Cape Cross Namibia.jpg"
+    },
+    "sources": [
+      {
+        "label": "역사·자연 자료",
+        "url": "https://www.dffe.gov.za/mediareleases/capefurseals"
+      }
+    ],
+    "region": "아프리카",
+    "place": "남부 아프리카의 대서양 연안",
+    "point": [
+      14.23175,
+      -22.31373
+    ],
+    "tier": 1,
+    "hintPorts": [],
+    "hints": []
+  },
+  {
+    "id": "era-flightless-cormorant",
+    "kind": "animal",
+    "name": "갈라파고스 날지못하는가마우지",
+    "anchor": "puertoayora",
+    "era": null,
+    "description": "작은 날개를 가진 바닷새가 잠수해 물고기와 다른 먹이를 찾아요.",
+    "image": "assets/era-discoveries/flightless-cormorant.webp",
+    "thumbnail": "assets/era-discoveries/flightless-cormorant-thumb.webp",
+    "media": {
+      "author": "putneymark",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "url": "https://commons.wikimedia.org/wiki/File:Flightless_cormorant_(Phalacrocorax_harrisi)_-Isabela.jpg",
+      "file": "Flightless_cormorant_(Phalacrocorax_harrisi)_-Isabela.jpg"
+    },
+    "sources": [
+      {
+        "label": "역사·자연 자료",
+        "url": "https://www.galapagos.org/newsroom/the-worlds-only-flightless-cormorant-is-endemic-to-the-galapagos/"
+      }
+    ],
+    "region": "남아메리카",
+    "place": "갈라파고스 이사벨라·페르난디나섬 해안",
+    "point": [
+      -91.9,
+      -0.38
+    ],
+    "tier": 2,
+    "hintPorts": [],
+    "hints": []
+  },
+  {
+    "id": "era-tuatara",
+    "kind": "animal",
+    "name": "투아타라",
+    "anchor": "auckland",
+    "era": null,
+    "description": "뉴질랜드의 섬에서 만나는 파충류예요. 도마뱀과 닮은 겉모습을 관찰해요.",
+    "image": "assets/era-discoveries/tuatara.webp",
+    "thumbnail": "assets/era-discoveries/tuatara-thumb.webp",
+    "media": {
+      "author": "Sid Mosdell from New Zealand",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "url": "https://commons.wikimedia.org/wiki/File:Tuatara_(5205719005).jpg",
+      "file": "Tuatara_(5205719005).jpg"
+    },
+    "sources": [
+      {
+        "label": "역사·자연 자료",
+        "url": "https://www.doc.govt.nz/nature/native-animals/reptiles-and-frogs/tuatara/"
+      }
+    ],
+    "region": "오세아니아",
+    "place": "뉴질랜드 북섬 동쪽 연안의 섬들",
+    "point": [
+      175.8,
+      -36.32
+    ],
+    "tier": 2,
+    "hintPorts": [],
+    "hints": []
+  },
+  {
+    "id": "era-hamel-journal",
+    "kind": "book",
+    "name": "하멜 표류기",
+    "anchor": "busan",
+    "era": 4,
+    "description": "난파를 겪은 네덜란드 선원이 조선에서의 체류와 귀환에 대해 남긴 기록이에요.",
+    "image": "assets/era-discoveries/hamel-journal.webp",
+    "thumbnail": "assets/era-discoveries/hamel-journal-thumb.webp",
+    "media": {
+      "author": "헨드릭 하멜 일행 · Hoetink 1920년판에 수록된 필사본",
+      "license": "Public domain",
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+      "url": "https://ourearthshistory.com/east-asia/early-modern/hamel-sperwer-jeju-august-16-1653-journael-1668-sillok-thirteen-years/"
+    },
+    "region": "아시아",
+    "place": "제주 부근의 난파와 조선 체류 기록 · 1668년 간행",
+    "point": [
+      126.34308,
+      33.50198
+    ],
+    "tier": 3,
+    "hintPorts": [
+      "busan"
+    ],
+    "hints": [
+      "제주 인근 바다에서 난파를 기록한 선원의 글 사본을 찾아보세요."
+    ],
+    "sources": [
+      {
+        "label": "역사·자연 자료",
+        "url": "https://www.acc.go.kr/webzine/index.do?article=819&lang=en"
+      }
+    ]
+  },
+  {
+    "id": "era-sete-cidades",
+    "kind": "nature",
+    "name": "세테 시다데스 칼데라",
+    "anchor": "angra",
+    "era": null,
+    "description": "화산이 무너지며 생긴 큰 웅덩이에 호수가 자리한 지형이에요.",
+    "image": "assets/era-discoveries/sete-cidades.webp",
+    "thumbnail": "assets/era-discoveries/sete-cidades-thumb.webp",
+    "media": {
+      "author": "Ymblanter",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "url": "https://commons.wikimedia.org/wiki/File:View_of_Sete_Cidades_from_the_south.jpg",
+      "file": "View of Sete Cidades from the south.jpg"
+    },
+    "region": "유럽",
+    "place": "아조레스 제도 상미겔섬 서쪽",
+    "point": [
+      -25.94,
+      37.88
+    ],
+    "sitePoint": [
+      -25.793,
+      37.858
+    ],
+    "tier": 1,
+    "hintPorts": [],
+    "hints": [],
+    "sources": [
+      {
+        "label": "역사·자연 자료",
+        "url": "https://www.azoresgeopark.com/geoparque_acores/geossitios.php?id_geositio=39"
+      }
+    ]
+  }
+];
+ERA_DISCOVERIES.push(...COASTAL_OBSERVATIONS);

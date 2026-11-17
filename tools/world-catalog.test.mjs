@@ -7,6 +7,7 @@ import {PORT_BY_ID} from '../dist/data.js';
 import {GOODS} from '../dist/port-economy.js';
 import {ACTIVE_PORT_IDS,RETIRED_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,NEW_PORT_HISTORY,PORT_REGIONS,ISLAND_COAST_POINTS} from '../dist/world-catalog.js';
 import {DISCOVERIES,DISCOVERY_BY_ID,RUMORS,RUMOR_BY_ID} from '../dist/discoveries-catalog.js';
+import {COASTAL_OBSERVATIONS} from '../dist/era-discoveries.js';
 import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from '../dist/coastal-sites.js';
 
 const read=name=>JSON.parse(readFileSync(new URL('../'+name,import.meta.url),'utf8'));
@@ -87,9 +88,11 @@ test('the starter wine and dried fish cycle remains profitable before the first 
 });
 
 test('hard discoveries have one rumor, legendary discoveries two distinct active port rumors',()=>{
- assert.equal(RUMORS.length,58+DISCOVERIES.filter(d=>d.media).length);assert.equal(Object.keys(RUMOR_BY_ID).length,RUMORS.length);
+ const coastal=new Set(COASTAL_OBSERVATIONS.map(d=>d.id));
+ assert.equal(RUMORS.length,58+DISCOVERIES.filter(d=>d.media&&!coastal.has(d.id)).length+9);
+ assert.equal(Object.keys(RUMOR_BY_ID).length,RUMORS.length);
  for(const d of DISCOVERIES){
-  assert.equal(d.rumorIds.length,d.media?1:d.tier===4?2:d.tier===3?1:0);
+  assert.equal(d.rumorIds.length,d.media&&!coastal.has(d.id)?1:d.tier===4?2:d.tier===3?1:0,d.id);
   const rumors=d.rumorIds.map(id=>RUMOR_BY_ID[id]);
   for(const r of rumors){assert.ok(ACTIVE_PORT_IDS.includes(r.portId));assert.equal(r.discoveryId,d.id);assert.ok(r.text.length>10);}
   assert.equal(new Set(rumors.map(r=>r.portId)).size,rumors.length);

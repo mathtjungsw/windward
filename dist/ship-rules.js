@@ -1,5 +1,5 @@
-import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.17-harbor-development';
-import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.17-harbor-development';
+import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.17-promoted-ports-and-content';
+import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
 
 export const ACTIVE_SECONDS_PER_DAY=2;
 const rows=[
@@ -13,7 +13,6 @@ const rows=[
 ];
 export const SHIPS=Object.freeze(rows.map(([name,speed,capacity,supply,offshore,cost],i)=>Object.freeze({name,speed,capacity,supply,offshore,cost,tier:i,riverSpeed:36,reserve:i<9?.5:i<15?2:5,supplyPrice:i<9?3:i<15?6:12,upgrade:rows[i+1]?.[5]??null})));
 export const LEGACY_TIER=[4,9,15];
-export const STORED_SHIP_LIMIT=24;
 const legacyTier=s=>Number.isInteger(s.shipTier)?Math.max(0,Math.min(19,s.shipTier)):LEGACY_TIER[s.level]??0;
 export function fleetShips(s){
  const rows=Array.isArray(s.fleetShips)?s.fleetShips:null,flag=rows?.find(p=>p.id===s.flagshipId)||rows?.[0];
@@ -26,7 +25,7 @@ export function fleetDisplayShips(game){
  return [flagship,...rows.filter(v=>v.id!==flagship.id)];
 }
 export const storedShips=game=>Array.isArray(game.storedShips)?game.storedShips:[];
-export const highestOwnedTier=game=>Math.max(...fleetShips(game).map(ship=>ship.tier),...storedShips(game).map(ship=>ship.tier));
+export const highestOwnedTier=game=>storedShips(game).reduce((highest,ship)=>Math.max(highest,ship.tier),Math.max(...fleetShips(game).map(ship=>ship.tier)));
 export const vesselSpec=v=>{const base=SHIPS[v.tier],row=HISTORICAL_BY_ID[v.kind],p=row?.stats||{};return {...base,name:row?.name||base.name,speed:base.speed*(p.speed||1),riverSpeed:base.riverSpeed*(p.river||1),capacity:Math.floor(base.capacity*(p.capacity||1)),supply:Math.round(base.supply*(p.supply||1)*10)/10,offshore:p.offshore??base.offshore,hp:Math.round((100+30*v.tier)*(p.hp||1)),...{guns:p.guns||1,coastSpeed:p.coastSpeed||1,supplyUse:p.supplyUse||1,openSupply:p.openSupply||1}};};
 export function vesselSeaSpeed(game,vessel,coastal=false){
  const bonus=(gearOnShip(game,vessel.id)?.seaSpeed||0)+(activeOfficer(game)?.seaSpeed||0);

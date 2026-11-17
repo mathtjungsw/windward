@@ -19,7 +19,29 @@ const fifthGroups={
  timber:[['ship-blocks','범선 도르래 목구',99,'london amsterdam',5]],
  oliveoil:[['coconut-oil','코코넛 기름',69,'colombo suva apia',5]]
 };
-export const ERA_GOODS=Object.fromEntries([...Object.entries(groups),...Object.entries(fifthGroups)].flatMap(([family,rows])=>rows.map(([id,name,base,ports,era])=>[id,{name,base,ports:ports.split(' '),era,family,icon:'◈',color:'#476c65'}])));
+const regionalGoods=[
+ ['cork','코르크',67,'lisbon seville',0,'timber','bordeaux london'],
+ ['dried-pomegranate','말린 석류',54,'istanbul alexandria',0,'grain','marseille venice'],
+ ['salted-sardines','소금에 절인 정어리',51,'porto funchal',0,'driedfish','seville bordeaux'],
+ ['liquorice-root','감초 뿌리',69,'alexandria istanbul',0,'spice','venice marseille'],
+ ['rattan','등나무',62,'malacca batavia',0,'timber','manila goa'],
+ ['dried-lime','말린 라임',64,'muscat aden',1,'spice','jeddah alexandria'],
+ ['coriander-seed','고수 씨',56,'chennai goa',1,'spice','colombo aden'],
+ ['ship-nails','선박용 철 못',77,'lisbon london',2,'copper','funchal laspalmas'],
+ ['barley-malt','보리 맥아',48,'dublin london',2,'grain','amsterdam bordeaux'],
+ ['mother-of-pearl','자개 공예 재료',129,'manila macau',3,'porcelain','nagasaki acapulco'],
+ ['mulberry-paper','닥종이',89,'busan',3,'silk','nagasaki shanghai'],
+ ['annatto-dye','안나토 염료',95,'belem manaus',4,'spice','recife lisbon'],
+ ['parchment','양피지',96,'bordeaux london',4,'leather','amsterdam marseille'],
+ ['tinplate','주석 도금 철판',107,'london amsterdam',5,'copper','lisbon bordeaux'],
+ ['tea-chest','차 보관 상자',82,'macau shanghai',5,'timber','amsterdam london']
+];
+export const REGIONAL_GOOD_IDS=regionalGoods.map(([id])=>id);
+const goodsEntry=(id,name,base,ports,era,family,markets='')=>[id,{name,base,ports:ports.split(' '),era,family,markets:markets?markets.split(' '):[],icon:'◈',color:'#476c65'}];
+export const ERA_GOODS=Object.fromEntries([
+ ...[...Object.entries(groups),...Object.entries(fifthGroups)].flatMap(([family,rows])=>rows.map(([id,name,base,ports,era])=>goodsEntry(id,name,base,ports,era,family))),
+ ...regionalGoods.map(row=>goodsEntry(...row))
+]);
 
 const targetPorts={
  1:['zanzibar','goa','chennai','colombo','aden','muscat'],
@@ -47,5 +69,6 @@ export function eraTradeFactor(port,id,mode,era){
  const source=item.ports.includes(port.id);
  if(mode==='buy')return source&&era&&item.era===era.id?0.94:1;
  if(source)return 1;
+ if(item.markets.includes(port.id))return item.era&&item.era!==era?.id?1.1:1.31;
  return era&&item.era===era.id&&targetPorts[era.id]?.includes(port.id)?1.11:1;
 }

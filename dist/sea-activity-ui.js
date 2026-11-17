@@ -1,4 +1,4 @@
-import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.17-harbor-development';
+import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.17-promoted-ports-and-content';
 
 export function createSeaActivityUI(api){
   let pending=false, timer, signature='';

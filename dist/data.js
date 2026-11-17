@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.17-harbor-development';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.17-harbor-development';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.17-harbor-development';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.17-harbor-development';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.17-harbor-development';
-import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.17-harbor-development';
-import {eraAt} from './era-cycle.js?v=2026.11.17-harbor-development';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.17-promoted-ports-and-content';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.17-promoted-ports-and-content';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.17-promoted-ports-and-content';
+import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.17-promoted-ports-and-content';
+import {eraAt} from './era-cycle.js?v=2026.11.17-promoted-ports-and-content';
 Object.assign(GOODS,PREMIUM_GOODS,ERA_GOODS);
 
 export {GOODS};
@@ -88,8 +88,9 @@ export function registerDevelopedPorts(registry={},now=Date.now()){
       port.ownerUid=entry.ownerUid||null;
       port.ownerShare=entry.ownerShare||0;
       port.promotionLevel=Number.isInteger(entry.promotionLevel)&&entry.promotionLevel>=1&&entry.promotionLevel<=3?entry.promotionLevel:0;
-      port.name=port.promotionLevel?site.cityName+'항':site.name;
+      port.name=port.promotionLevel?site.cityName:site.name;
       port.en=port.name;
+      port.searchAliases=[site.name,site.cityName+'항'];
       port.market=port.promotionLevel>=2?site.market:[];
       port.economy=port.promotionLevel>=2?{stock:site.stock,demand:site.demand,demandTiers:site.demandTiers}:{stock:{},demand:[],demandTiers:{}};
     }else{

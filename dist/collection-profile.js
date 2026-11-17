@@ -1,5 +1,5 @@
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.17-harbor-development';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.17-harbor-development';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.17-promoted-ports-and-content';
 
 export function collectionProfile(game){
   const hires=new Set(game.rumorProgress?.officers||[]);

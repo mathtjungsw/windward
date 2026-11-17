@@ -1,10 +1,10 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.17-harbor-development';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-harbor-development';
-import {segmentDistance} from './voyage-core.js?v=2026.11.17-harbor-development';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.17-harbor-development';
-import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.17-harbor-development';
-import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.17-harbor-development';
-import {eraAvailable} from './era-cycle.js?v=2026.11.17-harbor-development';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
+import {segmentDistance} from './voyage-core.js?v=2026.11.17-promoted-ports-and-content';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.17-promoted-ports-and-content';
+import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
+import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.17-promoted-ports-and-content';
+import {eraAvailable} from './era-cycle.js?v=2026.11.17-promoted-ports-and-content';
 const shipTrace=s=>(s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0)+(explorationGear(s)?.spotBonus||0);
 export const explorationAllowed=s=>!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{

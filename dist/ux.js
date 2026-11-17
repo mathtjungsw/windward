@@ -1,12 +1,12 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.17-harbor-development';
-import {shipArtPath} from './art.js?v=2026.11.17-harbor-development';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.17-harbor-development';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.17-harbor-development';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.17-harbor-development';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.17-harbor-development';
-import {autoSupplyDays,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.17-harbor-development';
-import {isTypingTarget} from './controls.js?v=2026.11.17-harbor-development';
-import {validCard} from './social-core.js?v=2026.11.17-harbor-development';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.17-promoted-ports-and-content';
+import {shipArtPath} from './art.js?v=2026.11.17-promoted-ports-and-content';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.17-promoted-ports-and-content';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.17-promoted-ports-and-content';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.17-promoted-ports-and-content';
+import {autoSupplyDays,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.17-promoted-ports-and-content';
+import {isTypingTarget} from './controls.js?v=2026.11.17-promoted-ports-and-content';
+import {validCard} from './social-core.js?v=2026.11.17-promoted-ports-and-content';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');

@@ -1,8 +1,8 @@
-import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.17-harbor-development';
-import {GOODS} from './data.js?v=2026.11.17-harbor-development';
-import {explorationGear} from './rumor-progress.js?v=2026.11.17-harbor-development';
-import {shipGlyph} from './art.js?v=2026.11.17-harbor-development';
-import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.17-harbor-development';
+import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.17-promoted-ports-and-content';
+import {GOODS} from './data.js?v=2026.11.17-promoted-ports-and-content';
+import {explorationGear} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
+import {shipGlyph} from './art.js?v=2026.11.17-promoted-ports-and-content';
+import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.17-promoted-ports-and-content';
 
 const button=(title,action,target='')=>`<button type="button" class="service-button" data-shore-action="${action}" data-shore-target="${target}">${title}</button>`;
 const nodes=['harbor','market','site','ridge'];
