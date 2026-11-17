@@ -1,4 +1,4 @@
-import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.16-rumor-filters.1';
+import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.17-harbor-development';
 
 export function createSeaActivityUI(api){
   let pending=false, timer, signature='';

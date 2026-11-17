@@ -1,5 +1,5 @@
-import {rankFleet} from './social-core.js?v=2026.11.16-rumor-filters.1';
-import {RANK_METRICS} from './rank-metrics.js?v=2026.11.16-rumor-filters.1';
+import {rankFleet} from './social-core.js?v=2026.11.17-harbor-development';
+import {RANK_METRICS} from './rank-metrics.js?v=2026.11.17-harbor-development';
 export {RANK_METRICS};
 export class CaptainRankings{
  constructor(fleet,onChange){this.fleet=fleet;this.onChange=onChange;this.rows={};this.myRanks={};this.metric='profit';this.visible=true;}

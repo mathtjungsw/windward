@@ -1,4 +1,4 @@
-import {harborGoal,harborPresenceOutcome,harborPracticeAction,settleHarborConnection,harborBattleAction} from './harbor-battles.js?v=2026.11.16-rumor-filters.1';
+import {harborGoal,harborPresenceOutcome,harborPracticeAction,settleHarborConnection,harborBattleAction} from './harbor-battles.js?v=2026.11.17-harbor-development';
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

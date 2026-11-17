@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.16-rumor-filters.1';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.16-rumor-filters.1';
-import {mapDistance} from './world-wrap.js?v=2026.11.16-rumor-filters.1';
-import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.16-rumor-filters.1';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.16-rumor-filters.1';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.16-rumor-filters.1';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome} from './port-income.js?v=2026.11.16-rumor-filters.1';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.17-harbor-development';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.17-harbor-development';
+import {mapDistance} from './world-wrap.js?v=2026.11.17-harbor-development';
+import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.17-harbor-development';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.17-harbor-development';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.17-harbor-development';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome,advanceBasicIncome,pendingTradeTax,claimTradeTax} from './port-income.js?v=2026.11.17-harbor-development';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));
@@ -46,12 +46,12 @@ export function projectView(project,content,uid,now){
   const owner=projectOwner(content);
   const phase=status(content,now);
   let base=0;
-  if(project.kind==='depot'&&phase==='open'&&owner===uid){
+  if(project.kind==='depot'&&phase==='open'&&(owner===uid||content.promotion?.level)){
     const preview={...content};
-    initializeBasicIncome(preview,project.id,owner,Math.max(content.readyAt,content.baseCollectedAt||0));
+    if(!content.promotion?.level)initializeBasicIncome(preview,project.id,owner,Math.max(content.readyAt,content.baseCollectedAt||0));
     base=estimateBasicIncome(preview,project.id,uid,owner,now).accrued;
   }
-  return {owner,raised:totalOf(content.investors),mine:amountOf(content.investors,uid),status:phase,readyAt:content.readyAt||0,stock:content.stock||0,toll:owner?content.toll||0:0,balance:amountOf(content.dividends,uid)+amountOf(content.activationDividends,uid)+base,base};
+  return {owner,raised:totalOf(content.investors),mine:amountOf(content.investors,uid),status:phase,readyAt:content.readyAt||0,stock:content.stock||0,toll:owner?content.toll||0:0,balance:amountOf(content.dividends,uid)+amountOf(content.activationDividends,uid)+base+pendingTradeTax(content,uid),base};
 }
 function consumeItem(game,id){
   if(!(game.rumorProgress?.items?.[id]>0))throw Error('사용할 증서가 가방에 없어요.');
@@ -148,6 +148,37 @@ function depotRegistry(project,content){
   content.registeredOwner=owner||'';
   return {id:project.id,kind:'depot',name:project.name,level:1,opensAt:content.readyAt,
     ownerUid:owner||'',ownerShare:owner?Math.floor(content.investors[owner]*10000/total)/100:0};
+}
+export function depotPromotion(project,content,uid,now,candidateOpen=false,vote=0){
+ const {level=0,support=0}=content.promotion||{};
+ const capital=content.registeredCapital||0;
+ const eligible=project.kind==='depot'&&capital>0&&status(content,now)==='open'&&level<3&&!candidateOpen;
+ const stake=amountOf(content.investors,uid),voted=vote===level+1;
+ return {level,support,capital,stake,voted,eligible,cost:[100000,200000,300000][level]||0,majority:capital>0&&support*2>capital};
+}
+export function changeDepotPromotion(game,content,uid,project,action,now,candidateOpen,vote,expectedLevel){
+ const plan=depotPromotion(project,content,uid,now,candidateOpen,vote);
+ if(!plan.eligible)throw Error('완공한 공동보급항의 승격 가능 상태를 확인하세요.');
+ if(expectedLevel!==plan.level)throw Error('공사 단계가 바뀌었어요. 다시 확인해 주세요.');
+ if(!plan.stake)throw Error('기존 투자자만 동의하거나 공사를 확정할 수 있어요.');
+ const panel=content.promotion??={level:0,support:0};
+ if(action==='promotion-vote'){
+  panel.support+=plan.voted?-plan.stake:plan.stake;
+  return {message:plan.voted?'공사 동의를 철회했어요.':'공사에 동의했어요.',extras:{['depotPromotionVotes/'+project.id+'/'+uid]:plan.voted?0:plan.level+1}};
+ }
+ if(!plan.majority||!plan.voted)throw Error('과반 지분 동의와 본인의 동의가 필요해요.');
+ if(game.port!==project.id||game.voyage||game.shoreTrip||game.seaJob||game.raidId||game.battleId||game.npcBattle)throw Error('공동보급항에 정박한 뒤 공사를 확정하세요.');
+ if(game.money<plan.cost)throw Error('공사에 필요한 두카트가 부족해요.');
+ const owner=projectOwner(content);
+ if(!plan.level){
+  if(owner)initializeBasicIncome(content,project.id,owner,Math.max(content.readyAt,content.baseCollectedAt||0));
+  delete content.baseCollectedAt;
+  panel.startedAt=now;
+ }else advanceBasicIncome(content,project.id,owner,now);
+ game.money-=plan.cost;
+ panel.level++;panel.support=0;
+ advanceBasicIncome(content,project.id,owner,now);
+ return {message:['정식 항구로 승격했어요.','교역소를 열었어요.','조선소를 열었어요.'][plan.level],registry:{...depotRegistry(project,content),promotionLevel:panel.level}};
 }
 export function normalizeDepotDock(game){
   const depot=PROJECT_BY_ID[game.depotDock];
@@ -252,10 +283,11 @@ export function projectAction(game,content,uid,id,action,requested,now,nav){
     let registry;
     if(view.base){
       if(project.kind==='depot'&&!content.registeredCapital&&view.raised+(content.materialCredit||0)===project.cost)registry=depotRegistry(project,content);
-      initializeBasicIncome(content,id,view.owner,Math.max(content.readyAt,content.baseCollectedAt||0));
+      if(!content.promotion?.level)initializeBasicIncome(content,id,view.owner,Math.max(content.readyAt,content.baseCollectedAt||0));
       claimBasicIncome(content,id,uid,view.owner,now);
       delete content.baseCollectedAt;
     }
+    if(content.promotion?.level)claimTradeTax(content,uid);
     return {message:view.balance.toLocaleString('ko-KR')+' D를 수령했어요.',...(registry?{registry}:{})};
   }
   if(action==='materials'){

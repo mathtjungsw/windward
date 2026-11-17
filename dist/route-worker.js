@@ -1,5 +1,5 @@
-import {Navigator} from './engine.js?v=2026.11.16-rumor-filters.1';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.16-rumor-filters.1';
+import {Navigator} from './engine.js?v=2026.11.17-harbor-development';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.17-harbor-development';
 
 let nav;
 self.onmessage=({data})=>{

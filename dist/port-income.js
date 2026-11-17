@@ -6,13 +6,15 @@ let dividendStart=0;
 export function configurePortDividends(at){
   dividendStart=Number.isSafeInteger(at)&&at>0?at:0;
 }
-export function dividendsEnabled(portId,now){
+export function dividendsEnabled(portId,now,content){
+  if(portId.startsWith('depot-'))return (content?.promotion?.level||0)>0;
   return dividendStart>0&&now>=dividendStart&&!NEUTRAL.has(portId)&&!portId.startsWith('depot-')&&!portId.startsWith('developed-');
 }
 const cleanAmount=value=>Math.round(value*1e6)/1e6;
 const assets=(content)=>Object.entries(content.investors||{}).filter(([,amount])=>Number.isSafeInteger(amount)&&amount>0);
 export function dividendRate(content,portId){
   const total=assets(content).reduce((sum,[,amount])=>sum+amount,0);
+  if(portId.startsWith('depot-'))return {total,boost:0,rate:total?(content.promotion?.level>=2?1000:500):0};
   const base=MAJOR.has(portId)?3000:1000;
   const boost=Math.min(.5,total/(MAJOR.has(portId)?600000:200000)*.05);
   return {total,boost,rate:total?base*(1+boost):0};
@@ -29,12 +31,13 @@ function accountAt(content,uid,rate,at,now){
   return cleanAmount(pending+Math.max(0,Math.min(rate*CAP_HOURS-Math.max(0,pending),rate*Math.max(0,now-at)/HOUR)));
 }
 function advanceDividends(content,id,owner,now){
-  const ledger=content.taxDividend??={at:dividendStart};
+  const start=content.promotion?.startedAt??dividendStart;
+  const ledger=content.taxDividend??={at:start};
   if(!ledger.rates){
     const legacy=content.basicIncome?.period;
     if(validPeriod(legacy)){
       const old=content.basicIncome.previous??={};
-      old[legacy.owner]=previousUnits(content,legacy.owner)+currentUnits(content,id,legacy,Math.max(dividendStart,legacy.at));
+      old[legacy.owner]=previousUnits(content,legacy.owner)+currentUnits(content,id,legacy,Math.max(start,legacy.at));
       delete content.basicIncome.period;
     }
   }
@@ -117,12 +120,13 @@ export function initializeBasicIncome(content,portId,owner,at){
   return true;
 }
 export function estimateBasicIncome(content,portId,uid,owner,now){
-  if(dividendsEnabled(portId,now)){
+  if(dividendsEnabled(portId,now,content)){
     const ledger=content.taxDividend;
     const legacy=content.basicIncome?.period;
-    const oldUnits=previousUnits(content,uid)+(validPeriod(legacy)&&legacy.owner===uid?currentUnits(content,portId,legacy,Math.max(dividendStart,legacy.at)):0);
+    const start=content.promotion?.startedAt??dividendStart;
+    const oldUnits=previousUnits(content,uid)+(validPeriod(legacy)&&legacy.owner===uid?currentUnits(content,portId,legacy,Math.max(start,legacy.at)):0);
     const rate=dividendRates(content,portId,owner,now)[uid]||0;
-    const amount=accountAt(content,uid,ledger?.rates?.[uid]??(ledger?0:rate),ledger?.at??dividendStart,now);
+    const amount=accountAt(content,uid,ledger?.rates?.[uid]??(ledger?0:rate),ledger?.at??start,now);
     return {active:rate>0,canStart:false,rate,accrued:Math.max(0,Math.round(amount+oldUnits/HOUR))};
   }
   const period=content.basicIncome?.period, own=owner===uid&&basicIncomeRate(content,portId,owner,now)>0;
@@ -131,7 +135,7 @@ export function estimateBasicIncome(content,portId,uid,owner,now){
     accrued:Math.floor(((active?currentUnits(content,portId,period,now):0)+previousUnits(content,uid))/HOUR)};
 }
 export function advanceBasicIncome(content,portId,owner,now){
-  if(dividendsEnabled(portId,now))return advanceDividends(content,portId,owner,now);
+  if(dividendsEnabled(portId,now,content))return advanceDividends(content,portId,owner,now);
   const current=content.basicIncome?.period, rate=owner?basicIncomeRate(content,portId,owner,now):0;
   if(!rate&&!validPeriod(current))return;
   const ledger=content.basicIncome??={};
@@ -145,7 +149,7 @@ export function advanceBasicIncome(content,portId,owner,now){
   }else delete ledger.period;
 }
 export function claimBasicIncome(content,portId,uid,owner,now){
-  if(dividendsEnabled(portId,now)){
+  if(dividendsEnabled(portId,now,content)){
     advanceDividends(content,portId,owner,now);
     const ledger=content.taxDividend,old=previousUnits(content,uid)/HOUR;
     const due=cleanAmount((ledger.basic?.[uid]||0)+old);

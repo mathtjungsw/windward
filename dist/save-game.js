@@ -1,18 +1,18 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.16-rumor-filters.1';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.16-rumor-filters.1';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.16-rumor-filters.1';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.16-rumor-filters.1';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.16-rumor-filters.1';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.17-harbor-development';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.17-harbor-development';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.17-harbor-development';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips,STORED_SHIP_LIMIT} from './ship-rules.js?v=2026.11.17-harbor-development';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.17-harbor-development';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.16-rumor-filters.1';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.17-harbor-development';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.16-rumor-filters.1';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.16-rumor-filters.1';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.16-rumor-filters.1';
-import {normalizeDepotDock} from './projects.js?v=2026.11.16-rumor-filters.1';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.16-rumor-filters.1';
-import {normalizeStories} from './story-core.js?v=2026.11.16-rumor-filters.1';
-import {validInlandSave} from './inland.js?v=2026.11.16-rumor-filters.1';
+import {normalizeSea} from './sea-activities.js?v=2026.11.17-harbor-development';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.17-harbor-development';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.17-harbor-development';
+import {normalizeDepotDock} from './projects.js?v=2026.11.17-harbor-development';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.17-harbor-development';
+import {normalizeStories} from './story-core.js?v=2026.11.17-harbor-development';
+import {validInlandSave} from './inland.js?v=2026.11.17-harbor-development';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;

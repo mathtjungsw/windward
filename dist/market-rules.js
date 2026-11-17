@@ -1,8 +1,8 @@
-import {tradeEvent} from './market-events.js?v=2026.11.16-rumor-filters.1';
-import {PORT_BY_ID,GOODS,eraMarketBoost} from './data.js?v=2026.11.16-rumor-filters.1';
-import {eraAt} from './era-cycle.js?v=2026.11.16-rumor-filters.1';
-import {eraTradeFactor} from './era-goods.js?v=2026.11.16-rumor-filters.1';
-import {regionalFactor} from './regional-economy.js?v=2026.11.16-rumor-filters.1';
+import {tradeEvent} from './market-events.js?v=2026.11.17-harbor-development';
+import {PORT_BY_ID,GOODS,eraMarketBoost} from './data.js?v=2026.11.17-harbor-development';
+import {eraAt} from './era-cycle.js?v=2026.11.17-harbor-development';
+import {eraTradeFactor} from './era-goods.js?v=2026.11.17-harbor-development';
+import {regionalFactor} from './regional-economy.js?v=2026.11.17-harbor-development';
 export const PREMIUM_STOCK_LIMIT=30,STOCK_PERIOD=7200000,MARKET_VERSION=3;
 // Version boundary is a fixed release epoch, never reset by a page reload.
 export const MARKET_V2_AT=1794293996252;

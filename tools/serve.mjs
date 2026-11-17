@@ -6,6 +6,7 @@ import {initialState} from '../dist/engine.js';
 import {applyRaftStart} from '../dist/raft-start.js';
 import {DISCOVERIES} from '../dist/discoveries-catalog.js';
 import {PORTS,DEPOT_SITES} from '../dist/data.js';
+import {DEVELOPMENT_SITES} from '../dist/coastal-sites.js';
 import {previewPrefix,previewHeader,previewStyles,previewEntry,previewShipRules} from './speed-preview.mjs';
 
 const root=fileURLToPath(new URL('../dist/',import.meta.url));
@@ -192,6 +193,36 @@ async function developmentPreviewPage(){
  return html.replace("const tag=document.createElement('p');",fixture+"const tag=document.createElement('p');");
 }
 
+async function harborDevelopmentPreview(mode){
+ const game=initialState(),depot=DEPOT_SITES.find(row=>row.id==='depot-reykjavik');
+ const candidate=DEVELOPMENT_SITES.find(row=>row.portId===depot.candidateId);
+ const docked=mode!=='develop';
+ Object.assign(game,{port:docked?depot.id:null,position:docked?depot.point:candidate.point,money:840000});
+ const html=await fixturePage(game),marker='beginPlaying('+JSON.stringify(game)+');';
+ const fixture=`
+   const opensAt=Date.now()-7200000,uid='harbor-preview',id=${JSON.stringify(depot.id)};
+   let vote=${mode==='waiting'?0:1};
+   const content={readyAt:opensAt,startedAt:opensAt-21600000,stock:386,registeredCapital:300000,registeredOwner:uid,
+     investors:{[uid]:192000,'sample-partner':108000},dividends:{[uid]:660},promotion:{level:0,support:vote?192000:0}};
+   const registry={[id]:{id,kind:'depot',name:${JSON.stringify(depot.name)},level:1,opensAt,ownerUid:uid,ownerShare:64}};
+   account.ready=true;account.uid=uid;account.name='검증 선장';account.save=()=>{};
+   account.sdk={ref:(_,key)=>key,get:async key=>({val:()=>key.includes('depotPromotionVotes')?vote:key.endsWith('harborRegistry')?registry:null}),onValue:()=>()=>{}};
+   account.readShared=async(kind,key)=>({revision:1,content:kind==='projects'&&key===id?structuredClone(content):{}});
+   account.atomicAction=async(kind,key,mutate)=>{
+     const game=structuredClone(state),shared=(await account.readShared(kind,key)).content;
+     const result=await mutate(game,shared,Date.now(),1);
+     if(kind==='projects'&&key===id)Object.assign(content,shared);
+     if(result.registry)registry[result.registry.id]=result.registry;
+     if(result.extras)vote=result.extras['depotPromotionVotes/'+id+'/'+uid];
+     account.applyGame(game);
+     return result;
+   };
+   window.windwardHarborQA={open:async()=>{await business.syncPorts();state.legacyHarbor=false;if(${docked})return projectsUI.inspect(id);return business.showDevelopment();},
+    list:()=>business.showDevelopment(),game:()=>structuredClone(state),registry:()=>structuredClone(registry)};
+ `;
+ return html.replace(marker,marker+fixture);
+}
+
 async function emulatorAccount(){
   let account= (await read('account.js'))
     .replace("appSdk.initializeApp(FIREBASE_CONFIG, 'windward-google')",
@@ -229,6 +260,7 @@ const server=createServer(async(req,res)=>{
     if(useEmulators&&url.pathname==='/account.js')return reply(res,'.js',await emulatorAccount());
     const manual={...initialState(),port:null,controlMode:'manual'};
     if(url.pathname==='/__qa/development')return reply(res,'.html',await developmentPreviewPage());
+    if(url.pathname==='/__qa/harbor-development')return reply(res,'.html',await harborDevelopmentPreview(url.searchParams.get('mode')));
     if(url.pathname==='/__qa/inland-album')return reply(res,'.html',await inlandAlbumPreview(url.searchParams.has('suez'),url.searchParams.has('blessing')));
     if(url.pathname==='/__qa/expedition')return reply(res,'.html',await expeditionPage(url.searchParams.get('mode')));
     if(url.pathname==='/__qa/harbor')return reply(res,'.html',await fixturePage({...manual,position:[url.searchParams.has('near')?-9.44:-10.1,41]}));

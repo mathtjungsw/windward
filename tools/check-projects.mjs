@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {initialState} from '../dist/engine.js';
-import {nextFreightParticipation,projectAction,PROJECT_BY_ID} from '../dist/projects.js';
+import {changeDepotPromotion,nextFreightParticipation,projectAction,PROJECT_BY_ID} from '../dist/projects.js';
 
 const namespace='demo-windward-projects',url='http://127.0.0.1:9000/',timestamp={'.sv':'timestamp'};
 const project='freight-porto',path='shared/projects/'+project;
@@ -32,11 +32,12 @@ async function prepare(uid,action,amount,key=project){
   const node='shared/projects/'+key;
   const [personal,shared]=await Promise.all([request('gameV2/privateSaves/'+uid,{uid}),request('gameV2/'+node,{uid})]);
   const old=personal.value,current=shared.value||{revision:0,content:{}},game=JSON.parse(old.data),content=current.content;
-  const result=projectAction(game,content,uid,key,action,amount,Date.now());
+  const vote=action.startsWith('promotion-')?(await request('gameV2/depotPromotionVotes/'+key+'/'+uid,{uid})).value:0;
+  const result=action.startsWith('promotion-')?changeDepotPromotion(game,content,uid,PROJECT_BY_ID[key],action,Date.now(),false,vote,amount):projectAction(game,content,uid,key,action,amount,Date.now());
   const sequence=old.operationSequence+1,id=uid+':'+sequence,revision=old.revision+1,sharedRevision=current.revision+1;
   const receipt={id,sequence,kind:'projects',key,sharedRevision,...(old.schemaVersion>=13?{blessingStart:0}:{})};
   const record={revision:sharedRevision,content:{...content,_version:1},updatedAt:timestamp,lastOperation:{id,uid,sequence,saveRevision:revision}};
-  return {result,patch:{['privateSaves/'+uid]:{...old,revision,operationSequence:sequence,lastOperation:receipt,data:JSON.stringify(game),updatedAt:timestamp},[node]:record,...(result.registry?{['harborRegistry/'+key]:result.registry}:{})}};
+  return {result,patch:{['privateSaves/'+uid]:{...old,revision,operationSequence:sequence,lastOperation:receipt,data:JSON.stringify(game),updatedAt:timestamp},[node]:record,...result.extras,...(result.registry?{['harborRegistry/'+key]:result.registry}:{})}};
 }
 const commit=(uid,body)=>request('gameV2',{uid,method:'PATCH',body});
 const alice='test-alice',bob='test-bob';
@@ -83,6 +84,53 @@ const joint='depot-davao';
 assert.equal((await commit(alice,(await prepare(alice,'invest',150000,joint)).patch)).status,200);
 assert.equal((await commit(bob,(await prepare(bob,'invest',150000,joint)).patch)).status,200);
 assert.equal((await request('gameV2/harborRegistry/'+joint,{uid:alice})).value.ownerUid,'');
+for(const [path,body] of [['shared/projects/'+joint+'/content',{readyAt:openedAt,startedAt:openedAt-21600000,dividends:{[alice]:125,[bob]:70}}],['harborRegistry/'+joint,{opensAt:openedAt}]]){
+  assert.equal((await request('gameV2/'+path,{admin:true,method:'PATCH',body})).status,200);
+}
+for(const uid of [alice,bob]){
+  const path='gameV2/privateSaves/'+uid, record=(await request(path,{uid})).value,game=JSON.parse(record.data);
+  game.port=joint;game.position=PROJECT_BY_ID[joint].site.point;game.money=1000000;
+  assert.equal((await request(path,{admin:true,method:'PATCH',body:{data:JSON.stringify(game)}})).status,200);
+}
+const aliceVote=await prepare(alice,'promotion-vote',0,joint);
+const overstated=structuredClone(aliceVote.patch);
+overstated['shared/projects/'+joint].content.promotion.support+=1;
+assert.equal((await commit(alice,overstated)).status,401);
+assert.equal((await request('gameV2/depotPromotionVotes/'+joint+'/'+bob,{uid:alice,method:'PUT',body:1})).status,401);
+assert.equal((await commit(alice,aliceVote.patch)).status,200);
+await assert.rejects(prepare(alice,'promotion-confirm',0,joint),/과반/);
+assert.equal((await commit(bob,(await prepare(bob,'promotion-vote',0,joint)).patch)).status,200);
+const attempts=await Promise.all([prepare(alice,'promotion-confirm',0,joint),prepare(bob,'promotion-confirm',0,joint)]);
+const invalid=structuredClone(attempts[0].patch);
+delete invalid['harborRegistry/'+joint];
+assert.equal((await commit(alice,invalid)).status,401);
+const wins=await Promise.all(attempts.map(({patch},i)=>commit([alice,bob][i],patch)));
+assert.equal(wins.filter(result=>result.status===200).length,1);
+const promoted=(await request('gameV2/shared/projects/'+joint+'/content',{uid:bob})).value;
+assert.deepEqual(promoted.investors,{[alice]:150000,[bob]:150000});
+assert.deepEqual(promoted.dividends,{[alice]:125,[bob]:70});
+assert.equal(promoted.stock,400);
+assert.equal(promoted.promotion.level,1);
+assert.equal((await request('gameV2/harborRegistry/'+joint,{uid:alice})).value.promotionLevel,1);
+const balances=await Promise.all([alice,bob].map(async uid=>JSON.parse((await request('gameV2/privateSaves/'+uid,{uid})).value.data).money));
+assert.equal(balances[0]+balances[1],1900000);
+for(const uid of [alice,bob])assert.equal((await commit(uid,(await prepare(uid,'promotion-vote',1,joint)).patch)).status,200);
+const expansion=await prepare(alice,'promotion-confirm',1,joint);
+assert.equal((await commit(alice,expansion.patch)).status,200);
+assert.equal((await request('gameV2/harborRegistry/'+joint,{uid:alice})).value.promotionLevel,2);
+for(const uid of [alice,bob])assert.equal((await commit(uid,(await prepare(uid,'promotion-vote',2,joint)).patch)).status,200);
+assert.equal((await commit(alice,(await prepare(alice,'promotion-confirm',2,joint)).patch)).status,200);
+assert.equal((await request('gameV2/harborRegistry/'+joint,{uid:alice})).value.promotionLevel,3);
+const baseline=(await request('gameV2/privateSaves/'+alice,{uid:alice})).value;
+const originalGame=JSON.parse(baseline.data);originalGame.port=depot;
+assert.equal((await request('gameV2/privateSaves/'+alice,{admin:true,method:'PATCH',body:{data:JSON.stringify(originalGame)}})).status,200);
+assert.equal((await commit(alice,(await prepare(alice,'promotion-vote',0,depot)).patch)).status,200);
+const majorityUpgrade=await prepare(alice,'promotion-confirm',0,depot);
+assert.equal((await commit(alice,majorityUpgrade.patch)).status,200);
+const majorityPort=(await request('gameV2/shared/projects/'+depot+'/content',{uid:alice})).value;
+assert.ok(majorityPort.basicIncome.previous[alice]>=0);
+assert.equal(majorityPort.taxDividend.rates[alice]+majorityPort.taxDividend.rates[bob],500);
+console.log('PASS: promotion votes are weighted, require a strict majority, and preserve capital, stock and unsettled dividends. Only one competing confirmation can charge.');
 console.log('PASS: local Firebase projects use individual reads, atomic shared revisions, cargo limits, and one-time split rewards.');
 
 const captain='quota-captain',counter='freightParticipation/'+captain,savePath='gameV2/privateSaves/'+captain;

@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.16-rumor-filters.1';
-import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.16-rumor-filters.1';
-import {PORT_BY_ID} from './data.js?v=2026.11.16-rumor-filters.1';
+import {ownership} from './commerce.js?v=2026.11.17-harbor-development';
+import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.17-harbor-development';
+import {PORT_BY_ID} from './data.js?v=2026.11.17-harbor-development';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;
@@ -55,7 +55,7 @@ export function collectPortTaxes(game,content,uid,port,dueAt,now){
  const visit=collectorVisits(collector,now).find(row=>row.port===port&&row.pending&&row.at===dueAt);
  if(!visit)throw Error('아직 방문 시각이 아니거나 이미 징수한 항구예요.');
  const owner=port.startsWith('depot-')?content.registeredOwner:ownership(content).ownerUid;
- const shared=dividendsEnabled(port,now);
+ const shared=dividendsEnabled(port,now,content);
  if(!shared&&(owner!==uid||content.ownerSince>dueAt)){
   collector.visits[port]=dueAt;
   return {message:'소유 기간을 확인해 이번 징수는 건너뛰었어요.',gross:0};
@@ -80,7 +80,7 @@ export function collectPortTaxes(game,content,uid,port,dueAt,now){
 }
 
 export function createTaxCollector(api){
- let running=false,lastCheck=0,seedOwner=null,seedPorts=[];
+ let running=false,lastCheck=0,seedOwner=null,seedPorts=[],depotSeed='',depotPorts=[];
  const time=at=>new Date(at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'short',timeStyle:'short'});
  const fmt=n=>Number(n||0).toLocaleString('ko-KR');
  async function myPorts(){
@@ -92,9 +92,16 @@ export function createTaxCollector(api){
    seedPorts=Object.keys(snapshot.val()||{});seedOwner=uid;
   }
   const game=api.game();
+  const promoted=Object.values(PORT_BY_ID).filter(port=>port.promotionLevel).map(port=>port.id);
+  const depotKey=uid+'|'+promoted.join(',');
+  if(depotSeed!==depotKey){
+   const records=await Promise.all(promoted.map(id=>api.account.readShared('projects',id)));
+   depotPorts=promoted.filter((id,index)=>records[index].content?.investors?.[uid]);
+   depotSeed=depotKey;
+  }
   const cleared=new Set(game.taxCollector?.clearedPorts||[]);
   const history=[...seedPorts,...(game.taxDividendPorts||[])].filter(id=>!cleared.has(id));
-  return [...new Set([...owned,...history,...(game.investedPorts||[])])].filter(id=>Object.hasOwn(PORT_BY_ID,id));
+  return [...new Set([...owned,...history,...depotPorts,...(game.investedPorts||[])])].filter(id=>Object.hasOwn(PORT_BY_ID,id));
  }
  async function tick(force=false){
   if(running||!api.game().taxCollector||!api.account.ready||api.account.busy||api.account.economicUncertain||!navigator.onLine||!force&&Date.now()-lastCheck<30000)return;

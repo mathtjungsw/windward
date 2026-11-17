@@ -1,5 +1,5 @@
-import {PORTS,GOODS} from './data.js?v=2026.11.16-rumor-filters.1';
-import {taxRate,permitted,captainTradeQuote,NEUTRAL_PORTS} from './commerce.js?v=2026.11.16-rumor-filters.1';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.17-harbor-development';
+import {taxRate,permitted,captainTradeQuote,NEUTRAL_PORTS} from './commerce.js?v=2026.11.17-harbor-development';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const SALE_SEARCH_NOTICE='지금 검색한 시점에 조회한 시세 기준 최고가입니다. 시세와 세금은 실제 판매할 때 달라질 수 있어요.';
 export function ownedTradeGoods(game){const result={};for(const cargo of [game.cargo,JSON.parse(game.battleReserve?.cargoJSON||'{}')])for(const [id,c]of Object.entries(cargo||{}))if(GOODS[id]&&c.qty>0)result[id]=(result[id]||0)+c.qty;return result;}
@@ -32,6 +32,12 @@ async function readPortPolicy(read,portId,uid,includeRates){
  return policy;
 }
 export async function readSalePort(account,port,goodId,remoteRead){
+ if(port.promotionLevel>=2){
+  const {content}=await account.readShared('projects',port.id);
+  if(!(content.promotion?.level>=2))throw Error('항구 교역소 상태를 확인하지 못했어요.');
+  if(GOODS[goodId]?.source===port.id)return {port,item:await portReader(account,port.id,remoteRead)('markets/'+goodId),policy:{}};
+  return {port,item:content.markets?.[goodId],policy:content};
+ }
  const read=portReader(account,port.id,remoteRead);
  const [item,policy]=await Promise.all([read('markets/'+goodId),readPortPolicy(read,port.id,account.uid,true)]);
  if(item!=null&&(typeof item!=='object'||Array.isArray(item)))throw Error('항구 시세를 확인하지 못했어요.');
@@ -39,6 +45,10 @@ export async function readSalePort(account,port,goodId,remoteRead){
 }
 export async function readSaleAccess(account,portId,remoteRead){
  const uid=account.uid;
+ if(PORT_BY_ID[portId]?.promotionLevel>=2){
+  const {content}=await account.readShared('projects',portId);
+  return permitted(content,uid);
+ }
  const policy=await readPortPolicy(portReader(account,portId,remoteRead),portId,uid,false);
  return permitted(policy,uid);
 }
@@ -108,7 +118,7 @@ export function createSaleFinder(api){
     await api.syncPorts?.();
     if(!current())return;
     const known=new Set(api.getState().knownPorts||[]);
-    const ports=PORTS.filter(p=>!p.depot&&(!p.developable||p.developmentLevel>=2)&&(!knownOnly||known.has(p.id)));
+    const ports=PORTS.filter(p=>(!p.depot||p.promotionLevel>=2)&&(!p.developable||p.developmentLevel>=2)&&(!knownOnly||known.has(p.id)));
     const {rows,failed}=await scanSalePorts(ports,p=>readSalePort(a,p,goodId,remote),current);
     if(!current())return;
     const at=Date.now()+(a.serverOffset||0);

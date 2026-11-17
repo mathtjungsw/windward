@@ -1,7 +1,7 @@
-import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.16-rumor-filters.1';
-import {fleetCount} from './ship-rules.js?v=2026.11.16-rumor-filters.1';
-import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.16-rumor-filters.1';
-import {canalPassDiscount} from './canal-reservations.js?v=2026.11.16-rumor-filters.1';
+import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.17-harbor-development';
+import {fleetCount} from './ship-rules.js?v=2026.11.17-harbor-development';
+import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,depotPromotion,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.17-harbor-development';
+import {canalPassDiscount} from './canal-reservations.js?v=2026.11.17-harbor-development';
 
 const $=s=>document.querySelector(s), fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const time=at=>at?new Date(at).toLocaleString('ko-KR',{dateStyle:'short',timeStyle:'short'}):'';
@@ -29,7 +29,7 @@ export function createProjectsUI(api){
       });
     }
   }
-  async function inspect(id){
+  async function inspect(id,keepPromotion=false){
     const project=PROJECTS.find(p=>p.id===id);
     if(!project)return;
     const token=++sequence;
@@ -40,9 +40,9 @@ export function createProjectsUI(api){
     if(token!==sequence||!$('#project-loading'))return;
     const game=api.game(),content=record.content||{},view=projectView(project,content,api.uid(),api.now());
     const button=(action,label,value='')=>`<button data-project-action="${action}" value="${value}">${label}</button>`;
-    const field=(min,value,max=10000000,step=1)=>`<label>수량 또는 금액 <input type="number" inputmode="numeric" id="project-quantity" min="${min}" max="${max}" step="${step}" value="${value}"></label>`;
+    const field=(min,value,max=10000000,step=1,label='수량 또는 금액')=>`<label>${label} <input type="number" inputmode="numeric" id="project-quantity" min="${min}" max="${max}" step="${step}" value="${value}"></label>`;
     const has=id=>!!game.rumorProgress?.items?.[id];
-    let details,actions='';
+    let details,actions='',promotion=null;
     if(project.kind==='freight'){
       const {remaining}=freightParticipation(record.freightParticipation,api.now());
       const rounds=Math.floor(remaining/project.goal);
@@ -68,17 +68,24 @@ export function createProjectsUI(api){
       }
       if(view.status==='building'&&project.kind==='canal'&&has('I051')&&!content.dredged)actions+=button('dredge','준설 장비 계약 사용');
       if(view.status==='open'&&project.kind==='depot'){
-        details+=`<p>재고 ${view.stock}일분(한 척 기준) · 척당 하루 4 D</p>`;
+        promotion=depotPromotion(project,content,api.uid(),api.now(),!!ACTIVE_PORT_BY_ID[project.site.candidateId],record.promotionVote);
+        details+=`<p>보급 재고 ${fmt(view.stock)}일분(한 척 기준) · 척당 하루 4 D</p>`;
         if(!content.registeredCapital)actions+=button('register','완공한 보급항을 해도에 등록');
-        else if(ACTIVE_PORT_BY_ID[id])details+='<p>해도와 항구 찾기에 등록된 보급항</p>';
+        else if(!promotion.level&&ACTIVE_PORT_BY_ID[id])details+='<p>해도와 항구 찾기에 등록된 보급항</p>';
         if(game.depotDock!==id&&game.port!==project.site.portId)actions+=button('go','보급소로 항해');
-        if(view.owner===api.uid())details+='<p>운영자 기본 세수 · 시간당 500 D · 최대 72시간</p>';
+        if(!promotion.level&&view.owner===api.uid())details+='<p>운영자 기본 세수 · 시간당 500 D · 최대 72시간</p>';
+        if(!promotion.level)actions+=button('candidate','정식 항구 후보지 보기');
+        if(promotion.level||promotion.eligible)actions+=button('promotion',promotion.level?'항구 시설·확장':'정식 항구 승격');
+        else if(ACTIVE_PORT_BY_ID[project.site.candidateId])details+='<p>인근 정식 항구가 개발되어 공동보급항을 따로 운영해요.</p>';
         if(depotAccess(game,project,api.nav())){
           if(game.depotDock!==id&&game.port!==project.site.portId)actions+=button('dock','보급소 정박');
           else{
             details+='<p>정박 중 · 공격 보호</p>';
-            actions+=field(1,10,1000)+button('supply','보급 구매');
+            actions+=field(1,10,1000,1,'보급 일수')+button('supply','보급 구매');
             if(game.port===id&&ACTIVE_PORT_BY_ID[id])actions+=button('specialty-market','특산품·공용 납품');
+            if(promotion.level>=2)actions+=button('market','교역소 열기');
+            if(promotion.level>=3)actions+=button('shipyard','조선소 열기');
+            if(promotion.level>=2&&view.owner===api.uid())actions+=button('tax-policy','교역 세율 관리');
             if(has('I053'))actions+=button('stock','보급 창고 증서 사용');
           }
         }
@@ -105,16 +112,48 @@ export function createProjectsUI(api){
       }
       if(view.balance)actions+=button('dividend',`수입 ${fmt(view.balance)} D 받기`);
     }
-    api.modal(project.name,labels[project.kind],`${details}<div class="project-actions">${actions}</div>
+    api.modal(promotion?.level?project.site.cityName+'항':project.name,promotion?.level?'개발 항구 · '+promotion.level+'단계':labels[project.kind],`${details}<div class="project-actions">${actions}</div>
       <p id="business-result" role="status"></p><button id="project-list">사업 목록</button>`,'wide');
     $('#project-list').onclick=()=>open(project.kind);
     document.querySelectorAll('[data-project-action]').forEach(b=>b.onclick=async()=>{
       const action=b.dataset.projectAction;
       if(action==='specialty-market')return api.openSpecialty?.(project.id);
+      if(action==='candidate')return api.lookCandidate?.(project.site.previousPoint,project.site.cityName+' 정식 항구 후보지');
+      if(action==='market')return api.openMarket?.(id);
+      if(action==='shipyard')return api.openShipyard?.();
+      if(action==='tax-policy')return api.openTaxPolicy?.(id);
+      if(action==='promotion')return showPromotion(project,promotion,view);
       if(action==='go'||action==='entrance')return api.go(project,action,view);
       const number=b.value?Number(b.value):Number($('#project-quantity')?.value);
       await api.action(project,action,number,()=>action==='transit'?api.close():inspect(id));
     });
+    if(keepPromotion&&promotion)showPromotion(project,promotion,view);
+  }
+  function showPromotion(project,plan,view){
+    const game=api.game(),name=['정식 항구 승격','교역소 확장','조선소 확장'][plan.level];
+    const percentage=plan.capital?(100*plan.support/plan.capital).toFixed(2):'0';
+    const docked=game.port===project.id&&!game.voyage;
+    const reason=!plan.eligible?'시설 확장을 마쳤어요.':!plan.stake?'기존 투자자만 참여할 수 있어요.':
+      !plan.majority?'지분 50%를 넘어야 확정할 수 있어요.':!plan.voted?'동의한 투자자가 확정할 수 있어요.':
+      !docked?'이 항구에 정박한 뒤 확정할 수 있어요.':game.money<plan.cost?'확정할 두카트가 부족해요.':'';
+    api.modal(name||'항구 시설',project.site.cityName+' · '+(plan.level?'개발 '+plan.level+'단계':'공동보급항'),`
+      <div class="harbor-cost"><span>동의 지분</span><strong>${percentage}%</strong><small>과반 필요 · 내 지분 ${plan.capital?(100*plan.stake/plan.capital).toFixed(2):'0'}%</small></div>
+      ${name?`<div class="harbor-cost"><span>확정 선장 부담</span><strong>${fmt(plan.cost)} D</strong><small>보유 ${fmt(game.money)} D</small></div>`:''}
+      <p>기존 지분, 보급 재고 ${fmt(view.stock)}일분, 미수령 수익을 이어받아요.</p>
+      <ol class="harbor-stages">${['정식 항구 개항','교역소 개설','조선소 개설'].map((label,i)=>`<li ${plan.level===i?'aria-current="step"':''}>${i+1}단계 · ${label}${plan.level>i?' ✓':''}</li>`).join('')}</ol>
+      <div class="harbor-development-actions"><button id="promotion-back">보급항 정보</button>${plan.eligible&&plan.stake?`<button id="promotion-vote">${plan.voted?'동의 철회':'공사에 동의'}</button>`:''}
+        ${name?`<button id="promotion-confirm" class="primary-button" ${reason?'disabled':''}>${plan.level?'확장 확정':'승격 확정'}</button>`:''}</div>
+      <p id="business-result" role="status">${reason}</p>`,'medium');
+    $('#promotion-back').onclick=()=>inspect(project.id);
+    for(const action of ['vote','confirm']){
+      const button=$('#promotion-'+action);
+      if(!button)continue;
+      button.onclick=async()=>{
+        button.disabled=true;
+        await api.action(project,'promotion-'+action,plan.level,()=>inspect(project.id,action==='vote'));
+        if(button.isConnected)button.disabled=false;
+      };
+    }
   }
   return {open,inspect};
 }

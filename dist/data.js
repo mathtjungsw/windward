@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.16-rumor-filters.1';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.16-rumor-filters.1';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.16-rumor-filters.1';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.16-rumor-filters.1';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.16-rumor-filters.1';
-import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.16-rumor-filters.1';
-import {eraAt} from './era-cycle.js?v=2026.11.16-rumor-filters.1';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.17-harbor-development';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.17-harbor-development';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.17-harbor-development';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.17-harbor-development';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.17-harbor-development';
+import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.17-harbor-development';
+import {eraAt} from './era-cycle.js?v=2026.11.17-harbor-development';
 Object.assign(GOODS,PREMIUM_GOODS,ERA_GOODS);
 
 export {GOODS};
@@ -51,8 +51,9 @@ export const ACTIVE_PORT_BY_ID=Object.fromEntries(PORTS.map(p=>[p.id,p]));
 export const DEPOT_SITES=[['stjohns',.35,0],['reykjavik',-.55,0],['mogadishu',.35,0],['davao',.35,0],['cairns',.2,.15],['comodoro',.35,0]].map(([key,dx,dy])=>{
   const site=DEVELOPMENT_SITES.find(row=>row.id==='develop-'+key);
   const lon=Number((site.lon+dx).toFixed(6)),lat=Number((site.lat+dy).toFixed(6));
-  return {...site,id:'depot-'+key,portId:'depot-'+key,name:site.name+' 공동 보급항',lon,lat,point:[lon,lat],previousPoint:site.point};
+  return {...site,id:'depot-'+key,portId:'depot-'+key,candidateId:site.portId,cityName:site.name,name:site.name+' 공동 보급항',lon,lat,point:[lon,lat],previousPoint:site.point};
 });
+export const DEPOT_BY_CANDIDATE=Object.fromEntries(DEPOT_SITES.map(site=>[site.candidateId,site]));
 for(const site of DEVELOPMENT_SITES)PORT_BY_ID[site.portId]={...site,id:site.portId,name:site.name,en:site.name,developable:true,active:false,market:[],specialty:Object.keys(site.stock).find(id=>site.stock[id]==='producer')||Object.keys(site.stock)[0],economy:{stock:site.stock,demand:site.demand,demandTiers:site.demandTiers},pricePhase:200+DEVELOPMENT_SITES.indexOf(site)};
 for(const site of DEPOT_SITES)PORT_BY_ID[site.id]={...site,en:site.name,sea:'공동 보급항',depot:true,active:false,market:[],economy:{stock:{},demand:[],demandTiers:{}},specialty:'grain',fact:'선장들이 공동으로 건설한 보급항입니다. 정박한 뒤 공동 창고에서 식량을 구입할 수 있어요.'};
 const unmatched=new Map();
@@ -71,26 +72,33 @@ export const harborMarket=(port,now)=>{
  const era=eraAt(now);
  if(!era)return port.market;
  return [...new Set([...port.market,...(unmatched.get(port.id)||[]).filter(id=>!GOODS[id].era||GOODS[id].era===era.id),
-  ...(port.depot?[]:regionalEraGoods(port,era).filter(id=>!GOODS[id].legacy))])];
+  ...(port.depot&&!(port.promotionLevel>=2)?[]:regionalEraGoods(port,era).filter(id=>!GOODS[id].legacy))])];
 };
 export const harborSupply=(port,id,now)=>port.economy?.stock?.[id]||(unmatched.get(port.id)?.includes(id)?'local':
- !port.depot&&regionalEraGoods(port,eraAt(now)).includes(id)?'import':null);
+ (!port.depot||port.promotionLevel>=2)&&regionalEraGoods(port,eraAt(now)).includes(id)?'import':null);
 export const eraMarketBoost=(id,mode,era)=>era&&eraHighlights[id]===era.id&&mode==='sell'?1.04:1;
 export function registerDevelopedPorts(registry={},now=Date.now()){
   const added=[];
   for(const site of [...DEVELOPMENT_SITES,...DEPOT_SITES]){
     const entry=registry[site.portId],port=PORT_BY_ID[site.portId];
     if(!entry||!Number.isInteger(entry.level)||entry.level<1)continue;
+    const previousLevel=port.promotionLevel||0;
     if(port.depot){
       if(entry.kind!=='depot'||!Number.isSafeInteger(entry.opensAt)||entry.opensAt>now)continue;
       port.ownerUid=entry.ownerUid||null;
       port.ownerShare=entry.ownerShare||0;
+      port.promotionLevel=Number.isInteger(entry.promotionLevel)&&entry.promotionLevel>=1&&entry.promotionLevel<=3?entry.promotionLevel:0;
+      port.name=port.promotionLevel?site.cityName+'항':site.name;
+      port.en=port.name;
+      port.market=port.promotionLevel>=2?site.market:[];
+      port.economy=port.promotionLevel>=2?{stock:site.stock,demand:site.demand,demandTiers:site.demandTiers}:{stock:{},demand:[],demandTiers:{}};
     }else{
       port.name=String(entry.name||site.name).replace(/[<>&"'\u0000-\u001f]/g,'').slice(0,16);
       port.market=entry.level>=2?site.market:[];
     }
     Object.assign(port,{developmentLevel:entry.level,active:true});
     if(!ACTIVE_PORT_BY_ID[port.id]){PORTS.push(port);ACTIVE_PORT_BY_ID[port.id]=port;added.push(port);}
+    else if(previousLevel!==(port.promotionLevel||0))added.push(port);
   }
   return added;
 }

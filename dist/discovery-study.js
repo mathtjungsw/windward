@@ -1,4 +1,4 @@
-import {DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.16-rumor-filters.1';
+import {DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.17-harbor-development';
 // Geographic context for the catalog. Sources for real sites and species are listed on the cards.
 const records={
  'ruin-azores':['포르투갈 아소르스 제도, 테르세이라섬의 앙그라 두 에루이즈무','유럽과 아프리카·아메리카를 오가는 선단이 대서양을 건너며 이 항구에 들렀어요. 만의 입구를 지키는 요새들은 항구를 보급과 방어에 어떻게 활용했는지 보여 줍니다.'],

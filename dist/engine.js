@@ -1,18 +1,18 @@
-import {blessingBonus,blessingBoundary,blessingNow,blessingRate} from './blessings.js?v=2026.11.16-rumor-filters.1';
-import {inlandBlocksSailing} from './inland.js?v=2026.11.16-rumor-filters.1';
-import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.16-rumor-filters.1';
-import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.16-rumor-filters.1';
-import {regionalFactor} from './regional-economy.js?v=2026.11.16-rumor-filters.1';
-import {recordTrade} from './rank-progress.js?v=2026.11.16-rumor-filters.1';
-import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.16-rumor-filters.1';
-import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,STORED_SHIP_LIMIT,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.16-rumor-filters.1';
-import {parseState} from './save-game.js?v=2026.11.16-rumor-filters.1';
-import {gunWeight} from './cannons.js?v=2026.11.16-rumor-filters.1';
-import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.16-rumor-filters.1';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.16-rumor-filters.1';
-import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.16-rumor-filters.1';
-import {charterCargo} from './guild-contracts.js?v=2026.11.16-rumor-filters.1';
-export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.16-rumor-filters.1';
+import {blessingBonus,blessingBoundary,blessingNow,blessingRate} from './blessings.js?v=2026.11.17-harbor-development';
+import {inlandBlocksSailing} from './inland.js?v=2026.11.17-harbor-development';
+import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.17-harbor-development';
+import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.17-harbor-development';
+import {regionalFactor} from './regional-economy.js?v=2026.11.17-harbor-development';
+import {recordTrade} from './rank-progress.js?v=2026.11.17-harbor-development';
+import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.17-harbor-development';
+import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,STORED_SHIP_LIMIT,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.17-harbor-development';
+import {parseState} from './save-game.js?v=2026.11.17-harbor-development';
+import {gunWeight} from './cannons.js?v=2026.11.17-harbor-development';
+import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.17-harbor-development';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.17-harbor-development';
+import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.17-harbor-development';
+import {charterCargo} from './guild-contracts.js?v=2026.11.17-harbor-development';
+export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.17-harbor-development';
 
 export const SAVE_KEY='windward-save-v1';
 export const START_DATE=Date.UTC(1522,3,6);
@@ -209,7 +209,10 @@ export function recallShip(s,id,expectedPort){
  return {ok:true,message:vesselSpec(quote.vessel).name+'이(가) 항해 선단에 합류했어요.'};
 }
 export function sellPrice(portId,goodId,day){return Math.floor(price(portId,goodId,day)*0.88);}
-export const tradingPort=s=>s.voyage||inlandBlocksSailing(s,Date.now())||PORT_BY_ID[s.port]?.depot?null:PORT_BY_ID[s.port]||null;
+export const tradingPort=s=>{
+ const port=PORT_BY_ID[s.port];
+ return s.voyage||inlandBlocksSailing(s,Date.now())||port?.depot&&!(port.promotionLevel>=2)?null:port||null;
+};
 export function buy(s,goodId,qty){
   qty=Math.floor(qty);
   if(GOODS[goodId]?.legacy || !tradingPort(s)?.market.includes(goodId) || !Number.isFinite(qty)||qty<=0)return {ok:false,error:'구매할 수량을 확인하세요.'};

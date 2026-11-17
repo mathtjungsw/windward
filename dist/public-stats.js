@@ -1,11 +1,11 @@
-import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.16-rumor-filters.1';
-import {GOODS} from './data.js?v=2026.11.16-rumor-filters.1';
-import {Exploration} from './voyage-core.js?v=2026.11.16-rumor-filters.1';
-import {explorationStats} from './exploration-score.js?v=2026.11.16-rumor-filters.1';
-import {discoveryStats} from './discoveries.js?v=2026.11.16-rumor-filters.1';
-import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.16-rumor-filters.1';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.16-rumor-filters.1';
-import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.16-rumor-filters.1';
+import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.17-harbor-development';
+import {GOODS} from './data.js?v=2026.11.17-harbor-development';
+import {Exploration} from './voyage-core.js?v=2026.11.17-harbor-development';
+import {explorationStats} from './exploration-score.js?v=2026.11.17-harbor-development';
+import {discoveryStats} from './discoveries.js?v=2026.11.17-harbor-development';
+import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.17-harbor-development';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.17-harbor-development';
+import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.17-harbor-development';
 export function collectionRankStats(game){
  const progress=game.rumorProgress,acquired=new Set(progress?.acquiredItems||[]),officers=new Set(progress?.officers||[]);
  return {shoreCompleted:game.shoreProgress?.count||0,rareFinds:DISCOVERIES.filter(d=>d.tier>=3&&game.discoveries?.[d.id]).length,

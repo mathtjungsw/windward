@@ -88,6 +88,15 @@ dialog#modal[data-size=wide]{width:min(960px,calc(100vw - 32px));max-width:calc(
 /* Read rumors stay in the notebook without taking space on the chart. */
 .rumor-note-tabs { flex-wrap: wrap; }
 .rumor-note-tabs button,.rumor-note-row button,#rumor-note-tab { min-height:44px; }
+.harbor-development-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #cbd4bd}
+.harbor-development-row h3,.harbor-development-row p{margin:0 0 4px}
+.harbor-development-status{color:#556c61}
+.harbor-development-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.harbor-cost{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin:8px 0;padding:10px 12px;border:1px solid #cbd4bd;border-radius:7px;background:#edf2e5;color:#285663}
+.harbor-cost strong{font-size:1.2em}.harbor-cost small{grid-column:1/-1;color:#54695c}
+.harbor-stages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:0;list-style:none}
+.harbor-stages li{padding:6px;border-bottom:2px solid #bdcbbd;word-break:keep-all}.harbor-stages [aria-current=step]{border-color:#286777;color:#265f6e;font-weight:700}
+@media(max-width:600px){.harbor-development-row{grid-template-columns:1fr;gap:2px}.harbor-development-row .harbor-development-actions{margin-top:4px}}
 #modal-content .rumor-note-tabs button[aria-pressed=true] { background:#286777; color:#fffdf4; border-color:#286777; }
 .rumor-note-row {
  display:grid;

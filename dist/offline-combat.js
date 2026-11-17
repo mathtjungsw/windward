@@ -1,8 +1,8 @@
-import {seaSector} from './presence-core.js?v=2026.11.16-rumor-filters.1';
-import {openOfflineRaid,advanceOfflineRaid} from './defense-core.js?v=2026.11.16-rumor-filters.1';
-import {readDefense,refreshDefense,publishDefense} from './defense-account.js?v=2026.11.16-rumor-filters.1';
-import {cannonStats} from './cannons.js?v=2026.11.16-rumor-filters.1';
-import {mapDistance} from './world-wrap.js?v=2026.11.16-rumor-filters.1';
+import {seaSector} from './presence-core.js?v=2026.11.17-harbor-development';
+import {openOfflineRaid,advanceOfflineRaid} from './defense-core.js?v=2026.11.17-harbor-development';
+import {readDefense,refreshDefense,publishDefense} from './defense-account.js?v=2026.11.17-harbor-development';
+import {cannonStats} from './cannons.js?v=2026.11.17-harbor-development';
+import {mapDistance} from './world-wrap.js?v=2026.11.17-harbor-development';
 const roll=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
 export function createOfflineCombat(api){
  const a=api.account;let room=null,id=null,roomOff=null,connectionOff=null,ownOff=null,connection=null,working=false,lastAuto=0,lastError=0;

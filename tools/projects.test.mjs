@@ -3,14 +3,15 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {initialState,parseSavedGame,Navigator,makeRoute,voyageEstimate,advanceVoyage} from '../dist/engine.js';
 import {createChartDetail} from '../dist/chart-waterways.js';
-import {CANALS,PROJECTS,PROJECT_BY_ID,freightParticipation,nextFreightParticipation,projectAction,projectView} from '../dist/projects.js';
+import {CANALS,PROJECTS,PROJECT_BY_ID,changeDepotPromotion,freightParticipation,nextFreightParticipation,projectAction,projectView} from '../dist/projects.js';
 import {ITEMS,OFFICERS} from '../dist/rumor-catalog.js';
 import {RELEASE} from '../dist/release-notes.js';
 const {PORTS,GOODS,ACTIVE_PORT_BY_ID,registerDevelopedPorts,DEPOT_SITES}=await import('../dist/data.js?v='+RELEASE);
 import {DISCOVERIES} from '../dist/discoveries-catalog.js';
 import {syncFleet} from '../dist/ship-rules.js';
 import {activateDistanceGear,activateTradeVoucher,addOfficerExperience,activeOfficer,appendItemRecord,normalizeRumorProgress,equippedGear,explorationGear,saleBonus,extraCapacity,performContractAction,readContractRumor,recordContractArrival} from '../dist/rumor-progress.js';
-import {captainTradeQuote,executeTrade} from '../dist/commerce.js';
+import {captainTradeQuote,executeTrade,taxRate} from '../dist/commerce.js';
+import {buyCollector,collectPortTaxes,collectorVisits} from '../dist/tax-collector.js';
 import {reserveCanalTolls,refundCanalTolls,designateCanalPass} from '../dist/canal-reservations.js';
 import {planPortIncome} from './port-income-backfill.mjs';
 
@@ -198,6 +199,44 @@ test('a completed depot is a separate destination and its stock and basic income
   projectAction(docked,content,'a',id,'dividend',0,registry.opensAt+5400000,chart);
   assert.equal(docked.money-before,758);
   assert.equal(projectView(project,content,'a',registry.opensAt+5400000).balance,0);
+});
+
+test('promoted depot keeps its dock and splits new trade and basic income while legacy balances remain claimable',()=>{
+  const id='depot-reykjavik',project=PROJECT_BY_ID[id],game=asCaptain(id),content={
+    investors:{a:180000,b:120000},registeredOwner:'a',registeredCapital:300000,stock:385,readyAt:start-3600000,
+    dividends:{b:65},promotion:{level:0,support:180000}
+  };
+  game.money=700000;game.position=project.site.point;game.cargo={};
+  assert.throws(()=>changeDepotPromotion(game,content,'a',project,'promotion-confirm',start,true,1,0),/승격 가능/);
+  const first=changeDepotPromotion(game,content,'a',project,'promotion-confirm',start,false,1,0);
+  registerDevelopedPorts({[id]:first.registry},start);
+  assert.equal(game.port,id);
+  assert.equal(game.money,600000);
+  assert.deepEqual(ACTIVE_PORT_BY_ID[id].point,project.site.point);
+  assert.equal(projectView(project,content,'a',start).base,500);
+  assert.equal(projectView(project,content,'b',start).balance,65);
+  const next=start+3600000;
+  assert.equal(projectView(project,content,'b',next).balance,265);
+  content.promotion.support=180000;
+  const second=changeDepotPromotion(game,content,'a',project,'promotion-confirm',next,false,2,1);
+  registerDevelopedPorts({[id]:second.registry},next);
+  assert.equal(content.stock,385);
+  assert.equal(ACTIVE_PORT_BY_ID[id].market.length>0,true);
+  content.defaultRate=20;
+  const trader=asCaptain(id);trader.noviceGraduated=true;trader.money=100000;trader.cargo={};
+  const good=ACTIVE_PORT_BY_ID[id].market[0],qty=10,rate=taxRate(content,'c',id,trader);
+  const quote=captainTradeQuote(trader,id,good,qty,'buy',{revision:1},next,rate);
+  executeTrade(trader,content,'c',id,good,qty,'buy',quote,next,1);
+  assert.ok(quote.tax>0);
+  assert.equal(content.taxDividend.trade.b,quote.tax*.4);
+  const investor=asCaptain(id);
+  buyCollector(investor,[id],next);
+  const later=next+1800000,due=collectorVisits(investor.taxCollector,later)[0];
+  const collection=collectPortTaxes(investor,content,'b',id,due.at,later);
+  assert.equal(collection.gross,400+Math.round(quote.tax*.4));
+  assert.equal(projectView(project,content,'b',later).balance,65);
+  projectAction(investor,content,'b',id,'dividend',0,later,chart);
+  assert.equal(projectView(project,content,'b',later).balance,0);
 });
 
 test('the income backfill preserves trade taxes, balances and later ownership and is idempotent',()=>{
