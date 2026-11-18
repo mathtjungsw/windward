@@ -1,7 +1,7 @@
-import {SEA_SITES} from './sea-activities.js?v=2026.11.18-titles-and-harbor-equity';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.18-titles-and-harbor-equity';
-import {PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
-import {mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
+import {SEA_SITES} from './sea-activities.js?v=2026.11.18-captain-workflow';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.18-captain-workflow';
+import {PORT_BY_ID} from './data.js?v=2026.11.18-captain-workflow';
+import {mapDistance} from './world-wrap.js?v=2026.11.18-captain-workflow';
 
 const types={smuggler:{name:'밀수선 화물 회수',reward:1200},salvage:{name:'표류 화물 수색',reward:520}};
 const incidents={

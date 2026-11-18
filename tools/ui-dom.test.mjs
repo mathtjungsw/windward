@@ -43,8 +43,8 @@ test('investigation move reports an active canal and detours before its entrance
   app.expansion.investigate();
   const button=$('[data-popup-approach="'+d.id+'"]');
   assert.ok(button);
-  button.click();
-  assert.match($('#investigation-move-status').textContent,/운하 구간/);
+  assert.equal(button.disabled,true);
+  assert.match($('.approach-status').textContent,/운하 구간/);
   $('#investigation-resume-voyage').click();
   assert.equal($('#modal').open,false);
   assert.equal($('#pause-btn').getAttribute('aria-label'),'항해 일시 정지');
@@ -52,17 +52,18 @@ test('investigation move reports an active canal and detours before its entrance
   app.sailingClock.reset(0);app.tick(0);app.tick(100);
   assert.ok(app.state.voyage.travelled>0,'the existing voyage advances inside the paid passage');
   app.expansion.investigate();
-  const retry=$('[data-popup-approach="'+d.id+'"]');
   const balance=app.state.money;
   app.state.voyage.passages[0].paid=false;
   app.state.food=.1;
-  retry.click();
-  assert.match($('#investigation-move-status').textContent,/보급/);
+  app.expansion.investigate();
+  assert.equal($('[data-popup-approach]').disabled,true);
+  assert.match($('.approach-status').textContent,/보급/);
   assert.ok($('#investigation-resume-voyage'));
   assert.equal(app.state.voyage.passages[0].paid,false);
   assert.equal(app.state.money,balance);
   app.state.food=10;
-  retry.click();await wait();
+  app.expansion.investigate();
+  $('[data-popup-approach]').click();await wait();
   assert.equal(app.state.investigationTarget,d.id,$('#investigation-move-status')?.textContent);
   assert.equal(app.state.money,balance+80);
   assert.deepEqual(app.state.detourTarget.point,destination);
@@ -497,7 +498,7 @@ test('sale results split restricted and failed ports and recheck only the destin
   assert.match($('.sale-port-restricted summary').textContent,/2곳/);
   assert.match($('#sale-search-status').textContent,/판매할 수 없어요/);
   assert.equal($('#sale-search-known').checked,true);
-  assert.deepEqual(reads.map(item=>item[1]).sort(),['blacklist','developedOwner','ownerUid']);
+  assert.deepEqual(reads.map(item=>item[1]).sort(),['blacklist','ownerUid']);
   assert.ok(reads.every(item=>item[0]==='seville'));
   assert.deepEqual(departures,[]);
 
@@ -517,7 +518,7 @@ test('sale results split restricted and failed ports and recheck only the destin
   release();
   await departure;
   assert.deepEqual(departures,[]);
-  assert.equal(reads.length,3);
+  assert.equal(reads.length,2);
 
   delayed=null;
   blocked.delete('seville');

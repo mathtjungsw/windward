@@ -3,7 +3,9 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {initialState} from '../dist/engine.js';
 import {initializePortEquity} from '../dist/equity-migration.js';
 import {equityRegistry} from '../dist/port-equity.js';
-import {invest,withdrawInvestment} from '../dist/commerce.js';
+import {invest,withdrawInvestment,deliverForGrowth,growthDeliveryInfo} from '../dist/commerce.js';
+import {RELEASE} from '../dist/release-notes.js';
+import {voyageWeek} from '../dist/weekly-chart.js';
 import {ownershipRankChanges,ownedPortSummary} from '../dist/port-rankings.js';
 const ns='demo-windward-harbor-equity',timestamp={'.sv':'timestamp'},now=Date.now();
 const encode=x=>Buffer.from(JSON.stringify(x)).toString('base64url');
@@ -32,13 +34,17 @@ for(const id of[harbor,depot]){
  await req('gameV2/harborRegistry/'+id,{admin:true,method:'PUT',body:equityRegistry(id,content)});
  if(kind==='ports')await req('gameV2/real/ownedPorts/'+id,{admin:true,method:'PUT',body:{...ownedPortSummary(id,content,a),operationId:'seed',updatedAt:now}});
 }
-async function prepare(uid,id,action,amount){
- const kind=id.startsWith('depot-')?'projects':'ports';
+async function prepare(uid,id,action,amount,kind=id.startsWith('depot-')?'projects':'ports'){
  const old=(await req('gameV2/privateSaves/'+uid,{uid})).value;
  const shared=(await req('gameV2/shared/'+kind+'/'+id,{uid})).value;
  const game=JSON.parse(old.data),content=structuredClone(shared.content);game.port=id;
- const time=Date.now();const result=action==='invest'?invest(game,content,uid,id,amount,time):withdrawInvestment(game,content,uid,id,amount,time,shared.revision,shared.revision);
- content.investorNames??={};content.investorNames[uid]=uid;
+ const time=Date.now();
+ let result;
+ if(typeof action==='function')result=action(game,content,time,shared.revision);
+ else{
+  result=action==='invest'?invest(game,content,uid,id,amount,time):withdrawInvestment(game,content,uid,id,amount,time,shared.revision,shared.revision);
+  content.investorNames??={};content.investorNames[uid]=uid;
+ }
  const seq=old.operationSequence+1,op=uid+':'+seq;
  const sdk={ref:(_,p)=>p,get:async p=>({val:()=>(undefined)}),serverTimestamp:()=>timestamp};sdk.get=async p=>{const row=await req(p,{uid});return {val:()=>row.value};};
  const ranks=await ownershipRankChanges({uid,name:uid,sdk},id,shared.content,content,op,kind);
@@ -69,3 +75,41 @@ const invalid=structuredClone(patch);invalid['privateSaves/'+c].schemaVersion=19
 await req('gameV2/config/minSchema',{admin:true,method:'PUT',body:20});
 await commit(c,invalid,401);await commit(c,patch);
 console.log('PASS: direct and promoted harbor investment, strict-majority transfer, 20% withdrawal, rank and registry updates, stale-revision rejection, retained old income, peer-stake protection and minimum schema 20.');
+
+const expansion='developed-casablanca';
+const founder={_version:1,developedOwner:a,developerName:a,development:{name:'카사블랑카',level:1},facilityInvested:400000};
+await req('gameV2/shared/ports/'+expansion,{admin:true,method:'PUT',body:{revision:1,content:founder,updatedAt:now}});
+await req('gameV2/harborRegistry/'+expansion,{admin:true,method:'PUT',body:{id:expansion,name:'카사블랑카',level:1,ownerUid:a}});
+const expansionPatch=await prepare(a,expansion,(game,content,time)=>{
+ game.money-=200000;content.development.level=2;content.facilityInvested+=200000;
+ assert.equal(initializePortEquity(content,expansion,time),true);
+ return {registry:equityRegistry(expansion,content)};
+});
+await commit(a,expansionPatch);
+assert.equal((await req('gameV2/harborRegistry/'+expansion,{uid:a})).value.level,2);
+await commit(a,expansionPatch,401);
+await commit(a,await prepare(a,expansion,'invest',10000));
+
+const {registerDevelopedPorts}=await import('../dist/data.js?v='+RELEASE);
+registerDevelopedPorts({[depot]:{id:depot,kind:'depot',level:1,promotionLevel:2,opensAt:now-3600000,name:'다바오'}});
+const arrival=await req('gameV2/shared/projects/'+depot,{uid:a});
+assert.equal(arrival.value.content.promotion.level,2);
+await req('gameV2/shared/ports/'+depot,{admin:true,method:'PUT',body:{revision:1,content:{_version:1,growthContribution:10},updatedAt:now}});
+const delivery=await prepare(a,depot,(game,content,time)=>{
+ const order=growthDeliveryInfo(content,depot,time,a);
+ game.cargo[order.good]={qty:12,cost:120};
+ return deliverForGrowth(game,content,a,depot,time,order.day);
+},0,'ports');
+await commit(a,delivery);
+await commit(a,delivery,401);
+const afterDelivery=(await req('gameV2/shared/ports/'+depot,{uid:a})).value;
+assert.equal(afterDelivery.content.growthContribution,20);
+assert.equal(afterDelivery.content.growthDelivery.captains[a],true);
+assert.equal((await req('gameV2/shared/projects/'+depot,{uid:a})).value.revision,arrival.value.revision);
+
+const week=voyageWeek(Date.now()),route='lisbon|porto',chart='gameV2/real/weeklyVoyages/';
+assert.equal((await req(chart+week+'/'+a+'/'+route,{uid:a,method:'PUT',body:true})).status,200);
+assert.equal((await req(chart+week+'/'+a+'/'+route,{uid:b,method:'PUT',body:true})).status,401);
+assert.equal((await req(chart+(week-2)+'/'+a+'/'+route,{uid:a,method:'PUT',body:true})).status,401);
+assert.equal((await req(chart+week,{uid:b})).value[a][route],true);
+console.log('PASS: legacy 1→2 expansion and cash follow-up, promoted depot growth delivery, one-time settlement and shared chart week boundaries.');

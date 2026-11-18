@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.18-titles-and-harbor-equity';
-import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.18-titles-and-harbor-equity';
-import {PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {ownership} from './commerce.js?v=2026.11.18-captain-workflow';
+import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.18-captain-workflow';
+import {PORT_BY_ID} from './data.js?v=2026.11.18-captain-workflow';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;

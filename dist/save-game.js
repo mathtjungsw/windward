@@ -1,19 +1,20 @@
-import {normalizeTitles} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.18-titles-and-harbor-equity';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.18-titles-and-harbor-equity';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {normalizeTitles} from './title-effects.js?v=2026.11.18-captain-workflow';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.18-captain-workflow';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.18-captain-workflow';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.18-captain-workflow';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.18-captain-workflow';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.18-captain-workflow';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.18-captain-workflow';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.18-titles-and-harbor-equity';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.18-titles-and-harbor-equity';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.18-titles-and-harbor-equity';
-import {normalizeDepotDock} from './projects.js?v=2026.11.18-titles-and-harbor-equity';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.18-titles-and-harbor-equity';
-import {normalizeStories} from './story-core.js?v=2026.11.18-titles-and-harbor-equity';
-import {validInlandSave} from './inland.js?v=2026.11.18-titles-and-harbor-equity';
+import {normalizeSea} from './sea-activities.js?v=2026.11.18-captain-workflow';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.18-captain-workflow';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.18-captain-workflow';
+import {normalizeDepotDock} from './projects.js?v=2026.11.18-captain-workflow';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.18-captain-workflow';
+import {normalizeTavernRound} from './tavern-games.js?v=2026.11.18-captain-workflow';
+import {normalizeStories} from './story-core.js?v=2026.11.18-captain-workflow';
+import {validInlandSave} from './inland.js?v=2026.11.18-captain-workflow';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
@@ -74,6 +75,11 @@ export function parseState(raw,defaults){
  game.version=4;
  if(s.autoSupply!==undefined)game.autoSupply=s.autoSupply===true;
  if(s.autoSupplyTarget!==undefined)game.autoSupplyTarget=Number.isSafeInteger(s.autoSupplyTarget)&&s.autoSupplyTarget>0?s.autoSupplyTarget:null;
+ const round=normalizeTavernRound(s.tavernRound);
+ if(round)game.tavernRound=round;else delete game.tavernRound;
+ if(typeof s.chartLegOrigin==='string'&&Object.hasOwn(PORT_BY_ID,s.chartLegOrigin))game.chartLegOrigin=s.chartLegOrigin;else delete game.chartLegOrigin;
+ if(s.saleSearchOrder==='per-day'||s.saleSearchOrder==='total')game.saleSearchOrder=s.saleSearchOrder;
+ if(['all','pending','complete'].includes(s.tavernRumorFilter))game.tavernRumorFilter=s.tavernRumorFilter;
  if(s.autoSupplyDays!==undefined)game.autoSupplyDays=Number.isSafeInteger(s.autoSupplyDays)&&s.autoSupplyDays>0?s.autoSupplyDays:null;
  if(s.cannons!==undefined){if(!Array.isArray(s.cannons)||s.cannons.length>100||new Set(s.cannons.map(p=>p?.id)).size!==s.cannons.length||s.cannons.some(p=>typeof p?.id!=='string'||p.id.length>100||!['swivel','light','rapid','standard','long','precision','heavy','large'].includes(p.kind)||!Number.isInteger(p.quality)||p.quality<0||p.quality>4||!finite(p.readyAt)||p.readyAt<0||p.shipId!==null&&!game.fleetShips.some(v=>v.id===p.shipId)))bad();}
  if(s.hullHP!==undefined&&(!finite(s.hullHP)||s.hullHP<0||s.hullHP>100000))bad();

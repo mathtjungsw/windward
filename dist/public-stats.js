@@ -1,12 +1,12 @@
-import {activeTitle} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
-import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.18-titles-and-harbor-equity';
-import {GOODS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
-import {Exploration} from './voyage-core.js?v=2026.11.18-titles-and-harbor-equity';
-import {explorationStats} from './exploration-score.js?v=2026.11.18-titles-and-harbor-equity';
-import {discoveryStats} from './discoveries.js?v=2026.11.18-titles-and-harbor-equity';
-import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.18-titles-and-harbor-equity';
-import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {activeTitle} from './title-effects.js?v=2026.11.18-captain-workflow';
+import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.18-captain-workflow';
+import {GOODS} from './data.js?v=2026.11.18-captain-workflow';
+import {Exploration} from './voyage-core.js?v=2026.11.18-captain-workflow';
+import {explorationStats} from './exploration-score.js?v=2026.11.18-captain-workflow';
+import {discoveryStats} from './discoveries.js?v=2026.11.18-captain-workflow';
+import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.18-captain-workflow';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.18-captain-workflow';
+import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.18-captain-workflow';
 export function collectionRankStats(game){
  const progress=game.rumorProgress,acquired=new Set(progress?.acquiredItems||[]),officers=new Set(progress?.officers||[]);
  return {shoreCompleted:game.shoreProgress?.count||0,rareFinds:DISCOVERIES.filter(d=>d.tier>=3&&game.discoveries?.[d.id]).length,

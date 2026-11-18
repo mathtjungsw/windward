@@ -1,8 +1,8 @@
-import {titleEffect} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
-import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.18-titles-and-harbor-equity';
-import {mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
-import {activeOfficer,explorationGear,equippedGear,addOfficerExperience} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
+import {titleEffect} from './title-effects.js?v=2026.11.18-captain-workflow';
+import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.18-captain-workflow';
+import {mapDistance} from './world-wrap.js?v=2026.11.18-captain-workflow';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.18-captain-workflow';
+import {activeOfficer,explorationGear,equippedGear,addOfficerExperience} from './rumor-progress.js?v=2026.11.18-captain-workflow';
 
 export const SHORE_SITES={
   porto:{market:'강가 마을',site:'언덕의 옛 창고',ridge:'소나무 고갯길',good:'wine',theme:'green'},

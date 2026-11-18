@@ -1,11 +1,11 @@
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.18-titles-and-harbor-equity';
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.18-titles-and-harbor-equity';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.18-titles-and-harbor-equity';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.18-titles-and-harbor-equity';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.18-titles-and-harbor-equity';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.18-titles-and-harbor-equity';
-import {applyRaftStart} from './raft-start.js?v=2026.11.18-titles-and-harbor-equity';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.18-titles-and-harbor-equity';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.18-captain-workflow';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.18-captain-workflow';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.18-captain-workflow';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.18-captain-workflow';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.18-captain-workflow';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.18-captain-workflow';
+import {applyRaftStart} from './raft-start.js?v=2026.11.18-captain-workflow';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.18-captain-workflow';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';

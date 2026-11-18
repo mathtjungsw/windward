@@ -1,4 +1,4 @@
-import {canDepart,voyageEstimate,ship} from './engine.js?v=2026.11.18-titles-and-harbor-equity';
+import {canDepart,voyageEstimate,ship,supplyCost} from './engine.js?v=2026.11.18-captain-workflow';
 
 const number=n=>Math.round(n).toLocaleString('ko-KR');
 export function summarizeSearchRoute(game,port,route,canalNames={},preliminary=false,at){
@@ -10,7 +10,8 @@ export function summarizeSearchRoute(game,port,route,canalNames={},preliminary=f
  const passage=routeNames.length?' · '+routeNames.join('·')+' 경유 · 통행료 '+number(route.tollTotal||0)+' D':'';
  const supply=!depart.ok&&game.food+1e-8<needed?` · 직항 보급 부족 (필요 ${needed.toFixed(1)}일분 / 현재 ${game.food.toFixed(1)}일분)`:!depart.ok?' · '+depart.error:'';
  const toll=game.money<(route.tollTotal||0)?' · 통행료 부족':'';
- return {distance:route.total,text:`${number(route.total)}해리 · 약 ${estimate.days.toFixed(1)}일${passage}${supply}${toll}${suffix}`};
+ return {distance:route.total,days:estimate.days,supplyCost:supplyCost(game,estimate.food,at),toll:route.tollTotal||0,
+  canSail:depart.ok&&!toll&&!preliminary&&!game.voyage?.kind&&!game.voyage?.legacy,text:`${number(route.total)}해리 · 약 ${estimate.days.toFixed(1)}일${passage}${supply}${toll}${suffix}`};
 }
 export function createRouteLookup(prepare,compute){
  const rows=new Map();

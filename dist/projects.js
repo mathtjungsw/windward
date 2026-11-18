@@ -1,12 +1,12 @@
-import {equityEnabled,currentPortOwner,capitalTotal} from './port-equity.js?v=2026.11.18-titles-and-harbor-equity';
-import {initializePortEquity} from './equity-migration.js?v=2026.11.18-titles-and-harbor-equity';
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
-import {mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
-import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.18-titles-and-harbor-equity';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.18-titles-and-harbor-equity';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome,advanceBasicIncome,pendingTradeTax,claimTradeTax} from './port-income.js?v=2026.11.18-titles-and-harbor-equity';
+import {equityEnabled,currentPortOwner,capitalTotal} from './port-equity.js?v=2026.11.18-captain-workflow';
+import {initializePortEquity} from './equity-migration.js?v=2026.11.18-captain-workflow';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.18-captain-workflow';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.18-captain-workflow';
+import {mapDistance} from './world-wrap.js?v=2026.11.18-captain-workflow';
+import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.18-captain-workflow';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.18-captain-workflow';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.18-captain-workflow';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome,advanceBasicIncome,pendingTradeTax,claimTradeTax} from './port-income.js?v=2026.11.18-captain-workflow';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));

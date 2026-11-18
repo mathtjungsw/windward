@@ -1,5 +1,5 @@
-import {TITLES,TITLE_BY_ID,normalizeTitles} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
-import {gameStats} from './public-stats.js?v=2026.11.18-titles-and-harbor-equity';
+import {TITLES,TITLE_BY_ID,normalizeTitles} from './title-effects.js?v=2026.11.18-captain-workflow';
+import {gameStats} from './public-stats.js?v=2026.11.18-captain-workflow';
 export function titleStats(game,verified={}){return {...gameStats(game),...Object.fromEntries(['ownedPortCount','overallScore'].filter(k=>Number.isFinite(verified[k])).map(k=>[k,verified[k]]))};}
 export function reconcileTitles(game,now=Date.now(),verified={}){
  const progress=game.titles=normalizeTitles(game),stats=titleStats(game,verified),added=[];

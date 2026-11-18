@@ -1,10 +1,10 @@
-import {STORIES,STORY_BY_ID} from './story-catalog.js?v=2026.11.18-titles-and-harbor-equity';
-import {PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
-import {OFFICER_BY_ID,ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.18-titles-and-harbor-equity';
-import {storyAction,storyRequirement,refreshStories,recordStoryView,completedChapter} from './story-core.js?v=2026.11.18-titles-and-harbor-equity';
+import {STORIES,STORY_BY_ID} from './story-catalog.js?v=2026.11.18-captain-workflow';
+import {PORT_BY_ID} from './data.js?v=2026.11.18-captain-workflow';
+import {OFFICER_BY_ID,ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.18-captain-workflow';
+import {storyAction,storyRequirement,refreshStories,recordStoryView,completedChapter} from './story-core.js?v=2026.11.18-captain-workflow';
 
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const names={ship:'내 배 보기',cargo:'화물·보유금',route:'항구 찾기와 항로', 'porto-route':'포르투 항로',supply:'항구 보급',trade:'교역소',sale:'최고가 판매처', 'auto-route':'자동 항해 전환',favorites:'항구 즐겨찾기',minimap:'세계지도',journal:'항해일지',tavern:'주점',note:'소문노트','note-hide':'소문 숨기기','note-restore':'숨긴 소문 복원',album:'발견 도감',investigation:'흔적 조사',guild:'조합 의뢰',shipyard:'역사 선박 조선소',stored:'항구에 맡긴 배',guns:'대포 장착',items:'아이템 가방',officers:'부선장 명부',captains:'선장 목록',ranks:'선장 랭킹',chat:'선장 채팅',projects:'공동 사업',settings:'조작·화면 설정',finder:'메뉴 찾기'};
+const names={ship:'내 배 보기',cargo:'화물·보유금',route:'항구 찾기와 항로', 'porto-route':'포르투 항로',supply:'항구 보급',trade:'교역소',sale:'최고가 판매처', 'auto-route':'자동 항해 전환',favorites:'항구 즐겨찾기',minimap:'세계지도',journal:'항해일지',tavern:'주점',note:'소문노트','note-reread':'소문 펼치기',album:'발견 도감',investigation:'흔적 조사',guild:'조합 의뢰',shipyard:'역사 선박 조선소',stored:'항구에 맡긴 배',guns:'대포 장착',items:'아이템 가방',officers:'부선장 명부',captains:'선장 목록',ranks:'선장 랭킹',chat:'선장 채팅',projects:'공동 사업',settings:'조작·화면 설정',finder:'메뉴 찾기'};
 
 export function createStoryUI(api){
  let busy=false;
@@ -42,6 +42,10 @@ export function createStoryUI(api){
    <div class="story-layout"><section><h3>${escape(part.title)}</h3><p class="story-dialogue">${escape(part.dialogue)}</p>
    ${row?`<p class="story-objective">${row.rewarded?'✓ 이야기 완료':step?escape(step.text):'모든 단계를 마쳤어요. 완료 보상을 받으세요.'}</p><p>${row.index}/${story.steps.length}단계 완료</p>`:
     `<p>시작 항구 · ${PORT_BY_ID[story.origin].name}</p><p>필요 선박 ${story.stage}단계 · 방문 ${story.visits}곳${story.level==='고급'?' · 중급 1편 완료':''}</p>`}
+   ${story.id==='first-route'&&get().storyBook.firstSale?(() => {
+    const {cost,total}=get().storyBook.firstSale;
+    return '<p class="help-tip">첫 와인 판매 · 매입액 '+Math.round(cost).toLocaleString('ko-KR')+' D · 받은 금액 '+total.toLocaleString('ko-KR')+' D · 손익 '+(total>=cost?'+':'')+Math.round(total-cost).toLocaleString('ko-KR')+' D</p>';
+   })():''}
    <div class="dialog-actions">${!row?'<button id="story-start" class="primary-button">이야기 시작</button>':!step&&!row.rewarded?'<button id="story-claim" class="primary-button">완료 보상 받기</button>':step?.kind==='talk'?'<button id="story-advance" class="primary-button">이야기 듣고 계속</button>':step?.kind==='deliver'?'<button id="story-advance" class="primary-button">화물 납품</button>':step?.kind==='view'?'<button id="story-menu" class="primary-button">해당 메뉴 열기</button>':step?'<button id="story-guide" class="primary-button">할 일 안내</button>':''}${step?.optional?'<button id="story-skip">선택 체험 건너뛰기</button>':''}${chapterRewards}</div>
    ${reward?`<div class="story-reward"><strong>첫 완료 보상 · ${escape(reward.name)}</strong><p>${escape(reward.effect)}</p></div>`:''}
    <details><summary>역사 배경과 창작 안내</summary><p>${escape(story.history)}</p>${story.source?`<a href="${escape(story.source)}" target="_blank" rel="noopener noreferrer">역사 자료 보기</a>`:''}</details></section>
@@ -60,11 +64,7 @@ export function createStoryUI(api){
   document.querySelector('#story-resume').onclick=()=>showStory(id);
   document.querySelectorAll('[data-story-menu]').forEach(element=>element.onclick=async()=>{
    const key=element.dataset.storyMenu;
-   if(key==='note-hide'||key==='note-restore'){
-    api.open.note();
-    api.toast(key==='note-hide'?'소문 옆 숨기기를 눌러 보세요.':'숨긴 소문 탭에서 다시 표시를 눌러 보세요.');
-    return;
-   }
+   if(key==='note-reread'){api.open.note(true);return;}
    try{
     api.close?.();
     if(api.open[key])await api.open[key]();
@@ -78,6 +78,12 @@ export function createStoryUI(api){
   api.modal('지금 할 일','이야기 단계 안내',`<p>${escape(step.text)}</p>${port?`<p>목적지 · ${port.name}</p><button id="story-port">항구 위치·항로 보기</button>`:''}<p>완료한 행동은 자동으로 기록해요. 구조 이동은 항해 통과 실적에 포함되지 않아요.</p><button id="story-guide-back">이야기로 돌아가기</button>`,'small');
   document.querySelector('#story-guide-back').onclick=()=>showStory(id);
   if(port)document.querySelector('#story-port').onclick=()=>api.port(port.id);
+  if(port&&get().port===port.id&&['buy','sell'].includes(step.kind)){
+   const button=document.createElement('button');
+   button.type='button';button.className='primary-button';button.textContent=step.kind==='buy'?'교역소 열기':'판매할 화물 열기';
+   button.onclick=()=>{api.close?.();api.open[step.kind==='buy'?'trade':'cargo']();};
+   document.querySelector('#story-port').before(button);
+  }
  }
  function renderPanel(){
   const ledger=get().storyBook;
@@ -97,5 +103,9 @@ export function createStoryUI(api){
   for(const [pattern,key] of mappings)if(pattern.test(title)&&!get().storyBook?.views?.[key]){recordStoryView(get(),key);changed=true;}
   if(changed)api.changed();
  }
- return {open,showStory,renderPanel,onModal,view:key=>{recordStoryView(get(),key);api.changed();}};
+ return {open,showStory,renderPanel,onModal,reread(){
+  const row=get().storyBook?.entries?.['first-route'];
+  if(!row||!STORY_BY_ID['first-route'].steps[row.index]?.menus?.includes('note-reread'))return;
+  recordStoryView(get(),'note-reread');api.changed();
+ },view:key=>{recordStoryView(get(),key);api.changed();}};
 }

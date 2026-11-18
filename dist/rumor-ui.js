@@ -1,15 +1,15 @@
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.18-titles-and-harbor-equity';
-import {collectionArt} from './art.js?v=2026.11.18-titles-and-harbor-equity';
-import {PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.18-titles-and-harbor-equity';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.18-titles-and-harbor-equity';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.18-titles-and-harbor-equity';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.18-titles-and-harbor-equity';
-import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.18-captain-workflow';
+import {collectionArt} from './art.js?v=2026.11.18-captain-workflow';
+import {PORT_BY_ID} from './data.js?v=2026.11.18-captain-workflow';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.18-captain-workflow';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.18-captain-workflow';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.18-captain-workflow';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.18-captain-workflow';
+import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.18-captain-workflow';
 
-import {readRumor} from './discoveries.js?v=2026.11.18-titles-and-harbor-equity';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
-import {eraAvailable} from './era-cycle.js?v=2026.11.18-titles-and-harbor-equity';
+import {readRumor} from './discoveries.js?v=2026.11.18-captain-workflow';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.18-captain-workflow';
+import {eraAvailable} from './era-cycle.js?v=2026.11.18-captain-workflow';
 
 const labels={all:'전체',pending:'미완료',complete:'완료'};
 const inFilter=(filter,complete)=>filter==='all'||(filter==='complete')===!!complete;
@@ -24,13 +24,13 @@ const fmt=n=>n.toLocaleString('ko-KR');
 
 export function createRumorUI(api){
   const get=api.getState;
-  let pending=false,tavernOpen=null,tavernPort=null,tavernFilter='all',keptExtra=null;
+  let pending=false,tavernOpen=null,tavernPort=null,keptExtra=null;
   function syncTavernPort(port){
     if(tavernPort===port)return;
-    tavernPort=port;tavernFilter='all';tavernOpen=null;keptExtra=null;
+    tavernPort=port;tavernOpen=null;keptExtra=null;
   }
   function renderTavern(root){
-    const game=get(),dock=game.port;
+    const game=get(),dock=game.port,tavernFilter=game.tavernRumorFilter||'pending';
     syncTavernPort(dock);
     const entries=rumorsAtTavern(game);
     for(const id of game.rumorProgress?.tavernHistory?.[dock]||[]){const row=RUMOR_BY_ID[id];if(row&&!entries.some(r=>r.id===id))entries.push(row);}
@@ -47,7 +47,7 @@ export function createRumorUI(api){
         ${open?`<p class="tavern-rumor-text">${escape(entry.text)}${note&&!eraAvailable(entry,api.now?.())?'<small> · 이전에 들은 소문 · 현재는 해당 시대 아님</small>':''}</p>`:''}</article>`;
     }).join('');
     section.innerHTML=`<h3>소문</h3><nav class="expansion-tabs rumor-note-tabs" aria-label="주점 소문 필터">${filterButtons('tavern',tavernFilter)}</nav>
-      ${rows||`<p>${emptyMessage[tavernFilter]}</p>`}`;
+      ${rows||(tavernFilter==='pending'&&entries.length?'<p>이 항구의 소문을 모두 마쳤어요.</p><button data-tavern-filter="complete">완료한 소문 보기</button>':`<p>${emptyMessage[tavernFilter]}</p>`)}`;
     const encounters=portEncounters(game);
     if(encounters.length){
       section.insertAdjacentHTML('beforeend',`<h3>이 항구에서 만날 사람</h3>${encounters.map(entry=>button(entry.title+(notes.get(entry.id)?.complete?' · ✓ 완료':''),`data-port-encounter="${entry.id}"`)).join('')}`);
@@ -56,9 +56,10 @@ export function createRumorUI(api){
     if(previous)previous.replaceWith(section);
     else root.append(section);
     section.querySelectorAll('[data-tavern-filter]').forEach(el=>{el.onclick=()=>{
-      tavernFilter=el.dataset.tavernFilter;
-      renderTavern(root);
-      root.querySelector(`[data-tavern-filter="${tavernFilter}"]`)?.focus({preventScroll:true});
+      get().tavernRumorFilter=el.dataset.tavernFilter;
+      api.changed();
+      if(section.isConnected)renderTavern(root);
+      root.querySelector('[data-tavern-filter="'+el.dataset.tavernFilter+'"]')?.focus({preventScroll:true});
     };});
     section.querySelectorAll('[data-port-encounter]').forEach(el=>{el.onclick=()=>{
       showContract(portEncounters(get()).find(entry=>entry.id===el.dataset.portEncounter));
@@ -88,7 +89,7 @@ export function createRumorUI(api){
       };
     });
   }
-  function showNote(){
+  function showNote(practice=false){
     api.modal('소문노트','주점에서 읽은 이야기',`<nav class="expansion-tabs rumor-note-tabs" aria-label="소문 노트 필터">${filterButtons('note','all')}</nav><div class="rumor-note-list"></div>`,'medium');
     const root=document.querySelector('#modal-content'),list=root.querySelector('.rumor-note-list');
     function paint(filter){
@@ -98,10 +99,15 @@ export function createRumorUI(api){
       <small>${escape(portName(note.port))} ${note.complete?'<strong class="rumor-complete">✓ 완료</strong>':''}</small>
       </summary><p>${escape(note.text)}</p></details></article>`).join('');
       list.innerHTML=rows||`<p>${filter==='all'?'아직 읽은 소문이 없어요.':emptyMessage[filter]}</p>`;
+      list.querySelectorAll('summary').forEach(summary=>{
+       summary.addEventListener('click',()=>{
+        if(!summary.parentElement.open)api.onReread?.();
+       });
+      });
       root.querySelectorAll('[data-note-filter]').forEach(el=>el.setAttribute('aria-pressed',el.dataset.noteFilter===filter));
     }
     root.querySelectorAll('[data-note-filter]').forEach(el=>{el.onclick=()=>paint(el.dataset.noteFilter);});
-    paint('all');
+    paint(practice&&rumorNote(get()).some(note=>!note.complete)?'pending':'all');
   }
   function itemLocation(game,entry){
     if(equippedGear(game,'explore').some(item=>item.id===entry.id))return '장착 중 · 탐사 장비';

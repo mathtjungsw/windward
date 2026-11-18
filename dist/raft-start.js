@@ -1,5 +1,5 @@
-import {SHIPS,shipTier,fleetCount,syncFleet} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
-import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {SHIPS,shipTier,fleetCount,syncFleet} from './ship-rules.js?v=2026.11.18-captain-workflow';
+import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.18-captain-workflow';
 
 export const RAFT_START_ID='raft-start-2026-11-06';
 // Replacement value: one hull's cumulative upgrades plus the current quote

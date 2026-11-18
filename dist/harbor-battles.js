@@ -1,7 +1,7 @@
-import {requireCombatAllowed} from './blessings.js?v=2026.11.18-titles-and-harbor-equity';
-import {ownership} from './commerce.js?v=2026.11.18-titles-and-harbor-equity';
-import {advanceBasicIncome} from './port-income.js?v=2026.11.18-titles-and-harbor-equity';
-import {noviceActive} from './novice.js?v=2026.11.18-titles-and-harbor-equity';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.18-captain-workflow';
+import {ownership} from './commerce.js?v=2026.11.18-captain-workflow';
+import {advanceBasicIncome} from './port-income.js?v=2026.11.18-captain-workflow';
+import {noviceActive} from './novice.js?v=2026.11.18-captain-workflow';
 
 const HOUR=3600000, DAY=24*HOUR, WINDOW=2*HOUR;
 export const CONTESTED_PORTS=['jamestown','georgetown-ascension','sanjuan-robinson','portvila'];

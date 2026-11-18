@@ -1,9 +1,9 @@
-import {watchSectorPages} from './sector-pages.js?v=2026.11.18-titles-and-harbor-equity';
-import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.18-titles-and-harbor-equity';
-import {mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
-import {REAL_WORLD_ROOT} from './account.js?v=2026.11.18-titles-and-harbor-equity';
-import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.18-titles-and-harbor-equity';
-import {CaptainRoster} from './captains.js?v=2026.11.18-titles-and-harbor-equity';
+import {watchSectorPages} from './sector-pages.js?v=2026.11.18-captain-workflow';
+import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.18-captain-workflow';
+import {mapDistance} from './world-wrap.js?v=2026.11.18-captain-workflow';
+import {REAL_WORLD_ROOT} from './account.js?v=2026.11.18-captain-workflow';
+import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.18-captain-workflow';
+import {CaptainRoster} from './captains.js?v=2026.11.18-captain-workflow';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{

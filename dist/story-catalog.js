@@ -18,7 +18,7 @@ export const STORIES=[
    chapter('내 손으로 고르는 항로','조타수 마르틴이 키를 가리킵니다. “바다가 익숙해졌다면 직접 움직여 보세요. 다시 자동으로 돌아오는 방법과 자주 가는 항구를 기억하는 방법도 알려 드리죠.”',[
     {kind:'manual',optional:true,text:'직접 조종과 정지를 연습하세요. 선택 체험입니다.'},view('항구를 선택해 자동 항해로 돌아오는 방법을 확인하세요.','auto-route'),view('항구를 즐겨찾기에 넣고 목록을 확인하세요.','favorites'),view('지구본과 평면 미니맵을 확인하세요.','minimap'),view('항해일지를 열어 보세요.','journal')]),
    chapter('주점의 이야기','주점 주인은 잔을 내려놓으며 목소리를 낮춥니다. “바다에는 거래 장부에 적히지 않는 이야기도 있어요. 들은 말은 노트에 남기고, 진실은 직접 찾아 보세요.”',[
-    {kind:'rumor',text:'지금 정박한 항구의 소문을 읽으세요.'},view('소문노트를 열어 다시 읽어 보세요.','note'),{...view('소문의 숨기기와 복원을 확인하세요.','note-hide','note-restore'),optional:true},view('발견 수집 도감을 열어 보세요.','album'),view('흔적을 발견하고 조사하는 방법을 확인하세요.','investigation')]),
+    {kind:'rumor',text:'지금 정박한 항구의 소문을 읽으세요.'},view('소문노트를 열어 다시 읽어 보세요.','note'),view('소문노트에서 읽었던 소문 하나를 직접 펼쳐 보세요.','note-reread'),view('발견 수집 도감을 열어 보세요.','album'),view('흔적을 발견하고 조사하는 방법을 확인하세요.','investigation')]),
    chapter('나의 다음 항해','알바루는 빈 항해록의 첫 장에 선장의 이름을 적습니다. “이제 갈 곳은 스스로 고르면 됩니다. 새 배와 동료, 조합의 의뢰가 기다립니다. 문을 열어 보는 것부터 시작하세요.”',[
     view('조합 의뢰 화면을 확인하세요.','guild'),view('조선소와 항구에 맡긴 배를 확인하세요.','shipyard','stored'),view('대포·아이템·부선장 메뉴를 둘러보세요.','guns','items','officers'),view('선장 목록·랭킹·채팅을 확인하세요.','captains','ranks','chat'),view('공동 사업·설정·메뉴 찾기를 확인하세요.','projects','settings','finder')])]},
  {id:'kilwa-ledger',name:'킬와의 교역 장부',level:'중급',stage:6,visits:10,origin:'zanzibar',cash:4000,reward:'OS01',
@@ -91,6 +91,13 @@ export const STORIES=[
     visit('seville','세비야에 귀항하세요.'),talk('완성한 항해록 보고하기')])]}
 ];
 
+// Map the old first-route indices to the new journey without replaying recorded actions.
+export const FIRST_ROUTE_ORDER=[0,4,5,6,7,8,1,2,9,10,11,12,13,14,3];
+const firstRoute=STORIES[0];
+const earlySteps=firstRoute.chapters.slice(0,3).flatMap(part=>part.steps);
+for(let index=0;index<3;index++){
+ firstRoute.chapters[index].steps=FIRST_ROUTE_ORDER.slice(index*5,index*5+5).map(step=>earlySteps[step]);
+}
 for(const story of STORIES){
  story.steps=[];
  story.chapters.forEach((part,chapterIndex)=>part.steps.forEach(step=>{

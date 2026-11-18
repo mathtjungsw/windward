@@ -353,6 +353,17 @@
         }
       },
       "real": {
+      "weeklyVoyages": {
+        "$week": {
+          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && $week.matches(/^[0-9]{4,5}$/) && ($week == ''+((now+291600000)/604800000 - ((now+291600000)%604800000)/604800000) || $week == ''+(((now+291600000)/604800000 - ((now+291600000)%604800000)/604800000)-1))",
+          "$uid": {
+            "$edge": {
+              ".write": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com' && newData.val() == true && $week.matches(/^[0-9]{4,5}$/) && ($week == ''+((now+291600000)/604800000 - ((now+291600000)%604800000)/604800000) || $week == ''+(((now+291600000)/604800000 - ((now+291600000)%604800000)/604800000)-1))",
+              ".validate": "newData.val() == true && $edge.matches(/^[a-z0-9-]{2,32}[|][a-z0-9-]{2,32}$/)"
+            }
+          }
+        }
+      },
         "rankings": {
           ".read": "(auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true) || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && (((query.orderByChild == 'money' || query.orderByChild == 'profit' || query.orderByChild == 'visited' || query.orderByChild == 'explorationScore' || query.orderByChild == 'fame' || query.orderByChild == 'pirateKills' || query.orderByChild == 'fleetDefeats' || query.orderByChild == 'duelWins' || query.orderByChild == 'tradedGoodCount' || query.orderByChild == 'bestTradeProfit' || query.orderByChild == 'islandPorts' || query.orderByChild == 'fleetGrowth' || query.orderByChild == 'foundCount' || query.orderByChild == 'shoreCompleted' || query.orderByChild == 'rareFinds' || query.orderByChild == 'officerCount' || query.orderByChild == 'itemCount' || query.orderByChild == 'guildCompleted' || query.orderByChild == 'freightCompleted' || query.orderByChild == 'seaRescues') && query.limitToLast != null && (query.limitToLast <= 5 || (query.limitToLast <= 1000 && query.startAt != null))) || (query.orderByKey == true && query.limitToFirst != null && query.limitToFirst <= 20)))",
           ".indexOn": [
@@ -915,7 +926,7 @@
               },
               "investors": {
                 "$uid": {
-                  ".validate": "(newData.parent().parent().child('equityVersion').val() == 1?(newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val() > 0 && (auth.uid == $uid || newData.val() == data.val()) && (newData.val()*2 <= newData.parent().parent().child('equityTotal').val() || newData.parent().parent().child('ownerUid').val() == $uid) && (newData.val() == data.val() || newData.parent().parent().child('equityRevision').val() == data.parent().parent().child('equityRevision').val()+1 || !data.parent().parent().child('equityVersion').exists())):(true))"
+                  ".validate": "(newData.parent().parent().child('equityVersion').val() == 1?(newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val() > 0 && (auth.uid == $uid || newData.val() == data.val()) && (newData.val()*2 <= newData.parent().parent().child('equityTotal').val() || newData.parent().parent().child('ownerUid').val() == $uid) && (!data.parent().parent().child('equityVersion').exists() || newData.val() == data.val() || newData.parent().parent().child('equityRevision').val() == data.parent().parent().child('equityRevision').val()+1)):(true))"
                 }
               },
               "ownerUid": {
@@ -1000,7 +1011,7 @@
               },
               "investors": {
                 "$uid": {
-                  ".validate": "(newData.parent().parent().child('equityVersion').val() == 1?(newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val() > 0 && (auth.uid == $uid || newData.val() == data.val()) && (newData.val()*2 <= newData.parent().parent().child('equityTotal').val() || newData.parent().parent().child('ownerUid').val() == $uid) && (newData.val() == data.val() || newData.parent().parent().child('equityRevision').val() == data.parent().parent().child('equityRevision').val()+1 || !data.parent().parent().child('equityVersion').exists())):(newData.isNumber() && newData.val() >= 1 && newData.val() <= 10000000 && newData.val()%1 == 0 && (auth.uid == $uid || newData.val() == data.val()) && (!data.parent().parent().child('registeredCapital').exists() || newData.val() == data.val())))"
+                  ".validate": "(newData.parent().parent().child('equityVersion').val() == 1?(newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val() > 0 && (auth.uid == $uid || newData.val() == data.val()) && (newData.val()*2 <= newData.parent().parent().child('equityTotal').val() || newData.parent().parent().child('ownerUid').val() == $uid) && (!data.parent().parent().child('equityVersion').exists() || newData.val() == data.val() || newData.parent().parent().child('equityRevision').val() == data.parent().parent().child('equityRevision').val()+1)):(newData.isNumber() && newData.val() >= 1 && newData.val() <= 10000000 && newData.val()%1 == 0 && (auth.uid == $uid || newData.val() == data.val()) && (!data.parent().parent().child('registeredCapital').exists() || newData.val() == data.val())))"
                 }
               },
               "startedAt": {

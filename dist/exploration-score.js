@@ -1,4 +1,4 @@
-import {EXPLORATION_MASK as mask} from './exploration-mask.js?v=2026.11.18-titles-and-harbor-equity';
+import {EXPLORATION_MASK as mask} from './exploration-mask.js?v=2026.11.18-captain-workflow';
 const bits=Uint8Array.from(atob(mask.bits),c=>c.charCodeAt(0));
 export const SCORE_VERSION=mask.version;
 let total=0;

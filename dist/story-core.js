@@ -1,6 +1,6 @@
-import {STORIES,STORY_BY_ID} from './story-catalog.js?v=2026.11.18-titles-and-harbor-equity';
-import {PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
+import {STORIES,STORY_BY_ID,FIRST_ROUTE_ORDER} from './story-catalog.js?v=2026.11.18-captain-workflow';
+import {PORT_BY_ID} from './data.js?v=2026.11.18-captain-workflow';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.18-captain-workflow';
 
 const tradeKeys=new Set(STORIES.flatMap(story=>story.steps.filter(step=>step.kind==='buy'||step.kind==='sell').map(step=>[step.kind,step.port,step.good].join(':'))));
 const viewKeys=new Set(STORIES.flatMap(story=>story.steps.flatMap(step=>step.menus||[])));
@@ -11,16 +11,20 @@ export function normalizeStories(game){
  for(const story of STORIES){
   const row=old.entries?.[story.id];
   if(!row)continue;
-  entries[story.id]={index:Math.max(0,Math.min(story.steps.length,Number.isInteger(row.index)?row.index:0)),
+  const index=Math.max(0,Math.min(story.steps.length,Number.isInteger(row.index)?row.index:0));
+  const migrate=story.id==='first-route'&&old.version!==2&&index<15;
+  const credited=migrate?FIRST_ROUTE_ORDER.flatMap((prior,next)=>prior<index?[next]:[]):(row.credited||[]).filter(n=>Number.isInteger(n)&&n>=0&&n<15);
+  entries[story.id]={index:migrate?0:index,...(credited.length?{credited}:{}),
    startedAt:Number.isSafeInteger(row.startedAt)?row.startedAt:0,
    baseline:tradeCounters(row.baseline),zones:Object.fromEntries(story.steps.filter(step=>step.kind==='zone'&&row.zones?.[step.zone]===true).map(step=>[step.zone,true])),
    chapterRewards:[...new Set(row.chapterRewards||[])].filter(n=>Number.isInteger(n)&&n>=0&&n<story.chapters.length),rewarded:row.rewarded===true};
  }
- game.storyBook={version:1,entries,views:Object.fromEntries(Object.entries(old.views||{}).filter(([key,value])=>viewKeys.has(key)&&value===true)),trades:tradeCounters(old.trades),manual:old.manual===true,
+ game.storyBook={version:2,entries,views:Object.fromEntries(Object.entries(old.views||{}).filter(([key,value])=>viewKeys.has(key)&&value===true)),trades:tradeCounters(old.trades),manual:old.manual===true,
+  ...(old.firstSale&&Number.isFinite(old.firstSale.cost)&&Number.isFinite(old.firstSale.total)?{firstSale:{cost:old.firstSale.cost,total:old.firstSale.total}}:{}),
   tracked:STORY_BY_ID[old.tracked]?old.tracked:'first-route'};
  return game.storyBook;
 }
-const book=game=>game.storyBook||normalizeStories(game);
+const book=game=>game.storyBook?.version===2?game.storyBook:normalizeStories(game);
 export function storyRequirement(game,story){
  const visits=new Set(game.visited.filter(id=>PORT_BY_ID[id]?.active)).size;
  const completed=Object.entries(book(game).entries).some(([id,row])=>STORY_BY_ID[id].level==='중급'&&row.rewarded);
@@ -44,10 +48,11 @@ export function recordStoryTrade(game,port,good,qty,mode){
 }
 function stepComplete(game,story,row,step){
  const ledger=book(game);
+ if(row.credited?.includes(row.index))return true;
  if(step.kind==='view')return step.menus.every(id=>ledger.views[id]);
  if(step.kind==='manual')return ledger.manual;
  if(step.kind==='port')return !game.voyage&&!game.explorationLockedUntilSailing&&game.port===step.port;
- if(step.kind==='depart')return !game.voyage?.kind&&game.voyage?.target===step.port;
+ if(step.kind==='depart')return !game.voyage?.kind&&(game.voyage?.target===step.port||story.id==='first-route'&&game.port===step.port&&!game.explorationLockedUntilSailing);
  if(step.kind==='buy'||step.kind==='sell'){
   const key=[step.kind,step.port,step.good].join(':');
   if(story.id==='first-route'&&step.good==='wine')return step.kind==='buy'?game.boughtLisbonWine:game.soldAway;

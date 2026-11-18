@@ -1,18 +1,18 @@
-import {blessingBonus,blessingBoundary,blessingNow,blessingRate} from './blessings.js?v=2026.11.18-titles-and-harbor-equity';
-import {inlandBlocksSailing} from './inland.js?v=2026.11.18-titles-and-harbor-equity';
-import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.18-titles-and-harbor-equity';
-import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.18-titles-and-harbor-equity';
-import {regionalFactor} from './regional-economy.js?v=2026.11.18-titles-and-harbor-equity';
-import {recordTrade} from './rank-progress.js?v=2026.11.18-titles-and-harbor-equity';
-import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.18-titles-and-harbor-equity';
-import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
-import {parseState} from './save-game.js?v=2026.11.18-titles-and-harbor-equity';
-import {gunWeight} from './cannons.js?v=2026.11.18-titles-and-harbor-equity';
-import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.18-titles-and-harbor-equity';
-import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.18-titles-and-harbor-equity';
-import {charterCargo} from './guild-contracts.js?v=2026.11.18-titles-and-harbor-equity';
-export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
+import {blessingBonus,blessingBoundary,blessingNow,blessingRate} from './blessings.js?v=2026.11.18-captain-workflow';
+import {inlandBlocksSailing} from './inland.js?v=2026.11.18-captain-workflow';
+import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.18-captain-workflow';
+import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.18-captain-workflow';
+import {regionalFactor} from './regional-economy.js?v=2026.11.18-captain-workflow';
+import {recordTrade} from './rank-progress.js?v=2026.11.18-captain-workflow';
+import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.18-captain-workflow';
+import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.18-captain-workflow';
+import {parseState} from './save-game.js?v=2026.11.18-captain-workflow';
+import {gunWeight} from './cannons.js?v=2026.11.18-captain-workflow';
+import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.18-captain-workflow';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.18-captain-workflow';
+import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.18-captain-workflow';
+import {charterCargo} from './guild-contracts.js?v=2026.11.18-captain-workflow';
+export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.18-captain-workflow';
 
 export const SAVE_KEY='windward-save-v1';
 export const START_DATE=Date.UTC(1522,3,6);
@@ -29,7 +29,7 @@ export function initialState(){return {
   version:4,legacyHarbor:false,shipTier:0,fleetCount:1,fleetShips:[{id:"vessel-0",tier:0}],flagshipId:"vessel-0",discoveries:{},rumors:[],supplyCreditValue:0,worldCatalogVersion:'2026.11.09-world-78',explorationMaskVersion:1,world:'real',knownPorts:[...INITIAL_PORTS],explored:'',money:2400,food:10,day:0,cargo:{},visited:['lisbon'],port:'lisbon',
   position:[-9.14,38.72],voyage:null,controlMode:'auto',profit:0,trades:0,soldAway:false,level:0,speed:1,
   favorites:[],recentPorts:['lisbon'],recentRoutes:[],missions:[],quiz:[],boughtLisbonWine:false,useCanals:true,
-  storyBook:{version:1,entries:{},views:{},trades:{},manual:false,tracked:'first-route'},
+  storyBook:{version:2,entries:{},views:{},trades:{},manual:false,tracked:'first-route'},
   log:[{day:0,text:'리스본에서 뗏목 항해를 시작합니다. 보급과 화물 공간을 함께 확인하세요.',type:'discovery'}]
 };}
 export const parseSavedGame=raw=>parseState(raw,initialState);

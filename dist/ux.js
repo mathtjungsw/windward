@@ -1,12 +1,13 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
-import {shipArtPath} from './art.js?v=2026.11.18-titles-and-harbor-equity';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.18-titles-and-harbor-equity';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.18-titles-and-harbor-equity';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.18-titles-and-harbor-equity';
-import {autoSupplyDays,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.18-titles-and-harbor-equity';
-import {isTypingTarget} from './controls.js?v=2026.11.18-titles-and-harbor-equity';
-import {validCard} from './social-core.js?v=2026.11.18-titles-and-harbor-equity';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.18-captain-workflow';
+import {shipArtPath} from './art.js?v=2026.11.18-captain-workflow';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.18-captain-workflow';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.18-captain-workflow';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.18-captain-workflow';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.18-captain-workflow';
+import {findMenus} from './menu-finder.js?v=2026.11.18-captain-workflow';
+import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.18-captain-workflow';
+import {isTypingTarget} from './controls.js?v=2026.11.18-captain-workflow';
+import {validCard} from './social-core.js?v=2026.11.18-captain-workflow';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -22,7 +23,7 @@ export function createUX(api){
   const panel=$('#port-panel'),market=$('#market'),cargo=$('#cargo-list'),modal=$('#modal');
   const panelHome=document.createComment('항구 정보 원래 위치');panel.before(panelHome);
   const sheet=document.createElement('dialog');sheet.id='quick-sheet';sheet.setAttribute('aria-labelledby','quick-title');
-  sheet.innerHTML='<header><strong id="quick-title">항구·보급</strong><button id="quick-expand" type="button" aria-label="창 확장 또는 축소">↕</button><button id="quick-close" type="button">닫기</button></header><div id="quick-content"></div>';
+  sheet.innerHTML='<header><strong id="quick-title">항구·보급</strong><button id="quick-help" type="button" aria-label="현재 화면 도움말">?</button><button id="quick-expand" type="button" aria-label="창 확장 또는 축소">↕</button><button id="quick-close" type="button">닫기</button></header><div id="quick-content"></div>';
   document.body.append(sheet);
   const bar=document.createElement('nav');bar.id='quick-bar';bar.setAttribute('aria-label','모바일 바로가기');
   bar.innerHTML='<button id="quick-nav" type="button">항해</button><button id="quick-port" type="button">항구·보급</button><button id="quick-tavern" type="button">주점</button><button id="quick-more" type="button">더보기</button>';
@@ -45,11 +46,12 @@ export function createUX(api){
     if(panel.parentNode!==$('#quick-content'))return;
     const home=mobile.matches?$('#mobile-panels'):$('#desktop-panels');
     if(home){const before=mobile.matches?$('#chat-panel'):home.firstChild;home.insertBefore(panel,before?.parentNode===home?before:null);}else panelHome.after(panel);
-    panel.classList.remove('quick-cargo-only');
+    panel.classList.remove('quick-cargo-only','quick-tavern-only');
   }
   function closeSheet(){if(sheet.open)sheet.close();restorePanel();}
   sheet.addEventListener('close',()=>{if(!sheet.open){restorePanel();if(sheetFocus?.isConnected&&!modal.open)sheetFocus.focus({preventScroll:true});}});
   $('#quick-close').onclick=closeSheet;
+  $('#quick-help').onclick=()=>api.onHelp();
   $('#quick-expand').onclick=()=>sheet.classList.toggle('expanded');
   $('#quick-nav').onclick=()=>{closeSheet();api.onHome();$('.chart').scrollIntoView({block:'nearest'});};
   $('#action-home').onclick=api.onHome;
@@ -74,9 +76,11 @@ export function createUX(api){
     if(!mobile.matches){panel.scrollIntoView({block:'nearest'});if(mode==='cargo')cargo.scrollIntoView({block:'nearest'});return;}
     if(panel.parentNode!==$('#quick-content'))$('#quick-content').replaceChildren(panel);
     panel.classList.toggle('quick-cargo-only',mode==='cargo');
-    openSheet(mode==='cargo'?'내 화물':mode==='supply'?'선박·보급':mode==='target'?'선택한 항구':mode==='tavern'?'주점':'항구·보급',mode);
+    panel.classList.toggle('quick-tavern-only',mode==='tavern');
+    $('#quick-content').scrollTop=0;
+    openSheet(mode==='cargo'?'내 화물':mode==='supply'?'선박·보급':mode==='target'?'선택한 항구':mode==='tavern'?((PORT_BY_ID[s.port]?.name||'')+' 주점').trim():'항구·보급',mode);
   }
-  const quickLabels={tavern:'주점',cargo:'화물',port:'항구·보급',guild:'항구 조합',items:'아이템 가방',ownedPorts:'소유 항구'};
+  const quickLabels={tavern:'주점',cargo:'화물',port:'항구·보급',guild:'항구 조합',items:'아이템 가방',ownedPorts:'소유 항구',ship:'내 배 보기'};
   function currentQuick(){
     const selected=Array.isArray(prefs.quick)&&prefs.quick.length===2&&new Set(prefs.quick).size===2&&prefs.quick.every(k=>Object.hasOwn(quickLabels,k))?prefs.quick:['port','tavern'];
     return selected;
@@ -87,7 +91,7 @@ export function createUX(api){
       const button=$(selector),key=values[i];
       button.textContent=quickLabels[key];
       button.onclick=()=>{
-        const actions={cargo:()=>openPort('cargo'),port:()=>openPort('port'),guild:()=>api.onGuild?.(),items:()=>api.onItems?.(),ownedPorts:()=>api.onOwnedPorts?.(),tavern:()=>{
+        const actions={cargo:()=>openPort('cargo'),port:()=>openPort('port'),guild:()=>api.onGuild?.(),items:()=>api.onItems?.(),ownedPorts:()=>api.onOwnedPorts?.(),ship:()=>api.onShip?.(),tavern:()=>{
           if(!tools().port||tools().voyage)return api.onToast('항구에 정박한 뒤 주점을 이용할 수 있어요.');
           openPort('tavern');
         }};
@@ -107,19 +111,89 @@ export function createUX(api){
     };
     $('#quick-edit-reset').onclick=()=>{$('#quick-edit-1').value='port';$('#quick-edit-2').value='tavern';};
   }
-  function openMore(){
-    restorePanel();$('#quick-content').innerHTML='<div class="quick-links"><button data-menu="guild">항구 조합</button><button data-menu="items">아이템 가방</button><button data-menu="atlas">항구 찾기</button><button data-menu="officers">부선장 명부</button><button data-menu="cargo">화물</button><button data-menu="mail">외교 서신</button><button data-menu="menuFinder">메뉴 찾기</button><button data-menu="suggestions">개선 제안 게시판</button><button data-menu="ownedPorts">소유 항구 현황</button><button data-menu="projects">공동 사업</button><button data-menu="sea">해상 활동</button><button data-menu="shore">상륙 탐사</button><button data-menu="saleSearch">내 물품 최고가 판매처</button><button data-menu="business">항구 투자·활동</button><button data-menu="guns">대포·수리</button><button data-menu="combat">선장 전투</button><button data-menu="collection">수집 도감</button><button data-menu="ship">내 배 보기</button><button data-menu="captains">전체 선장</button><button data-menu="globe">세계 지구본</button><button data-menu="rank">랭킹</button><button data-menu="story">항해자의 이야기</button><button data-menu="chat">채팅</button><button data-menu="journal">항해일지</button><button data-menu="editQuick">바로가기 편집</button><button data-menu="settings">조작·화면 설정</button><button data-menu="help">도움말</button></div>';
-    const unread=api.onMailUnread?.()||0;
-    if(unread)$('#quick-content [data-menu="mail"]').textContent='외교 서신 · '+Math.min(99,unread)+(unread>99?'+':'');
-    openSheet('더보기','more');
-    $('#quick-content').querySelectorAll('[data-menu]').forEach(b=>b.onclick=()=>{
-      closeSheet();const key=b.dataset.menu;
-      if(key==='editQuick')editQuick();else if(key==='mail')api.onMail?.();else if(key==='cargo')openPort('cargo');else if(key==='story')api.onStory?.();else if(key==='menuFinder')api.onMenuFinder?.();else if(key==='sea')api.onSea?.();else if(key==='guild')api.onGuild?.();else if(key==='projects')api.onProjects?.();else if(key==='shore')api.onShore?.();else if(key==='officers')api.onOfficers?.();else if(key==='items')api.onItems?.();else if(key==='saleSearch')api.onSaleSearch?.();else if(key==='suggestions')api.onSuggestions?.();else if(key==='ownedPorts')api.onOwnedPorts?.();else if(key==='business')api.onBusiness?.();else if(key==='guns')api.onGuns?.();else if(key==='combat')api.onCombat?.();else if(key==='collection')api.onCollection?.();else if(key==='ship')api.onShip?.();else if(key==='captains')api.onCaptains?.();else if(key==='atlas')api.onAtlas();else if(key==='journal')api.onJournal();else if(key==='settings')showSettings();else if(key==='help')api.onHelp();else {
-        if(key==='chat')api.onChat(true);
-        $({globe:'.minimap-card',rank:'.rank-card',mission:'.mission-card',chat:'#chat-panel'}[key])?.scrollIntoView({block:'nearest'});
-      }
-    });
+  const menuGroups=[
+    ['항해',[['map','세계지도'],['atlas','항구 찾기'],['journal','항해일지'],['ship','내 배 보기'],['globe','세계 지구본'],['sea','해상 활동'],['guns','대포·수리'],['combat','선장 전투']]],
+    ['교역·항구',[['cargo','화물'],['saleSearch','내 물품 최고가 판매처'],['port','항구·보급'],['tavern','주점'],['guild','항구 조합'],['business','항구 투자·활동'],['ownedPorts','소유 항구 현황'],['projects','공동 사업']]],
+    ['탐험',[['collection','발견 도감'],['note','소문노트'],['shore','상륙 탐사'],['story','항해자의 이야기'],['items','아이템 가방']]],
+    ['선장',[['captains','선장 목록'],['rank','랭킹'],['officers','부선장 명부'],['mail','외교 서신'],['chat','채팅'],['suggestions','개선 제안 게시판']]],
+  ];
+  const menuItems=new Map(menuGroups.flatMap(([,rows])=>rows));
+  const defaultPins=['guild','items','atlas','officers'];
+  const currentPins=()=>Array.isArray(prefs.morePins)&&prefs.morePins.length===4&&new Set(prefs.morePins).size===4&&prefs.morePins.every(key=>menuItems.has(key))?prefs.morePins:defaultPins;
+  const moreButton=(key,name)=>'<button type="button" data-menu="'+key+'">'+escape(name)+'</button>';
+  function editMore(){
+    const options=currentPins().map((pin,index)=>'<label>'+(index+1)+'번 자리 <select data-pin="'+index+'">'+[...menuItems].map(([id,name])=>'<option value="'+id+'" '+(id===pin?'selected':'')+'>'+escape(name)+'</option>').join('')+'</select></label>').join('');
+    api.onModal('더보기 고정 메뉴 편집','네 자리에 원하는 메뉴를 선택하세요.',options+'<div class="dialog-actions"><button id="save-menu-pins">저장</button><button id="reset-menu-pins">기본값</button></div><p id="menu-pin-status" role="status"></p>','small');
+    const fields=[...document.querySelectorAll('[data-pin]')];
+    $('#reset-menu-pins').onclick=()=>fields.forEach((field,index)=>field.value=defaultPins[index]);
+    $('#save-menu-pins').onclick=()=>{
+      const keys=fields.map(field=>field.value);
+      if(new Set(keys).size!==4){$('#menu-pin-status').textContent='서로 다른 메뉴 네 개를 선택하세요.';return;}
+      prefs.morePins=keys;storePrefs();api.onClose();openMore();
+    };
   }
+  function navigate(key){
+    closeSheet();
+    const actions={
+      map:()=>{api.onHome();$('.chart').scrollIntoView({block:'nearest'});},
+      cargo:()=>openPort('cargo'),port:()=>openPort('port'),
+      tavern:()=>tools().port&&!tools().voyage?openPort('tavern'):api.onToast('항구에 정박한 뒤 주점을 이용할 수 있어요.'),
+      trade:()=>openPort('port'),editQuick,editMore,menuFinder:api.onMenuFinder,note:api.onNote,era:api.onEra,mail:api.onMail,
+      story:api.onStory,sea:api.onSea,guild:api.onGuild,projects:api.onProjects,shore:api.onShore,
+      officers:api.onOfficers,items:api.onItems,saleSearch:api.onSaleSearch,suggestions:api.onSuggestions,
+      ownedPorts:api.onOwnedPorts,business:api.onBusiness,guns:api.onGuns,combat:api.onCombat,
+      collection:api.onCollection,ship:api.onShip,captains:api.onCaptains,atlas:api.onAtlas,
+      journal:api.onJournal,settings:showSettings,help:api.onHelp
+    };
+    if(Object.hasOwn(actions,key))return actions[key]?.();
+    if(key==='chat')api.onChat(true);
+    $({globe:'.minimap-card',rank:'.rank-card',chat:'#chat-panel'}[key])?.scrollIntoView({block:'nearest'});
+  }
+  function openMore(){
+    restorePanel();
+    const root=$('#quick-content'),unread=api.onMailUnread?.()||0;
+    const label=(id,text)=>id==='mail'&&unread?text+' · '+Math.min(99,unread)+(unread>99?'+':''):text;
+    const pins=currentPins().map(id=>moreButton(id,label(id,menuItems.get(id)))).join('');
+    const sections=menuGroups.map(([title,rows])=>'<details class="quick-category"><summary>'+title+'</summary><div class="quick-links">'+rows.map(([id,name])=>moreButton(id,label(id,name))).join('')+'</div></details>').join('');
+    root.innerHTML='<div class="quick-directory"><label for="quick-menu-search">메뉴 검색</label><input id="quick-menu-search" type="search" placeholder="세금, 대포, 소문" autocomplete="off"><div id="quick-search-results" aria-live="polite" hidden></div><div id="quick-menu-default"><div class="quick-pin-heading"><strong>고정 메뉴</strong>'+moreButton('editMore','편집')+'</div><div class="quick-links">'+pins+'</div>'+sections+'<details class="quick-category"><summary>설정·도움말</summary><div class="quick-links">'+moreButton('editQuick','하단 바로가기 편집')+moreButton('settings','조작·화면 설정')+moreButton('help','도움말')+moreButton('era','현재 시대')+moreButton('menuFinder','설명서 검색')+'</div></details></div></div>';
+    openSheet('더보기','more');
+    root.scrollTop=0;
+    root.querySelector('.quick-directory').onclick=event=>{
+      const target=event.target.closest('[data-menu]');
+      if(target)navigate(target.dataset.menu);
+    };
+    const search=$('#quick-menu-search');
+    const aliases={sale:'saleSearch',album:'collection',ports:'ownedPorts',stories:'story',canals:'projects',storedShips:'ship',shipyard:'ship',taxCollector:'ownedPorts',supply:'port'};
+    const refresh=()=>{
+      const query=search.value.trim(),results=$('#quick-search-results');
+      $('#quick-menu-default').hidden=!!query;results.hidden=!query;
+      if(!query)return;
+      const key=query.replace(/\s/g,'').toLowerCase();
+      const ids=new Set(findMenus(query).map(([id])=>aliases[id]||id));
+      for(const [id,name] of menuItems)if(name.replace(/\s/g,'').toLowerCase().includes(key))ids.add(id);
+      results.innerHTML=[...ids].map(id=>menuItems.has(id)?moreButton(id,menuItems.get(id)):'').join('')||'<p>일치하는 메뉴가 없어요.</p>';
+    };
+    search.oninput=event=>{if(!event.isComposing)refresh();};
+    search.oncompositionend=refresh;
+  }
+  const pcNav=document.createElement('nav');
+  pcNav.className='pc-menu-groups';pcNav.setAttribute('aria-label','주 메뉴');
+  for(const [title,rows] of menuGroups){
+    const details=document.createElement('details');
+    details.innerHTML='<summary>'+title+'</summary><div>'+rows.filter(([id])=>id!=='atlas').map(([id,name])=>moreButton(id,name)).join('')+'</div>';
+    details.onclick=event=>{
+      if(event.target.closest('summary'))for(const other of pcNav.querySelectorAll('details[open]'))if(other!==details)other.open=false;
+      const button=event.target.closest('[data-menu]');
+      if(button){details.open=false;navigate(button.dataset.menu);}
+    };
+    details.onkeydown=event=>{if(event.key==='Escape'&&details.open){event.preventDefault();details.open=false;details.querySelector('summary').focus();}};
+    pcNav.append(details);
+  }
+  $('.main-nav').before(pcNav);
+  pcNav.append($('#atlas-btn'));
+  document.addEventListener('click',event=>{
+    if(!pcNav.contains(event.target))for(const group of pcNav.querySelectorAll('details[open]'))group.open=false;
+  });
   function layout(){
     closeSheet();if(mobile.matches)$('main').insertBefore($('#manual-pad'),$('#mobile-panels'));else navHome.after($('#manual-pad'));
     $('.chart').tabIndex=0;$('.chart').setAttribute('aria-label','항해 지도 · 방향키 또는 W 위 S 아래 A 왼쪽 D 오른쪽');
@@ -156,9 +230,9 @@ export function createUX(api){
     const renderSupply=()=>{
       const game=tools();
       mode.value=autoSupplyDays(game.autoSupplyTarget)?'days':'max';
-      mode.disabled=!game.autoSupply;
+      mode.disabled=false;
       dayRow.hidden=mode.value!=='days';
-      days.disabled=!game.autoSupply||dayRow.hidden;
+      days.disabled=dayRow.hidden;
       days.value=game.autoSupplyDays||game.autoSupplyTarget||Math.max(1,Math.floor(ship(game).supply));
     };
     $('#auto-supply').onchange=e=>{tools().autoSupply=e.target.checked;renderSupply();api.onSave();};
@@ -195,12 +269,22 @@ export function createUX(api){
   }
   function renderShip(){
     const s=tools(),spec=ship(s),docked=!!tradingPort(s),next=SHIPS[shipTier(s)+1];
-    const freeFood=Math.max(0,Math.min(spec.supply-s.food,(capacity(s)-usedCargo(s))*2/fleetCount(s)-s.food));
-    $('#ship-content').innerHTML=`<p class="modal-meta">자동 보급 · ${s.autoSupply?(autoSupplyDays(s.autoSupplyTarget)?'목표 '+fmt(s.autoSupplyTarget)+'일분':'최대치'):'꺼짐'}</p><div class="ship-card"><img class="port-ship-image" src="${shipArtPath(shipTier(s))}" alt="${escape(spec.name)}"><h3>${spec.name} · ${shipTier(s)+1}/20단계 · ${fleetCount(s)}척</h3><p>해상 하루 ${spec.speed}해리 · 강 하루 ${spec.riverSpeed}해리<br>${Number.isFinite(spec.offshore)?'해안에서 '+spec.offshore+'해리 이내 · ':''}보급 ${s.food.toFixed(1)} / ${spec.supply}일분 · 적재 ${usedSpace(s)} / ${capacity(s)}칸</p><p>비현금 보급 크레딧 ${fmt(s.supplyCreditValue||0)} D 상당</p><button class="service-button" id="supply-one" ${docked&&freeFood>1e-8?'':'disabled'}>보급 +1일분 <span>${supplyCost(s,Math.min(1,freeFood))} D</span></button><button class="service-button" id="supply-btn" ${docked&&freeFood>1e-8?'':'disabled'}>가득 채우기 · +${freeFood.toFixed(1)}일분 <span>${supplyCost(s,freeFood)} D</span></button><button class="service-button" id="supply-unload" ${docked&&s.food>0?'':'disabled'}>보급 1일분 내려 보관</button><button class="service-button" id="upgrade-btn">내 배 보기 · 개량/선단 <span>${next?fmt(upgradeCost(s))+' D':'최대 개량'}</span></button>${PORT_BY_ID[s.port]?.depot?'<button class="service-button" id="depot-supply-open">공동 창고에서 보급</button>':'<button class="service-button" id="guild-open">항구 조합</button>'}<button class="service-button" id="shore-open">상륙 탐사</button><p>최대 ${fleetLimit(s)}척 보유 가능 · 구조는 방문한 항구로 귀환해요.</p></div>`;
+    const freeFood=Math.max(0,Math.min(spec.supply-s.food,supplyRoom(s)));
+    const target=autoSupplyDays(s.autoSupplyTarget)||spec.supply;
+    const targetNeed=Math.max(0,target-s.food),targetAmount=Math.min(targetNeed,freeFood),targetCost=supplyCost(s,targetAmount);
+    const targetLabel=targetNeed<1e-8?'목표 보급량 충족':targetAmount<1e-8?'적재·보급 한도에 도달했어요':(targetAmount<targetNeed-1e-8?'공간·선박 한도 · ':'')+(s.food+targetAmount).toFixed(1)+'일분까지 채우기 · +'+targetAmount.toFixed(1)+'일분 · '+fmt(targetCost)+' D';
+    $('#ship-content').innerHTML=`<p class="modal-meta">자동 보급 · ${s.autoSupply?(autoSupplyDays(s.autoSupplyTarget)?'목표 '+fmt(s.autoSupplyTarget)+'일분':'최대치'):'꺼짐'}</p><section class="target-supply"><label>보급 목표 <input id="port-supply-goal" type="number" min="1" value="${autoSupplyDays(s.autoSupplyTarget)||''}" placeholder="최대치" inputmode="numeric"> 일분</label><label><input id="port-supply-auto" type="checkbox" ${s.autoSupply?'checked':''}> 입항할 때도 이 목표로 자동 보급</label><button id="supply-target" type="button" class="primary-button" ${docked&&targetAmount>1e-8&&targetCost<=s.money?'':'disabled'}>${targetLabel}</button>${targetAmount>1e-8&&targetCost>s.money?'<p>보급할 두카트가 부족해요.</p>':''}</section><div class="ship-card"><img class="port-ship-image" src="${shipArtPath(shipTier(s))}" alt="${escape(spec.name)}"><h3>${spec.name} · ${shipTier(s)+1}/20단계 · ${fleetCount(s)}척</h3><p>해상 하루 ${spec.speed}해리 · 강 하루 ${spec.riverSpeed}해리<br>${Number.isFinite(spec.offshore)?'해안에서 '+spec.offshore+'해리 이내 · ':''}보급 ${s.food.toFixed(1)} / ${spec.supply}일분 · 적재 ${usedSpace(s)} / ${capacity(s)}칸</p><p>비현금 보급 크레딧 ${fmt(s.supplyCreditValue||0)} D 상당</p><button class="service-button" id="supply-one" ${docked&&freeFood>1e-8?'':'disabled'}>보급 +1일분 <span>${supplyCost(s,Math.min(1,freeFood))} D</span></button><button class="service-button" id="supply-btn" ${docked&&freeFood>1e-8?'':'disabled'}>가득 채우기 · +${freeFood.toFixed(1)}일분 <span>${supplyCost(s,freeFood)} D</span></button><button class="service-button" id="supply-unload" ${docked&&s.food>0?'':'disabled'}>보급 1일분 내려 보관</button><button class="service-button" id="upgrade-btn">내 배 보기 · 개량/선단 <span>${next?fmt(upgradeCost(s))+' D':'최대 개량'}</span></button>${PORT_BY_ID[s.port]?.depot?'<button class="service-button" id="depot-supply-open">공동 창고에서 보급</button>':'<button class="service-button" id="guild-open">항구 조합</button>'}<button class="service-button" id="shore-open">상륙 탐사</button><p>최대 ${fleetLimit(s)}척 보유 가능 · 구조는 방문한 항구로 귀환해요.</p></div>`;
     $('#guild-open')?.addEventListener('click',()=>api.onGuild?.());
     $('#depot-supply-open')?.addEventListener('click',()=>api.onDepot?.(s.port));
     $('#shore-open').onclick=()=>api.onShore?.();
     const supply=amount=>{const result=resupply(s,amount);if(!result.ok){api.onToast(result.error,'error');return;}api.onToast(`보급 ${result.amount.toFixed(1)}일분 · ${result.cost} D`);api.onSave();};
+    $('#port-supply-goal').onchange=event=>{
+      const input=event.currentTarget,goal=input.value===''?null:autoSupplyDays(input.valueAsNumber);
+      if(input.value!==''&&!goal){api.onToast('1 이상의 정수 일수를 입력하세요.');return;}
+      s.autoSupplyTarget=goal;s.autoSupplyDays=goal;api.onSave();renderShip();
+    };
+    $('#port-supply-auto').onchange=event=>{s.autoSupply=event.target.checked;api.onSave();};
+    $('#supply-target').onclick=()=>supply(targetAmount);
     $('#supply-one').onclick=()=>supply(1);$('#supply-btn').onclick=()=>supply(Infinity);
     $('#supply-unload').onclick=()=>{if(unloadSupply(s,1)){api.onToast('보급을 항구에 보관했어요.');api.onSave();}};
     $('#upgrade-btn').onclick=()=>api.onShip?.();

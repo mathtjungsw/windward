@@ -1,6 +1,6 @@
-import {TITLES,activeTitle,normalizeTitles} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
-import {titleStats,chooseTitle,reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.18-titles-and-harbor-equity';
-import {RANK_BY_ID} from './rank-metrics.js?v=2026.11.18-titles-and-harbor-equity';
+import {TITLES,activeTitle,normalizeTitles} from './title-effects.js?v=2026.11.18-captain-workflow';
+import {titleStats,chooseTitle,reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.18-captain-workflow';
+import {RANK_BY_ID} from './rank-metrics.js?v=2026.11.18-captain-workflow';
 export function createTitleUI(api){
  let busy=false;
  const esc=text=>String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

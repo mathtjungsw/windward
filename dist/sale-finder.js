@@ -1,5 +1,7 @@
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
-import {taxRate,permitted,captainTradeQuote,NEUTRAL_PORTS} from './commerce.js?v=2026.11.18-titles-and-harbor-equity';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.18-captain-workflow';
+import {taxRate,permitted,captainTradeQuote,NEUTRAL_PORTS} from './commerce.js?v=2026.11.18-captain-workflow';
+import {currentPortOwner} from './port-equity.js?v=2026.11.18-captain-workflow';
+import {fillSearchRoutes} from './route-search.js?v=2026.11.18-captain-workflow';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const SALE_SEARCH_NOTICE='지금 검색한 시점에 조회한 시세 기준 최고가입니다. 시세와 세금은 실제 판매할 때 달라질 수 있어요.';
 export function ownedTradeGoods(game){const result={};for(const cargo of [game.cargo,JSON.parse(game.battleReserve?.cargoJSON||'{}')])for(const [id,c]of Object.entries(cargo||{}))if(GOODS[id]&&c.qty>0)result[id]=(result[id]||0)+c.qty;return result;}
@@ -15,11 +17,12 @@ function portReader(account,portId,remoteRead){
  return async key=>(await s.get(s.ref(account.db,`gameV2/shared/ports/${portId}/content/${key}`))).val();
 }
 async function readPortPolicy(read,portId,uid,includeRates){
- const [ownerUid,developedOwner]=await Promise.all([read('ownerUid'),read('developedOwner')]);
+ const developed=portId.startsWith('developed-');
+ const [ownerUid,developedOwner,equityVersion]=await Promise.all([read('ownerUid'),developed?read('developedOwner'):null,developed?read('equityVersion'):null]);
  if([ownerUid,developedOwner].some(value=>value!=null&&(typeof value!=='string'||!value)))throw Error('항구 소유 정보를 확인하지 못했어요.');
- const owner=developedOwner||ownerUid;
+ const owner=equityVersion===1?ownerUid:developedOwner||ownerUid;
  if(!owner)return {};
- const policy=developedOwner?{developedOwner}:{investors:{[owner]:1}};
+ const policy={investors:{[owner]:1}};
  const readRates=includeRates&&owner!==uid&&!NEUTRAL_PORTS.includes(portId);
  const [blacklist,defaultRate,personalRate]=await Promise.all([
   read('blacklist'),readRates?read('defaultRate'):null,readRates?read('rates/'+uid):null
@@ -55,6 +58,19 @@ export async function readSaleAccess(account,portId,remoteRead){
 export async function scanSalePorts(ports,read,isCurrent=()=>true){let next=0;const rows=[],failed=[],deadline=Date.now()+20000;await Promise.all(Array.from({length:Math.min(6,ports.length)},async()=>{while(next<ports.length&&isCurrent()&&Date.now()<deadline){const port=ports[next++];try{rows.push(await read(port));}catch{failed.push(port.id);}}}));for(const port of ports.slice(next))failed.push(port.id);return {rows,failed};}
 
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
+function taxReason(row,uid){
+ if(NEUTRAL_PORTS.includes(row.port.id))return '중립항';
+ if(row.quote.noviceTax)return '초보 선장 면세';
+ const owner=currentPortOwner(row.policy);
+ if(owner===uid)return '내 소유 항구';
+ if(!owner)return '소유자 없음';
+ return Object.hasOwn(row.policy.rates||{},uid)?'내 개별 세율':'기본 세율';
+}
+export function saleProfit(quote,originCost,route){
+ if(!route?.canSail||!(route.days>0))return null;
+ const profit=quote.total-originCost-route.supplyCost-route.toll;
+ return {profit,perDay:profit/route.days};
+}
 const byPortName=(a,b)=>a.name.localeCompare(b.name,'ko');
 function element(tag,value,className){
  const node=document.createElement(tag);
@@ -77,6 +93,20 @@ export function createSaleFinder(api){
   if(!form)return;
   const modal=document.querySelector('#modal'),target=document.querySelector('#sale-search-results'),status=document.querySelector('#sale-search-status');
   const controls=[...form.querySelectorAll('button,input,select')],uid=a.uid;
+  const order=element('select');
+  order.id='sale-search-order';
+  order.setAttribute('aria-label','판매처 정렬');
+  for(const [id,label] of [['total','판매 실수령액순'],['per-day','항해 하루당 순이익순']]){
+   const option=element('option',label);option.value=id;order.append(option);
+  }
+  order.value=api.getState().saleSearchOrder==='per-day'?'per-day':'total';
+  form.after(order);
+  let repaint=null;
+  order.onchange=()=>{
+   api.getState().saleSearchOrder=order.value;
+   api.changed?.();
+   repaint?.();
+  };
   let search=0,searching=false;
   function say(message){
    status.hidden=!message;
@@ -108,6 +138,7 @@ export function createSaleFinder(api){
    const current=()=>request===search&&form.isConnected&&modal.open&&a.ready&&uid===a.uid;
    controls.forEach(control=>control.disabled=true);
    say('각 항구의 현재 시세를 조회하고 있어요…');
+   repaint=null;
    target.replaceChildren();
    try{
     const goodId=form.querySelector('#sale-search-good').value,knownOnly=form.querySelector('#sale-search-known').checked;
@@ -126,22 +157,54 @@ export function createSaleFinder(api){
     const blocked=rows.filter(row=>!permitted(row.policy,uid)).map(row=>row.port);
     const failedIds=new Set(failed),uncertain=ports.filter(port=>failedIds.has(port.id)).sort(byPortName);
     const clock=new Intl.DateTimeFormat('ko-KR',{dateStyle:'short',timeStyle:'medium',timeZone:'Asia/Seoul'}).format(new Date(at));
-    let checking=false;
+    const game=api.getState();
+    const stacks=[game.cargo?.[goodId],JSON.parse(game.battleReserve?.cargoJSON||'{}')[goodId]].filter(row=>row?.qty>0);
+    const originCost=stacks.reduce((sum,c)=>sum+c.cost,0)*qty/stacks.reduce((sum,c)=>sum+c.qty,0);
+    const routeRows=new Map();
+    let checking=false,routeGeneration=0,loading=false;
+    async function calculate(){
+     if(!lookup||loading||!current())return;
+     const generation=routeGeneration,reader=lookup;
+     const pending=ranked.filter(row=>known.has(row.port.id)&&row.port.id!==game.port&&!routeRows.has(row.port.id));
+     if(!pending.length)return;
+     loading=true;
+     paint();
+     await fillSearchRoutes(pending.map(row=>row.port),reader,(port,result)=>routeRows.set(port.id,result),
+      ()=>current()&&generation===routeGeneration&&order.value==='per-day');
+     if(generation===routeGeneration){
+      loading=false;
+      if(current())paint();
+     }
+    }
     function paint(showBlocked=false){
      const restricted=showBlocked||target.querySelector('.sale-port-restricted')?.open;
      const failedOpen=target.querySelector('.sale-port-uncertain')?.open;
+     const perDay=order.value==='per-day';
+     const results=perDay?ranked.flatMap(row=>{
+      const economics=saleProfit(row.quote,originCost,routeRows.get(row.port.id));
+      return economics?[{...row,...economics}]:[];
+     }).sort((a,b)=>b.perDay-a.perDay||b.quote.total-a.quote.total):ranked;
      target.replaceChildren(
       element('p',`검색 기준 ${clock} (한국 시간) · ${GOODS[goodId].name} ${qty}상자 · ${rows.length}/${ports.length}항구 조회`,'sale-search-timestamp'),
-      element('h3',failed.length||knownOnly?'확인된 항구 중 예상 실수령액 상위 5곳':'예상 실수령액 상위 5곳')
+      element('h3',perDay?'바로 출항 가능한 항구 · 항해 하루당 예상 순이익 상위 5곳':failed.length||knownOnly?'확인된 항구 중 예상 실수령액 상위 5곳':'예상 실수령액 상위 5곳')
      );
      if(failed.length)target.append(element('p',`미조회 ${failed.length}곳이 있어 확인에 성공한 항구의 시세만 비교했어요.`,'help-tip'));
      if(!ranked.length)target.append(element('p','판매 가능하다고 확인된 항구가 없어요.'));
+     if(perDay){
+      const dock=ranked.find(row=>row.port.id===api.getState().port&&!api.getState().voyage);
+      if(dock)target.append(element('p','지금 팔기 · '+dock.port.name+' · 예상 실수령 '+fmt(dock.quote.total)+' D','help-tip'));
+      if(loading)target.append(element('p','알고 있는 항구의 직항 가능 여부를 계산 중…','route-search-detail'));
+      else if(!results.length)target.append(element('p','현재 조건으로 비교할 수 있는 직항이 없어요.'));
+     }
      if(lookup&&ranked.length){
       const refresh=element('button','현재 위치로 항로 다시 계산');
-      refresh.type='button';refresh.onclick=()=>{lookup=api.searchRoutes();paint();};
+      refresh.type='button';refresh.onclick=()=>{
+       routeGeneration++;loading=false;routeRows.clear();lookup=api.searchRoutes();
+       paint();if(order.value==='per-day')void calculate();
+      };
       target.append(refresh);
      }
-     for(const [index,row] of ranked.slice(0,5).entries()){
+     for(const [index,row] of results.slice(0,5).entries()){
       const article=element('article',null,'sale-search-row');
       const depart=element('button','항구로 이동');
       depart.type='button';
@@ -158,7 +221,7 @@ export function createSaleFinder(api){
         const allowed=await readSaleAccess(a,row.port.id,await freshSaleRead(a));
         if(!current())return;
         if(!allowed){
-         ranked.splice(ranked.indexOf(row),1);
+         ranked.splice(ranked.findIndex(candidate=>candidate.port.id===row.port.id),1);
          blocked.push(row.port);
          paint(true);
          target.querySelector('.sale-port-restricted summary')?.focus();
@@ -179,10 +242,16 @@ export function createSaleFinder(api){
       };
        const routeInfo=element('p',lookup?'항로 계산 중…':'','route-search-detail');
        if(lookup)void lookup(row.port).then(result=>{if(current()&&article.isConnected)routeInfo.textContent=result.text+(!known.has(row.port.id)?' · 항구 정보 필요':'');});
+       const details=element('details',null,'sale-port-details');
+       const route=routeRows.get(row.port.id);
+       let breakdown='세전 '+fmt(row.quote.gross)+' D · 세금 '+fmt(row.quote.tax)+' D · 판매 보너스 +'+fmt(row.quote.bonus||0)+' D · 축복 +'+fmt(row.quote.blessing||0)+' D';
+       if(perDay)breakdown+=' · 매입 원가 '+fmt(originCost)+' D · 예상 보급비 '+fmt(route.supplyCost)+' D · 통행료 '+fmt(route.toll)+' D';
+       details.append(element('summary','계산 자세히'),element('p',breakdown));
        article.append(
        element('strong',`${index+1}. ${row.port.name}${known.has(row.port.id)?'':' · 미발견'}`),
-       element('p',`${row.quote.eventEnd?'행사 시세 · ':''}판매가 ${fmt(row.quote.unit)} D/상자 · 세율 ${row.rate}%${row.quote.noviceTax?' · 초보 선장 면세':''}${row.quote.bonus?' · 보너스 +'+fmt(row.quote.bonus)+' D':''}${row.quote.blessing?' · 축복 +'+fmt(row.quote.blessing)+' D':''} · ${qty}상자 수령 ${fmt(row.quote.total)} D`),
-       routeInfo,lookButton(row.port),depart
+       element('p',`${qty}상자 수령 예상 ${fmt(row.quote.total)} D · 항구세 ${row.rate}% (${taxReason(row,uid)})`),
+       ...(perDay?[element('strong',`${fmt(row.perDay)} D / 항해일 · 예상 순이익 ${fmt(row.profit)} D`)]:[]),
+       routeInfo,details,lookButton(row.port),depart
       );
       target.append(article);
      }
@@ -199,7 +268,11 @@ export function createSaleFinder(api){
       target.append(details);
      }
     }
-    paint();
+    repaint=()=>{
+     paint();
+     if(order.value==='per-day')void calculate();
+    };
+    repaint();
     say('');
     api.record?.(goodId,qty,ranked[0],at);
    }catch(error){

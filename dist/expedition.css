@@ -315,3 +315,70 @@ button.shore-pin:focus-visible { outline:2px solid #265f65; outline-offset:2px; 
 .title-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}.title-card,.album-milestone{padding:14px;border:1px solid #bdc7ad;border-radius:9px}.title-card.earned{background:#eef2e6}.album-milestone{margin-bottom:12px}.album-report-choice{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid #d9ddcd}.album-report-choice input{width:22px;height:22px}.trade-effect-details{padding:8px;border-top:1px solid #d9ddcd}.trade-effect-details summary{cursor:pointer}
 
 .trade-quantity-options{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important}.trade-quantity-options button{min-width:0!important;margin:0!important;padding:10px 4px!important}.trade-effect-details{max-width:100%;overflow-wrap:anywhere}.title-grid,.title-card{min-width:0}
+
+/* Grouped navigation and compact charts */
+.topbar .main-nav{display:none}
+.pc-menu-groups{display:flex;align-items:center;gap:5px;min-width:0}
+.pc-menu-groups details{position:relative}
+.pc-menu-groups summary{list-style:none;white-space:nowrap;cursor:pointer;padding:7px 8px;border-radius:5px}
+.pc-menu-groups summary::after{content:' ▾';font-size:.75em}
+.pc-menu-groups details[open] summary{background:#285d62;color:#fffdf5}
+.pc-menu-groups details>div{position:absolute;top:100%;left:0;z-index:30;display:grid;gap:2px;min-width:11rem;max-width:80vw;padding:6px;border:1px solid #b6c3ae;border-radius:6px;background:#fffdf4;box-shadow:0 7px 20px #183c3c30}
+.pc-menu-groups details button{padding:.55rem;text-align:left;white-space:nowrap}
+.pc-menu-groups #atlas-btn{white-space:nowrap;border:1px solid #b6c3ae;padding:7px 8px;border-radius:5px;height:auto;background:#eef3e7}
+.pc-menu-groups #atlas-count{display:none}
+.mobile-era{display:none}
+.quick-directory{display:grid;gap:8px;padding:12px}
+.quick-directory input{width:100%;min-height:42px;padding:7px 10px;font:inherit;border:1px solid #a9bdaa;border-radius:5px;background:#fffef7;color:#294b4a}
+.quick-pin-heading{display:flex;justify-content:space-between;align-items:center;margin:9px 0 5px}
+.quick-category{margin-top:7px;border-bottom:1px solid #cad5c2}
+.quick-category summary{padding:10px 4px;font-weight:700;cursor:pointer}
+.quick-category .quick-links{padding-bottom:7px}
+#quick-search-results:not([hidden]){display:grid;gap:6px}
+.target-supply{display:grid;gap:7px;padding:10px;margin-bottom:10px;border:1px solid #c7d4c0;border-radius:6px;background:#eff4e9}
+.target-supply input[type=number]{width:8em}
+.target-supply .primary-button{width:100%}
+.fleet-vessel-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:6px;margin-bottom:8px}
+.fleet-vessel-list [aria-pressed=true]{outline:2px solid #3a7779;background:#edf4e8}
+.weekly-route-map{display:block;width:100%;height:auto;background:#c7dfe1;border:1px solid #9ab5ac;border-radius:5px}
+.weekly-grid{fill:none;stroke:#7ea8a7;stroke-width:.5}
+.weekly-lines{stroke:#23787d;stroke-linecap:round}
+.weekly-ports circle{fill:#fffdf0;stroke:#27666b}
+.weekly-ports text{fill:#224647;stroke:#fffdf0;stroke-width:1.5;paint-order:stroke;font:9px sans-serif}
+#sale-search-order{margin:5px 0 9px}
+#dialog-help{margin-left:auto;margin-right:7px}
+#modal:has(#game-manual-frame) #dialog-help{display:none}
+#quick-content .quick-tavern-only .port-illustration,#quick-content .quick-tavern-only .fold-heading,#quick-content .quick-tavern-only .panel-bottom{display:none}
+#quick-content .quick-tavern-only .panel-content>:not(.panel-tabs):not(#tavern-content){display:none}
+#quick-content .quick-tavern-only .panel-tabs button:not(#tavern-tab):not(#rumor-note-tab){display:none}
+#quick-content .quick-tavern-only .panel-tabs{margin-top:0}
+#quick-content .quick-tavern-only .tavern-intro{display:none}
+button:disabled{color:#546761;opacity:.78}
+@media(max-width:850px){
+ .pc-menu-groups{display:none}
+ .topbar{display:flex;flex-wrap:nowrap;min-height:0;height:auto;justify-content:space-between;gap:5px;padding:6px 10px}
+ .topbar .brand{min-width:0;white-space:nowrap}
+ .topbar .brand strong{font-size:clamp(14px,4.7vw,22px)}
+ .topbar .brand small{display:none}
+ .topbar .brand>svg{width:25px;height:25px}
+ .topbar .header-end{width:auto;display:flex;flex-wrap:nowrap;justify-content:flex-end;gap:4px}
+ .topbar .header-end>*{display:none}
+ .topbar #game-manual,.topbar #update-notes,.topbar #help-btn{display:inline-flex;align-items:center;font-size:10px;padding:4px 6px;min-height:31px;white-space:nowrap}
+ .topbar #help-btn{width:26px;justify-content:center}
+ .topbar #save-status.save-warning{position:absolute;right:8px;top:100%;z-index:10;display:block;background:#fff0d8;color:#694718;padding:4px 8px;border-radius:4px;font-size:11px}
+ .statusbar{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr);min-height:0;height:auto;gap:4px;padding:4px 8px;overflow:visible}
+ .statusbar .date,.statusbar .weather{display:none}
+ .statusbar .mobile-era{display:block;font-size:10px;padding:5px 1px;line-height:1.25;min-width:0;word-break:keep-all;color:#365b52}
+ .statusbar .mobile-era[hidden]{display:block;visibility:hidden}
+ .statusbar .status-item{padding:0 2px 0 4px;min-width:0;line-height:1.25}
+ .statusbar .status-item strong{font-size:13px;white-space:nowrap}
+ .statusbar .status-item small{font-size:9px;white-space:nowrap}
+ .statusbar .status-item strong em{font-size:9px}
+ #action-strip{flex-wrap:nowrap;min-height:0;padding:4px 9px;gap:4px}
+ #action-status{flex:1;min-width:0;font-size:11px;line-height:1.4}
+ #action-strip #action-home,#action-strip #ship-view-btn{min-height:30px;padding:3px 5px;font-size:10px;white-space:nowrap}
+ #action-strip #action-context{display:none}
+ #quick-content .quick-tavern-only .panel-content{padding-top:5px}
+ .fleet-vessel-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .fleet-vessel-list button{font-size:12px;padding:4px}
+}

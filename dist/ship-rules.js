@@ -1,6 +1,6 @@
-import {titleEffect} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
-import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.18-titles-and-harbor-equity';
-import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
+import {titleEffect} from './title-effects.js?v=2026.11.18-captain-workflow';
+import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.18-captain-workflow';
+import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.18-captain-workflow';
 
 export const ACTIVE_SECONDS_PER_DAY=2;
 const rows=[

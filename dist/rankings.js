@@ -1,5 +1,5 @@
-import {rankFleet} from './social-core.js?v=2026.11.18-titles-and-harbor-equity';
-import {RANK_METRICS} from './rank-metrics.js?v=2026.11.18-titles-and-harbor-equity';
+import {rankFleet} from './social-core.js?v=2026.11.18-captain-workflow';
+import {RANK_METRICS} from './rank-metrics.js?v=2026.11.18-captain-workflow';
 export {RANK_METRICS};
 export class CaptainRankings{
  constructor(fleet,onChange){this.fleet=fleet;this.onChange=onChange;this.rows={};this.myRanks={};this.metric='profit';this.visible=true;}

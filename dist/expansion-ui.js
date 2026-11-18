@@ -1,22 +1,22 @@
-import {ALBUM_MILESTONES,HERITAGE_IDS,canReportAlbum,reportHeritage} from './album-rewards.js?v=2026.11.18-titles-and-harbor-equity';
-import {TITLE_BY_ID,activeTitle} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
-import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.18-titles-and-harbor-equity';
-import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.18-titles-and-harbor-equity';
-import {historicalArt} from './historical-ship-art.js?v=2026.11.18-titles-and-harbor-equity';
-import {vesselGunLimits} from './cannons.js?v=2026.11.18-titles-and-harbor-equity';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.18-titles-and-harbor-equity';
-import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
-import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.18-titles-and-harbor-equity';
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
-import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,storedShips} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
-import {mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
-import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.18-titles-and-harbor-equity';
-import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS as KINDS} from './discoveries-catalog.js?v=2026.11.18-titles-and-harbor-equity';
-import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.18-titles-and-harbor-equity';
-import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.18-titles-and-harbor-equity';
-import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.18-titles-and-harbor-equity';
-import {lastSeenText} from './captain-time.js?v=2026.11.18-titles-and-harbor-equity';
-import {nextShipEndsProtection} from './novice.js?v=2026.11.18-titles-and-harbor-equity';
+import {ALBUM_MILESTONES,HERITAGE_IDS,canReportAlbum,reportHeritage} from './album-rewards.js?v=2026.11.18-captain-workflow';
+import {TITLE_BY_ID,activeTitle} from './title-effects.js?v=2026.11.18-captain-workflow';
+import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.18-captain-workflow';
+import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.18-captain-workflow';
+import {historicalArt} from './historical-ship-art.js?v=2026.11.18-captain-workflow';
+import {vesselGunLimits} from './cannons.js?v=2026.11.18-captain-workflow';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.18-captain-workflow';
+import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.18-captain-workflow';
+import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.18-captain-workflow';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.18-captain-workflow';
+import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,storedShips} from './ship-rules.js?v=2026.11.18-captain-workflow';
+import {mapDistance} from './world-wrap.js?v=2026.11.18-captain-workflow';
+import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.18-captain-workflow';
+import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS as KINDS} from './discoveries-catalog.js?v=2026.11.18-captain-workflow';
+import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.18-captain-workflow';
+import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.18-captain-workflow';
+import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.18-captain-workflow';
+import {lastSeenText} from './captain-time.js?v=2026.11.18-captain-workflow';
+import {nextShipEndsProtection} from './novice.js?v=2026.11.18-captain-workflow';
 const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createExpansion(api){
@@ -25,11 +25,26 @@ export function createExpansion(api){
  const summary=document.createElement('section');summary.id='ship-overview';summary.className='ship-overview';$('.navigation-mode .fold-body').append(summary);
  const progress=document.createElement('div');progress.id='exploration-overview';$('.captain-stats').after(progress);
  const find=document.createElement('section');find.id='nearby-discovery';find.className='nearby-discovery';find.hidden=true;$('.navigation-mode .fold-body').append(find);
- const collection=document.createElement('button');collection.id='collection-btn';collection.className='nav-item';collection.innerHTML='<span>✦ 수집 도감</span>';collection.onclick=()=>showAlbum();$('.main-nav').append(collection);
+ const collection=document.createElement('button');collection.id='collection-btn';collection.className='nav-item';collection.textContent='발견 도감';collection.onclick=()=>showAlbum();$('.main-nav').append(collection);
  $('#action-home').textContent='내 배 위치';
  const own=document.createElement('button');own.id='ship-view-btn';own.textContent='내 배 보기';own.onclick=()=>showShip();$('#action-home').after(own);
  const cue=document.createElement('button');cue.className='discovery-alert';cue.dataset.usageKey='action-open-discovery';cue.hidden=true;cue.onclick=()=>showInvestigation();$('#chart-sailing-actions').prepend(cue);const dismissed=new Map();let popupScheduled=false;
- function showInvestigation(){const s=get(),list=nearbyDiscoveries(s);if(!list.length)return;api.onDiscoveryPause?.();for(const d of list)dismissed.set(d.id,{at:Date.now(),outside:false});api.onModal('탐험의 흔적을 발견했어요','항해를 잠시 멈췄어요',list.map(d=>{const nm=mapDistance(s.position,d.point),ok=nm<=d.inspectRadius&&api.getNav().clear(s.position,d.point);return `<article class="investigation-row"><h3>${KINDS[d.kind]}의 흔적 · 난도 ${d.tier}</h3><p>현재 ${nm.toFixed(1)}해리 · ${ok?'조사 가능':'조사까지 '+Math.max(0,nm-d.inspectRadius).toFixed(1)+'해리 더 접근 / 같은 바닷길 확인'}</p><div class="dialog-actions"><button data-popup-inspect="${d.id}" class="primary-button" ${ok?'':'disabled'}>조사하기</button><button data-popup-approach="${d.id}">조사 지점으로 이동</button></div></article>`;}).join('')+'<p id="investigation-move-status" role="status"></p><button id="investigation-close">닫기 · 현재 위치에서 정지</button>','small');
+ function showInvestigation(){
+  const s=get(),list=nearbyDiscoveries(s);
+  if(!list.length)return;
+  api.onDiscoveryPause?.();
+  const entries=list.map(d=>{
+   dismissed.set(d.id,{at:Date.now(),outside:false});
+   const nm=mapDistance(s.position,d.point),remaining=nm-d.inspectRadius,water=api.getNav().clear(s.position,d.point);
+   const canInspect=remaining<=0&&water;
+   const approach=api.approachStatus?.(d);
+   const next=canInspect?'현재 위치에서 조사할 수 있어요.':remaining>0?'조사 범위까지 '+Math.max(.1,remaining).toFixed(1)+'해리 더 접근하세요.':'거리는 충분해요. 해안을 돌아 같은 물길에서 접근하세요.';
+   return `<article class="investigation-row"><h3>${KINDS[d.kind]}의 흔적 · 난도 ${d.tier}</h3><p>현재 ${nm.toFixed(1)}해리 · ${next}</p>
+    <div class="dialog-actions"><button data-popup-inspect="${d.id}" class="${canInspect?'primary-button':''}" ${canInspect?'':'disabled'}>조사하기</button>
+    <button data-popup-approach="${d.id}" class="${canInspect||approach?.error?'':'primary-button'}" ${approach?.error?'disabled':''}>조사 지점으로 이동</button></div>
+    ${approach?.error?`<p class="help-tip approach-status">${esc(approach.error)}</p>`:''}</article>`;
+  });
+  api.onModal('탐험의 흔적을 발견했어요',s.voyage?'항해를 잠시 멈췄어요':'현재 주변의 발견 단서',entries.join('')+'<p id="investigation-move-status" role="status"></p><button id="investigation-close">닫기 · 현재 위치에서 정지</button>','medium');
   $('#modal').dataset.investigation='true';
   if(s.voyage||s.detourTarget){
    const resume=document.createElement('button');
@@ -57,7 +72,7 @@ export function createExpansion(api){
   }
  }
  function showShip(tab='current'){
-  if(tab!=='growth')return showFleet();const rows=fleetShips(get());
+  if(tab!=='growth'){fleetTab='fleet';viewedVessel=null;return showFleet();}const rows=fleetShips(get());
   api.onModal('선박의 20단계 성장','뗏목에서 명장의 교역 범선까지',`<button id="growth-back">내 선단으로 돌아가기</button><div class="ship-growth-grid">${SHIPS.map((p,i)=>{const n=rows.filter(v=>v.tier===i).length;return `<article class="growth-step ${n?'current':''}"><img src="${shipArtPath(i)}" alt="${esc(p.name)}" width="160" height="120"><strong>${i+1}. ${esc(p.name)}</strong><span>${p.speed}해리/일 · 보급 ${p.supply}일</span><span>한 척 적재 ${p.capacity}칸</span>${n?`<b>${n}척 보유</b>`:''}</article>`;}).join('')}</div>`,'wide');$('#growth-back').onclick=()=>showFleet();
  }
  function showShipyard(){
@@ -100,6 +115,14 @@ export function createExpansion(api){
   grid.classList.add('fleet-management-list');
   grid.hidden=fleetTab!=='fleet';actions.hidden=fleetTab!=='yard';
   root.classList.remove('fleet-overview-mode');
+  const list=document.createElement('div');list.className='fleet-vessel-list';list.setAttribute('aria-label','동행 중인 배');
+  rows.forEach((ship,index)=>{
+   const choice=document.createElement('button');choice.type='button';choice.textContent=(index?'동행선 '+index:'기함')+' · '+vesselSpec(ship).name+' · '+(ship.tier+1)+'단계';
+   choice.setAttribute('aria-pressed',String(ship.id===viewedVessel));
+   choice.onclick=()=>{viewedVessel=ship.id;showFleet();};
+   list.append(choice);
+  });
+  root.querySelector('.fleet-display').before(list);
   $('#fleet-display-select').onchange=e=>{viewedVessel=e.target.value;showFleet();};
   $('#fleet-open-equipment').onclick=()=>api.onItems?.();
   root.querySelectorAll('[data-fleet-view]').forEach(button=>button.onclick=()=>{fleetTab=button.dataset.fleetView;showFleet();});
