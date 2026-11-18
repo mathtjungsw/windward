@@ -1,8 +1,9 @@
-import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.17-promoted-ports-and-content';
-import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.17-promoted-ports-and-content';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {eraAvailable} from './era-cycle.js?v=2026.11.17-promoted-ports-and-content';
-import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {titleEffect} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
+import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.18-titles-and-harbor-equity';
+import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {eraAvailable} from './era-cycle.js?v=2026.11.18-titles-and-harbor-equity';
+import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.18-titles-and-harbor-equity';
 
 export const isConsumable=entry=>['supply','repair','coupon','extension','shore-consumable','distance','trade-voucher','activity','project','facility'].includes(entry?.type);
 export const itemLimit=entry=>isConsumable(entry)?20:1;
@@ -50,7 +51,8 @@ export function normalizeRumorProgress(game){
     ...Object.keys(items).filter(id=>items[id]>0),...Object.keys(distanceGear),
     ...Object.values(vouchers),...Object.values(object(src.coupons))
   ],id=>Object.hasOwn(ITEM_BY_ID,id));
-  return {read,hidden,officers,items,acquiredItems,contracts,shipGear,canalPass:CANAL_IDS.includes(src.canalPass)?src.canalPass:null,
+  const tavernHistory=Object.fromEntries(Object.entries(object(src.tavernHistory)).filter(([port])=>PORT_BY_ID[port]).map(([port,values])=>[port,ids(values,id=>read.includes(id)||(game.rumors||[]).includes(id)).filter(id=>RUMOR_BY_ID[id])]).filter(([,values])=>values.length));
+  return {read,hidden,officers,items,acquiredItems,contracts,shipGear,tavernHistory,canalPass:CANAL_IDS.includes(src.canalPass)?src.canalPass:null,
     active:officers.includes(src.active)?src.active:null,
     exploreGear:gearIds(src.exploreGear,items,'explore'),
     tradeGear:gearIds(src.tradeGear,items,'trade'),
@@ -266,7 +268,7 @@ export function explorationGear(game){
 export const extraCapacity=game=>equippedGear(game,'trade').reduce((total,item)=>total+(item.capacity||0),0);
 export function supplyDiscount(game){
   const officer=activeOfficer(game);
-  return officer?.supplyDiscount||(MEDITERRANEAN_PORTS.has(game.port)?officer?.mediterraneanSupply||0:0);
+  return Math.min(.1,(officer?.supplyDiscount||(MEDITERRANEAN_PORTS.has(game.port)?officer?.mediterraneanSupply||0:0))+titleEffect(game,'supplyDiscount'));
 }
 export function activeCoupon(game,kind){
   const id=game.rumorProgress?.coupons?.[kind];
@@ -288,13 +290,16 @@ export function activateCoupon(game,id){
   p.items[id]--;
   return {message:entry.name+' 적용 대기'};
 }
-export function saleBonus(game,portId,goodId){
+export function saleBonusDetails(game,portId,goodId){
   const region=PORT_BY_ID[portId]?.region;
-  const eligible=gear=>gear&&(!gear.sellRegion||region===gear.sellRegion)&&(!gear.sellPorts||gear.sellPorts.includes(portId))&&(!gear.sellGoods||gear.sellGoods.includes(goodId));
-  return Math.min(.03,[activeOfficer(game),...equippedGear(game,'trade')].reduce((sum,g)=>sum+(eligible(g)?g.sellBonus||0:0),0));
+  const source=[activeOfficer(game),...equippedGear(game,'trade')].filter(g=>g?.sellBonus).map(g=>({id:g.id,name:g.name,rate:g.sellBonus,eligible:(!g.sellRegion||region===g.sellRegion)&&(!g.sellPorts||g.sellPorts.includes(portId))&&(!g.sellGoods||g.sellGoods.includes(goodId))}));
+  const title=titleEffect(game,'sellBonus');if(title)source.push({id:'title',name:'선택한 칭호',rate:title,eligible:true});
+  const raw=source.reduce((n,g)=>n+(g.eligible?g.rate:0),0),applied=Math.min(.03,raw);
+  return {raw,applied,cap:.03,source:source.map(g=>({...g,contribution:g.eligible?Math.max(0,applied-Math.min(.03,raw-g.rate)):0}))};
 }
+export const saleBonus=(game,portId,goodId)=>saleBonusDetails(game,portId,goodId).applied;
 export function contractDescription(entry){
   if(entry.scenario)return '항해자의 이야기 완료 보상입니다. 획득 후 기존 장비 칸 또는 동행 부선장으로 선택하세요.';
   return entry.challenge.ports.map(id=>PORT_BY_ID[id]?.name).join(' · ')+' 방문, '+GOODS[entry.challenge.cargo].name+' '+entry.challenge.qty+'상자 납품';
 }
-import {CANAL_IDS} from './canal-reservations.js?v=2026.11.17-promoted-ports-and-content';
+import {CANAL_IDS} from './canal-reservations.js?v=2026.11.18-titles-and-harbor-equity';

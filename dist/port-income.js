@@ -1,3 +1,4 @@
+import {equityEnabled} from './port-equity.js?v=2026.11.18-titles-and-harbor-equity';
 const HOUR=3600000;
 const CAP_HOURS=72;
 const NEUTRAL=new Set(['lisbon','porto']);
@@ -7,6 +8,7 @@ export function configurePortDividends(at){
   dividendStart=Number.isSafeInteger(at)&&at>0?at:0;
 }
 export function dividendsEnabled(portId,now,content){
+  if(equityEnabled(content))return now>=content.equitySince;
   if(portId.startsWith('depot-'))return (content?.promotion?.level||0)>0;
   return dividendStart>0&&now>=dividendStart&&!NEUTRAL.has(portId)&&!portId.startsWith('depot-')&&!portId.startsWith('developed-');
 }
@@ -14,6 +16,10 @@ const cleanAmount=value=>Math.round(value*1e6)/1e6;
 const assets=(content)=>Object.entries(content.investors||{}).filter(([,amount])=>Number.isSafeInteger(amount)&&amount>0);
 export function dividendRate(content,portId){
   const total=assets(content).reduce((sum,[,amount])=>sum+amount,0);
+  if(equityEnabled(content)){
+    const base=portId.startsWith('depot-')?(content.promotion?.level>=2?1000:500):(content.development?.level>=2?1000:500)+(content.advancedSupply?500:0);
+    const boost=Math.min(.5,total/200000*.05);return {total,boost,rate:total?base*(1+boost):0};
+  }
   if(portId.startsWith('depot-'))return {total,boost:0,rate:total?(content.promotion?.level>=2?1000:500):0};
   const base=MAJOR.has(portId)?3000:1000;
   const boost=Math.min(.5,total/(MAJOR.has(portId)?600000:200000)*.05);
@@ -23,7 +29,8 @@ function dividendRates(content,id,owner,now){
   const {total,rate}=dividendRate(content,id);
   if(!total)return {};
   const rates=Object.fromEntries(assets(content).map(([uid,amount])=>[uid,rate*(amount/total)]));
-  if(owner)rates[owner]=(rates[owner]||0)+Math.max(0,basicIncomeRate(content,id,owner,now)-(MAJOR.has(id)?3000:1000));
+  const base=equityEnabled(content)?(id.startsWith('depot-')?(content.promotion?.level>=2?1000:500):(content.development?.level>=2?1000:500)+(content.advancedSupply?500:0)):MAJOR.has(id)?3000:1000;
+  if(owner)rates[owner]=(rates[owner]||0)+Math.max(0,basicIncomeRate(content,id,owner,now)-base);
   return rates;
 }
 function accountAt(content,uid,rate,at,now){
@@ -31,7 +38,7 @@ function accountAt(content,uid,rate,at,now){
   return cleanAmount(pending+Math.max(0,Math.min(rate*CAP_HOURS-Math.max(0,pending),rate*Math.max(0,now-at)/HOUR)));
 }
 function advanceDividends(content,id,owner,now){
-  const start=content.promotion?.startedAt??dividendStart;
+  const start=content.equitySince??content.promotion?.startedAt??dividendStart;
   const ledger=content.taxDividend??={at:start};
   if(!ledger.rates){
     const legacy=content.basicIncome?.period;
@@ -83,7 +90,7 @@ export function claimTradeTax(content,uid){
 
 export function basicIncomeRate(content,portId,owner=content.developedOwner||content.ownerUid,now=Date.now()){
   if(NEUTRAL.has(portId))return 0;
-  const base=portId.startsWith('depot-')?500:content.developedOwner?((content.development?.level||0)>=2?1000:500)+(content.advancedSupply?500:0):MAJOR.has(portId)?3000:1000;
+  const base=portId.startsWith('depot-')?(equityEnabled(content)&&content.promotion?.level>=2?1000:500):content.developedOwner?((content.development?.level||0)>=2?1000:500)+(content.advancedSupply?500:0):MAJOR.has(portId)?3000:1000;
   const bonus=owner&&content.officerIncome?.uid===owner?Math.max(0,Math.min(420,content.officerIncome.basis||0)):0;
   const capital=Object.values(content.investors||{}).reduce((sum,n)=>sum+(Number.isSafeInteger(n)&&n>0?n:0),0);
   const threshold=MAJOR.has(portId)?3000000:1000000;
@@ -123,7 +130,7 @@ export function estimateBasicIncome(content,portId,uid,owner,now){
   if(dividendsEnabled(portId,now,content)){
     const ledger=content.taxDividend;
     const legacy=content.basicIncome?.period;
-    const start=content.promotion?.startedAt??dividendStart;
+    const start=content.equitySince??content.promotion?.startedAt??dividendStart;
     const oldUnits=previousUnits(content,uid)+(validPeriod(legacy)&&legacy.owner===uid?currentUnits(content,portId,legacy,Math.max(start,legacy.at)):0);
     const rate=dividendRates(content,portId,owner,now)[uid]||0;
     const amount=accountAt(content,uid,ledger?.rates?.[uid]??(ledger?0:rate),ledger?.at??start,now);

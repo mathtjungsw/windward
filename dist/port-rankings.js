@@ -1,11 +1,12 @@
-import {ownership} from './commerce.js?v=2026.11.17-promoted-ports-and-content';
-import {PORT_BY_ID} from './data.js?v=2026.11.17-promoted-ports-and-content';
-export function ownedPortSummary(portId,content,ownerName){const o=ownership(content);if(!o.ownerUid)return null;return {ownerUid:o.ownerUid,ownerName:content.investorNames?.[o.ownerUid]||content.developerName||ownerName,portName:content.development?.name||PORT_BY_ID[portId]?.name||portId,share:content.developedOwner?100:content.investors[o.ownerUid]/o.total*100,defaultRate:content.defaultRate||0,kind:content.developedOwner?'developed':'general'};}
+import {equityEnabled,currentPortOwner} from './port-equity.js?v=2026.11.18-titles-and-harbor-equity';
+import {ownership} from './commerce.js?v=2026.11.18-titles-and-harbor-equity';
+import {PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+export function ownedPortSummary(portId,content,ownerName){const o=ownership(content);if(!o.ownerUid)return null;return {ownerUid:o.ownerUid,ownerName:content.investorNames?.[o.ownerUid]||content.developerName||ownerName,portName:content.development?.name||PORT_BY_ID[portId]?.name||portId,share:content.developedOwner&&!equityEnabled(content)?100:content.investors[o.ownerUid]/o.total*100,defaultRate:content.defaultRate||0,kind:content.developedOwner?'developed':'general'};}
 // Counters are independent of personal summaries: another investor may change
 // an offline captain's ownership, without ever writing that captain's save.
 export async function ownershipRankChanges(account,portId,before,after,operationId,kind='ports'){
  const depot=kind==='projects';
- const rankOwner=content=>depot?(content.promotion?.level>=2&&content.registeredOwner||null):ownership(content).ownerUid;
+ const rankOwner=content=>depot?(content.promotion?.level>=2&&currentPortOwner(content)||null):ownership(content).ownerUid;
  const oldOwner=rankOwner(before),newOwner=rankOwner(after);
  if(depot&&oldOwner===newOwner)return {};
  const sdk=account.sdk,changes={};

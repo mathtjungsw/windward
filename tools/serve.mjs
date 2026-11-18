@@ -223,6 +223,39 @@ async function harborDevelopmentPreview(mode){
  return html.replace(marker,marker+fixture);
 }
 
+async function suggestionsPreviewPage(){
+ const game=initialState();Object.assign(game,{port:'london',position:[-0.13,51.5],money:2400000,profit:650000,noviceGraduated:true});
+ game.albumRewards={title:true,quest:true,flag:true};
+ for(const d of DISCOVERIES.slice(0,140))game.discoveries[d.id]={foundDay:1,foundAt:1};
+ game.rumorProgress={read:[],contracts:{},items:{I017:1,I020:1,I066:1},officers:['O002'],active:'O002',tradeGear:['I017','I020','I066']};
+ game.fleetShips[0].tier=19;game.shipTier=19;game.cargo={cloves:{qty:100,cost:5000}};
+ const html=await fixturePage(game),marker='beginPlaying('+JSON.stringify(game)+');';
+ return html.replace(marker,marker+`
+  const uid='suggestions-preview',harbor='developed-bergen';
+  const harborContent={_version:1,equityVersion:1,equitySince:Date.now()-3600000,equityRevision:1,equityTotal:400000,
+    developedOwner:uid,developerName:'검증 선장',development:{name:'베르겐',level:2},investors:{[uid]:400000},withdrawableCapital:{[uid]:400000},investorNames:{[uid]:'검증 선장'},ownerUid:uid,foundingPaid:400000};
+  const registry={[harbor]:{id:harbor,name:'베르겐',level:2,ownerUid:uid}};
+  const shared=new Map([['ports/'+harbor,{revision:1,content:harborContent}]]);
+  account.ready=true;account.uid=uid;account.name='검증 선장';account.defenseEnabled=false;account.save=()=>{};account.flush=async()=>{};
+  account.sdk={ref:(_,path)=>path,serverTimestamp:()=>Date.now(),get:async path=>({val:()=>path.endsWith('harborRegistry')?registry:path.includes('portRankings')?{ownedPortCount:3}:path.includes('overallRanking/captains')?{overallScore:6500}:null}),onValue:()=>()=>{}};
+  account.readShared=async(kind,key)=>structuredClone(shared.get(kind+'/'+key)||{revision:0,content:{}});
+  account.atomicAction=async(kind,key,mutate)=>{
+    const game=structuredClone(state),book=await account.readShared(kind,key),result=await mutate(game,book.content,Date.now(),book.revision);
+    book.revision++;shared.set(kind+'/'+key,book);if(result.registry)registry[key]=result.registry;
+    reconcileTitles(game,Date.now(),{ownedPortCount:3,overallScore:6500});state=game;exploration=new Exploration(state.explored);renderHUD();return result;
+  };
+  community.syncOwnership=async()=>[];
+  const toolbar=document.createElement('aside');toolbar.className='qa-toolbar';toolbar.style.cssText='position:relative;padding:6px;background:#e6ede4;display:flex;gap:5px;flex-wrap:wrap;z-index:1000';
+  toolbar.innerHTML='<small>개발용 샘플</small><button id="qa-titles">칭호</button><button id="qa-report">수집 보고</button><button id="qa-trade">판매 효과</button><button id="qa-equity">항구 투자</button>';
+  document.body.prepend(toolbar);
+  const dock=id=>{state.port=id;state.voyage=null;business.observe(id);};
+  document.querySelector('#qa-titles').onclick=()=>{dock('london');titleUI.open();};
+  document.querySelector('#qa-report').onclick=()=>{dock('london');expansion.showAlbum();document.querySelector('#album-rewards').click();};
+  document.querySelector('#qa-trade').onclick=()=>{dock('london');business.trade('sell','cloves');};
+  document.querySelector('#qa-equity').onclick=async()=>{await business.syncPorts();dock(harbor);await business.showHub(true);};
+ `);
+}
+
 async function emulatorAccount(){
   let account= (await read('account.js'))
     .replace("appSdk.initializeApp(FIREBASE_CONFIG, 'windward-google')",
@@ -259,6 +292,8 @@ const server=createServer(async(req,res)=>{
     if(url.pathname===previewPrefix+'ship-rules.js')return reply(res,'.js',previewShipRules(await read('ship-rules.js')));
     if(useEmulators&&url.pathname==='/account.js')return reply(res,'.js',await emulatorAccount());
     const manual={...initialState(),port:null,controlMode:'manual'};
+    if(url.pathname==='/__qa/suggestions')return reply(res,'.html',await suggestionsPreviewPage());
+    if(url.pathname==='/__qa/suggestions-mobile')return reply(res,'.html','<!doctype html><html lang="ko"><meta charset="utf-8"><title>모바일 개선 화면 검증</title><style>body{margin:0;background:#dce8e8}iframe{display:block;margin:auto;width:390px;height:844px;border:0;max-width:100%}</style><iframe title="모바일 개선 화면" src="/__qa/suggestions"></iframe></html>');
     if(url.pathname==='/__qa/development')return reply(res,'.html',await developmentPreviewPage());
     if(url.pathname==='/__qa/harbor-development')return reply(res,'.html',await harborDevelopmentPreview(url.searchParams.get('mode')));
     if(url.pathname==='/__qa/inland-album')return reply(res,'.html',await inlandAlbumPreview(url.searchParams.has('suez'),url.searchParams.has('blessing')));

@@ -1,8 +1,8 @@
-import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.17-promoted-ports-and-content';
-import {GOODS} from './data.js?v=2026.11.17-promoted-ports-and-content';
-import {explorationGear} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
-import {shipGlyph} from './art.js?v=2026.11.17-promoted-ports-and-content';
-import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.17-promoted-ports-and-content';
+import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.18-titles-and-harbor-equity';
+import {GOODS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {explorationGear} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
+import {shipGlyph} from './art.js?v=2026.11.18-titles-and-harbor-equity';
+import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.18-titles-and-harbor-equity';
 
 const button=(title,action,target='')=>`<button type="button" class="service-button" data-shore-action="${action}" data-shore-target="${target}">${title}</button>`;
 const nodes=['harbor','market','site','ridge'];

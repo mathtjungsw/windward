@@ -1,10 +1,12 @@
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.17-promoted-ports-and-content';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.17-promoted-ports-and-content';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
-import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.17-promoted-ports-and-content';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.17-promoted-ports-and-content';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome,advanceBasicIncome,pendingTradeTax,claimTradeTax} from './port-income.js?v=2026.11.17-promoted-ports-and-content';
+import {equityEnabled,currentPortOwner,capitalTotal} from './port-equity.js?v=2026.11.18-titles-and-harbor-equity';
+import {initializePortEquity} from './equity-migration.js?v=2026.11.18-titles-and-harbor-equity';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
+import {mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
+import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.18-titles-and-harbor-equity';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.18-titles-and-harbor-equity';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome,advanceBasicIncome,pendingTradeTax,claimTradeTax} from './port-income.js?v=2026.11.18-titles-and-harbor-equity';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));
@@ -34,6 +36,7 @@ const totalOf=entries=>Object.values(entries||{}).reduce((total,n)=>total+n,0);
 const status=(content,now)=>content.readyAt?now>=content.readyAt?'open':'building':'funding';
 const atSea=(game)=>!game.port&&!game.voyage&&!game.shoreTrip&&!game.seaJob&&!game.raidId&&!game.battleId&&!game.npcBattle;
 export const projectOwner=content=>{
+  if(equityEnabled(content))return currentPortOwner(content);
   if(content.registeredCapital)return content.registeredOwner||null;
   const total=totalOf(content.investors);
   return Object.entries(content.investors||{}).find(([,n])=>2*n>total)?.[0]||null;
@@ -131,6 +134,14 @@ export function canalLedger(content,uid,now){
 function addDividend(content,amount){
   const investors=content.investors||{},total=totalOf(investors);
   if(!amount||!total)return;
+  if(equityEnabled(content)){
+    const ledger=content.dividends??={},remainders=content.supplyRemainders??={};
+    for(const[uid,stake]of Object.entries(investors)){
+      const accrued=amount*stake/total+(remainders[uid]||0),whole=Math.floor(accrued);
+      if(whole)ledger[uid]=(ledger[uid]||0)+whole;remainders[uid]=accrued-whole;
+    }
+    return;
+  }
   const ledger=content.dividends??={},remainder=content.dividendRemainders??={};
   for(const [uid,stake] of Object.entries(investors)){
     const units=amount*stake+amountOf(remainder,uid),whole=Math.floor(units/total);
@@ -144,17 +155,16 @@ export function depotAccess(game,project,nav){
 }
 function depotRegistry(project,content){
   const owner=projectOwner(content),total=totalOf(content.investors);
-  content.registeredCapital=total;
-  content.registeredOwner=owner||'';
+  if(!equityEnabled(content)){content.registeredCapital=total;content.registeredOwner=owner||'';}
   return {id:project.id,kind:'depot',name:project.name,level:1,opensAt:content.readyAt,
     ownerUid:owner||'',ownerShare:owner?Math.floor(content.investors[owner]*10000/total)/100:0};
 }
 export function depotPromotion(project,content,uid,now,candidateOpen=false,vote=0){
  const {level=0,support=0}=content.promotion||{};
- const capital=content.registeredCapital||0;
+ const capital=equityEnabled(content)?capitalTotal(content):content.registeredCapital||0;
  const eligible=project.kind==='depot'&&capital>0&&status(content,now)==='open'&&level<3&&!candidateOpen;
- const stake=amountOf(content.investors,uid),voted=vote===level+1;
- return {level,support,capital,stake,voted,eligible,cost:[100000,200000,300000][level]||0,majority:capital>0&&support*2>capital};
+ const stake=amountOf(content.investors,uid),voteCode=equityEnabled(content)?(content.equityRevision||1)*10+level+1:level+1,voted=vote===voteCode;
+ return {level,support,capital,stake,voted,voteCode,eligible,cost:[100000,200000,300000][level]||0,majority:capital>0&&support*2>capital};
 }
 export function changeDepotPromotion(game,content,uid,project,action,now,candidateOpen,vote,expectedLevel){
  const plan=depotPromotion(project,content,uid,now,candidateOpen,vote);
@@ -164,7 +174,7 @@ export function changeDepotPromotion(game,content,uid,project,action,now,candida
  const panel=content.promotion??={level:0,support:0};
  if(action==='promotion-vote'){
   panel.support+=plan.voted?-plan.stake:plan.stake;
-  return {message:plan.voted?'공사 동의를 철회했어요.':'공사에 동의했어요.',extras:{['depotPromotionVotes/'+project.id+'/'+uid]:plan.voted?0:plan.level+1}};
+  return {message:plan.voted?'공사 동의를 철회했어요.':'공사에 동의했어요.',extras:{['depotPromotionVotes/'+project.id+'/'+uid]:plan.voted?0:plan.voteCode}};
  }
  if(!plan.majority||!plan.voted)throw Error('과반 지분 동의와 본인의 동의가 필요해요.');
  if(game.port!==project.id||game.voyage||game.shoreTrip||game.seaJob||game.raidId||game.battleId||game.npcBattle)throw Error('공동보급항에 정박한 뒤 공사를 확정하세요.');
@@ -177,6 +187,7 @@ export function changeDepotPromotion(game,content,uid,project,action,now,candida
  }else advanceBasicIncome(content,project.id,owner,now);
  game.money-=plan.cost;
  panel.level++;panel.support=0;
+ if(panel.level>=2){content.registryName??=project.name;initializePortEquity(content,project.id,now);}
  advanceBasicIncome(content,project.id,owner,now);
  return {message:['정식 항구로 승격했어요.','교역소를 열었어요.','조선소를 열었어요.'][plan.level],registry:{...depotRegistry(project,content),promotionLevel:panel.level}};
 }

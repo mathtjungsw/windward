@@ -1,14 +1,15 @@
-import {collectionArt} from './art.js?v=2026.11.17-promoted-ports-and-content';
-import {PORT_BY_ID} from './data.js?v=2026.11.17-promoted-ports-and-content';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.17-promoted-ports-and-content';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.17-promoted-ports-and-content';
-import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {collectionArt} from './art.js?v=2026.11.18-titles-and-harbor-equity';
+import {PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.18-titles-and-harbor-equity';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.18-titles-and-harbor-equity';
+import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
 
-import {readRumor} from './discoveries.js?v=2026.11.17-promoted-ports-and-content';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.17-promoted-ports-and-content';
-import {eraAvailable} from './era-cycle.js?v=2026.11.17-promoted-ports-and-content';
+import {readRumor} from './discoveries.js?v=2026.11.18-titles-and-harbor-equity';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
+import {eraAvailable} from './era-cycle.js?v=2026.11.18-titles-and-harbor-equity';
 
 const labels={all:'전체',pending:'미완료',complete:'완료'};
 const inFilter=(filter,complete)=>filter==='all'||(filter==='complete')===!!complete;
@@ -31,7 +32,9 @@ export function createRumorUI(api){
   function renderTavern(root){
     const game=get(),dock=game.port;
     syncTavernPort(dock);
-    const entries=rumorsAtTavern(game),notes=new Map(rumorNote(game).map(note=>[note.id,note]));
+    const entries=rumorsAtTavern(game);
+    for(const id of game.rumorProgress?.tavernHistory?.[dock]||[]){const row=RUMOR_BY_ID[id];if(row&&!entries.some(r=>r.id===id))entries.push(row);}
+    const notes=new Map(rumorNote(game).map(note=>[note.id,note]));
     const extra=api.extraHarborRumor?.(game,keptExtra);
     if(extra&&!entries.some(entry=>entry.id===extra.id))entries.push(extra);
     if(!entries.some(entry=>entry.id===tavernOpen))tavernOpen=null;
@@ -41,7 +44,7 @@ export function createRumorUI(api){
       const note=notes.get(entry.id),open=tavernOpen===entry.id;
       if(!inFilter(tavernFilter,note?.complete))return '';
       return `<article class="tavern-rumor">${button(`소문 ${i+1}${note?.complete?' · 완료':note?' · 다시 보기':''}`,`data-tavern-rumor="${entry.id}" aria-expanded="${open}"`)}
-        ${open?`<p class="tavern-rumor-text">${escape(entry.text)}</p>`:''}</article>`;
+        ${open?`<p class="tavern-rumor-text">${escape(entry.text)}${note&&!eraAvailable(entry,api.now?.())?'<small> · 이전에 들은 소문 · 현재는 해당 시대 아님</small>':''}</p>`:''}</article>`;
     }).join('');
     section.innerHTML=`<h3>소문</h3><nav class="expansion-tabs rumor-note-tabs" aria-label="주점 소문 필터">${filterButtons('tavern',tavernFilter)}</nav>
       ${rows||`<p>${emptyMessage[tavernFilter]}</p>`}`;
@@ -65,7 +68,7 @@ export function createRumorUI(api){
         const id=el.dataset.tavernRumor;
         const current=get(),now=api.now?.(),entry=entries.find(row=>row.id===id),wasRead=notes.has(id);
         if(current.port!==dock||current.voyage)return api.toast('이 항구에 정상 정박한 뒤 소문을 들어 보세요.','error');
-        if(!eraAvailable(entry,now)&&(!wasRead||extra?.id===id)){
+        if(!wasRead&&!eraAvailable(entry,now)){
           renderTavern(root);
           return api.toast('시대가 바뀌어 이 소문을 지금은 읽을 수 없어요.','error');
         }
@@ -73,9 +76,13 @@ export function createRumorUI(api){
         if(!wasRead&&!readRumor(current,id,availableExtra?.id,now)&&!readContractRumor(current,id)){
           return api.toast('이 항구에 정상 정박한 뒤 소문을 들어 보세요.','error');
         }
-        if(availableExtra?.id===id)keptExtra=id;
+        if(availableExtra?.id===id){
+          keptExtra=id;current.rumorProgress??={};
+          const history=current.rumorProgress.tavernHistory??={};
+          history[dock]=[...new Set([...(history[dock]||[]),id])];
+        }
         tavernOpen=tavernOpen===id?null:id;
-        if(!wasRead)api.changed();
+        if(!wasRead||availableExtra?.id===id)api.changed();
         if(section.isConnected)renderTavern(root);
         root.querySelector(`[data-tavern-rumor="${id}"]`)?.focus({preventScroll:true});
       };

@@ -1,11 +1,12 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
-import {segmentDistance} from './voyage-core.js?v=2026.11.17-promoted-ports-and-content';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.17-promoted-ports-and-content';
-import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
-import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.17-promoted-ports-and-content';
-import {eraAvailable} from './era-cycle.js?v=2026.11.17-promoted-ports-and-content';
-const shipTrace=s=>(s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0)+(explorationGear(s)?.spotBonus||0);
+import {titleEffect} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
+import {segmentDistance} from './voyage-core.js?v=2026.11.18-titles-and-harbor-equity';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.18-titles-and-harbor-equity';
+import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
+import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.18-titles-and-harbor-equity';
+import {eraAvailable} from './era-cycle.js?v=2026.11.18-titles-and-harbor-equity';
+const shipTrace=s=>(s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0)+(explorationGear(s)?.spotBonus||0)+titleEffect(s,'spotBonus');
 export const explorationAllowed=s=>!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{
  const ids=Object.keys(s.discoveries||{}),active=ids.filter(id=>Object.hasOwn(DISCOVERY_BY_ID,id));

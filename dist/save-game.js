@@ -1,18 +1,19 @@
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.17-promoted-ports-and-content';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.17-promoted-ports-and-content';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.17-promoted-ports-and-content';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.17-promoted-ports-and-content';
+import {normalizeTitles} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.18-titles-and-harbor-equity';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.18-titles-and-harbor-equity';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.17-promoted-ports-and-content';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.17-promoted-ports-and-content';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.17-promoted-ports-and-content';
-import {normalizeDepotDock} from './projects.js?v=2026.11.17-promoted-ports-and-content';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.17-promoted-ports-and-content';
-import {normalizeStories} from './story-core.js?v=2026.11.17-promoted-ports-and-content';
-import {validInlandSave} from './inland.js?v=2026.11.17-promoted-ports-and-content';
+import {normalizeSea} from './sea-activities.js?v=2026.11.18-titles-and-harbor-equity';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.18-titles-and-harbor-equity';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.18-titles-and-harbor-equity';
+import {normalizeDepotDock} from './projects.js?v=2026.11.18-titles-and-harbor-equity';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.18-titles-and-harbor-equity';
+import {normalizeStories} from './story-core.js?v=2026.11.18-titles-and-harbor-equity';
+import {validInlandSave} from './inland.js?v=2026.11.18-titles-and-harbor-equity';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
@@ -100,5 +101,6 @@ export function parseState(raw,defaults){
  normalizeDepotDock(game);
  if(s.taxCollector)game.taxCollector=normalizeCollector(s.taxCollector);
  normalizeStories(game);
+ if(s.titles!==undefined||s.albumRewards?.title)game.titles=normalizeTitles(game);
  return game;
 }

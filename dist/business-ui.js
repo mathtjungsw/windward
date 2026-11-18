@@ -1,20 +1,22 @@
-import {noviceActive} from './novice.js?v=2026.11.17-promoted-ports-and-content';
-import {createHarborArena} from './harbor-arena.js?v=2026.11.17-promoted-ports-and-content';
-import {extraHarborRumor,harborOfficerRole,HARBOR_ROLE_LABEL,freeRecalledOfficer} from './harbor-officers.js?v=2026.11.17-promoted-ports-and-content';
-import {CONTESTED_PORTS,battleWindow,harborOperator,harborBattleAction,militiaAction,createHarborPractice,reconcileHarborLoss} from './harbor-battles.js?v=2026.11.17-promoted-ports-and-content';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {returnReserve,reserveLoss} from './combat-core.js?v=2026.11.17-promoted-ports-and-content';
-import {PORTS,PORT_BY_ID,GOODS,PORT_GROWTH_GOODS,DEPOT_BY_CANDIDATE,registerDevelopedPorts} from './data.js?v=2026.11.17-promoted-ports-and-content';
-import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.17-promoted-ports-and-content';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
-import {ship,fleetMaxHP,fleetShips} from './ship-rules.js?v=2026.11.17-promoted-ports-and-content';
-import {capacity,usedSpace,tradingPort} from './engine.js?v=2026.11.17-promoted-ports-and-content';
-import {tradeQuote,specialtyStock} from './market-rules.js?v=2026.11.17-promoted-ports-and-content';
-import {invest,investmentWithdrawal,withdrawInvestment,portGrowth,portMarketItem,specialtyLimit,specialtyTradePort,growthDeliveryInfo,deliverForGrowth,assignHarborOfficer,delegateTradePreview,portDevelopment,setPortDevelopment,ownership,taxRate,permitted,executeTrade,captainTradeQuote,changePortPolicy,withdrawTax,withdrawBasicIncome,investmentBase,NEUTRAL_PORTS} from './commerce.js?v=2026.11.17-promoted-ports-and-content';
-import {CANNONS,QUALITIES,cannonStats,buyCannon,equipCannon,upgradeCannon,sellCannon,gunWeight,currentHP} from './cannons.js?v=2026.11.17-promoted-ports-and-content';
-import {repairHull,coastalAction,playDice} from './activities.js?v=2026.11.17-promoted-ports-and-content';
-import {advanceBasicIncome,dividendRate,dividendsEnabled,estimateBasicIncome,pendingTradeTax,setIncomeOfficer} from './port-income.js?v=2026.11.17-promoted-ports-and-content';
-import {activeOfficer} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
+import {equityEnabled,withdrawableCapital,equityRegistry,equityExpansionPlan} from './port-equity.js?v=2026.11.18-titles-and-harbor-equity';
+import {initializePortEquity} from './equity-migration.js?v=2026.11.18-titles-and-harbor-equity';
+import {noviceActive} from './novice.js?v=2026.11.18-titles-and-harbor-equity';
+import {createHarborArena} from './harbor-arena.js?v=2026.11.18-titles-and-harbor-equity';
+import {extraHarborRumor,harborOfficerRole,HARBOR_ROLE_LABEL,freeRecalledOfficer} from './harbor-officers.js?v=2026.11.18-titles-and-harbor-equity';
+import {CONTESTED_PORTS,battleWindow,harborOperator,harborBattleAction,militiaAction,createHarborPractice,reconcileHarborLoss} from './harbor-battles.js?v=2026.11.18-titles-and-harbor-equity';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {returnReserve,reserveLoss} from './combat-core.js?v=2026.11.18-titles-and-harbor-equity';
+import {PORTS,PORT_BY_ID,GOODS,PORT_GROWTH_GOODS,DEPOT_BY_CANDIDATE,registerDevelopedPorts} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {DEVELOPMENT_SITES,COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.18-titles-and-harbor-equity';
+import {mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
+import {ship,fleetMaxHP,fleetShips} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
+import {capacity,usedSpace,tradingPort} from './engine.js?v=2026.11.18-titles-and-harbor-equity';
+import {tradeQuote,specialtyStock} from './market-rules.js?v=2026.11.18-titles-and-harbor-equity';
+import {invest,investmentWithdrawal,withdrawInvestment,portGrowth,portMarketItem,specialtyLimit,specialtyTradePort,growthDeliveryInfo,deliverForGrowth,assignHarborOfficer,delegateTradePreview,portDevelopment,setPortDevelopment,ownership,taxRate,permitted,executeTrade,captainTradeQuote,changePortPolicy,withdrawTax,withdrawBasicIncome,investmentBase,NEUTRAL_PORTS} from './commerce.js?v=2026.11.18-titles-and-harbor-equity';
+import {CANNONS,QUALITIES,cannonStats,buyCannon,equipCannon,upgradeCannon,sellCannon,gunWeight,currentHP} from './cannons.js?v=2026.11.18-titles-and-harbor-equity';
+import {repairHull,coastalAction,playDice} from './activities.js?v=2026.11.18-titles-and-harbor-equity';
+import {advanceBasicIncome,dividendRate,dividendsEnabled,estimateBasicIncome,pendingTradeTax,setIncomeOfficer} from './port-income.js?v=2026.11.18-titles-and-harbor-equity';
+import {activeOfficer,saleBonusDetails} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
 const developmentCost=(game,level)=>Math.ceil([400000,200000,300000,160000][level]*(1-(activeOfficer(game)?.developmentDiscount||0)))-(level>0&&game.rumorProgress?.items?.I054?300:0);
 const marketKind=(id,good)=>PORT_BY_ID[id]?.promotionLevel>=2&&good!==PORT_GROWTH_GOODS[id]?'projects':'ports';
 function developmentLocation(game,site,nav){
@@ -79,15 +81,19 @@ export function createBusiness(api){const account=api.account,get=api.getState,c
  async function readPort(id,kind=marketKind(id)){const c=await account.readShared(kind,id);if(kind===marketKind(id))caches.set(id,c);return c;}
  async function trade(mode,id){if(pending)return;const p=specialtyTradePort(get(),id);if(!p)return api.toast('항구에 입항하세요.');api.pause();const order=tradeState={mode,id,port:p.id,kind:marketKind(p.id,id),qty:1};try{const shared=await readPort(p.id,order.kind),{content}=shared;if(order!==tradeState)return;order.shared=shared;if(!permitted(content,account.uid))return api.toast('이 항구에서는 현재 내 화물을 거래할 수 없어요.');paintTrade();}catch(e){if(order===tradeState)api.toast(e.message,'error');}}
  function paintTrade(){const t=tradeState;if(!t)return;const s=get(),p=PORT_BY_ID[t.port],c=t.shared||content(t.port),g=GOODS[t.id],item=portMarketItem(c.content,p.id,t.id,c.revision),max=t.mode==='sell'?s.cargo[t.id]?.qty||0:Math.max(0,Math.min(1000,capacity(s)-usedSpace(s),g.premium?specialtyStock(item,now(),item.specialtyLimit,item.specialtyPeriod).stock:Infinity));let q,error='';try{q=captainTradeQuote(s,p.id,t.id,t.qty,t.mode,item,now(),taxRate(c.content,account.uid,p.id,s));}catch(e){error=e.message;}
- api.modal(`${g.name} ${t.mode==='sell'?'판매':'구매'}`,`${p.name} · 현실 시간 공동 시세`,`<p>${t.mode==='sell'?'이번 판매는 전량 같은 단가로 정산합니다.':'이번 구매는 전량 같은 단가로 정산합니다.'}</p><label>수량 <input id="market-qty" type="number" min="1" max="${max}" value="${t.qty}" inputmode="numeric"></label><div class="dialog-actions">${[1,5,10,max].map(n=>`<button data-market-qty="${n}">${n===max?'최대':n}</button>`).join('')}</div><div id="market-quote">${q?`<p>현재 단가 ${fmt(q.unit)} D · ${t.qty}상자</p><p>상품 총액 ${fmt(q.gross)} D · 세금 ${fmt(q.tax)} D${q.noviceTax?' · 초보 선장 면세':''}${q.albumDiscount?' · 도감 할인 '+fmt(q.albumDiscount)+' D':''}${q.bonus?' · 선장 보너스 +'+fmt(q.bonus)+' D':''}${q.blessing?' · 축복 +'+fmt(q.blessing)+' D':''}</p><h3>${t.mode==='sell'?'받는':'지불할'} 금액 ${fmt(q.total)} D</h3><p>다음 ${t.mode==='sell'?'판매':'구매'} 예상 단가 ${fmt(q.afterUnit)} D/상자 · 구매·판매 시세는 따로 변하고 현실 시간으로 회복</p>`:esc(error)}</div><button id="market-confirm" data-trade-mode="${t.mode}" class="primary-button" ${q&&max?'':'disabled'}>표시 금액으로 ${t.mode==='sell'?'판매':'구매'}</button><p id="business-result" role="status">견적 유효 5초 · 시세가 달라지면 재확인합니다.</p>`,'small');
+ api.modal(`${g.name} ${t.mode==='sell'?'판매':'구매'}`,`${p.name} · 현실 시간 공동 시세`,`<p>${t.mode==='sell'?'이번 판매는 전량 같은 단가로 정산합니다.':'이번 구매는 전량 같은 단가로 정산합니다.'}</p><label>수량 <input id="market-qty" type="number" min="1" max="${max}" value="${t.qty}" inputmode="numeric"></label><div class="dialog-actions trade-quantity-options">${[1,5,10,max].map(n=>`<button data-market-qty="${n}">${n===max?'최대':n}</button>`).join('')}</div><div id="market-quote">${q?`<p>현재 단가 ${fmt(q.unit)} D · ${t.qty}상자</p><p>상품 총액 ${fmt(q.gross)} D · 세금 ${fmt(q.tax)} D${q.noviceTax?' · 초보 선장 면세':''}${q.albumDiscount?' · 칭호 할인 '+fmt(q.albumDiscount)+' D':''}${q.bonus?' · 선장 보너스 +'+fmt(q.bonus)+' D':''}${q.blessing?' · 축복 +'+fmt(q.blessing)+' D':''}</p>${t.mode==='sell'?saleEffectMarkup(s,p.id,t.id,q):''}<h3>${t.mode==='sell'?'받는':'지불할'} 금액 ${fmt(q.total)} D</h3><p>다음 ${t.mode==='sell'?'판매':'구매'} 예상 단가 ${fmt(q.afterUnit)} D/상자 · 구매·판매 시세는 따로 변하고 현실 시간으로 회복</p>`:esc(error)}</div><button id="market-confirm" data-trade-mode="${t.mode}" class="primary-button" ${q&&max?'':'disabled'}>표시 금액으로 ${t.mode==='sell'?'판매':'구매'}</button><p id="business-result" role="status">견적 유효 5초 · 시세가 달라지면 재확인합니다.</p>`,'small');
  const update=n=>{t.qty=Math.max(1,Math.min(max,Math.floor(n)||1));paintTrade();};$('#market-qty').onchange=e=>update(Number(e.target.value));document.querySelectorAll('[data-market-qty]').forEach(b=>b.onclick=()=>update(Number(b.dataset.marketQty)));
  $('#market-confirm').onclick=async()=>{const result=await run(t.kind,p.id,(game,c,time,revision)=>executeTrade(game,c,account.uid,p.id,t.id,t.qty,t.mode,q,time,revision));if(result){api.onTradeComplete?.(t.mode);t.shared=await readPort(p.id,t.kind);paintTrade();$('#business-result').textContent='거래 완료 · '+fmt(result.total)+' D';}else{try{t.shared=await readPort(p.id,t.kind);paintTrade();$('#business-result').textContent='새 견적을 확인한 뒤 다시 확정하세요.';}catch{}}};
  }
- async function showHub(){if(PORT_BY_ID[get().port]?.depot)return api.onDepot?.(get().port);if(!account.ready)return api.toast('로그인 뒤 이용하세요.');const p=tradingPort(get());try{if(p)await readPort(p.id);const s=get(),c=p?content(p.id).content:{},own=ownership(c),my=c.investors?.[account.uid]||0,income=p?estimateBasicIncome(c,p.id,account.uid,own.ownerUid,now()):null;if(p&&own.ownerUid===account.uid)api.record?.(p,income,c.facilityInvested||0);api.modal('항구 투자와 항해 활동','지분 50% 초과 소유 · 기본 세율 0%',`${p?`<h3>${esc(p.name)}</h3><p>총 투자 ${fmt(own.total)} D${dividendsEnabled(p.id,now())&&own.total?" · 항구 기본 세수 시간당 "+fmt(dividendRate(c,p.id).rate)+" D (+"+fmt(dividendRate(c,p.id).boost*100)+"%)":""} · 내 지분 ${own.total?(my/own.total*100).toFixed(2):'0'}%</p><p>${own.ownerUid===account.uid?'내 소유 항구':own.ownerUid?'소유 선장: '+esc(c.investorNames?.[own.ownerUid]||c.developerName||own.ownerUid.slice(0,8)):'공동 투자 · 소유자 없음'}</p><p>내 세율 ${taxRate(c,account.uid,p.id,s)}% · ${permitted(c,account.uid)?'교역 이용 가능':'교역 제한 · 필수 보급과 구조는 이용 가능'}</p>${NEUTRAL_PORTS.includes(p.id)?'<p>리스본·포르투는 중립 보장 항구입니다.</p>':p.developable?'':`<label>추가 투자 D <input id="invest-amount" type="number" min="10000" step="10000" value="${own.total?10000:investmentBase(p.id)}"></label><button id="invest-port">투자 확정</button>${noviceActive(s)?'<small>투자로 과반 소유자가 되면 초보 보호를 졸업해요.</small>':''}${my?'<button id="withdraw-investment">투자금 인출 · 20% 손실</button>':''}`}${own.ownerUid===account.uid?'<button id="manage-port">세율·블랙리스트 관리</button><button id="trade-request-inbox">거래 재개 요청함</button><button id="harbor-officer">부선장 상주·자동 교역</button>':''}<button id="withdraw-tax">미수령 세금 ${fmt(pendingTradeTax(c,account.uid))} D 인출</button>${income?.rate||income?.accrued?`<p>기본 세수 ${fmt(income.accrued)} D${income.rate?' · 시간당 '+fmt(income.rate)+' D · 72시간 한도':''}</p><button id="basic-income" ${income.canStart||income.accrued?'':'disabled'}>${income.canStart?'기본 세수 적립 시작':'기본 세수 수령'}</button>`:''}${own.ownerUid===account.uid&&activeOfficer(s)?.incomeBonus?'<button id="assign-income-officer">'+(s.incomeOfficerPort===p.id?'부선장 세수 배정 해제':'이 항구에 부선장 세수 배정')+'</button>':''}${harborOperator(c,now())===account.uid?'<button id="harbor-message">입항 공지 편집</button>':''}${specialtyMarkup(p,c)}${growthMarkup(p,c)}${domesticMarkup(p,c)}${CONTESTED_PORTS.includes(p.id)?'<button id="harbor-battle">항구 공방·사병</button>':''}${['macau','venice'].includes(p.id)?'<button id="casino-open">홀짝 주사위장</button>':''}`:'<p>현재 항구 밖입니다. 후보지로 접근한 뒤 정박·개발할 수 있어요.</p>'}<div class="dialog-actions"><button id="development-open">새 항구 개발</button><button id="coast-open">해안 활동</button></div><p id="business-result"></p>`,'medium');
- $('#withdraw-investment')?.addEventListener('click',()=>showWithdrawal(p,my)); $('#invest-port')?.addEventListener('click',()=>run('ports',p.id,(game,c,time)=>{const result=invest(game,c,account.uid,p.id,Number($('#invest-amount').value),time);c.investorNames??={};c.investorNames[account.uid]=account.name;return result;},()=>{api.onOwnership?.();return showHub();}));$('#harbor-battle')?.addEventListener('click',()=>showHarborBattle(p));$('#harbor-message')?.addEventListener('click',()=>showHarborMessage(p,c));$('#harbor-officer')?.addEventListener('click',()=>showHarborOfficer(p));$('#trade-request-inbox')?.addEventListener('click',()=>showTradeInbox(p));$('#manage-port')?.addEventListener('click',()=>managePort(p.id));$('#withdraw-tax')?.addEventListener('click',()=>run('ports',p.id,(game,c)=>withdrawTax(game,c,account.uid),showHub));$('#basic-income')?.addEventListener('click',()=>run('ports',p.id,(game,c,time)=>withdrawBasicIncome(game,c,account.uid,p.id,time),showHub));$('#assign-income-officer')?.addEventListener('click',()=>run('ports',p.id,(game,content,time)=>setIncomeOfficer(game,content,p.id,account.uid,ownership(content).ownerUid,time,game.incomeOfficerPort===p.id?0:Math.round((activeOfficer(game)?.incomeBonus||0)*10000)),showHub));document.querySelectorAll('[data-port-development]').forEach(b=>b.onclick=()=>run('ports',p.id,(game,content,time)=>setPortDevelopment(game,content,account.uid,p.id,b.dataset.portDevelopment,time),showHub));
+ function saleEffectMarkup(game,port,good,q){
+  const d=saleBonusDetails(game,port,good),pct=n=>(n*100).toLocaleString('ko-KR',{maximumFractionDigits:2})+'%';
+  return `<details class="trade-effect-details"><summary>효과 자세히 · 합산 ${pct(d.raw)} → 적용 ${pct(d.applied)}</summary><p>장비·부선장·칭호 합산 상한 3% · 세후 ${fmt(q.gross-q.tax)} D에 적용</p>${d.source.map(g=>`<p>${esc(g.name)} +${pct(g.rate)} · ${!g.eligible?'이 상품·항구에는 적용되지 않아요':g.contribution<1e-8?'최대 효과에 도달해 추가 증가 없음':'현재 조건의 추가 기여 '+pct(g.contribution)}</p>`).join('')}<p>이중 상자는 후추·정향·육두구에 적용돼요. 정수 미만 보너스는 버려져요. 거래 증서·축복은 별도로 계산해요.</p></details>`;
+ }
+ async function showHub(force=false){if(PORT_BY_ID[get().port]?.depot&&!force)return api.onDepot?.(get().port);if(!account.ready)return api.toast('로그인 뒤 이용하세요.');const p=tradingPort(get());try{if(p)await readPort(p.id);const s=get(),c=p?content(p.id).content:{},own=ownership(c),my=c.investors?.[account.uid]||0,income=p?estimateBasicIncome(c,p.id,account.uid,own.ownerUid,now()):null;if(p&&own.ownerUid===account.uid)api.record?.(p,income,c.facilityInvested||0);api.modal('항구 투자와 항해 활동','지분 50% 초과 소유 · 기본 세율 0%',`${p?`<h3>${esc(p.name)}</h3><p>총 투자 ${fmt(own.total)} D${dividendsEnabled(p.id,now(),c)&&own.total?" · 항구 기본 세수 시간당 "+fmt(dividendRate(c,p.id).rate)+" D (+"+fmt(dividendRate(c,p.id).boost*100)+"%)":""} · 인출 가능한 현금 원금 ${fmt(withdrawableCapital(c,account.uid))} D${c.foundingValuation?' · 창립 평가 지분은 현금 인출 대상에서 제외':''} · 내 지분 ${own.total?(my/own.total*100).toFixed(2):'0'}%</p><p>${own.ownerUid===account.uid?'내 소유 항구':own.ownerUid?'소유 선장: '+esc(c.investorNames?.[own.ownerUid]||c.developerName||own.ownerUid.slice(0,8)):'공동 투자 · 소유자 없음'}</p><p>내 세율 ${taxRate(c,account.uid,p.id,s)}% · ${permitted(c,account.uid)?'교역 이용 가능':'교역 제한 · 필수 보급과 구조는 이용 가능'}</p>${NEUTRAL_PORTS.includes(p.id)?'<p>리스본·포르투는 중립 보장 항구입니다.</p>':p.developable&&!equityEnabled(c)?'<p>교역소 2단계부터 일반 지분 투자 가능</p>':`<label>추가 투자 D <input id="invest-amount" type="number" min="10000" step="10000" value="${own.total?10000:investmentBase(p.id)}"></label><button id="invest-port">투자 확정</button>${noviceActive(s)?'<small>투자로 과반 소유자가 되면 초보 보호를 졸업해요.</small>':''}${withdrawableCapital(c,account.uid)?'<button id="withdraw-investment">투자금 인출 · 20% 손실</button>':''}`}${own.ownerUid===account.uid?'<button id="manage-port">세율·블랙리스트 관리</button><button id="trade-request-inbox">거래 재개 요청함</button><button id="harbor-officer">부선장 상주·자동 교역</button>':''}<button id="withdraw-tax">미수령 세금 ${fmt(pendingTradeTax(c,account.uid))} D 인출</button>${income?.rate||income?.accrued?`<p>기본 세수 ${fmt(income.accrued)} D${income.rate?' · 시간당 '+fmt(income.rate)+' D · 72시간 한도':''}</p><button id="basic-income" ${income.canStart||income.accrued?'':'disabled'}>${income.canStart?'기본 세수 적립 시작':'기본 세수 수령'}</button>`:''}${own.ownerUid===account.uid&&activeOfficer(s)?.incomeBonus?'<button id="assign-income-officer">'+(s.incomeOfficerPort===p.id?'부선장 세수 배정 해제':'이 항구에 부선장 세수 배정')+'</button>':''}${harborOperator(c,now())===account.uid?'<button id="harbor-message">입항 공지 편집</button>':''}${specialtyMarkup(p,c)}${growthMarkup(p,c)}${domesticMarkup(p,c)}${CONTESTED_PORTS.includes(p.id)?'<button id="harbor-battle">항구 공방·사병</button>':''}${['macau','venice'].includes(p.id)?'<button id="casino-open">홀짝 주사위장</button>':''}`:'<p>현재 항구 밖입니다. 후보지로 접근한 뒤 정박·개발할 수 있어요.</p>'}<div class="dialog-actions"><button id="development-open">새 항구 개발</button><button id="coast-open">해안 활동</button></div><p id="business-result"></p>`,'medium');
+ $('#withdraw-investment')?.addEventListener('click',()=>showWithdrawal(p,withdrawableCapital(c,account.uid))); $('#invest-port')?.addEventListener('click',()=>run(marketKind(p.id),p.id,(game,c,time)=>{const result=invest(game,c,account.uid,p.id,Number($('#invest-amount').value),time);c.investorNames??={};c.investorNames[account.uid]=account.name;return result;},()=>{api.onOwnership?.();return showHub(true);}));$('#harbor-battle')?.addEventListener('click',()=>showHarborBattle(p));$('#harbor-message')?.addEventListener('click',()=>showHarborMessage(p,c));$('#harbor-officer')?.addEventListener('click',()=>showHarborOfficer(p));$('#trade-request-inbox')?.addEventListener('click',()=>showTradeInbox(p));$('#manage-port')?.addEventListener('click',()=>managePort(p.id));$('#withdraw-tax')?.addEventListener('click',()=>run(marketKind(p.id),p.id,(game,c)=>withdrawTax(game,c,account.uid),showHub));$('#basic-income')?.addEventListener('click',()=>run(marketKind(p.id),p.id,(game,c,time)=>withdrawBasicIncome(game,c,account.uid,p.id,time),showHub));$('#assign-income-officer')?.addEventListener('click',()=>run(marketKind(p.id),p.id,(game,content,time)=>setIncomeOfficer(game,content,p.id,account.uid,ownership(content).ownerUid,time,game.incomeOfficerPort===p.id?0:Math.round((activeOfficer(game)?.incomeBonus||0)*10000)),showHub));document.querySelectorAll('[data-port-development]').forEach(b=>b.onclick=()=>run(marketKind(p.id),p.id,(game,content,time)=>setPortDevelopment(game,content,account.uid,p.id,b.dataset.portDevelopment,time),showHub));
 $('#growth-deliver')?.addEventListener('click',event=>{
  const day=Number(event.currentTarget.dataset.day);
- run('ports',p.id,(game,content,time)=>deliverForGrowth(game,content,account.uid,p.id,time,day),showHub);
+ run(marketKind(p.id),p.id,(game,content,time)=>deliverForGrowth(game,content,account.uid,p.id,time,day),showHub);
 });document.querySelectorAll('[data-growth-buy]').forEach(b=>b.onclick=()=>trade('buy',b.dataset.growthBuy));$('#casino-open')?.addEventListener('click',()=>showCasino());$('#development-open').onclick=()=>showDevelopment();$('#coast-open').onclick=()=>showCoast();}catch(e){api.toast(e.message,'error');}}
  function showWithdrawal(port,principal){
   const update=(amount,confirmed=false)=>{
@@ -100,12 +106,12 @@ $('#growth-deliver')?.addEventListener('click',event=>{
    const after=quote?portGrowth({...snapshot.content,investors:quote.investors},port.id).stage:before;
    const growth=after===before?'':`<p>성장 ${before}단계에서 ${after}단계로 변경 · ${after?'특산품 최대 50상자':'특산품 신규 구매 중단'}</p>`;
    api.modal('투자금 인출',port.name,`<p>내 투자 원금 ${fmt(principal)} D · 인출액의 80%를 받습니다.</p><label>장부에서 차감할 금액 <input id="withdraw-amount" type="number" inputmode="numeric" min="1" max="${principal}" value="${amount}"></label><div class="dialog-actions"><button id="withdraw-all">전액</button><button id="withdraw-review">금액 확인</button><button id="withdraw-back">돌아가기</button></div>${confirmed&&quote?`<p>받을 금액 <strong>${fmt(quote.received)} D</strong> · 손실 ${fmt(quote.loss)} D</p><p>인출 후 내 지분 ${quote.share.toFixed(2)}% · 과반 소유자 ${esc(owner?ownerName:'없음')}</p>${growth}<button id="withdraw-confirm">인출 확정</button>`:confirmed?'<p>10,000 D 단위 또는 전액을 선택하세요.</p>':''}`,'small');
-   $('#withdraw-back').onclick=showHub;
+   $('#withdraw-back').onclick=()=>showHub(true);
    $('#withdraw-all').onclick=()=>update(principal,true);
    $('#withdraw-review').onclick=()=>update(Number($('#withdraw-amount').value),true);
    $('#withdraw-amount').oninput=()=>{const button=$('#withdraw-confirm');if(button)button.disabled=true;};
    if(confirmed&&quote)$('#withdraw-confirm').onclick=async()=>{
-    const result=await run('ports',port.id,(game,c,time,revision)=>withdrawInvestment(game,c,account.uid,port.id,amount,time,revision,snapshot.revision),()=>{api.onOwnership?.();return showHub();});
+    const result=await run(marketKind(port.id),port.id,(game,c,time,revision)=>withdrawInvestment(game,c,account.uid,port.id,amount,time,revision,snapshot.revision),()=>{api.onOwnership?.();return showHub(true);});
     if(!result&&$('#withdraw-confirm')?.isConnected)await showHub();
    };
   };
@@ -119,7 +125,7 @@ $('#growth-deliver')?.addEventListener('click',event=>{
     if(harborOperator(content,time)!==account.uid||text.length>120)throw Error('항구 소유권과 공지 길이를 확인하세요.');
     if(text)content.harborMessage={owner:account.uid,text,at:Math.floor(time)};else delete content.harborMessage;
     return {message:text?'입항 공지를 저장했어요.':'입항 공지를 내렸어요.'};
-   },showHub);
+   },()=>showHub(true));
   };
  }
  function harborMessage(id){
@@ -170,7 +176,7 @@ $('#growth-deliver')?.addEventListener('click',event=>{
  async function managePort(id){
   const c=content(id).content,rates={...(c.rates||{})},blocked=new Set(c.blacklist||[]),people=new Map();let cursor=null,more=true,defaultRate=c.defaultRate||0;
   const paint=()=>{api.modal('항구 관리','선장 이름으로 지정 · 기본 세율 0~30%',`<label>기본 세율 % <input id="port-rate" type="number" min="0" max="30" value="${defaultRate}"></label><p>개별 세율이 ‘기본’이면 위의 기본 세율을 따릅니다. 교역 제한을 해도 입항·필수 보급·구조는 이용할 수 있어요.</p><div id="port-captains">${[...people].map(([uid,p])=>`<article class="port-captain-policy"><strong>${esc(p.name)}</strong><label>개별 세율 <select data-rate="${uid}"><option value="" ${rates[uid]===undefined?'selected':''}>기본</option>${Array.from({length:31},(_,n)=>`<option value="${n}" ${rates[uid]===n?'selected':''}>${n}%</option>`).join('')}</select></label><label><input type="checkbox" data-block="${uid}" ${blocked.has(uid)?'checked':''} ${uid===account.uid?'disabled':''}> 교역·선박 서비스 제한</label></article>`).join('')}</div><button id="more-port-captains" ${more?'':'disabled'}>선장 20명 더 불러오기</button><button id="save-policy" class="primary-button">설정 저장</button><p id="business-result"></p>`,'medium');
-   document.querySelectorAll('[data-rate]').forEach(el=>el.onchange=()=>{if(el.value==='')delete rates[el.dataset.rate];else rates[el.dataset.rate]=Number(el.value);});document.querySelectorAll('[data-block]').forEach(el=>el.onchange=()=>{if(el.checked)blocked.add(el.dataset.block);else blocked.delete(el.dataset.block);});$('#more-port-captains').onclick=async()=>{defaultRate=Number($('#port-rate').value);await load();paint();};$('#save-policy').onclick=()=>run('ports',id,(_game,c)=>changePortPolicy(c,account.uid,Number($('#port-rate').value),rates,[...blocked]),showHub);
+   document.querySelectorAll('[data-rate]').forEach(el=>el.onchange=()=>{if(el.value==='')delete rates[el.dataset.rate];else rates[el.dataset.rate]=Number(el.value);});document.querySelectorAll('[data-block]').forEach(el=>el.onchange=()=>{if(el.checked)blocked.add(el.dataset.block);else blocked.delete(el.dataset.block);});$('#more-port-captains').onclick=async()=>{defaultRate=Number($('#port-rate').value);await load();paint();};$('#save-policy').onclick=()=>run(marketKind(id),id,(_game,c)=>changePortPolicy(c,account.uid,Number($('#port-rate').value),rates,[...blocked]),showHub);
   };
   async function load(){try{const rows=await api.directory(cursor);for(const p of rows)people.set(p.id,p);cursor=rows.at(-1)?.id||cursor;more=rows.length===20;}catch{api.toast('선장 명부를 불러오지 못했어요.','error');more=false;}}
   for(const uid of new Set([...Object.keys(rates),...blocked]))people.set(uid,{name:c.investorNames?.[uid]||'선장 '+uid.slice(0,8)});await load();paint();
@@ -289,7 +295,7 @@ $('#growth-deliver')?.addEventListener('click',event=>{
    $('#depot-market-back').onclick=()=>api.onDepot?.(id);
    $('#growth-deliver')?.addEventListener('click',event=>{
     const day=Number(event.currentTarget.dataset.day);
-    run('ports',id,(game,c,time)=>deliverForGrowth(game,c,account.uid,id,time,day),()=>showDepotMarket(id));
+    run(marketKind(id),id,(game,c,time)=>deliverForGrowth(game,c,account.uid,id,time,day),()=>showDepotMarket(id));
    });
    document.querySelectorAll('[data-growth-buy]').forEach(b=>{b.onclick=()=>trade('buy',b.dataset.growthBuy);});
   }catch(error){api.toast(error.message,'error');}
@@ -352,10 +358,12 @@ $('#growth-deliver')?.addEventListener('click',event=>{
   const {content}=await readPort(site.portId);
   if(!source?.isConnected||!source.closest('dialog')?.open)return;
   const game=get(),level=content.development?.level||0;
-  const advanced=level===3&&!content.advancedSupply&&content.developedOwner===account.uid&&!!game.rumorProgress?.items?.I056;
+  const expansion=equityExpansionPlan(content,account.uid);
+  const canExpand=equityEnabled(content)?expansion.canConfirm:content.developedOwner===account.uid;
+  const advanced=level===3&&!content.advancedSupply&&canExpand&&!!game.rumorProgress?.items?.I056;
   const title=['항구 개척','교역소 확장','조선소 확장','고급 보급 창고'][level],cost=developmentCost(game,level);
   const error=developmentLocation(game,site,api.nav())||
-   (content.developedOwner&&content.developedOwner!==account.uid?'이 항구의 소유 선장만 확장할 수 있어요.':
+   (content.developedOwner&&!canExpand?'현재 과반 소유자 또는 과반 지분 동의가 필요해요.':
     level===3&&!advanced?(content.advancedSupply?'모든 확장을 완료했어요.':'고급 보급 창고 증서가 필요해요.'):
     game.money<cost?'개발에 필요한 두카트가 부족해요.':'');
   api.modal('항구 개발·확장',site.name,`<p>현재 ${level?level+'단계':'미개발'} · ${title}</p>
@@ -363,8 +371,13 @@ $('#growth-deliver')?.addEventListener('click',event=>{
    <label>항구 이름 <input id="development-name" maxlength="16" value="${esc(content.development?.name||site.name)}"></label>
    ${level===0&&noviceActive(game)?'<p class="help-tip">항구를 처음 소유하면 초보 보호를 졸업해요.</p>':''}
    <div class="harbor-development-actions"><button id="development-back">후보 목록</button><button id="development-confirm" class="primary-button" ${error?'disabled':''}>개발 확정</button></div>
-   <p id="business-result" role="status">${error}</p>`,'small');
+   ${equityEnabled(content)&&content.investors?.[account.uid]?`<button id="development-vote">${expansion.voted?'공사 동의 철회':'공사에 동의'}</button><p>동의 지분 ${expansion.total?(expansion.support*100/expansion.total).toFixed(2):0}% · 지분 변경 시 재동의</p>`:''}<p id="business-result" role="status">${error}</p>`,'small');
   $('#development-back').onclick=showDevelopment;
+  $('#development-vote')?.addEventListener('click',()=>run('ports',site.portId,(state,c)=>{
+   if(!equityEnabled(c)||!c.investors?.[account.uid]||state.port!==site.portId||state.voyage)throw Error('투자한 이 항구에 정박하세요.');
+   const v=equityExpansionPlan(c,account.uid);c.equityExpansionVotes??={};if(v.voted)delete c.equityExpansionVotes[account.uid];else c.equityExpansionVotes[account.uid]=v.revision;
+   return {message:'공사 동의 설정 완료'};
+  },()=>develop(site)));
   const confirm=$('#development-confirm');
   confirm.onclick=async()=>{
    const name=$('#development-name').value.trim();
@@ -375,24 +388,27 @@ $('#growth-deliver')?.addEventListener('click',event=>{
     const depot=DEPOT_BY_CANDIDATE[site.portId];
     if(PORT_BY_ID[depot?.id]?.promotionLevel)throw Error('공동보급항이 정식 항구로 승격됐어요.');
     const current=c.development?.level||0;
-    if(current!==level||current>=3&&(!advanced||c.advancedSupply||!currentGame.rumorProgress?.items?.I056)||c.developedOwner&&c.developedOwner!==account.uid)throw Error('개발 상태나 소유권이 바뀌었어요. 후보 목록에서 다시 확인하세요.');
+    if(current!==level||current>=3&&(!advanced||c.advancedSupply||!currentGame.rumorProgress?.items?.I056)||(equityEnabled(c)?!equityExpansionPlan(c,account.uid).canConfirm:c.developedOwner&&c.developedOwner!==account.uid))throw Error('개발 상태나 소유권이 바뀌었어요. 후보 목록에서 다시 확인하세요.');
     if(name.length<2||name.length>16||/[<>\u0000-\u001f]/.test(name))throw Error('항구 이름은 2~16자로 입력하세요.');
     if(developmentCost(currentGame,current)!==cost)throw Error('개발 비용이 바뀌었어요. 후보 목록에서 새 금액을 확인하세요.');
     if(currentGame.money<cost)throw Error('개발할 두카트가 부족해요.');
-    advanceBasicIncome(c,site.portId,c.developedOwner,time);
+    advanceBasicIncome(c,site.portId,ownership(c).ownerUid,time);
     currentGame.money-=cost;
+    if(!current)c.foundingPaid=cost;
     if(current>0&&currentGame.rumorProgress?.items?.I054)currentGame.rumorProgress.items.I054--;
     c.facilityInvested=(c.facilityInvested||0)+cost;
-    if(current===3){c.advancedSupply=true;advanceBasicIncome(c,site.portId,c.developedOwner,time);return {message:'고급 보급 창고 확장 완료 · 기본 세수 +500 D/시간'};}
+    if(current===3){c.advancedSupply=true;advanceBasicIncome(c,site.portId,ownership(c).ownerUid,time);return {message:'고급 보급 창고 확장 완료 · 기본 세수 +500 D/시간'};}
     currentGame.developedPorts=[...new Set([...(currentGame.developedPorts||[]),site.portId])];
     if(!c.developedOwner)c.ownerSince=time;
-    c.developedOwner=account.uid;c.developerName=account.name;c.development={name,level:current+1};
-    advanceBasicIncome(c,site.portId,c.developedOwner,time);
+    if(!c.developedOwner){c.developedOwner=account.uid;c.developerName=account.name;}c.development={name,level:current+1};
+    initializePortEquity(c,site.portId,time);
+    c.equityExpansionVotes={};
+    advanceBasicIncome(c,site.portId,ownership(c).ownerUid,time);
     currentGame.knownPorts=[...new Set([...currentGame.knownPorts,site.portId])];
-    return {message:'항구 개발 완료',registry:{id:site.portId,name,level:current+1,ownerUid:account.uid}};
+    return {message:'항구 개발 완료',registry:equityEnabled(c)?equityRegistry(site.portId,c):{id:site.portId,name,level:current+1,ownerUid:account.uid}};
    },async()=>{
     await syncPorts();api.onOwnership?.();
-    if(level!==0)return showHub();
+    if(level!==0)return showHub(true);
     api.modal('항구 개발 완료',name,'<p>해도에 등록했어요. 지도에서 항구를 선택해 입항하세요.</p><button id="developed-look">새 항구 지도에서 보기</button>','small');
     $('#developed-look').onclick=()=>api.look(site.point,name);
    });

@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.17-promoted-ports-and-content';
-import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.17-promoted-ports-and-content';
-import {PORT_BY_ID} from './data.js?v=2026.11.17-promoted-ports-and-content';
+import {ownership} from './commerce.js?v=2026.11.18-titles-and-harbor-equity';
+import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.18-titles-and-harbor-equity';
+import {PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;
@@ -54,7 +54,7 @@ export function collectPortTaxes(game,content,uid,port,dueAt,now){
  const collector=game.taxCollector;
  const visit=collectorVisits(collector,now).find(row=>row.port===port&&row.pending&&row.at===dueAt);
  if(!visit)throw Error('아직 방문 시각이 아니거나 이미 징수한 항구예요.');
- const owner=port.startsWith('depot-')?content.registeredOwner:ownership(content).ownerUid;
+ const owner=ownership(content).ownerUid;
  const shared=dividendsEnabled(port,now,content);
  if(!shared&&(owner!==uid||content.ownerSince>dueAt)){
   collector.visits[port]=dueAt;

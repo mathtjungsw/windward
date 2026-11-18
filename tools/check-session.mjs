@@ -27,8 +27,8 @@ game=await a.enter({uid},{name:'검증'});clearInterval(a.timer);assert.equal(ga
 // Permanent map key is UID. Membership key must still include the session.
 const f={account:a,uid,shipKey:uid,root:'gameV2/real',sdk,active:true,connected:true,color:0,name:a.name,onChange:()=>{}},roster=new CaptainRoster(f);roster.connect();assert.equal(roster.selfRef,'gameV2/real/captains/'+uid+'_new-session');await roster.prepareDisconnect();await roster.publish({status:'정박'},true);const members=await req('gameV2/real/captains',{query:{orderBy:'updatedAt',limitToLast:100}});assert.equal(members.status,200);assert.ok(members.value[uid+'_new-session']);
 await sdk.set('gameV2/real/rankings/'+uid,{...gameStats(game),name:a.name,saveRevision:a.revision,updatedAt:stamp,lastSeenAt:stamp});const ranks=await req('gameV2/real/rankings',{query:{orderBy:'profit',startAt:-1e12,limitToLast:5}});assert.equal(ranks.status,200);assert.ok(ranks.value[uid]);
-assert.equal((await req('gameV2/privateSaves/'+uid)).value.schemaVersion,19);
-console.log('PASS: previous saves migrate to schema 19, outdated writes are rejected, and cloud save, online roster and rankings work.');
+assert.equal((await req('gameV2/privateSaves/'+uid)).value.schemaVersion,20);
+console.log('PASS: previous saves migrate to schema 20, outdated writes are rejected, and cloud save, online roster and rankings work.');
 
 // Story reward officers must be accepted by both canonical and public combat state.
 // This exercises actual enter() and save() instead of just matching a rule string.

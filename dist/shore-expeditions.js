@@ -1,7 +1,8 @@
-import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.17-promoted-ports-and-content';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.17-promoted-ports-and-content';
-import {activeOfficer,explorationGear,equippedGear,addOfficerExperience} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
+import {titleEffect} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
+import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.18-titles-and-harbor-equity';
+import {mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {activeOfficer,explorationGear,equippedGear,addOfficerExperience} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
 
 export const SHORE_SITES={
   porto:{market:'강가 마을',site:'언덕의 옛 창고',ridge:'소나무 고갯길',good:'wine',theme:'green'},
@@ -94,7 +95,7 @@ export function shoreMoves(game,node){
     const to=e.a===node?e.b:e.a;
     const returning=to==='harbor'||to==='market'&&node!=='harbor';
     const food=returning?0:e.food*(1-(officer?.shoreFood||0));
-    return {to, ms:Math.ceil(e.ms*(1-(gear?.shoreSpeed||0))), food:game.shoreTrip?.camp?food*.8:food};
+    return {to, ms:Math.ceil(e.ms*(1-Math.min(.3,(gear?.shoreSpeed||0)+titleEffect(game,'shoreSpeed')))), food:game.shoreTrip?.camp?food*.8:food};
   });
 }
 const atSurvey=(trip,node)=>trip.node===node&&(node!=='site'||trip.surveyed);

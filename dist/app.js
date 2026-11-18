@@ -1,74 +1,77 @@
-import {createCaptainsMail} from './captains-mail.js?v=2026.11.17-promoted-ports-and-content';
-import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.17-promoted-ports-and-content';
-import {regionalEvent} from './market-events.js?v=2026.11.17-promoted-ports-and-content';
-import {createUiUsage} from './ui-usage.js?v=2026.11.17-promoted-ports-and-content';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.17-promoted-ports-and-content';
-import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.17-promoted-ports-and-content';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.17-promoted-ports-and-content';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.17-promoted-ports-and-content';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.17-promoted-ports-and-content';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.17-promoted-ports-and-content';
-import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.17-promoted-ports-and-content';
-import {createBlessings} from './blessings-ui.js?v=2026.11.17-promoted-ports-and-content';
-import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.17-promoted-ports-and-content';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.17-promoted-ports-and-content';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.17-promoted-ports-and-content';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.17-promoted-ports-and-content';
-import {createCommunity} from './community.js?v=2026.11.17-promoted-ports-and-content';
-import {createTaxCollector} from './tax-collector.js?v=2026.11.17-promoted-ports-and-content';
-import {createStoryUI} from './story-ui.js?v=2026.11.17-promoted-ports-and-content';
-import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.17-promoted-ports-and-content';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.17-promoted-ports-and-content';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.17-promoted-ports-and-content';
-import {createCombat} from './combat-ui.js?v=2026.11.17-promoted-ports-and-content';
-import {createBusiness} from './business-ui.js?v=2026.11.17-promoted-ports-and-content';
-import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.17-promoted-ports-and-content';
-import {createInlandUI} from './inland-ui.js?v=2026.11.17-promoted-ports-and-content';
-import {INLAND_CITIES,INLAND_PORTS,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.17-promoted-ports-and-content';
-import {createExpansion} from './expansion-ui.js?v=2026.11.17-promoted-ports-and-content';
-import {gameStats} from './public-stats.js?v=2026.11.17-promoted-ports-and-content';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.17-promoted-ports-and-content';
-import {shipGlyph} from './art.js?v=2026.11.17-promoted-ports-and-content';
-import {inspectDiscovery,explorationAllowed,discoveryStats,hasClues} from './discoveries.js?v=2026.11.17-promoted-ports-and-content';
-import {RELEASE} from './release-notes.js?v=2026.11.17-promoted-ports-and-content';
-import {createUX} from './ux.js?v=2026.11.17-promoted-ports-and-content';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.17-promoted-ports-and-content';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.17-promoted-ports-and-content';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.17-promoted-ports-and-content';
-import {AtlasView} from './atlas-view.js?v=2026.11.17-promoted-ports-and-content';
-import {FleetPresence} from './multiplayer.js?v=2026.11.17-promoted-ports-and-content';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.17-promoted-ports-and-content';
-import {CaptainChat} from './chat.js?v=2026.11.17-promoted-ports-and-content';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.17-promoted-ports-and-content';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.17-promoted-ports-and-content';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.17-promoted-ports-and-content';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.17-promoted-ports-and-content';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.17-promoted-ports-and-content';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.17-promoted-ports-and-content';
-import {CaptainRankings} from './rankings.js?v=2026.11.17-promoted-ports-and-content';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
+import {reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.18-titles-and-harbor-equity';
+import {createTitleUI} from './title-ui.js?v=2026.11.18-titles-and-harbor-equity';
+let titleUI;
+import {createCaptainsMail} from './captains-mail.js?v=2026.11.18-titles-and-harbor-equity';
+import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.18-titles-and-harbor-equity';
+import {regionalEvent} from './market-events.js?v=2026.11.18-titles-and-harbor-equity';
+import {createUiUsage} from './ui-usage.js?v=2026.11.18-titles-and-harbor-equity';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.18-titles-and-harbor-equity';
+import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.18-titles-and-harbor-equity';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.18-titles-and-harbor-equity';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.18-titles-and-harbor-equity';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.18-titles-and-harbor-equity';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.18-titles-and-harbor-equity';
+import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.18-titles-and-harbor-equity';
+import {createBlessings} from './blessings-ui.js?v=2026.11.18-titles-and-harbor-equity';
+import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.18-titles-and-harbor-equity';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.18-titles-and-harbor-equity';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.18-titles-and-harbor-equity';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.18-titles-and-harbor-equity';
+import {createCommunity} from './community.js?v=2026.11.18-titles-and-harbor-equity';
+import {createTaxCollector} from './tax-collector.js?v=2026.11.18-titles-and-harbor-equity';
+import {createStoryUI} from './story-ui.js?v=2026.11.18-titles-and-harbor-equity';
+import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.18-titles-and-harbor-equity';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.18-titles-and-harbor-equity';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.18-titles-and-harbor-equity';
+import {createCombat} from './combat-ui.js?v=2026.11.18-titles-and-harbor-equity';
+import {createBusiness} from './business-ui.js?v=2026.11.18-titles-and-harbor-equity';
+import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.18-titles-and-harbor-equity';
+import {createInlandUI} from './inland-ui.js?v=2026.11.18-titles-and-harbor-equity';
+import {INLAND_CITIES,INLAND_PORTS,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.18-titles-and-harbor-equity';
+import {createExpansion} from './expansion-ui.js?v=2026.11.18-titles-and-harbor-equity';
+import {gameStats} from './public-stats.js?v=2026.11.18-titles-and-harbor-equity';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
+import {shipGlyph} from './art.js?v=2026.11.18-titles-and-harbor-equity';
+import {inspectDiscovery,explorationAllowed,discoveryStats,hasClues} from './discoveries.js?v=2026.11.18-titles-and-harbor-equity';
+import {RELEASE} from './release-notes.js?v=2026.11.18-titles-and-harbor-equity';
+import {createUX} from './ux.js?v=2026.11.18-titles-and-harbor-equity';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.18-titles-and-harbor-equity';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.18-titles-and-harbor-equity';
+import {AtlasView} from './atlas-view.js?v=2026.11.18-titles-and-harbor-equity';
+import {FleetPresence} from './multiplayer.js?v=2026.11.18-titles-and-harbor-equity';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.18-titles-and-harbor-equity';
+import {CaptainChat} from './chat.js?v=2026.11.18-titles-and-harbor-equity';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.18-titles-and-harbor-equity';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.18-titles-and-harbor-equity';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.18-titles-and-harbor-equity';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.18-titles-and-harbor-equity';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.18-titles-and-harbor-equity';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.18-titles-and-harbor-equity';
+import {CaptainRankings} from './rankings.js?v=2026.11.18-titles-and-harbor-equity';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.17-promoted-ports-and-content';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.17-promoted-ports-and-content';
-import {portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.17-promoted-ports-and-content';
-import {harborMarket,harborSupply} from './data.js?v=2026.11.17-promoted-ports-and-content';
-import {configurePortDividends} from './port-income.js?v=2026.11.17-promoted-ports-and-content';
-import {configureEra,ERA_PERIOD,eraAt,setEraServerOffset} from './era-cycle.js?v=2026.11.17-promoted-ports-and-content';
-import {createGuildUI} from './guild-ui.js?v=2026.11.17-promoted-ports-and-content';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.17-promoted-ports-and-content';
-import {ownership} from './commerce.js?v=2026.11.17-promoted-ports-and-content';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.17-promoted-ports-and-content';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,changeDepotPromotion,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.17-promoted-ports-and-content';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.17-promoted-ports-and-content';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.17-promoted-ports-and-content';
-import {createShoreUI} from './shore-ui.js?v=2026.11.17-promoted-ports-and-content';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.17-promoted-ports-and-content';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.17-promoted-ports-and-content';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
-import {useRepairKit} from './activities.js?v=2026.11.17-promoted-ports-and-content';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.17-promoted-ports-and-content';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.18-titles-and-harbor-equity';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.18-titles-and-harbor-equity';
+import {portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.18-titles-and-harbor-equity';
+import {harborMarket,harborSupply} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {configurePortDividends} from './port-income.js?v=2026.11.18-titles-and-harbor-equity';
+import {configureEra,ERA_PERIOD,eraAt,setEraServerOffset} from './era-cycle.js?v=2026.11.18-titles-and-harbor-equity';
+import {createGuildUI} from './guild-ui.js?v=2026.11.18-titles-and-harbor-equity';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.18-titles-and-harbor-equity';
+import {ownership} from './commerce.js?v=2026.11.18-titles-and-harbor-equity';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.18-titles-and-harbor-equity';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,changeDepotPromotion,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.18-titles-and-harbor-equity';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.18-titles-and-harbor-equity';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.18-titles-and-harbor-equity';
+import {createShoreUI} from './shore-ui.js?v=2026.11.18-titles-and-harbor-equity';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.18-titles-and-harbor-equity';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.18-titles-and-harbor-equity';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
+import {useRepairKit} from './activities.js?v=2026.11.18-titles-and-harbor-equity';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.18-titles-and-harbor-equity';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -217,7 +220,7 @@ const uiUsage=createUiUsage({account,enabled:()=>playing&&!sessionBlocked});
 function beginPlaying(game){
   blessings.connect();
   sailingClock.reset(performance.now());
-  manualTrail=[];state=game;normalizeDepotDock(state);const navigationNotice=reconcileNavigation(state,nav);if(navigationNotice)toast(navigationNotice);if(state.port&&ACTIVE_PORT_BY_ID[state.port])state.legacyHarbor=false;exploration=new Exploration(state.explored);exploration.seed(state);selected=state.port||state.voyage?.target||'lisbon';planned=null;paused=!!game.offlinePaused&&!!game.voyage;delete game.offlinePaused;playing=true;sessionBlocked=false;lastPanelPort=null;manualActive=false;manualTarget=null;manualChannel=null;departedPort=null;heldKeys.clear();
+  manualTrail=[];state=game;reconcileTitles(state,guildTime());refreshTitleContext(account,true).then(verified=>{if(playing&&account.ready&&state===game){reconcileTitles(state,guildTime(),verified);save();}}).catch(()=>{});normalizeDepotDock(state);const navigationNotice=reconcileNavigation(state,nav);if(navigationNotice)toast(navigationNotice);if(state.port&&ACTIVE_PORT_BY_ID[state.port])state.legacyHarbor=false;exploration=new Exploration(state.explored);exploration.seed(state);selected=state.port||state.voyage?.target||'lisbon';planned=null;paused=!!game.offlinePaused&&!!game.voyage;delete game.offlinePaused;playing=true;sessionBlocked=false;lastPanelPort=null;manualActive=false;manualTarget=null;manualChannel=null;departedPort=null;heldKeys.clear();
   settleGuildDeadlines();uiUsage.entered?.();mail.watch();setTimeout(()=>business?.reconcileHarborRecords().catch(()=>{}),1100);setTimeout(()=>taxCollector?.tick(true),100);
   account.stopNoviceWatch?.();
   if(noviceActive(state)&&account.sdk){
@@ -651,7 +654,7 @@ function settleGuildDeadlines(){
   const expired=expireCharters(state,guildTime(),baseGuildFame(state));
   if(expired.count)toast(`의뢰 ${expired.count}건 기한 초과 · 명성 −${expired.loss}`,'error');
 }
-function changed(){community?.syncOwnership().catch(()=>{});settleGuildDeadlines();checkMissions();renderHUD();renderPanel();renderPorts();renderShip();save();if(account.ready&&account.dirty)account.flush();}
+function changed(){reconcileTitles(state,guildTime());community?.syncOwnership().catch(()=>{});settleGuildDeadlines();checkMissions();renderHUD();renderPanel();renderPorts();renderShip();save();if(account.ready&&account.dirty)account.flush();}
 
 function inspectNearby(id){
   if(!nav)return;stopForUI();paused=!!state.voyage;
@@ -1440,7 +1443,7 @@ $('#novice-status').onclick=()=>showModal('초보 선장 보호','교역세 면�
   `<p>현재 항구 교역세가 면제됩니다. 다른 선장과 자유 공격을 주고받을 수 없어요. 합의 결투와 NPC 토벌은 이용할 수 있습니다.</p><p>처음 항구를 소유하거나, 맡긴 배까지 3척을 보유하거나, 선박이 ${NOVICE_MAX_STAGE}단계에 닿으면 보호를 졸업해요.</p><p><a href="guide/captains/" target="_blank" rel="noopener">초보 보호 설명 보기</a></p>`,'small');
 setupInterface();ux=createUX({getState:()=>state,getAccount:()=>account,getNav:()=>nav,getSelection:()=>selected,getPlan:()=>planned,getFleet:()=>fleet,getVisibleShips:visibleShips,getChat:()=>chat,storage,onTrade:(mode,id)=>business?.trade(mode,id),onStop:stopForUI,onHome:centerShip,onSelect:selectPort,onPlan:planDestination,onSail:startVoyage,onManual:startManual,onMode:setControlMode,onSave:changed,onPanel:renderPanel,onSea:()=>seaUI?.open(),onGuild:()=>guildUI?.open(),onProjects:()=>projectsUI?.open(),onDepot:id=>projectsUI?.inspect(id),onShareRecord:(message,from,port)=>{if(appendItemRecord(state,'shares',String(message.id||((from?.id||'')+':'+port.id)),(from?from.name+' → ':'')+port.name,guildTime()))save();},onShore:()=>shoreUI?.open(),onModal:showModal,onClose:()=>modal.close(),onToast:toast,onRescue:launchRescue,onTab:setTab,onChat:toggleChat,onMapLabels:()=>renderChartLabels(true),onRankVisibility:visible=>rankings.setVisible(visible),onAtlas:showAtlas,onJournal:showJournal,onHelp:showHelp,onMenuFinder:openMenuFinder,onStory:()=>storyUI?.open(),onShip:()=>expansion?.showShip(),onCollection:()=>expansion?.showAlbum(),onBusiness:()=>business?.showHub(),onGuns:()=>business?.showArmory(),onSaleSearch:()=>saleFinder?.open(),onOfficers:()=>rumorUI?.showDirectory('officer'),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show(),onCombatTarget:uid=>combat?.attack(uid),onMail:()=>mail.open(),onMailUnread:()=>mail.unreadCount(),onSuggestions:()=>community?.showSuggestions(true),onOwnedPorts:()=>community?.showOwnedPorts(),onCaptains:()=>expansion?.showCaptains('all',true)});renderHUD();renderMission();renderPanel();$('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
 const albumQuiz=createAlbumQuiz({uid:()=>account.uid,game:()=>state,now:guildTime,modal:showModal,album:id=>expansion.showAlbum(id),run:fn=>business.run('personal',account.uid,fn)});
-expansion=createExpansion({onQuiz:albumQuiz.menu,onMailBlock:(id,name)=>mail.blockButton(id,name),getState:()=>state,getNav:()=>nav,getFleet:()=>fleet,getRankings:()=>rankings,getStats:()=>gameStats(state,exploration),onModal:showModal,onToast:toast,onChanged:changed,onClose:()=>modal.close(),onContinueVoyage:continueInvestigationVoyage,canShowDiscovery:()=>playing&&!!nav&&!currentCanal(state.voyage)&&!state.shoreTrip&&$('.chart')?.classList.contains('shore-map-open')===false&&!modal.open&&!state.battleId&&!state.npcBattle&&!state.raidId&&!ux?.isBlocking(),onDiscoveryPause:()=>{stopForUI();paused=!!state.voyage;},onInspect:inspectNearby,onApproach:approachDiscovery,onShowDiscoveryPoint:showDiscoveryOnChart,onResumeRoute:resumeDetour,onShipAction:fn=>business?.shipAction(fn),onStorageAction:fn=>business?.run('personal',account.uid,fn),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show()});
+expansion=createExpansion({onQuiz:albumQuiz.menu,onMailBlock:(id,name)=>mail.blockButton(id,name),getState:()=>state,getNav:()=>nav,getFleet:()=>fleet,getRankings:()=>rankings,getStats:()=>gameStats(state,exploration),onModal:showModal,onToast:toast,onChanged:changed,onClose:()=>modal.close(),onContinueVoyage:continueInvestigationVoyage,canShowDiscovery:()=>playing&&!!nav&&!currentCanal(state.voyage)&&!state.shoreTrip&&$('.chart')?.classList.contains('shore-map-open')===false&&!modal.open&&!state.battleId&&!state.npcBattle&&!state.raidId&&!ux?.isBlocking(),onDiscoveryPause:()=>{stopForUI();paused=!!state.voyage;},onInspect:inspectNearby,onApproach:approachDiscovery,onShowDiscoveryPoint:showDiscoveryOnChart,onResumeRoute:resumeDetour,onShipAction:fn=>business?.shipAction(fn),onTitles:()=>titleUI?.open(),onStorageAction:fn=>business?.run('personal',account.uid,fn),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show()});
 rumorUI=createRumorUI({extraHarborRumor:(game,keepId)=>business?.extraRumor(game,keepId),getState:()=>state,now:guildTime,nav:()=>nav,modal:showModal,toast,changed,depart:autoToPort,onCanals:()=>projectsUI?.open('canal'),share:(text,card)=>ux?.share(text,card),action:(id,action,replaceId)=>{
   if(!account.ready)return toast('로그인 뒤 이용하세요.','error');
   const port=state.port;
@@ -1512,7 +1515,7 @@ async function readDepotPromotionVote(id){
   return (await sdk.get(sdk.ref(account.db,'gameV2/depotPromotionVotes/'+id+'/'+account.uid))).val()||0;
 }
 projectsUI=createProjectsUI({game:()=>state,uid:()=>account.uid,now:guildTime,nav:()=>nav,modal:showModal,close:()=>{modal.close();paused=false;centerShip();},
-  openSpecialty:id=>business.showDepotMarket(id),
+  openInvestment:()=>business.showHub(true),openSpecialty:id=>business.showDepotMarket(id),
   openMarket:id=>{modal.close();selected=id;setTab('trade');renderPanel();if(innerWidth<=850)ux?.openPort('target',false);},
   openShipyard:()=>expansion.showShip(),
   openTaxPolicy:id=>business.showDepotTaxPolicy(id),
@@ -1712,5 +1715,6 @@ if(await maintenanceInProgress()){
   setupMap(responses[0],responses[4]);void setChartStyle(preferredChart);centerShip();requestAnimationFrame(tick);
   clearLegacyStorage(storage);
   if(location.hostname==='mathtjungsw.github.io')setInterval(async()=>{if(!document.hidden&&await maintenanceInProgress())location.replace('maintenance.html');},60000);
-  renderFleetStatus();showEntry();
-}catch(error){$('#map-loading').innerHTML='<p>지도를 불러오지 못했어요.</p><button class="primary-button" style="width:180px" data-usage-key="action-reload" onclick="location.reload()">다시 불러오기</button>';console.error(error);}
+  titleUI=createTitleUI({account,getState:()=>state,modal:showModal,action:fn=>business?.run('personal',account.uid,fn)});
+renderFleetStatus();showEntry();
+}catch(error){console.error(error);if($('#map-loading'))$('#map-loading').innerHTML='<p>지도를 불러오지 못했어요.</p><button class="primary-button" style="width:180px" data-usage-key="action-reload" onclick="location.reload()">다시 불러오기</button>';console.error(error);}

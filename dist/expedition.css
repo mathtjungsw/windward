@@ -311,3 +311,7 @@ button.shore-pin:focus-visible { outline:2px solid #265f65; outline-offset:2px; 
 #era-announcement-open small{font-size:.75rem;color:#755629}
 #era-announcement-dismiss{min-width:2.75rem;min-height:2.75rem;font-size:1.25rem}
 @media(max-width:500px){.era-hero img{aspect-ratio:16/9}.era-announcement{inset-inline-end:.5rem;max-width:calc(100vw - 1rem)}}
+
+.title-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}.title-card,.album-milestone{padding:14px;border:1px solid #bdc7ad;border-radius:9px}.title-card.earned{background:#eef2e6}.album-milestone{margin-bottom:12px}.album-report-choice{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid #d9ddcd}.album-report-choice input{width:22px;height:22px}.trade-effect-details{padding:8px;border-top:1px solid #d9ddcd}.trade-effect-details summary{cursor:pointer}
+
+.trade-quantity-options{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important}.trade-quantity-options button{min-width:0!important;margin:0!important;padding:10px 4px!important}.trade-effect-details{max-width:100%;overflow-wrap:anywhere}.title-grid,.title-card{min-width:0}

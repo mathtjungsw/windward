@@ -1,7 +1,7 @@
-import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.17-promoted-ports-and-content';
-import {GOODS} from './data.js?v=2026.11.17-promoted-ports-and-content';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
-import {explorationGear,activeOfficer,appendItemRecord,addOfficerExperience} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
+import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.18-titles-and-harbor-equity';
+import {GOODS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
+import {explorationGear,activeOfficer,appendItemRecord,addOfficerExperience} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
 
 export const SEA_TYPES={
   fishing:{label:'어장',wait:20000,cooldown:1800000,good:'driedfish',qty:2},

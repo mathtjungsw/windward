@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.17-promoted-ports-and-content';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.17-promoted-ports-and-content';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.17-promoted-ports-and-content';
-import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.17-promoted-ports-and-content';
-import {eraAt} from './era-cycle.js?v=2026.11.17-promoted-ports-and-content';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.18-titles-and-harbor-equity';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.18-titles-and-harbor-equity';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.18-titles-and-harbor-equity';
+import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.18-titles-and-harbor-equity';
+import {eraAt} from './era-cycle.js?v=2026.11.18-titles-and-harbor-equity';
 Object.assign(GOODS,PREMIUM_GOODS,ERA_GOODS);
 
 export {GOODS};

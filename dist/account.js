@@ -1,16 +1,16 @@
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.17-promoted-ports-and-content';
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.17-promoted-ports-and-content';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.17-promoted-ports-and-content';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.17-promoted-ports-and-content';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.17-promoted-ports-and-content';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.17-promoted-ports-and-content';
-import {applyRaftStart} from './raft-start.js?v=2026.11.17-promoted-ports-and-content';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.17-promoted-ports-and-content';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.18-titles-and-harbor-equity';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.18-titles-and-harbor-equity';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.18-titles-and-harbor-equity';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.18-titles-and-harbor-equity';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.18-titles-and-harbor-equity';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.18-titles-and-harbor-equity';
+import {applyRaftStart} from './raft-start.js?v=2026.11.18-titles-and-harbor-equity';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.18-titles-and-harbor-equity';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
 export const localSaveKey = uid => 'windward-account-v4:' + uid;
-const SAVE_SCHEMA_VERSION = 19;
+const SAVE_SCHEMA_VERSION = 20;
 
 export function accountName(value) {
   const name = String(value || '').normalize('NFKC').trim();

@@ -1,7 +1,8 @@
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.17-promoted-ports-and-content';
-import {ownershipRankChanges} from './port-rankings.js?v=2026.11.17-promoted-ports-and-content';
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.17-promoted-ports-and-content';
-import {blessingAt} from './blessings.js?v=2026.11.17-promoted-ports-and-content';
+import {reconcileTitles} from './titles.js?v=2026.11.18-titles-and-harbor-equity';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.18-titles-and-harbor-equity';
+import {ownershipRankChanges} from './port-rankings.js?v=2026.11.18-titles-and-harbor-equity';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.18-titles-and-harbor-equity';
+import {blessingAt} from './blessings.js?v=2026.11.18-titles-and-harbor-equity';
 async function bounded(task,ms=5000){let timer;try{return await Promise.race([task,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('network-timeout')),ms))]);}finally{clearTimeout(timer);}}
 // Economic writes share the same queue as autosave. Acknowledgement precedes UI state.
 export function installAtomicAccount(Type){
@@ -31,6 +32,7 @@ export function installAtomicAccount(Type){
    if(Number.isSafeInteger(result?.eraWindow))op.marketEra=result.eraWindow;
    const ranksPort=kind==='ports'||kind==='projects'&&key.startsWith('depot-');
    const ownerChanges=ranksPort?await bounded(ownershipRankChanges(this,key,before.content||{},content,id,kind)):{};
+   if(Array.isArray(game.visited))reconcileTitles(game,now,ownerChanges['real/portRankings/'+this.uid]?{ownedPortCount:ownerChanges['real/portRankings/'+this.uid].ownedPortCount}:{});
    const graduated=protect?markNovice(game,this.record.noviceGraduated,ownsOrOwnedPort(ownerChanges['real/portRankings/'+this.uid])):undefined;
    const record={...this.record,schemaVersion:this.defenseEnabled?Math.max(6,this.record.schemaVersion):5,...(this.defenseEnabled?{defenseSeq:game.defenseAck?.seq||0}:{}),...(protect?{noviceGraduated:graduated}:{}),revision,session:this.session,data:JSON.stringify(game),leaseUntil:now+90000,updatedAt:stamp,operationSequence:sequence,lastOperation:op};
    content._version=1;

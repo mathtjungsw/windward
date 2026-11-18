@@ -1,8 +1,8 @@
-import {GOODS} from './data.js?v=2026.11.17-promoted-ports-and-content';
-import {capacity,usedSpace} from './engine.js?v=2026.11.17-promoted-ports-and-content';
-import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.17-promoted-ports-and-content';
-import {recordTrade} from './rank-progress.js?v=2026.11.17-promoted-ports-and-content';
-import {blessingRate} from './blessings.js?v=2026.11.17-promoted-ports-and-content';
+import {GOODS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
+import {capacity,usedSpace} from './engine.js?v=2026.11.18-titles-and-harbor-equity';
+import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.18-titles-and-harbor-equity';
+import {recordTrade} from './rank-progress.js?v=2026.11.18-titles-and-harbor-equity';
+import {blessingRate} from './blessings.js?v=2026.11.18-titles-and-harbor-equity';
 
 export const INLAND_CITIES={
  cordoba:{id:'cordoba',name:'코르도바',port:'seville',point:[-4.7794,37.8847],path:[[-5.6,37.53],[-5.16,37.77]],seconds:60,terrain:0,goods:{leather:.83,oliveoil:.87}},

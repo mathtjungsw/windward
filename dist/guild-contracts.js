@@ -1,11 +1,12 @@
-import {blessingBonus} from './blessings.js?v=2026.11.17-promoted-ports-and-content';
-import {shipyardReport} from './historical-ships.js?v=2026.11.17-promoted-ports-and-content';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.17-promoted-ports-and-content';
+import {titleEffect} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
+import {blessingBonus} from './blessings.js?v=2026.11.18-titles-and-harbor-equity';
+import {shipyardReport} from './historical-ships.js?v=2026.11.18-titles-and-harbor-equity';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.18-titles-and-harbor-equity';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[
@@ -172,7 +173,7 @@ export function charterAction(game,action,id,now,{findRoute,room,baseFame,findPo
   if(report&&!eligibleProof(row))throw Error('의뢰를 수락한 뒤 기한 안에 지정 목표를 완료하세요.');
   const sale=type.kind==='delivery'?(typeof trade==='function'?trade(row):null):null;
   if(type.kind==='delivery'&&!sale?.ok)throw Error('조합 납품의 현재 판매 견적을 확인하세요.');
-  const base=row.reward, officerBonus=type.kind?0:Math.floor(base*(activeOfficer(game)?.guildBonus||0));
+  const base=row.reward, officerBonus=Math.floor(base*Math.min(.1,(type.kind?0:activeOfficer(game)?.guildBonus||0)+titleEffect(game,'guildBonus')));
   const itemBonus=type.kind?0:couponAmount(game,'guild',base), net=base+officerBonus+itemBonus+(row.storyBonus||0)+(row.domesticBonus||0);
   const blessing=['pirate'].includes(type.kind)?0:blessingBonus(net,'guild',now),reward=net+blessing;
   game.money+=reward;

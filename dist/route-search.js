@@ -1,4 +1,4 @@
-import {canDepart,voyageEstimate,ship} from './engine.js?v=2026.11.17-promoted-ports-and-content';
+import {canDepart,voyageEstimate,ship} from './engine.js?v=2026.11.18-titles-and-harbor-equity';
 
 const number=n=>Math.round(n).toLocaleString('ko-KR');
 export function summarizeSearchRoute(game,port,route,canalNames={},preliminary=false,at){

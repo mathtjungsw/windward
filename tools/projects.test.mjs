@@ -233,7 +233,8 @@ test('promoted depot keeps its dock and splits new trade and basic income while 
   buyCollector(investor,[id],next);
   const later=next+1800000,due=collectorVisits(investor.taxCollector,later)[0];
   const collection=collectPortTaxes(investor,content,'b',id,due.at,later);
-  assert.equal(collection.gross,400+Math.round(quote.tax*.4));
+  // Opening stage 2 now enables liquid equity and a capital-linked 7.5% boost.
+  assert.equal(collection.gross,415+Math.round(quote.tax*.4));
   assert.equal(projectView(project,content,'b',later).balance,65);
   projectAction(investor,content,'b',id,'dividend',0,later,chart);
   assert.equal(projectView(project,content,'b',later).balance,0);

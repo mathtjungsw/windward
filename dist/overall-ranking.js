@@ -1,4 +1,4 @@
-import {RANK_DEFINITIONS,RANK_GROUPS} from './rank-metrics.js?v=2026.11.17-promoted-ports-and-content';
+import {RANK_DEFINITIONS,RANK_GROUPS} from './rank-metrics.js?v=2026.11.18-titles-and-harbor-equity';
 
 const baseline={money:2400,visited:1,fleetGrowth:1};
 const groups=RANK_GROUPS.filter(([id])=>id!=='overall');

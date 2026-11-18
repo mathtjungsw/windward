@@ -1,4 +1,4 @@
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.17-promoted-ports-and-content';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.18-titles-and-harbor-equity';
 
 const HOUR=3600000,DAY=24*HOUR,epoch=Date.UTC(2026,10,16,3);
 const agenda=[

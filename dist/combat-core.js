@@ -1,17 +1,18 @@
-import {requireCombatAllowed} from './blessings.js?v=2026.11.17-promoted-ports-and-content';
-import {shipyardVictory} from './historical-ships.js?v=2026.11.17-promoted-ports-and-content';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.17-promoted-ports-and-content';
-import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.17-promoted-ports-and-content';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.17-promoted-ports-and-content';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.17-promoted-ports-and-content';
-import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.17-promoted-ports-and-content';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.17-promoted-ports-and-content';
-import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.17-promoted-ports-and-content';
-import {mapDistance} from './world-wrap.js?v=2026.11.17-promoted-ports-and-content';
-import {currentCanal} from './canal-reservations.js?v=2026.11.17-promoted-ports-and-content';
+import {titleEffect} from './title-effects.js?v=2026.11.18-titles-and-harbor-equity';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.18-titles-and-harbor-equity';
+import {shipyardVictory} from './historical-ships.js?v=2026.11.18-titles-and-harbor-equity';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.18-titles-and-harbor-equity';
+import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.18-titles-and-harbor-equity';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.18-titles-and-harbor-equity';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.18-titles-and-harbor-equity';
+import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.18-titles-and-harbor-equity';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.18-titles-and-harbor-equity';
+import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.18-titles-and-harbor-equity';
+import {mapDistance} from './world-wrap.js?v=2026.11.18-titles-and-harbor-equity';
+import {currentCanal} from './canal-reservations.js?v=2026.11.18-titles-and-harbor-equity';
 export const COMBAT_RANGE=180,COMBAT_TIMEOUT=180000,PROTECTION_MS=120000;
 export function npcSlotChanges(game,uid,currentSlot){currentSlot??=null;const expected='npc:'+uid;if(currentSlot&&currentSlot!==expected)throw Error('선장 간 전투를 먼저 마치세요.');const next=game.npcBattle?expected:null;return currentSlot===next?{}:{['combatSlots/'+uid]:next};}
-export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.17-promoted-ports-and-content';
+export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.18-titles-and-harbor-equity';
 const copy=o=>structuredClone(o||{});
 export function splitCargo(cargo,limit){const taken={},rest={};for(const [id,c]of Object.entries(cargo||{}).sort(([a],[b])=>a.localeCompare(b))){const qty=Math.min(c.qty,Math.max(0,limit)),cost=c.qty?c.cost*qty/c.qty:0;if(qty)taken[id]={qty,cost};if(qty<c.qty)rest[id]={qty:c.qty-qty,cost:c.cost-cost};limit-=qty;}return {taken,rest};}
 export const cargoCount=c=>Object.values(c||{}).reduce((n,c)=>n+c.qty,0);
@@ -61,7 +62,7 @@ export function fireAtPirate(game,zoneId,gunId,now,rolls,clear=()=>true,coastDis
  const stats=cannonStats(gun),officer=activeOfficer(game);
  const effect=officerCombatEffect(battle.skill,{npc:true,distance:mapDistance(game.position,zone.point),hp:currentHP(game)/fleetMaxHP(game),shots:battle.shots??1,hits:battle.hits??1});
  const accuracy=Math.min(95,stats.accuracy+effect.accuracy);
- const hit=rolls[0]*100<accuracy,damage=hit?Math.min(battle.hp,Math.round(stats.damage*(1+effect.damage))):0;
+ const hit=rolls[0]*100<accuracy,damage=hit?Math.min(battle.hp,Math.round(stats.damage*(1+effect.damage+titleEffect(game,'npcDamage')))):0;
  gun.readyAt=now+Math.round(stats.reload*1000*(1-effect.reload));
  battle.hp-=damage;battle.shots=(battle.shots??1)+1;battle.hits=(battle.hits??1)+Number(hit);
  if(battle.hp<=0){const fame=Math.round([50,150,400][zone.tier]*(1+(officer?.pirateFame||0)));recordPirateKill(game,now);shipyardVictory(game,coastDistance(zone.point)<=180,zone);recordGuildObjective(game,'pirate',zoneId,now);addOfficerExperience(game,30+20*zone.tier);game.pirateFame=(game.pirateFame||0)+fame;game.pirateRespawns??={};game.pirateRespawns[zone.id]=now+1800000;delete game.npcBattle;return {ok:true,hit,damage,retaliation:{fired:false,damage:0},message:'해적 토벌! 명성 +'+fame,victory:true};}

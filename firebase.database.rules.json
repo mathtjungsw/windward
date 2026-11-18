@@ -4,36 +4,9 @@
     ".write": false,
     "gameV2": {
       "serverBlessings": {
-      "current": {
-        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
-        ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && !data.parent().child('history').child((newData.child('day').val()+'')).exists() && (!data.exists() || data.child('start').val() + 43200000 <= now) && newData.child('effect').val() == newData.parent().child('history').child((newData.child('day').val()+'')).child('effect').val() && newData.child('uid').val() == newData.parent().child('history').child((newData.child('day').val()+'')).child('uid').val() && newData.child('name').val() == newData.parent().child('history').child((newData.child('day').val()+'')).child('name').val() && newData.child('rankAt').val() == newData.parent().child('history').child((newData.child('day').val()+'')).child('rankAt').val() && newData.child('day').val() == newData.parent().child('history').child((newData.child('day').val()+'')).child('day').val() && newData.child('start').val() == newData.parent().child('history').child((newData.child('day').val()+'')).child('start').val()",
-        ".validate": "newData.hasChildren([\"effect\",\"uid\",\"name\",\"rankAt\",\"day\",\"start\"]) && root.child('gameV2').child('real/overallRanking/public').child('top').child(auth.uid).child('rank').val() == 1 && newData.child('uid').val() == auth.uid && newData.child('name').val() == root.child('gameV2').child('real/overallRanking/public').child('top').child(auth.uid).child('name').val() && newData.child('rankAt').val() == root.child('gameV2').child('real/overallRanking/public').child('updatedAt').val() && newData.child('start').val() == now && newData.child('day').val() * 86400000 <= (now + 32400000) && (newData.child('day').val() + 1) * 86400000 > (now + 32400000)",
-        "effect": {
-          ".validate": "newData.isString() && newData.val().matches(/^(peace|trade|wind|river|harvest|crew|lantern|fame|guild|repair|caravan|rescue)$/)"
-        },
-        "uid": {
-          ".validate": "newData.isString()"
-        },
-        "name": {
-          ".validate": "newData.isString()"
-        },
-        "rankAt": {
-          ".validate": "newData.isNumber()"
-        },
-        "day": {
-          ".validate": "newData.isNumber() && newData.val() % 1 == 0"
-        },
-        "start": {
-          ".validate": "newData.isNumber()"
-        },
-        "$other": {
-          ".validate": false
-        }
-      },
-      "history": {
-        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && query.orderByKey == true && query.limitToLast != null && query.limitToLast <= 30",
-        "$day": {
-          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && !data.exists() && newData.exists() && $day == (newData.child('day').val()+'') && newData.child('effect').val() == newData.parent().parent().child('current').child('effect').val() && newData.child('uid').val() == newData.parent().parent().child('current').child('uid').val() && newData.child('name').val() == newData.parent().parent().child('current').child('name').val() && newData.child('rankAt').val() == newData.parent().parent().child('current').child('rankAt').val() && newData.child('day').val() == newData.parent().parent().child('current').child('day').val() && newData.child('start').val() == newData.parent().parent().child('current').child('start').val()",
+        "current": {
+          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
+          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && !data.parent().child('history').child((newData.child('day').val()+'')).exists() && (!data.exists() || data.child('start').val() + 43200000 <= now) && newData.child('effect').val() == newData.parent().child('history').child((newData.child('day').val()+'')).child('effect').val() && newData.child('uid').val() == newData.parent().child('history').child((newData.child('day').val()+'')).child('uid').val() && newData.child('name').val() == newData.parent().child('history').child((newData.child('day').val()+'')).child('name').val() && newData.child('rankAt').val() == newData.parent().child('history').child((newData.child('day').val()+'')).child('rankAt').val() && newData.child('day').val() == newData.parent().child('history').child((newData.child('day').val()+'')).child('day').val() && newData.child('start').val() == newData.parent().child('history').child((newData.child('day').val()+'')).child('start').val()",
           ".validate": "newData.hasChildren([\"effect\",\"uid\",\"name\",\"rankAt\",\"day\",\"start\"]) && root.child('gameV2').child('real/overallRanking/public').child('top').child(auth.uid).child('rank').val() == 1 && newData.child('uid').val() == auth.uid && newData.child('name').val() == root.child('gameV2').child('real/overallRanking/public').child('top').child(auth.uid).child('name').val() && newData.child('rankAt').val() == root.child('gameV2').child('real/overallRanking/public').child('updatedAt').val() && newData.child('start').val() == now && newData.child('day').val() * 86400000 <= (now + 32400000) && (newData.child('day').val() + 1) * 86400000 > (now + 32400000)",
           "effect": {
             ".validate": "newData.isString() && newData.val().matches(/^(peace|trade|wind|river|harvest|crew|lantern|fame|guild|repair|caravan|rescue)$/)"
@@ -56,115 +29,158 @@
           "$other": {
             ".validate": false
           }
-        }
-      }
-    },
-    "freightParticipation": {
-      "$uid": {
-        ".read": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com'",
-        ".write": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists()",
-        ".validate": "newData.hasChildren(['day','usedBoxes','project','round','updatedAt']) && newData.child('updatedAt').val() == now && newData.child('day').val() * 86400000 <= now + 32400000 && newData.child('day').val() * 86400000 + 86400000 > now + 32400000 && newData.child('usedBoxes').val() == (data.child('day').val() == newData.child('day').val() ? data.child('usedBoxes').val() : 0) + (newData.child('project').val() == 'freight-porto' ? 40 : (newData.child('project').val() == 'freight-alexandria' || newData.child('project').val() == 'freight-goa') ? 60 : 80) && root.child('gameV2').child('shared/projects').child(newData.child('project').val()).child('content/round').val() == newData.child('round').val() && newData.parent().parent().child('shared/projects').child(newData.child('project').val()).child('content/round').val() == newData.child('round').val() && !root.child('gameV2').child('shared/projects').child(newData.child('project').val()).child('content/deliveries').child($uid).exists() && newData.parent().parent().child('shared/projects').child(newData.child('project').val()).child('content/deliveries').child($uid).isNumber() && newData.parent().parent().child('shared/projects').child(newData.child('project').val()).child('lastOperation/uid').val() == $uid && newData.parent().parent().child('shared/projects').child(newData.child('project').val()).child('lastOperation/id').val() == newData.parent().parent().child('privateSaves').child($uid).child('lastOperation/id').val()",
-        "day": {
-          ".validate": "newData.isNumber() && newData.val()%1 == 0"
         },
-        "usedBoxes": {
-          ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 40 && newData.val() <= 500"
-        },
-        "project": {
-          ".validate": "newData.isString() && newData.val().matches(/^freight-(porto|alexandria|goa|nagasaki|havana|sydney)$/)"
-        },
-        "round": {
-          ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() > 0"
-        },
-        "updatedAt": {
-          ".validate": "newData.val() == now"
-        },
-        "$other": {
-          ".validate": false
-        }
-      }
-    },
-    "albumQuizDays": {
-      "$uid": {
-        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid",
-        "$kind": {
-          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && $kind.matches(/^(all|ruin|relic|animal|treasure|book|nature)$/) && newData.exists() && newData.parent().parent().parent().child('privateSaves').child($uid).child('updatedAt').val() == now && newData.parent().parent().parent().child('privateSaves').child($uid).child('lastOperation/kind').val() == 'personal' && newData.child('day').val() * 86400000 <= now + 32400000 && (newData.child('day').val() + 1) * 86400000 > now + 32400000 && ((!data.exists() || data.child('day').val() < newData.child('day').val()) ? !newData.child('choice').exists() && !newData.child('paid').exists() : data.child('day').val() == newData.child('day').val() && !data.child('choice').exists() && newData.child('choice').exists() && newData.child('paid').exists() && newData.child('question').val() == data.child('question').val() && newData.child('count').val() == data.child('count').val() && newData.child('reward').val() == data.child('reward').val() && newData.child('correct').val() == data.child('correct').val())",
-          ".validate": "newData.hasChildren(['day','question','count','reward','correct'])",
-          "day": {
-            ".validate": "newData.isNumber() && newData.val() % 1 == 0"
-          },
-          "question": {
-            ".validate": "newData.isString() && newData.val().length <= 100"
-          },
-          "correct": {
-            ".validate": "newData.isString() && newData.val().length <= 64"
-          },
-          "count": {
-            ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 1000000 && newData.val() % 1 == 0"
-          },
-          "reward": {
-            ".validate": "newData.isNumber() && newData.val() % 100 == 0 && (newData.parent().child('count').val() * 191 <= 2000 ? newData.val() == 1000 : newData.val() * 2 >= newData.parent().child('count').val() * 191 && (newData.val() - 100) * 2 < newData.parent().child('count').val() * 191)"
-          },
-          "choice": {
-            ".validate": "newData.isString() && newData.val().length <= 64"
-          },
-          "paid": {
-            ".validate": "newData.val() == (newData.parent().child('correct').val() == newData.parent().child('choice').val() ? newData.parent().child('reward').val() : 0)"
-          },
-          "$other": {
-            ".validate": false
+        "history": {
+          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && query.orderByKey == true && query.limitToLast != null && query.limitToLast <= 30",
+          "$day": {
+            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && !data.exists() && newData.exists() && $day == (newData.child('day').val()+'') && newData.child('effect').val() == newData.parent().parent().child('current').child('effect').val() && newData.child('uid').val() == newData.parent().parent().child('current').child('uid').val() && newData.child('name').val() == newData.parent().parent().child('current').child('name').val() && newData.child('rankAt').val() == newData.parent().parent().child('current').child('rankAt').val() && newData.child('day').val() == newData.parent().parent().child('current').child('day').val() && newData.child('start').val() == newData.parent().parent().child('current').child('start').val()",
+            ".validate": "newData.hasChildren([\"effect\",\"uid\",\"name\",\"rankAt\",\"day\",\"start\"]) && root.child('gameV2').child('real/overallRanking/public').child('top').child(auth.uid).child('rank').val() == 1 && newData.child('uid').val() == auth.uid && newData.child('name').val() == root.child('gameV2').child('real/overallRanking/public').child('top').child(auth.uid).child('name').val() && newData.child('rankAt').val() == root.child('gameV2').child('real/overallRanking/public').child('updatedAt').val() && newData.child('start').val() == now && newData.child('day').val() * 86400000 <= (now + 32400000) && (newData.child('day').val() + 1) * 86400000 > (now + 32400000)",
+            "effect": {
+              ".validate": "newData.isString() && newData.val().matches(/^(peace|trade|wind|river|harvest|crew|lantern|fame|guild|repair|caravan|rescue)$/)"
+            },
+            "uid": {
+              ".validate": "newData.isString()"
+            },
+            "name": {
+              ".validate": "newData.isString()"
+            },
+            "rankAt": {
+              ".validate": "newData.isNumber()"
+            },
+            "day": {
+              ".validate": "newData.isNumber() && newData.val() % 1 == 0"
+            },
+            "start": {
+              ".validate": "newData.isNumber()"
+            },
+            "$other": {
+              ".validate": false
+            }
           }
         }
-      }
-    },
-    "harborPresence": {
-      "$port": {
-        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
+      },
+      "freightParticipation": {
         "$uid": {
-          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && ((root.child('gameV2/shared/ports').child($port).child('content').child('harborMatch').child('state').val() == 'active' && root.child('gameV2/shared/ports').child($port).child('content').child('harborMatch').child('end').val() + 60000 >= now && (root.child('gameV2/shared/ports').child($port).child('content').child('harborMatch').child('attacker').val() == $uid || root.child('gameV2/shared/ports').child($port).child('content').child('harborMatch').child('defender').val() == $uid)) || (root.child('gameV2/shared/ports').child($port).child('content').child('harborPractice').child('state').val() == 'active' && root.child('gameV2/shared/ports').child($port).child('content').child('harborPractice').child('end').val() + 60000 >= now && (root.child('gameV2/shared/ports').child($port).child('content').child('harborPractice').child('attacker').val() == $uid || root.child('gameV2/shared/ports').child($port).child('content').child('harborPractice').child('defender').val() == $uid)))",
-          ".validate": "newData.hasChildren(['at'])",
-          "at": {
+          ".read": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com'",
+          ".write": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists()",
+          ".validate": "newData.hasChildren(['day','usedBoxes','project','round','updatedAt']) && newData.child('updatedAt').val() == now && newData.child('day').val() * 86400000 <= now + 32400000 && newData.child('day').val() * 86400000 + 86400000 > now + 32400000 && newData.child('usedBoxes').val() == (data.child('day').val() == newData.child('day').val() ? data.child('usedBoxes').val() : 0) + (newData.child('project').val() == 'freight-porto' ? 40 : (newData.child('project').val() == 'freight-alexandria' || newData.child('project').val() == 'freight-goa') ? 60 : 80) && root.child('gameV2').child('shared/projects').child(newData.child('project').val()).child('content/round').val() == newData.child('round').val() && newData.parent().parent().child('shared/projects').child(newData.child('project').val()).child('content/round').val() == newData.child('round').val() && !root.child('gameV2').child('shared/projects').child(newData.child('project').val()).child('content/deliveries').child($uid).exists() && newData.parent().parent().child('shared/projects').child(newData.child('project').val()).child('content/deliveries').child($uid).isNumber() && newData.parent().parent().child('shared/projects').child(newData.child('project').val()).child('lastOperation/uid').val() == $uid && newData.parent().parent().child('shared/projects').child(newData.child('project').val()).child('lastOperation/id').val() == newData.parent().parent().child('privateSaves').child($uid).child('lastOperation/id').val()",
+          "day": {
+            ".validate": "newData.isNumber() && newData.val()%1 == 0"
+          },
+          "usedBoxes": {
+            ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 40 && newData.val() <= 500"
+          },
+          "project": {
+            ".validate": "newData.isString() && newData.val().matches(/^freight-(porto|alexandria|goa|nagasaki|havana|sydney)$/)"
+          },
+          "round": {
+            ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() > 0"
+          },
+          "updatedAt": {
             ".validate": "newData.val() == now"
           },
           "$other": {
             ".validate": false
           }
         }
-      }
-    },
-    "mailBlocks": {
-      "$owner": {
-        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $owner",
-        "$sender": {
-          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $sender",
-          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $owner && auth.uid != $sender",
-          ".validate": "newData.val() == true"
+      },
+      "albumQuizDays": {
+        "$uid": {
+          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid",
+          "$kind": {
+            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && $kind.matches(/^(all|ruin|relic|animal|treasure|book|nature)$/) && newData.exists() && newData.parent().parent().parent().child('privateSaves').child($uid).child('updatedAt').val() == now && newData.parent().parent().parent().child('privateSaves').child($uid).child('lastOperation/kind').val() == 'personal' && newData.child('day').val() * 86400000 <= now + 32400000 && (newData.child('day').val() + 1) * 86400000 > now + 32400000 && ((!data.exists() || data.child('day').val() < newData.child('day').val()) ? !newData.child('choice').exists() && !newData.child('paid').exists() : data.child('day').val() == newData.child('day').val() && !data.child('choice').exists() && newData.child('choice').exists() && newData.child('paid').exists() && newData.child('question').val() == data.child('question').val() && newData.child('count').val() == data.child('count').val() && newData.child('reward').val() == data.child('reward').val() && newData.child('correct').val() == data.child('correct').val())",
+            ".validate": "newData.hasChildren(['day','question','count','reward','correct'])",
+            "day": {
+              ".validate": "newData.isNumber() && newData.val() % 1 == 0"
+            },
+            "question": {
+              ".validate": "newData.isString() && newData.val().length <= 100"
+            },
+            "correct": {
+              ".validate": "newData.isString() && newData.val().length <= 64"
+            },
+            "count": {
+              ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 1000000 && newData.val() % 1 == 0"
+            },
+            "reward": {
+              ".validate": "newData.isNumber() && newData.val() % 100 == 0 && (newData.parent().child('count').val() * 191 <= 2000 ? newData.val() == 1000 : newData.val() * 2 >= newData.parent().child('count').val() * 191 && (newData.val() - 100) * 2 < newData.parent().child('count').val() * 191)"
+            },
+            "choice": {
+              ".validate": "newData.isString() && newData.val().length <= 64"
+            },
+            "paid": {
+              ".validate": "newData.val() == (newData.parent().child('correct').val() == newData.parent().child('choice').val() ? newData.parent().child('reward').val() : 0)"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
         }
-      }
-    },
-    "mailUnread": {
-      "$owner": {
-        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $owner",
-        "$id": {
-          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && ((auth.uid == $owner && !newData.exists()) || (!data.exists() && !root.child('gameV2/captainMail').child($owner).child($id).exists() && newData.val() == true && newData.parent().parent().parent().child('captainMail').child($owner).child($id).child('from').val() == auth.uid && newData.parent().parent().parent().child('captainMail').child($owner).child($id).child('at').val() == now))"
+      },
+      "harborPresence": {
+        "$port": {
+          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
+          "$uid": {
+            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && ((root.child('gameV2/shared/ports').child($port).child('content').child('harborMatch').child('state').val() == 'active' && root.child('gameV2/shared/ports').child($port).child('content').child('harborMatch').child('end').val() + 60000 >= now && (root.child('gameV2/shared/ports').child($port).child('content').child('harborMatch').child('attacker').val() == $uid || root.child('gameV2/shared/ports').child($port).child('content').child('harborMatch').child('defender').val() == $uid)) || (root.child('gameV2/shared/ports').child($port).child('content').child('harborPractice').child('state').val() == 'active' && root.child('gameV2/shared/ports').child($port).child('content').child('harborPractice').child('end').val() + 60000 >= now && (root.child('gameV2/shared/ports').child($port).child('content').child('harborPractice').child('attacker').val() == $uid || root.child('gameV2/shared/ports').child($port).child('content').child('harborPractice').child('defender').val() == $uid)))",
+            ".validate": "newData.hasChildren(['at'])",
+            "at": {
+              ".validate": "newData.val() == now"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
         }
-      }
-    },
-    "captainMail": {
+      },
+      "mailBlocks": {
+        "$owner": {
+          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $owner",
+          "$sender": {
+            ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $sender",
+            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $owner && auth.uid != $sender",
+            ".validate": "newData.val() == true"
+          }
+        }
+      },
+      "mailUnread": {
+        "$owner": {
+          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $owner",
+          "$id": {
+            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && ((auth.uid == $owner && !newData.exists()) || (!data.exists() && !root.child('gameV2/captainMail').child($owner).child($id).exists() && newData.val() == true && newData.parent().parent().parent().child('captainMail').child($owner).child($id).child('from').val() == auth.uid && newData.parent().parent().parent().child('captainMail').child($owner).child($id).child('at').val() == now))"
+          }
+        }
+      },
+      "captainMail": {
         "$recipient": {
           ".read": "auth != null && auth.uid == $recipient && auth.token.firebase.sign_in_provider == 'google.com'",
           "$id": {
             ".read": "auth != null && auth.uid == data.child('from').val() && auth.token.firebase.sign_in_provider == 'google.com'",
             ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && $id.matches(/^[a-zA-Z0-9_-]{8,64}$/) && newData.child('from').val() != $recipient && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('updatedAt').val() == now && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'personal' && (!data.exists() ? !root.child('gameV2/mailBlocks').child($recipient).child(auth.uid).exists() && auth.uid == newData.child('from').val() && newData.child('state').val() == 'pending' && newData.child('at').val() == now : newData.child('from').val() == data.child('from').val() && newData.child('at').val() == data.child('at').val() && newData.child('name').val() == data.child('name').val() && newData.child('body').val() == data.child('body').val() && newData.child('amount').val() == data.child('amount').val() && newData.child('closed').val() == now && ((auth.uid == $recipient && data.child('state').val() == 'pending' && now < data.child('at').val() + 172800000 && (newData.child('state').val() == 'accepted' || newData.child('state').val() == 'declined')) || (auth.uid == data.child('from').val() && ((data.child('state').val() == 'pending' && (newData.child('state').val() == 'cancelled' || (now >= data.child('at').val() + 172800000 && newData.child('state').val() == 'refunded'))) || (data.child('state').val() == 'declined' && newData.child('state').val() == 'refunded')))))",
             ".validate": "newData.hasChildren(['from','name','body','at','amount','state'])",
-            "from": {".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 128"},
-            "name": {".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50"},
-            "body": {".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 300"},
-            "at": {".validate": "newData.isNumber() && newData.val() > 0"},
-            "amount": {".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100000 && newData.val()%1 == 0"},
-            "state": {".validate": "newData.val() == 'pending' || newData.val() == 'accepted' || newData.val() == 'declined' || newData.val() == 'cancelled' || newData.val() == 'refunded'"},
-            "closed": {".validate": "newData.isNumber() && newData.val() == now"},
-            "$other": {".validate": false}
+            "from": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 128"
+            },
+            "name": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50"
+            },
+            "body": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 300"
+            },
+            "at": {
+              ".validate": "newData.isNumber() && newData.val() > 0"
+            },
+            "amount": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100000 && newData.val()%1 == 0"
+            },
+            "state": {
+              ".validate": "newData.val() == 'pending' || newData.val() == 'accepted' || newData.val() == 'declined' || newData.val() == 'cancelled' || newData.val() == 'refunded'"
+            },
+            "closed": {
+              ".validate": "newData.isNumber() && newData.val() == now"
+            },
+            "$other": {
+              ".validate": false
+            }
           }
         }
       },
@@ -174,20 +190,35 @@
           "$port": {
             "$sender": {
               ".read": "auth != null && auth.uid == $sender && auth.token.firebase.sign_in_provider == 'google.com'",
-              ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && $owner != $sender && (root.child('gameV2/shared/ports').child($port).child('content/developedOwner').val() == $owner || (!root.child('gameV2/shared/ports').child($port).child('content/developedOwner').exists() && root.child('gameV2/shared/ports').child($port).child('content/ownerUid').val() == $owner)) && ((auth.uid == $sender && newData.child('status').val() == 'pending' && newData.child('at').val() == now && (newData.child('name').val() == root.child('gameV2/real/rankings').child($sender).child('name').val() || newData.child('name').val() == root.child('gameV2/privateSaves').child($sender).child('name').val()) && (!data.exists() || data.child('status').val() == 'accepted' || (data.child('status').val() == 'pending' && data.child('at').val() + 259200000 <= now) || (data.child('status').val() == 'declined' && data.child('answeredAt').val() + 86400000 <= now))) || (auth.uid == $owner && data.child('status').val() == 'pending' && data.child('at').val() + 172800000 > now && newData.child('at').val() == data.child('at').val() && newData.child('body').val() == data.child('body').val() && newData.child('name').val() == data.child('name').val() && newData.child('answeredAt').val() == now && (newData.child('status').val() == 'accepted' || newData.child('status').val() == 'declined') && newData.parent().parent().parent().parent().child('shared/ports').child($port).child('lastOperation/id').val() == newData.parent().parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() && newData.parent().parent().parent().parent().child('shared/ports').child($port).child('updatedAt').val() == now))",
+              ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && $owner != $sender && (root.child('gameV2/shared/ports').child($port).child('content/developedOwner').val() == $owner || (!(root.child('gameV2/shared/ports').child($port).child('content/equityVersion').val() != 1 && root.child('gameV2/shared/ports').child($port).child('content/developedOwner').exists()) && root.child('gameV2/shared/ports').child($port).child('content/ownerUid').val() == $owner)) && ((auth.uid == $sender && newData.child('status').val() == 'pending' && newData.child('at').val() == now && (newData.child('name').val() == root.child('gameV2/real/rankings').child($sender).child('name').val() || newData.child('name').val() == root.child('gameV2/privateSaves').child($sender).child('name').val()) && (!data.exists() || data.child('status').val() == 'accepted' || (data.child('status').val() == 'pending' && data.child('at').val() + 259200000 <= now) || (data.child('status').val() == 'declined' && data.child('answeredAt').val() + 86400000 <= now))) || (auth.uid == $owner && data.child('status').val() == 'pending' && data.child('at').val() + 172800000 > now && newData.child('at').val() == data.child('at').val() && newData.child('body').val() == data.child('body').val() && newData.child('name').val() == data.child('name').val() && newData.child('answeredAt').val() == now && (newData.child('status').val() == 'accepted' || newData.child('status').val() == 'declined') && newData.parent().parent().parent().parent().child('shared/ports').child($port).child('lastOperation/id').val() == newData.parent().parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() && newData.parent().parent().parent().parent().child('shared/ports').child($port).child('updatedAt').val() == now))",
               ".validate": "newData.hasChildren(['at','name','body','status'])",
-              "at": {".validate": "newData.isNumber() && newData.val() > 0"},
-              "name": {".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50"},
-              "body": {".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 300"},
-              "status": {".validate": "newData.val() == 'pending' || newData.val() == 'accepted' || newData.val() == 'declined'"},
-              "answeredAt": {".validate": "newData.isNumber() && newData.val() <= now"},
-              "$other": {".validate": false}
+              "at": {
+                ".validate": "newData.isNumber() && newData.val() > 0"
+              },
+              "name": {
+                ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50"
+              },
+              "body": {
+                ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 300"
+              },
+              "status": {
+                ".validate": "newData.val() == 'pending' || newData.val() == 'accepted' || newData.val() == 'declined'"
+              },
+              "answeredAt": {
+                ".validate": "newData.isNumber() && newData.val() <= now"
+              },
+              "$other": {
+                ".validate": false
+              }
             }
           }
         }
       },
       "operations": {
-        "uiUsageDaily": {".read": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true", ".write": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true"},
+        "uiUsageDaily": {
+          ".read": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true",
+          ".write": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true"
+        },
         "uiUsage": {
           ".read": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true",
           ".write": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true",
@@ -231,14 +262,56 @@
         }
       },
       "corinthRefunds": {
-        "$uid": {".read": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com'", ".write": false}
+        "$uid": {
+          ".read": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com'",
+          ".write": false
+        }
       },
-      "receiptConfig": {"$uid":{".read":"auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com'",".write":false}},
-      "operationReceipts": {".read":false,".write":false,"$uid":{".indexOn":"at","$sequence":{".write":"auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com' && !data.exists() && newData.exists() && (root.child('gameV2/receiptConfig').child($uid).isNumber() && root.child('gameV2/receiptConfig').child($uid).val() > now)",".validate":"newData.hasChildren(['at','proof','key','type','amount']) && newData.child('at').val() == now && newData.child('amount').isNumber() && newData.child('amount').val() >= 0 && newData.child('amount').val() <= 1000000000000 && newData.child('amount').val() % 1 == 0 && ((newData.child('type').val() == 'collector' && !newData.child('good').exists() && !newData.child('qty').exists()) || ((newData.child('type').val() == 'buy' || newData.child('type').val() == 'sell') && newData.child('good').isString() && newData.child('good').val().matches(/^[a-z0-9-]{1,48}$/) && newData.child('qty').isNumber() && newData.child('qty').val() >= 1 && newData.child('qty').val() <= 1000 && newData.child('qty').val() % 1 == 0)) && newData.child('key').isString() && newData.child('key').val().matches(/^[a-z0-9-]{1,48}$/) && newData.parent().parent().parent().child('privateSaves').child($uid).child('lastOperation/sequence').val()+'' == $sequence && newData.parent().parent().parent().child('privateSaves').child($uid).child('lastOperation/id').val() == newData.child('proof').val() && newData.parent().parent().parent().child('privateSaves').child($uid).child('lastOperation/key').val() == newData.child('key').val() && newData.parent().parent().parent().child('privateSaves').child($uid).child('lastOperation/receipt').val() == true && newData.parent().parent().parent().child('privateSaves').child($uid).child('updatedAt').val() == now","at":{".validate":true},"proof":{".validate":true},"key":{".validate":true},"type":{".validate":true},"amount":{".validate":true},"good":{".validate":true},"qty":{".validate":true},"$other":{".validate":false}}}},
+      "receiptConfig": {
+        "$uid": {
+          ".read": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com'",
+          ".write": false
+        }
+      },
+      "operationReceipts": {
+        ".read": false,
+        ".write": false,
+        "$uid": {
+          ".indexOn": "at",
+          "$sequence": {
+            ".write": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com' && !data.exists() && newData.exists() && (root.child('gameV2/receiptConfig').child($uid).isNumber() && root.child('gameV2/receiptConfig').child($uid).val() > now)",
+            ".validate": "newData.hasChildren(['at','proof','key','type','amount']) && newData.child('at').val() == now && newData.child('amount').isNumber() && newData.child('amount').val() >= 0 && newData.child('amount').val() <= 1000000000000 && newData.child('amount').val() % 1 == 0 && ((newData.child('type').val() == 'collector' && !newData.child('good').exists() && !newData.child('qty').exists()) || ((newData.child('type').val() == 'buy' || newData.child('type').val() == 'sell') && newData.child('good').isString() && newData.child('good').val().matches(/^[a-z0-9-]{1,48}$/) && newData.child('qty').isNumber() && newData.child('qty').val() >= 1 && newData.child('qty').val() <= 1000 && newData.child('qty').val() % 1 == 0)) && newData.child('key').isString() && newData.child('key').val().matches(/^[a-z0-9-]{1,48}$/) && newData.parent().parent().parent().child('privateSaves').child($uid).child('lastOperation/sequence').val()+'' == $sequence && newData.parent().parent().parent().child('privateSaves').child($uid).child('lastOperation/id').val() == newData.child('proof').val() && newData.parent().parent().parent().child('privateSaves').child($uid).child('lastOperation/key').val() == newData.child('key').val() && newData.parent().parent().parent().child('privateSaves').child($uid).child('lastOperation/receipt').val() == true && newData.parent().parent().parent().child('privateSaves').child($uid).child('updatedAt').val() == now",
+            "at": {
+              ".validate": true
+            },
+            "proof": {
+              ".validate": true
+            },
+            "key": {
+              ".validate": true
+            },
+            "type": {
+              ".validate": true
+            },
+            "amount": {
+              ".validate": true
+            },
+            "good": {
+              ".validate": true
+            },
+            "qty": {
+              ".validate": true
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
       "privateSaves": {
         "$uid": {
           ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid",
-          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && (((newData.child('schemaVersion').val() == 19 || (newData.child('schemaVersion').val() == 18 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 18) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 18)) || (newData.child('schemaVersion').val() == 17 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 17) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 17)) || (newData.child('schemaVersion').val() == 16 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 16) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 16)) || (newData.child('schemaVersion').val() == 15 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 15) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 15)) || (newData.child('schemaVersion').val() == 14 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 14) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 14)) || (newData.child('schemaVersion').val() == 13 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 13) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 13)) || (newData.child('schemaVersion').val() == 12 && (!root.child('gameV2').child('config/minSchema').exists() || root.child('gameV2').child('config/minSchema').val() <= 12) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 12)) || (newData.child('schemaVersion').val() == 11 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 11) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 11)) || (newData.child('schemaVersion').val() == 10 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 10) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 10)) || (newData.child('schemaVersion').val() == 9 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 9) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 9)) || (newData.child('schemaVersion').val() == 8 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 8) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 8)) || (newData.child('schemaVersion').val() == 7 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 7) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 7)) || (newData.child('schemaVersion').val() == 6 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 6) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 6))) && newData.child('defenseSeq').val() == (newData.parent().parent().child('fleetStates').child($uid).child('seq').exists()?newData.parent().parent().child('fleetStates').child($uid).child('seq').val():0)) || (!root.child('gameV2/config/minSchema').exists() && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 5) && (newData.child('schemaVersion').val() == 5 || (newData.child('schemaVersion').val() == 4 && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 4)))))",
+          ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && (((newData.child('schemaVersion').val() == 20 || (newData.child('schemaVersion').val() == 19 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 19) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 19)) || (newData.child('schemaVersion').val() == 18 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 18) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 18)) || (newData.child('schemaVersion').val() == 17 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 17) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 17)) || (newData.child('schemaVersion').val() == 16 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 16) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 16)) || (newData.child('schemaVersion').val() == 15 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 15) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 15)) || (newData.child('schemaVersion').val() == 14 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 14) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 14)) || (newData.child('schemaVersion').val() == 13 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 13) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 13)) || (newData.child('schemaVersion').val() == 12 && (!root.child('gameV2').child('config/minSchema').exists() || root.child('gameV2').child('config/minSchema').val() <= 12) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 12)) || (newData.child('schemaVersion').val() == 11 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 11) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 11)) || (newData.child('schemaVersion').val() == 10 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 10) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 10)) || (newData.child('schemaVersion').val() == 9 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 9) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 9)) || (newData.child('schemaVersion').val() == 8 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 8) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 8)) || (newData.child('schemaVersion').val() == 7 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 7) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 7)) || (newData.child('schemaVersion').val() == 6 && (!root.child('gameV2/config/minSchema').exists() || root.child('gameV2/config/minSchema').val() <= 6) && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 6))) && newData.child('defenseSeq').val() == (newData.parent().parent().child('fleetStates').child($uid).child('seq').exists()?newData.parent().parent().child('fleetStates').child($uid).child('seq').val():0)) || (!root.child('gameV2/config/minSchema').exists() && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 5) && (newData.child('schemaVersion').val() == 5 || (newData.child('schemaVersion').val() == 4 && (!data.child('schemaVersion').exists() || data.child('schemaVersion').val() <= 4)))))",
           ".validate": "newData.hasChildren(['revision','data','session','leaseUntil','updatedAt']) && newData.child('revision').val() == (data.child('revision').exists() ? data.child('revision').val() : 0) + 1 && (!newData.child('operationSequence').exists() || (newData.child('operationSequence').val() == (data.child('operationSequence').exists()?data.child('operationSequence').val():0) ? newData.child('lastOperation/id').val() == data.child('lastOperation/id').val() : (newData.child('session').val() == data.child('session').val() && newData.parent().parent().child('shared').child(newData.child('lastOperation/kind').val()).child(newData.child('lastOperation/key').val()).child('lastOperation/id').val() == newData.child('lastOperation/id').val() && newData.parent().parent().child('shared').child(newData.child('lastOperation/kind').val()).child(newData.child('lastOperation/key').val()).child('lastOperation/saveRevision').val() == newData.child('revision').val() && newData.parent().parent().child('shared').child(newData.child('lastOperation/kind').val()).child(newData.child('lastOperation/key').val()).child('revision').val() == newData.child('lastOperation/sharedRevision').val()))) && (newData.child('schemaVersion').val() < 12 || newData.child('noviceGraduated').isBoolean()) && (data.child('noviceGraduated').val() != true || newData.child('noviceGraduated').val() == true) && (!(root.child('gameV2/config/minSchema').exists() && root.child('gameV2/config/minSchema').val() >= 12) || newData.child('lastOperation/id').val() == data.child('lastOperation/id').val() || !newData.child('lastOperation/noviceTax').exists() || (newData.child('lastOperation/noviceTax').val() == true && newData.child('lastOperation/kind').val() == 'ports' && newData.child('noviceGraduated').val() == false && !(newData.parent().parent().child('privateSaves').child($uid).child('noviceGraduated').val() == true || newData.parent().parent().child('real/portRankings').child($uid).child('everOwned').val() == true || (newData.parent().parent().child('real/portRankings').child($uid).child('ownedPortCount').isNumber() && newData.parent().parent().child('real/portRankings').child($uid).child('ownedPortCount').val() > 0)))) && (newData.child('lastOperation/id').val() == data.child('lastOperation/id').val() || newData.child('schemaVersion').val() < 13 || (newData.child('lastOperation/blessingStart').val() == ((root.child('gameV2').child('serverBlessings/current').child('start').isNumber() && root.child('gameV2').child('serverBlessings/current').child('start').val() <= now && root.child('gameV2').child('serverBlessings/current').child('start').val() + 43200000 > now) ? root.child('gameV2').child('serverBlessings/current').child('start').val() : 0) && (!((root.child('gameV2').child('serverBlessings/current').child('start').isNumber() && root.child('gameV2').child('serverBlessings/current').child('start').val() <= now && root.child('gameV2').child('serverBlessings/current').child('start').val() + 43200000 > now) && root.child('gameV2').child('serverBlessings/current').child('effect').val() == 'peace') || newData.child('lastOperation/npcStart').val() != true)))",
           "revision": {
             ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() % 1 == 0"
@@ -259,7 +332,7 @@
             ".validate": false
           },
           "schemaVersion": {
-            ".validate": "newData.val() == 4 || newData.val() == 5 || newData.val() == 6 || newData.val() == 7 || newData.val() == 8 || newData.val() == 9 || newData.val() == 10 || newData.val() == 11 || newData.val() == 12 || newData.val() == 13 || newData.val() == 14 || newData.val() == 15 || newData.val() == 16 || newData.val() == 17 || newData.val() == 18 || newData.val() == 19"
+            ".validate": "newData.val() == 4 || newData.val() == 5 || newData.val() == 6 || newData.val() == 7 || newData.val() == 8 || newData.val() == 9 || newData.val() == 10 || newData.val() == 11 || newData.val() == 12 || newData.val() == 13 || newData.val() == 14 || newData.val() == 15 || newData.val() == 16 || newData.val() == 17 || newData.val() == 18 || newData.val() == 19 || newData.val() == 20"
           },
           "operationSequence": {
             ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() % 1 == 0 && newData.val() >= (data.exists()?data.val():0) && newData.val() <= (data.exists()?data.val():0)+1"
@@ -271,10 +344,10 @@
             ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val()%1 == 0"
           },
           "noviceGraduated": {
-          ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
-          ".validate": "newData.isBoolean()"
-        },
-        "enrollment": {
+            ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
+            ".validate": "newData.isBoolean()"
+          },
+          "enrollment": {
             ".validate": "!newData.exists() || (data.exists() && newData.child('id').val() == data.child('id').val() && newData.child('sourceRevision').val() == data.child('sourceRevision').val() && newData.child('sourceData').val() == data.child('sourceData').val())"
           }
         }
@@ -380,15 +453,32 @@
             "rankProgressVersion": {
               ".validate": "newData.val() == 1"
             },
-            "shoreCompleted": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 100000"},
-            "rareFinds": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 60"},
-            "officerCount": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 42"},
-            "itemCount": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 106"},
-            "guildCompleted": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000"},
-            "freightCompleted": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000"},
-            "seaRescues": {".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000"},
+            "shoreCompleted": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 100000"
+            },
+            "rareFinds": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 60"
+            },
+            "officerCount": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 42"
+            },
+            "itemCount": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 106"
+            },
+            "guildCompleted": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000"
+            },
+            "freightCompleted": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000"
+            },
+            "seaRescues": {
+              ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000"
+            },
             "earnedFlag": {
               ".validate": "newData.val() == true"
+            },
+            "titleId": {
+              ".validate": "newData.isString() && (newData.val() == 'archivist' || newData.val() == 'merchant' || newData.val() == 'treasurer' || newData.val() == 'cosmopolitan' || newData.val() == 'broker' || newData.val() == 'traveler' || newData.val() == 'horizon' || newData.val() == 'renowned' || newData.val() == 'naturalist' || newData.val() == 'islander' || newData.val() == 'pathfinder' || newData.val() == 'seeker' || newData.val() == 'admiral' || newData.val() == 'harbormaster' || newData.val() == 'patron' || newData.val() == 'collector' || newData.val() == 'hunter' || newData.val() == 'victor' || newData.val() == 'duelist' || newData.val() == 'guildmate' || newData.val() == 'carrier' || newData.val() == 'rescuer' || newData.val() == 'allrounder')"
             }
           }
         },
@@ -397,18 +487,40 @@
             ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
             ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && newData.child('revision').val() == root.child('gameV2/privateSaves').child($uid).child('revision').val() && (!data.exists() || newData.child('revision').val() >= data.child('revision').val())",
             ".validate": "newData.hasChildren(['revision','updatedAt'])",
-            "revision": {".validate": "newData.isNumber() && newData.val() >= 1 && newData.val()%1 == 0"},
-            "updatedAt": {".validate": "newData.val() == now"},
-            "discoveries": {".validate":"newData.hasChildren()", "$id": {".validate": "$id.matches(/^(ruin-azores|ruin-carthage|ruin-kilwa|ruin-mahabalipuram|ruin-anse|ruin-rapanui|ruin-nanmadol|relic-compass|relic-chart|relic-astrolabe|relic-amphora|relic-seal|relic-bell|relic-carving|relic-pendant|animal-penguin-africa|animal-seal-med|animal-otter|animal-whaleshark|animal-iguana|animal-hector|animal-seal-hawaii|animal-penguin-nz|treasure-azores|treasure-gulf|treasure-madagascar|treasure-malacca|treasure-namib|treasure-atacama|treasure-andaman|treasure-pacific|relic-alaska-token|relic-pacific-chart|relic-amazon-weight|relic-andean-pottery|relic-timor-tool|relic-micronesia-marker|ruin-sganggwaay|ruin-fortjesus|ruin-skellig|ruin-butrint|ruin-galle|ruin-mozambique-island|ruin-portobelo|ruin-goree|animal-gray-whale|animal-manatee|animal-dugong|animal-green-turtle|animal-humboldt|animal-orca|treasure-faroe|treasure-socotra|treasure-mozambique-current|treasure-tasman|treasure-hudson|treasure-falklands|relic-kuril|relic-red-sea|relic-suriname|ruin-leptis|ruin-sabratha|ruin-dilmun|ruin-zanzibar-record|ruin-kotor-record|relic-cuneiform-record|relic-jikji-record|relic-andean-khipu|relic-papyrus-chart|relic-cargo-seals|relic-broken-hull|relic-sunken-jars|book-nanjung|book-donguibogam|book-rihla|book-geographia|book-ortelius|book-revolutions|relic-antikythera|relic-stick-chart|relic-uluburun|ruin-great-zimbabwe|book-hunminjeongeum|book-gutenberg|book-florentine|book-marco-polo|book-sidereus|book-fabrica|book-elements|book-bahriye|relic-rosetta|relic-vindolanda|relic-babylon-map|relic-armillary|nature-joggins|nature-whale-valley|nature-giants-causeway|nature-jeju-lava|ruin-cliff-palace|ruin-petra-water|ruin-mohenjo-daro|ruin-cahokia|era-sutton-hoo|era-newgrange|era-skara-brae|era-tintagel|era-monreale|era-siracusa|era-aigues-mortes|era-sagres|era-belem-tower|era-jeronimos|era-ait-benhaddou|era-el-jem|era-leptis-magna|era-timgad|era-kerkouane|era-volubilis|era-mamallapuram-rathas|era-gangaikonda|era-brhadisvara|era-sigiriya|era-polonnaruwa|era-ayutthaya|era-borobudur|era-prambanan|era-sukhothai|era-trowulan|era-a-famosa|era-intramuros|era-san-agustin|era-himeji|era-castillo-morro|era-san-felipe|era-tulum|era-uxmal|era-teotihuacan|era-chan-chan|era-caral|era-fort-zeelandia|era-codex-mendoza|era-dresden-codex|era-catalan-atlas|era-fra-mauro|era-waldseemuller|era-utrecht|era-voynich|era-galeon-vasa|era-goreme|era-rhodes|era-kairouan|era-dubrovnik|era-pont-du-gard|era-su-nuraxi|era-hampi|era-angkor|era-san-pedro|era-nasca|era-viniales|era-shark-bay|era-canaima|era-pantanal|era-redwood|era-kamchatka|era-bottlenose|era-right-whale|era-blue-whale|era-manta|era-sailfish|era-nautilus|era-walrus|era-albatross|era-galapagos-tortoise|era-cassowary|era-dodo|era-sailing-directions|era-song-illustration|era-lycurgus-cup|era-cyrus-cylinder|era-sankore|era-timbuktu-manuscripts|era-sao-jorge|era-cape-coast|era-mongol-shahnama|era-cocharelli-vices|era-constantinople-psalter|era-regensburg-law|era-al-jazari-automata|era-dioscorides-arabic|era-daihannya-scrolls|era-peter-poitiers-roll|era-benefits-of-animals|era-jajarmi-poetry|era-gold-quran-folio|era-ethiopian-luke|era-rashid-chronicles|era-hafiz-histories|era-nizami-treasury|era-sadi-gulistan|era-boccaccio-women|era-mirror-holiness|era-ramesses-ostracon|era-amenhotep-hunt-scarab|era-gudea-statue|era-amenemope-paint-box|era-nefertiti-talatat|era-sasanian-hunt-dish|era-geiranger-fjord|era-nile-delta|era-halong-karst|era-wadden-tidal-flats|era-kilauea-shield|era-belize-blue-hole|era-lencois-dune-lagoons|era-jeju-jusangjeolli|era-hurd-silver-teapot|era-chantilly-tea-service|era-staffordshire-salt-glaze|era-lafontaine-export-plate|era-covered-export-milk-jug|era-dutch-market-saucer|era-nolli-plan-rome|era-augsburg-compass-dial|era-meissen-painted-saucer|era-anson-voyage|era-selden-map|era-rekidai-hoan|era-panama-viejo|era-suakin|era-makassar-fort|era-magellan-shore|era-aldabra-atoll|era-cape-fur-seal|era-flightless-cormorant|era-tuatara|era-hamel-journal|era-sete-cidades)$/) && newData.val() == true"}},
-            "officers": {".validate":"newData.hasChildren()", "$id": {".validate": "$id.matches(/^(O0(0[1-9]|[1-3][0-9]|40)|OS0[12])$/) && newData.val() == true"}},
-            "$other": {".validate": false}
+            "revision": {
+              ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val()%1 == 0"
+            },
+            "updatedAt": {
+              ".validate": "newData.val() == now"
+            },
+            "discoveries": {
+              ".validate": "newData.hasChildren()",
+              "$id": {
+                ".validate": "$id.matches(/^(ruin-azores|ruin-carthage|ruin-kilwa|ruin-mahabalipuram|ruin-anse|ruin-rapanui|ruin-nanmadol|relic-compass|relic-chart|relic-astrolabe|relic-amphora|relic-seal|relic-bell|relic-carving|relic-pendant|animal-penguin-africa|animal-seal-med|animal-otter|animal-whaleshark|animal-iguana|animal-hector|animal-seal-hawaii|animal-penguin-nz|treasure-azores|treasure-gulf|treasure-madagascar|treasure-malacca|treasure-namib|treasure-atacama|treasure-andaman|treasure-pacific|relic-alaska-token|relic-pacific-chart|relic-amazon-weight|relic-andean-pottery|relic-timor-tool|relic-micronesia-marker|ruin-sganggwaay|ruin-fortjesus|ruin-skellig|ruin-butrint|ruin-galle|ruin-mozambique-island|ruin-portobelo|ruin-goree|animal-gray-whale|animal-manatee|animal-dugong|animal-green-turtle|animal-humboldt|animal-orca|treasure-faroe|treasure-socotra|treasure-mozambique-current|treasure-tasman|treasure-hudson|treasure-falklands|relic-kuril|relic-red-sea|relic-suriname|ruin-leptis|ruin-sabratha|ruin-dilmun|ruin-zanzibar-record|ruin-kotor-record|relic-cuneiform-record|relic-jikji-record|relic-andean-khipu|relic-papyrus-chart|relic-cargo-seals|relic-broken-hull|relic-sunken-jars|book-nanjung|book-donguibogam|book-rihla|book-geographia|book-ortelius|book-revolutions|relic-antikythera|relic-stick-chart|relic-uluburun|ruin-great-zimbabwe|book-hunminjeongeum|book-gutenberg|book-florentine|book-marco-polo|book-sidereus|book-fabrica|book-elements|book-bahriye|relic-rosetta|relic-vindolanda|relic-babylon-map|relic-armillary|nature-joggins|nature-whale-valley|nature-giants-causeway|nature-jeju-lava|ruin-cliff-palace|ruin-petra-water|ruin-mohenjo-daro|ruin-cahokia|era-sutton-hoo|era-newgrange|era-skara-brae|era-tintagel|era-monreale|era-siracusa|era-aigues-mortes|era-sagres|era-belem-tower|era-jeronimos|era-ait-benhaddou|era-el-jem|era-leptis-magna|era-timgad|era-kerkouane|era-volubilis|era-mamallapuram-rathas|era-gangaikonda|era-brhadisvara|era-sigiriya|era-polonnaruwa|era-ayutthaya|era-borobudur|era-prambanan|era-sukhothai|era-trowulan|era-a-famosa|era-intramuros|era-san-agustin|era-himeji|era-castillo-morro|era-san-felipe|era-tulum|era-uxmal|era-teotihuacan|era-chan-chan|era-caral|era-fort-zeelandia|era-codex-mendoza|era-dresden-codex|era-catalan-atlas|era-fra-mauro|era-waldseemuller|era-utrecht|era-voynich|era-galeon-vasa|era-goreme|era-rhodes|era-kairouan|era-dubrovnik|era-pont-du-gard|era-su-nuraxi|era-hampi|era-angkor|era-san-pedro|era-nasca|era-viniales|era-shark-bay|era-canaima|era-pantanal|era-redwood|era-kamchatka|era-bottlenose|era-right-whale|era-blue-whale|era-manta|era-sailfish|era-nautilus|era-walrus|era-albatross|era-galapagos-tortoise|era-cassowary|era-dodo|era-sailing-directions|era-song-illustration|era-lycurgus-cup|era-cyrus-cylinder|era-sankore|era-timbuktu-manuscripts|era-sao-jorge|era-cape-coast|era-mongol-shahnama|era-cocharelli-vices|era-constantinople-psalter|era-regensburg-law|era-al-jazari-automata|era-dioscorides-arabic|era-daihannya-scrolls|era-peter-poitiers-roll|era-benefits-of-animals|era-jajarmi-poetry|era-gold-quran-folio|era-ethiopian-luke|era-rashid-chronicles|era-hafiz-histories|era-nizami-treasury|era-sadi-gulistan|era-boccaccio-women|era-mirror-holiness|era-ramesses-ostracon|era-amenhotep-hunt-scarab|era-gudea-statue|era-amenemope-paint-box|era-nefertiti-talatat|era-sasanian-hunt-dish|era-geiranger-fjord|era-nile-delta|era-halong-karst|era-wadden-tidal-flats|era-kilauea-shield|era-belize-blue-hole|era-lencois-dune-lagoons|era-jeju-jusangjeolli|era-hurd-silver-teapot|era-chantilly-tea-service|era-staffordshire-salt-glaze|era-lafontaine-export-plate|era-covered-export-milk-jug|era-dutch-market-saucer|era-nolli-plan-rome|era-augsburg-compass-dial|era-meissen-painted-saucer|era-anson-voyage|era-selden-map|era-rekidai-hoan|era-panama-viejo|era-suakin|era-makassar-fort|era-magellan-shore|era-aldabra-atoll|era-cape-fur-seal|era-flightless-cormorant|era-tuatara|era-hamel-journal|era-sete-cidades)$/) && newData.val() == true"
+              }
+            },
+            "officers": {
+              ".validate": "newData.hasChildren()",
+              "$id": {
+                ".validate": "$id.matches(/^(O0(0[1-9]|[1-3][0-9]|40)|OS0[12])$/) && newData.val() == true"
+              }
+            },
+            "$other": {
+              ".validate": false
+            }
           }
         },
         "overallRanking": {
           ".read": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true",
           ".write": "auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true",
-          "public": {".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'"},
-          "captains": {"$uid": {".read": "auth != null && auth.uid == $uid"}}
+          "public": {
+            ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'"
+          },
+          "captains": {
+            "$uid": {
+              ".read": "auth != null && auth.uid == $uid"
+            }
+          }
         },
         "chat": {
           ".validate": "newData.hasChildren(['sequence','messages','lastSent']) && newData.child('sequence').val() == (data.child('sequence').exists() ? data.child('sequence').val() : 0) + 1 && newData.child('lastSent').child(auth.uid).val() == now && (!data.child('lastSent').child(auth.uid).exists() || now - data.child('lastSent').child(auth.uid).val() >= 3000) && newData.child('messages').child('' + (newData.child('sequence').val() % 50)).child('seq').val() == newData.child('sequence').val() && newData.child('messages').child('' + (newData.child('sequence').val() % 50)).child('uid').val() == auth.uid && newData.child('messages').child('' + (newData.child('sequence').val() % 50)).child('at').val() == now",
@@ -540,7 +652,11 @@
               "fleetCount": {
                 ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5 && newData.val() % 1 == 0"
               },
-              "fleetKinds": {"$index":{".validate":"$index.matches(/^[0-4]$/) && newData.isString() && newData.val().matches(/^(felucca|galley|fluyt|fujian|baghlah|waka|panok|endeavour|turtle)$/)"}},
+              "fleetKinds": {
+                "$index": {
+                  ".validate": "$index.matches(/^[0-4]$/) && newData.isString() && newData.val().matches(/^(felucca|galley|fluyt|fujian|baghlah|waka|panok|endeavour|turtle)$/)"
+                }
+              },
               "fleetTiers": {
                 "$index": {
                   ".validate": "$index.matches(/^[0-4]$/) && newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 19"
@@ -584,7 +700,7 @@
           ".read": "(auth != null && auth.uid == 'windward-scheduled-operations' && auth.token.firebase.sign_in_provider == 'custom' && auth.token.windwardOperations == true) || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && query.orderByChild == 'ownedPortCount' && query.limitToLast != null && (query.limitToLast <= 5 || (query.limitToLast <= 1000 && query.startAt != null)))",
           "$uid": {
             ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
-            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && ((auth.uid == $uid && !data.exists() && newData.child('ownedPortCount').val() == 0 && newData.child('revision').val() == 1 && !newData.child('lastPort').exists() && !newData.child('operationId').exists()) || (auth.uid == $uid && data.exists() && newData.child('ownedPortCount').val() == data.child('ownedPortCount').val() && newData.child('revision').val() == data.child('revision').val() && newData.child('lastPort').val() == data.child('lastPort').val() && newData.child('operationId').val() == data.child('operationId').val()) || (newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('revision').val() == root.child('gameV2/privateSaves').child(auth.uid).child('revision').val()+1 && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'ports' && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == newData.child('lastPort').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.child('operationId').val() && newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('lastOperation/id').val() == newData.child('operationId').val() && (root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val()) != (newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val()) && ($uid == (root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val()) || $uid == (newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val())) && newData.child('revision').val() == (data.child('revision').exists()?data.child('revision').val():0)+1 && newData.child('ownedPortCount').val() == (data.child('ownedPortCount').exists()?data.child('ownedPortCount').val():0) + ($uid == (newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val())?1:0) - ($uid == (root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists()?root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val())?1:0)) || (newData.child('lastPort').val().matches(/^depot-(stjohns|reykjavik|mogadishu|davao|cairns|comodoro)$/) && root.child('gameV2/shared/projects').child(newData.child('lastPort').val()).child('content/promotion/level').val() == 1 && newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('content/promotion/level').val() == 2 && root.child('gameV2/shared/projects').child(newData.child('lastPort').val()).child('content/registeredOwner').val() == $uid && newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('lastOperation/id').val() == newData.child('operationId').val() && newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('lastOperation/uid').val() == auth.uid && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.child('operationId').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'projects' && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == newData.child('lastPort').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('revision').val() == root.child('gameV2/privateSaves').child(auth.uid).child('revision').val()+1 && newData.child('ownedPortCount').val() == (data.child('ownedPortCount').exists()?data.child('ownedPortCount').val():0)+1 && newData.child('revision').val() == (data.child('revision').exists()?data.child('revision').val():0)+1))",
+            ".write": "(auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && ((auth.uid == $uid && !data.exists() && newData.child('ownedPortCount').val() == 0 && newData.child('revision').val() == 1 && !newData.child('lastPort').exists() && !newData.child('operationId').exists()) || (auth.uid == $uid && data.exists() && newData.child('ownedPortCount').val() == data.child('ownedPortCount').val() && newData.child('revision').val() == data.child('revision').val() && newData.child('lastPort').val() == data.child('lastPort').val() && newData.child('operationId').val() == data.child('operationId').val()) || (newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('revision').val() == root.child('gameV2/privateSaves').child(auth.uid).child('revision').val()+1 && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'ports' && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == newData.child('lastPort').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.child('operationId').val() && newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('lastOperation/id').val() == newData.child('operationId').val() && ((root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('equityVersion').val() != 1 && root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists())?root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val()) != ((newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('equityVersion').val() != 1 && newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists())?newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val()) && ($uid == ((root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('equityVersion').val() != 1 && root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists())?root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val()) || $uid == ((newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('equityVersion').val() != 1 && newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists())?newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val())) && newData.child('revision').val() == (data.child('revision').exists()?data.child('revision').val():0)+1 && newData.child('ownedPortCount').val() == (data.child('ownedPortCount').exists()?data.child('ownedPortCount').val():0) + ($uid == ((newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('equityVersion').val() != 1 && newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists())?newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val())?1:0) - ($uid == ((root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('equityVersion').val() != 1 && root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').exists())?root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('developedOwner').val():root.child('gameV2/shared/ports').child(newData.child('lastPort').val()).child('content').child('ownerUid').val())?1:0)) || (newData.child('lastPort').val().matches(/^depot-(stjohns|reykjavik|mogadishu|davao|cairns|comodoro)$/) && root.child('gameV2/shared/projects').child(newData.child('lastPort').val()).child('content/promotion/level').val() == 1 && newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('content/promotion/level').val() == 2 && root.child('gameV2/shared/projects').child(newData.child('lastPort').val()).child('content/registeredOwner').val() == $uid && newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('lastOperation/id').val() == newData.child('operationId').val() && newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('lastOperation/uid').val() == auth.uid && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.child('operationId').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'projects' && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == newData.child('lastPort').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('revision').val() == root.child('gameV2/privateSaves').child(auth.uid).child('revision').val()+1 && newData.child('ownedPortCount').val() == (data.child('ownedPortCount').exists()?data.child('ownedPortCount').val():0)+1 && newData.child('revision').val() == (data.child('revision').exists()?data.child('revision').val():0)+1))) || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && (newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('content/equityVersion').val() == 1 && newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('content/promotion/level').val() >= 2 && (root.child('gameV2').child('shared/projects').child(newData.child('lastPort').val()).child('content/equityVersion').val() == 1?root.child('gameV2').child('shared/projects').child(newData.child('lastPort').val()).child('content/ownerUid').val():root.child('gameV2').child('shared/projects').child(newData.child('lastPort').val()).child('content/registeredOwner').val()) != newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('content/ownerUid').val() && ($uid == (root.child('gameV2').child('shared/projects').child(newData.child('lastPort').val()).child('content/equityVersion').val() == 1?root.child('gameV2').child('shared/projects').child(newData.child('lastPort').val()).child('content/ownerUid').val():root.child('gameV2').child('shared/projects').child(newData.child('lastPort').val()).child('content/registeredOwner').val()) || $uid == newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('content/ownerUid').val()) && newData.child('ownedPortCount').val() == (data.child('ownedPortCount').exists()?data.child('ownedPortCount').val():0)+($uid == newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('content/ownerUid').val()?1:0)-($uid == (root.child('gameV2').child('shared/projects').child(newData.child('lastPort').val()).child('content/equityVersion').val() == 1?root.child('gameV2').child('shared/projects').child(newData.child('lastPort').val()).child('content/ownerUid').val():root.child('gameV2').child('shared/projects').child(newData.child('lastPort').val()).child('content/registeredOwner').val())?1:0) && newData.child('revision').val() == (data.child('revision').exists()?data.child('revision').val():0)+1 && newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('lastOperation/uid').val() == auth.uid && newData.parent().parent().parent().child('shared/projects').child(newData.child('lastPort').val()).child('lastOperation/id').val() == newData.child('operationId').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'projects' && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == newData.child('lastPort').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.child('operationId').val()))",
             ".validate": "newData.hasChildren(['name','ownedPortCount','revision','updatedAt']) && (auth.uid != $uid && data.exists()?newData.child('name').val() == data.child('name').val():newData.child('name').val() == root.child('gameV2/accounts').child($uid).child('name').val()) && (data.child('everOwned').val() != true || newData.child('everOwned').val() == true) && (!(root.child('gameV2/config/minSchema').exists() && root.child('gameV2/config/minSchema').val() >= 12) || newData.child('ownedPortCount').val() == 0 && (!data.child('ownedPortCount').isNumber() || data.child('ownedPortCount').val() == 0) || newData.child('everOwned').val() == true)",
             "name": {
               ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 16"
@@ -605,9 +721,9 @@
               ".validate": "newData.isString() && newData.val().matches(/^[a-z-]{1,80}$/)"
             },
             "everOwned": {
-          ".validate": "newData.val() == true && (data.val() == true || newData.parent().child('ownedPortCount').val() > 0 || (data.parent().child('ownedPortCount').isNumber() && data.parent().child('ownedPortCount').val() > 0))"
-        },
-        "$other": {
+              ".validate": "newData.val() == true && (data.val() == true || newData.parent().child('ownedPortCount').val() > 0 || (data.parent().child('ownedPortCount').isNumber() && data.parent().child('ownedPortCount').val() > 0))"
+            },
+            "$other": {
               ".validate": false
             }
           }
@@ -660,7 +776,7 @@
           ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && query.orderByKey == true && query.limitToFirst != null && query.limitToFirst <= 124",
           "$port": {
             ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
-            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.parent().parent().parent().child('shared/ports').child($port).child('lastOperation/uid').val() == auth.uid && newData.parent().parent().parent().child('shared/ports').child($port).child('lastOperation/id').val() == newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'ports' && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == $port && newData.parent().parent().parent().child('shared/ports').child($port).child('revision').val() == (root.child('gameV2/shared/ports').child($port).child('revision').exists()?root.child('gameV2/shared/ports').child($port).child('revision').val():0)+1 && (((newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('ownerUid').val()) == null && !newData.exists()) || (newData.exists() && newData.child('ownerUid').val() == (newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('developedOwner').exists()?newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('ownerUid').val()) && newData.child('operationId').val() == newData.parent().parent().parent().child('shared/ports').child($port).child('lastOperation/id').val()))",
+            ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.parent().parent().parent().child('shared/ports').child($port).child('lastOperation/uid').val() == auth.uid && newData.parent().parent().parent().child('shared/ports').child($port).child('lastOperation/id').val() == newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'ports' && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == $port && newData.parent().parent().parent().child('shared/ports').child($port).child('revision').val() == (root.child('gameV2/shared/ports').child($port).child('revision').exists()?root.child('gameV2/shared/ports').child($port).child('revision').val():0)+1 && ((((newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('equityVersion').val() != 1 && newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('developedOwner').exists())?newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('ownerUid').val()) == null && !newData.exists()) || (newData.exists() && newData.child('ownerUid').val() == ((newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('equityVersion').val() != 1 && newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('developedOwner').exists())?newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('developedOwner').val():newData.parent().parent().parent().child('shared/ports').child($port).child('content').child('ownerUid').val()) && newData.child('operationId').val() == newData.parent().parent().parent().child('shared/ports').child($port).child('lastOperation/id').val()))",
             ".validate": "newData.hasChildren(['ownerUid','ownerName','portName','share','defaultRate','kind','operationId','updatedAt'])",
             "ownerUid": {
               ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 128"
@@ -703,27 +819,131 @@
             ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && query.orderByKey == true && query.limitToFirst != null && query.limitToFirst <= 100",
             "$uid": {
               ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && ((auth.uid == $uid && (!newData.exists() || newData.child('session').val() == newData.parent().parent().parent().parent().child('privateSaves').child($uid).child('session').val())) || (!newData.exists() && newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('rescuePending').val() == true && newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('seq').val() == root.child('gameV2').child('fleetStates').child($uid).child('seq').val()+1 && newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('lastRaidId').val() == newData.parent().parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() && newData.parent().parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'raids'))",
-              "fleetKinds": {"$index":{".validate":"$index.matches(/^[0-4]$/) && newData.isString() && newData.val().matches(/^(felucca|galley|fluyt|fujian|baghlah|waka|panok|endeavour|turtle)$/)"}},
-            ".validate": "newData.hasChildren(['uid','name','session','persistent','offline','lon','lat','angle','color','status','updatedAt','positionSeq']) && newData.child('uid').val() == $uid && newData.child('persistent').val() == true && newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('rescuePending').val() == false && newData.child('offline').isBoolean() && newData.child('positionSeq').val() == newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('positionSeq').val() && $sector == newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('sector').val() && newData.child('lon').val() >= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/0').val()-0.00001 && newData.child('lon').val() <= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/0').val()+0.00001 && newData.child('lat').val() >= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/1').val()-0.00001 && newData.child('lat').val() <= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/1').val()+0.00001 && (newData.child('updatedAt').val() == now || (newData.child('offline').val() == true && newData.child('updatedAt').val() == data.child('updatedAt').val()))"
+              "fleetKinds": {
+                "$index": {
+                  ".validate": "$index.matches(/^[0-4]$/) && newData.isString() && newData.val().matches(/^(felucca|galley|fluyt|fujian|baghlah|waka|panok|endeavour|turtle)$/)"
+                }
+              },
+              ".validate": "newData.hasChildren(['uid','name','session','persistent','offline','lon','lat','angle','color','status','updatedAt','positionSeq']) && newData.child('uid').val() == $uid && newData.child('persistent').val() == true && newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('rescuePending').val() == false && newData.child('offline').isBoolean() && newData.child('positionSeq').val() == newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('positionSeq').val() && $sector == newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('sector').val() && newData.child('lon').val() >= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/0').val()-0.00001 && newData.child('lon').val() <= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/0').val()+0.00001 && newData.child('lat').val() >= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/1').val()-0.00001 && newData.child('lat').val() <= newData.parent().parent().parent().parent().child('fleetStates').child($uid).child('point/1').val()+0.00001 && (newData.child('updatedAt').val() == now || (newData.child('offline').val() == true && newData.child('updatedAt').val() == data.child('updatedAt').val()))"
             }
           }
         }
       },
-      "taxDividendPorts": {"$uid": {".read": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com'", ".write": false}},
+      "taxDividendPorts": {
+        "$uid": {
+          ".read": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com'",
+          ".write": false
+        }
+      },
       "shared": {
         "$kind": {
           "$key": {
             ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && ($kind == 'ports' || ($kind == 'personal' && $key == auth.uid))",
             ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && ($kind == 'ports' || ($kind == 'personal' && $key == auth.uid)) && newData.child('revision').val() == (data.child('revision').exists()?data.child('revision').val():0)+1 && newData.child('lastOperation/uid').val() == auth.uid && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.child('lastOperation/id').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == $kind && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == $key && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('revision').val() == newData.child('lastOperation/saveRevision').val()",
-            ".validate": "(newData.hasChildren(['revision','content','updatedAt','lastOperation']) && newData.child('updatedAt').val() == now && ($kind != 'ports' || (data.child('content').child('developedOwner').exists()?data.child('content').child('developedOwner').val():data.child('content').child('ownerUid').val()) == (newData.child('content').child('developedOwner').exists()?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) || (((data.child('content').child('developedOwner').exists()?data.child('content').child('developedOwner').val():data.child('content').child('ownerUid').val()) == null || newData.parent().parent().parent().child('real/portRankings').child((data.child('content').child('developedOwner').exists()?data.child('content').child('developedOwner').val():data.child('content').child('ownerUid').val())).child('operationId').val() == newData.child('lastOperation/id').val()) && ((newData.child('content').child('developedOwner').exists()?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) == null || newData.parent().parent().parent().child('real/portRankings').child((newData.child('content').child('developedOwner').exists()?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val())).child('operationId').val() == newData.child('lastOperation/id').val())))) && ($kind != 'ports' || (data.child('content/developedOwner').exists()?data.child('content/developedOwner').val():data.child('content/ownerUid').val()) == (newData.child('content').child('developedOwner').exists()?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) || (((newData.child('content').child('developedOwner').exists()?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) == null && !newData.parent().parent().parent().child('real/ownedPorts').child($key).exists()) || (newData.parent().parent().parent().child('real/ownedPorts').child($key).child('ownerUid').val() == (newData.child('content').child('developedOwner').exists()?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) && newData.parent().parent().parent().child('real/ownedPorts').child($key).child('operationId').val() == newData.child('lastOperation/id').val()))) && (!(root.child('gameV2/config/minSchema').exists() && root.child('gameV2/config/minSchema').val() >= 12) || $kind != 'ports' || !newData.child('content/harborMatch').exists() || newData.child('content/harborMatch/begin').val() == data.child('content/harborMatch/begin').val() || (root.child('gameV2').child('privateSaves').child(auth.uid).child('noviceGraduated').val() == true || root.child('gameV2').child('real/portRankings').child(auth.uid).child('everOwned').val() == true || (root.child('gameV2').child('real/portRankings').child(auth.uid).child('ownedPortCount').isNumber() && root.child('gameV2').child('real/portRankings').child(auth.uid).child('ownedPortCount').val() > 0))) && (!((root.child('gameV2').child('serverBlessings/current').child('start').isNumber() && root.child('gameV2').child('serverBlessings/current').child('start').val() <= now && root.child('gameV2').child('serverBlessings/current').child('start').val() + 43200000 > now) && root.child('gameV2').child('serverBlessings/current').child('effect').val() == 'peace') || $kind != 'ports' || !newData.child('content/harborMatch').exists() || newData.child('content/harborMatch/begin').val() == data.child('content/harborMatch/begin').val()) && (!($kind == 'ports' && newData.child('content/development/level').exists()) || !(($key == 'developed-stjohns' && newData.parent().parent().parent().child('harborRegistry').child('depot-stjohns').child('promotionLevel').exists()) || ($key == 'developed-reykjavik' && newData.parent().parent().parent().child('harborRegistry').child('depot-reykjavik').child('promotionLevel').exists()) || ($key == 'developed-mogadishu' && newData.parent().parent().parent().child('harborRegistry').child('depot-mogadishu').child('promotionLevel').exists()) || ($key == 'developed-davao' && newData.parent().parent().parent().child('harborRegistry').child('depot-davao').child('promotionLevel').exists()) || ($key == 'developed-cairns' && newData.parent().parent().parent().child('harborRegistry').child('depot-cairns').child('promotionLevel').exists()) || ($key == 'developed-comodoro' && newData.parent().parent().parent().child('harborRegistry').child('depot-comodoro').child('promotionLevel').exists())))",
-            "content": {"taxDividend": {".validate":"$kind == 'ports' && newData.hasChild('at')","at":{".validate":"newData.isNumber() && newData.val() % 1 == 0 && newData.val() >= 1 && newData.val() <= now + 5000"},"rates":{"$uid":{".validate":"newData.isNumber() && newData.val() > 0 && newData.val() <= 5000"}},"basic":{"$uid":{".validate":"newData.isNumber() && newData.val() >= -0.500001 && newData.val() <= 1000000000000"}},"trade":{"$uid":{".validate":"newData.isNumber() && newData.val() >= -0.500001 && newData.val() <= 1000000000000"}},"$other":{".validate":false}}}
+            ".validate": "(newData.hasChildren(['revision','content','updatedAt','lastOperation']) && newData.child('updatedAt').val() == now && ($kind != 'ports' || ((data.child('content').child('equityVersion').val() != 1 && data.child('content').child('developedOwner').exists())?data.child('content').child('developedOwner').val():data.child('content').child('ownerUid').val()) == ((newData.child('content').child('equityVersion').val() != 1 && newData.child('content').child('developedOwner').exists())?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) || ((((data.child('content').child('equityVersion').val() != 1 && data.child('content').child('developedOwner').exists())?data.child('content').child('developedOwner').val():data.child('content').child('ownerUid').val()) == null || newData.parent().parent().parent().child('real/portRankings').child(((data.child('content').child('equityVersion').val() != 1 && data.child('content').child('developedOwner').exists())?data.child('content').child('developedOwner').val():data.child('content').child('ownerUid').val())).child('operationId').val() == newData.child('lastOperation/id').val()) && (((newData.child('content').child('equityVersion').val() != 1 && newData.child('content').child('developedOwner').exists())?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) == null || newData.parent().parent().parent().child('real/portRankings').child(((newData.child('content').child('equityVersion').val() != 1 && newData.child('content').child('developedOwner').exists())?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val())).child('operationId').val() == newData.child('lastOperation/id').val())))) && ($kind != 'ports' || ((data.child('content/equityVersion').val() != 1 && data.child('content/developedOwner').exists())?data.child('content/developedOwner').val():data.child('content/ownerUid').val()) == ((newData.child('content').child('equityVersion').val() != 1 && newData.child('content').child('developedOwner').exists())?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) || ((((newData.child('content').child('equityVersion').val() != 1 && newData.child('content').child('developedOwner').exists())?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) == null && !newData.parent().parent().parent().child('real/ownedPorts').child($key).exists()) || (newData.parent().parent().parent().child('real/ownedPorts').child($key).child('ownerUid').val() == ((newData.child('content').child('equityVersion').val() != 1 && newData.child('content').child('developedOwner').exists())?newData.child('content').child('developedOwner').val():newData.child('content').child('ownerUid').val()) && newData.parent().parent().parent().child('real/ownedPorts').child($key).child('operationId').val() == newData.child('lastOperation/id').val()))) && (!(root.child('gameV2/config/minSchema').exists() && root.child('gameV2/config/minSchema').val() >= 12) || $kind != 'ports' || !newData.child('content/harborMatch').exists() || newData.child('content/harborMatch/begin').val() == data.child('content/harborMatch/begin').val() || (root.child('gameV2').child('privateSaves').child(auth.uid).child('noviceGraduated').val() == true || root.child('gameV2').child('real/portRankings').child(auth.uid).child('everOwned').val() == true || (root.child('gameV2').child('real/portRankings').child(auth.uid).child('ownedPortCount').isNumber() && root.child('gameV2').child('real/portRankings').child(auth.uid).child('ownedPortCount').val() > 0))) && (!((root.child('gameV2').child('serverBlessings/current').child('start').isNumber() && root.child('gameV2').child('serverBlessings/current').child('start').val() <= now && root.child('gameV2').child('serverBlessings/current').child('start').val() + 43200000 > now) && root.child('gameV2').child('serverBlessings/current').child('effect').val() == 'peace') || $kind != 'ports' || !newData.child('content/harborMatch').exists() || newData.child('content/harborMatch/begin').val() == data.child('content/harborMatch/begin').val()) && (!($kind == 'ports' && newData.child('content/development/level').exists()) || !(($key == 'developed-stjohns' && newData.parent().parent().parent().child('harborRegistry').child('depot-stjohns').child('promotionLevel').exists()) || ($key == 'developed-reykjavik' && newData.parent().parent().parent().child('harborRegistry').child('depot-reykjavik').child('promotionLevel').exists()) || ($key == 'developed-mogadishu' && newData.parent().parent().parent().child('harborRegistry').child('depot-mogadishu').child('promotionLevel').exists()) || ($key == 'developed-davao' && newData.parent().parent().parent().child('harborRegistry').child('depot-davao').child('promotionLevel').exists()) || ($key == 'developed-cairns' && newData.parent().parent().parent().child('harborRegistry').child('depot-cairns').child('promotionLevel').exists()) || ($key == 'developed-comodoro' && newData.parent().parent().parent().child('harborRegistry').child('depot-comodoro').child('promotionLevel').exists())))",
+            "content": {
+              "taxDividend": {
+                ".validate": "$kind == 'ports' && newData.hasChild('at')",
+                "at": {
+                  ".validate": "newData.isNumber() && newData.val() % 1 == 0 && newData.val() >= 1 && newData.val() <= now + 5000"
+                },
+                "rates": {
+                  "$uid": {
+                    ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 5000"
+                  }
+                },
+                "basic": {
+                  "$uid": {
+                    ".validate": "newData.isNumber() && newData.val() >= -0.500001 && newData.val() <= 1000000000000"
+                  }
+                },
+                "trade": {
+                  "$uid": {
+                    ".validate": "newData.isNumber() && newData.val() >= -0.500001 && newData.val() <= 1000000000000"
+                  }
+                },
+                "$other": {
+                  ".validate": false
+                }
+              },
+              "equityVersion": {
+                ".validate": "newData.val() == 1"
+              },
+              "equitySince": {
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() > 0 && newData.val() <= now+5000 && (!data.exists() || newData.val() == data.val())"
+              },
+              "equityRevision": {
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 1 && newData.val() <= 1000000000"
+              },
+              "equityTotal": {
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000"
+              },
+              "equityAction": {
+                ".validate": "newData.hasChildren(['kind','uid','amount'])",
+                "kind": {
+                  ".validate": "newData.val() == 'invest' || newData.val() == 'withdraw'"
+                },
+                "uid": {
+                  ".validate": "newData.isString() && newData.val().length <= 128"
+                },
+                "amount": {
+                  ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              },
+              "foundingInvestors": {
+                "$uid": {
+                  ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000 && (!data.exists() || newData.val() == data.val())"
+                }
+              },
+              "withdrawableCapital": {
+                "$uid": {
+                  ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val() <= newData.parent().parent().child('investors').child($uid).val() && (auth.uid == $uid || newData.val() == data.val() || (!data.parent().parent().child('equityVersion').exists() && newData.val() == data.parent().parent().child('investors').child($uid).val()))"
+                }
+              },
+              "supplyRemainders": {
+                "$uid": {
+                  ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 1.000001"
+                }
+              },
+              "equityExpansionVotes": {
+                "$uid": {
+                  ".validate": "newData.isNumber() && newData.val()%1 == 0 && (auth.uid == $uid || newData.val() == data.val()) && newData.val() == newData.parent().parent().child('equityRevision').val()"
+                }
+              },
+              "investors": {
+                "$uid": {
+                  ".validate": "(newData.parent().parent().child('equityVersion').val() == 1?(newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val() > 0 && (auth.uid == $uid || newData.val() == data.val()) && (newData.val()*2 <= newData.parent().parent().child('equityTotal').val() || newData.parent().parent().child('ownerUid').val() == $uid) && (newData.val() == data.val() || newData.parent().parent().child('equityRevision').val() == data.parent().parent().child('equityRevision').val()+1 || !data.parent().parent().child('equityVersion').exists())):(true))"
+                }
+              },
+              "ownerUid": {
+                ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 128"
+              },
+              "ownerSince": {
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= now+5000"
+              },
+              "foundingPaid": {
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000"
+              },
+              "foundingValuation": {
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000"
+              },
+              "investorNames": {
+                "$uid": {
+                  ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 16 && (auth.uid == $uid || !data.exists() || newData.val() == data.val())"
+                }
+              },
+              ".validate": "(!data.child('equityVersion').exists() || newData.child('equityVersion').val() == 1) && (!newData.child('equityVersion').exists() || ($kind == 'ports' && $key.matches(/^developed-/) && newData.child('development/level').val() >= 2 && newData.child('equityVersion').val() == 1 && newData.hasChildren(['equitySince','equityRevision','equityTotal']) && (!newData.child('ownerUid').exists() || (newData.child('ownerUid').isString() && newData.child('investors').child(newData.child('ownerUid').val()).val()*2 > newData.child('equityTotal').val())) && (data.child('equityVersion').val() == 1?(newData.child('equitySince').val() == data.child('equitySince').val() && ((newData.child('equityRevision').val() == data.child('equityRevision').val() && newData.child('equityTotal').val() == data.child('equityTotal').val()) || (newData.child('equityRevision').val() == data.child('equityRevision').val()+1 && newData.child('equityAction/uid').val() == auth.uid && ((newData.child('equityAction/kind').val() == 'invest' && newData.child('equityAction/amount').val() >= 10000 && newData.child('equityAction/amount').val()%10000 == 0 && newData.child('equityTotal').val() == data.child('equityTotal').val()+newData.child('equityAction/amount').val() && newData.child('investors').child(auth.uid).val() == (data.child('investors').child(auth.uid).exists()?data.child('investors').child(auth.uid).val():0)+newData.child('equityAction/amount').val() && newData.child('withdrawableCapital').child(auth.uid).val() == (data.child('withdrawableCapital').child(auth.uid).exists()?data.child('withdrawableCapital').child(auth.uid).val():0)+newData.child('equityAction/amount').val()) || (newData.child('equityAction/kind').val() == 'withdraw' && newData.child('equityAction/amount').val() > 0 && (newData.child('equityAction/amount').val()%10000 == 0 || newData.child('equityAction/amount').val() == data.child('withdrawableCapital').child(auth.uid).val()) && newData.child('equityAction/amount').val() <= data.child('withdrawableCapital').child(auth.uid).val() && newData.child('equityTotal').val() == data.child('equityTotal').val()-newData.child('equityAction/amount').val() && (newData.child('investors').child(auth.uid).exists()?newData.child('investors').child(auth.uid).val():0) == data.child('investors').child(auth.uid).val()-newData.child('equityAction/amount').val() && (newData.child('withdrawableCapital').child(auth.uid).exists()?newData.child('withdrawableCapital').child(auth.uid).val():0) == data.child('withdrawableCapital').child(auth.uid).val()-newData.child('equityAction/amount').val())) && (!newData.child('promotion').exists() || newData.child('promotion/support').val() == 0)))):(data.child('developedOwner').val() == auth.uid && data.child('development/level').val() == 1 && newData.child('development/level').val() == 2 && newData.child('equitySince').val() >= now-10000 && newData.child('equitySince').val() <= now+5000 && newData.child('equityRevision').val() == 1))))"
+            }
           }
         },
         "projects": {
           "$project": {
             ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && ($project == 'freight-porto' || $project == 'freight-alexandria' || $project == 'freight-goa' || $project == 'freight-nagasaki' || $project == 'freight-havana' || $project == 'freight-sydney' || $project == 'depot-stjohns' || $project == 'depot-reykjavik' || $project == 'depot-mogadishu' || $project == 'depot-davao' || $project == 'depot-cairns' || $project == 'depot-comodoro' || $project == 'canal-suez' || $project == 'canal-panama')",
             ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && ($project == 'freight-porto' || $project == 'freight-alexandria' || $project == 'freight-goa' || $project == 'freight-nagasaki' || $project == 'freight-havana' || $project == 'freight-sydney' || $project == 'depot-stjohns' || $project == 'depot-reykjavik' || $project == 'depot-mogadishu' || $project == 'depot-davao' || $project == 'depot-cairns' || $project == 'depot-comodoro' || $project == 'canal-suez' || $project == 'canal-panama') && newData.child('revision').val() == (data.child('revision').exists()?data.child('revision').val():0)+1 && newData.child('lastOperation/uid').val() == auth.uid && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.child('lastOperation/id').val() && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'projects' && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == $project && newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('revision').val() == newData.child('lastOperation/saveRevision').val() && newData.child('lastOperation/sequence').val() == newData.parent().parent().parent().child('privateSaves').child(auth.uid).child('operationSequence').val()",
-            ".validate": "newData.hasChildren(['revision','content','updatedAt','lastOperation']) && newData.child('updatedAt').val() == now && (!($project.matches(/^depot-/) && data.child('content/promotion/level').val() == 1 && newData.child('content/promotion/level').val() == 2 && data.child('content/registeredOwner').val() != '') || (newData.parent().parent().parent().child('real/portRankings').child(data.child('content/registeredOwner').val()).child('operationId').val() == newData.child('lastOperation/id').val() && newData.parent().parent().parent().child('real/portRankings').child(data.child('content/registeredOwner').val()).child('lastPort').val() == $project))",
+            ".validate": "(newData.hasChildren(['revision','content','updatedAt','lastOperation']) && newData.child('updatedAt').val() == now && (!($project.matches(/^depot-/) && data.child('content/promotion/level').val() == 1 && newData.child('content/promotion/level').val() == 2 && data.child('content/registeredOwner').val() != '') || (newData.parent().parent().parent().child('real/portRankings').child(data.child('content/registeredOwner').val()).child('operationId').val() == newData.child('lastOperation/id').val() && newData.parent().parent().parent().child('real/portRankings').child(data.child('content/registeredOwner').val()).child('lastPort').val() == $project))) && (!data.child('content/equityVersion').exists() || newData.child('content/equityVersion').val() == 1)",
             "revision": {
               ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 1000000000 && newData.val()%1 == 0"
             },
@@ -734,7 +954,7 @@
               ".validate": "newData.hasChildren(['id','uid','sequence','saveRevision'])"
             },
             "content": {
-              ".validate": "newData.child('_version').val() == 1 && (!data.child('registeredCapital').exists() || (newData.child('registeredCapital').val() == data.child('registeredCapital').val() && newData.child('registeredOwner').val() == data.child('registeredOwner').val() && newData.child('readyAt').val() == data.child('readyAt').val() && newData.child('startedAt').val() == data.child('startedAt').val())) && (!newData.child('registeredCapital').exists() || newData.parent().parent().parent().parent().child('harborRegistry').child($project).child('id').val() == $project) && (!data.child('registeredCapital').exists() || data.child('registeredOwner').val() == '' || newData.child('investors').child(data.child('registeredOwner').val()).val() == data.child('investors').child(data.child('registeredOwner').val()).val()) && (newData.child('defaultRate').val() == data.child('defaultRate').val() || (data.child('registeredOwner').val() == auth.uid && newData.child('defaultRate').exists())) && ((!data.child('promotion').exists() && !newData.child('promotion').exists()) || ($project.matches(/^depot-(stjohns|reykjavik|mogadishu|davao|cairns|comodoro)$/) && newData.child('promotion').exists() && ((newData.child('promotion').child('level').val() == (data.child('promotion/level').exists()?data.child('promotion/level').val():0) && newData.child('promotion').child('support').val() == (data.child('promotion/support').exists()?data.child('promotion/support').val():0) && newData.child('promotion').child('startedAt').val() == data.child('promotion').child('startedAt').val()) || (data.child('readyAt').isNumber() && data.child('readyAt').val() <= now && data.child('registeredCapital').isNumber() && data.child('investors').child(auth.uid).val() > 0 && (data.child('promotion/level').exists()?data.child('promotion/level').val():0) < 3 && (($project == 'depot-stjohns' && !newData.parent().parent().parent().parent().child('harborRegistry').child('developed-stjohns').exists()) || ($project == 'depot-reykjavik' && !newData.parent().parent().parent().parent().child('harborRegistry').child('developed-reykjavik').exists()) || ($project == 'depot-mogadishu' && !newData.parent().parent().parent().parent().child('harborRegistry').child('developed-mogadishu').exists()) || ($project == 'depot-davao' && !newData.parent().parent().parent().parent().child('harborRegistry').child('developed-davao').exists()) || ($project == 'depot-cairns' && !newData.parent().parent().parent().parent().child('harborRegistry').child('developed-cairns').exists()) || ($project == 'depot-comodoro' && !newData.parent().parent().parent().parent().child('harborRegistry').child('developed-comodoro').exists())) && ((newData.child('promotion').child('level').val() == (data.child('promotion/level').exists()?data.child('promotion/level').val():0) && newData.child('promotion').child('startedAt').val() == data.child('promotion').child('startedAt').val() && ((root.child('gameV2').child('depotPromotionVotes').child($project).child(auth.uid).val() == (data.child('promotion/level').exists()?data.child('promotion/level').val():0)+1 && newData.parent().parent().parent().parent().child('depotPromotionVotes').child($project).child(auth.uid).val() == 0 && newData.child('promotion').child('support').val() == (data.child('promotion/support').exists()?data.child('promotion/support').val():0)-data.child('investors').child(auth.uid).val()) || (root.child('gameV2').child('depotPromotionVotes').child($project).child(auth.uid).val() != (data.child('promotion/level').exists()?data.child('promotion/level').val():0)+1 && newData.parent().parent().parent().parent().child('depotPromotionVotes').child($project).child(auth.uid).val() == (data.child('promotion/level').exists()?data.child('promotion/level').val():0)+1 && newData.child('promotion').child('support').val() == (data.child('promotion/support').exists()?data.child('promotion/support').val():0)+data.child('investors').child(auth.uid).val()))) || (root.child('gameV2').child('depotPromotionVotes').child($project).child(auth.uid).val() == (data.child('promotion/level').exists()?data.child('promotion/level').val():0)+1 && (data.child('promotion/support').exists()?data.child('promotion/support').val():0)*2 > data.child('registeredCapital').val() && newData.child('promotion').child('level').val() == (data.child('promotion/level').exists()?data.child('promotion/level').val():0)+1 && newData.child('promotion').child('support').val() == 0 && newData.parent().parent().parent().parent().child('harborRegistry').child($project).child('promotionLevel').val() == newData.child('promotion').child('level').val() && (((data.child('promotion/level').exists()?data.child('promotion/level').val():0) == 0 && newData.child('promotion').child('startedAt').isNumber() && newData.child('promotion').child('startedAt').val() >= now-10000 && newData.child('promotion').child('startedAt').val() <= now+5000) || ((data.child('promotion/level').exists()?data.child('promotion/level').val():0) > 0 && newData.child('promotion').child('startedAt').val() == data.child('promotion').child('startedAt').val()))))))))",
+              ".validate": "(newData.child('equityVersion').val() == 1?(($project.matches(/^depot-/) && newData.child('promotion/level').val() >= 2 && newData.child('equityVersion').val() == 1 && newData.hasChildren(['equitySince','equityRevision','equityTotal']) && (!newData.child('ownerUid').exists() || (newData.child('ownerUid').isString() && newData.child('investors').child(newData.child('ownerUid').val()).val()*2 > newData.child('equityTotal').val())) && (data.child('equityVersion').val() == 1?(newData.child('equitySince').val() == data.child('equitySince').val() && ((newData.child('equityRevision').val() == data.child('equityRevision').val() && newData.child('equityTotal').val() == data.child('equityTotal').val()) || (newData.child('equityRevision').val() == data.child('equityRevision').val()+1 && newData.child('equityAction/uid').val() == auth.uid && ((newData.child('equityAction/kind').val() == 'invest' && newData.child('equityAction/amount').val() >= 10000 && newData.child('equityAction/amount').val()%10000 == 0 && newData.child('equityTotal').val() == data.child('equityTotal').val()+newData.child('equityAction/amount').val() && newData.child('investors').child(auth.uid).val() == (data.child('investors').child(auth.uid).exists()?data.child('investors').child(auth.uid).val():0)+newData.child('equityAction/amount').val() && newData.child('withdrawableCapital').child(auth.uid).val() == (data.child('withdrawableCapital').child(auth.uid).exists()?data.child('withdrawableCapital').child(auth.uid).val():0)+newData.child('equityAction/amount').val()) || (newData.child('equityAction/kind').val() == 'withdraw' && newData.child('equityAction/amount').val() > 0 && (newData.child('equityAction/amount').val()%10000 == 0 || newData.child('equityAction/amount').val() == data.child('withdrawableCapital').child(auth.uid).val()) && newData.child('equityAction/amount').val() <= data.child('withdrawableCapital').child(auth.uid).val() && newData.child('equityTotal').val() == data.child('equityTotal').val()-newData.child('equityAction/amount').val() && (newData.child('investors').child(auth.uid).exists()?newData.child('investors').child(auth.uid).val():0) == data.child('investors').child(auth.uid).val()-newData.child('equityAction/amount').val() && (newData.child('withdrawableCapital').child(auth.uid).exists()?newData.child('withdrawableCapital').child(auth.uid).val():0) == data.child('withdrawableCapital').child(auth.uid).val()-newData.child('equityAction/amount').val())) && (!newData.child('promotion').exists() || newData.child('promotion/support').val() == 0)))):(data.child('registeredCapital').exists() && data.child('promotion/level').val() == 1 && newData.child('promotion/level').val() == 2 && newData.child('equitySince').val() >= now-10000 && newData.child('equitySince').val() <= now+5000 && newData.child('equityRevision').val() == 1))) && newData.child('_version').val() == 1 && newData.child('registeredCapital').val() == data.child('registeredCapital').val() && newData.child('registeredOwner').val() == data.child('registeredOwner').val() && newData.child('readyAt').val() == data.child('readyAt').val() && newData.child('startedAt').val() == data.child('startedAt').val() && (data.child('equityVersion').val() != 1 || (newData.child('promotion/startedAt').val() == data.child('promotion/startedAt').val() && ((newData.child('promotion/level').val() == data.child('promotion/level').val() && (newData.child('promotion/support').val() == data.child('promotion/support').val() || (newData.child('equityRevision').val() == data.child('equityRevision').val()+1 && newData.child('promotion/support').val() == 0) || (data.child('investors').child(auth.uid).val() > 0 && ((root.child('gameV2/depotPromotionVotes').child($project).child(auth.uid).val() == ((data.child('equityRevision').exists()?data.child('equityRevision').val():1)*10+data.child('promotion/level').val()+1) && newData.parent().parent().parent().parent().child('depotPromotionVotes').child($project).child(auth.uid).val() == 0 && newData.child('promotion/support').val() == data.child('promotion/support').val()-data.child('investors').child(auth.uid).val()) || (root.child('gameV2/depotPromotionVotes').child($project).child(auth.uid).val() != ((data.child('equityRevision').exists()?data.child('equityRevision').val():1)*10+data.child('promotion/level').val()+1) && newData.parent().parent().parent().parent().child('depotPromotionVotes').child($project).child(auth.uid).val() == ((data.child('equityRevision').exists()?data.child('equityRevision').val():1)*10+data.child('promotion/level').val()+1) && newData.child('promotion/support').val() == data.child('promotion/support').val()+data.child('investors').child(auth.uid).val()))))) || (data.child('investors').child(auth.uid).val() > 0 && root.child('gameV2/depotPromotionVotes').child($project).child(auth.uid).val() == ((data.child('equityRevision').exists()?data.child('equityRevision').val():1)*10+data.child('promotion/level').val()+1) && data.child('promotion/support').val()*2 > data.child('equityTotal').val() && newData.child('promotion/level').val() == data.child('promotion/level').val()+1 && newData.child('promotion/level').val() <= 3 && newData.child('promotion/support').val() == 0 && newData.parent().parent().parent().parent().child('harborRegistry').child($project).child('promotionLevel').val() == newData.child('promotion/level').val()))))):(!data.child('equityVersion').exists() && (newData.child('_version').val() == 1 && (!data.child('registeredCapital').exists() || (newData.child('registeredCapital').val() == data.child('registeredCapital').val() && newData.child('registeredOwner').val() == data.child('registeredOwner').val() && newData.child('readyAt').val() == data.child('readyAt').val() && newData.child('startedAt').val() == data.child('startedAt').val())) && (!newData.child('registeredCapital').exists() || newData.parent().parent().parent().parent().child('harborRegistry').child($project).child('id').val() == $project) && (!data.child('registeredCapital').exists() || data.child('registeredOwner').val() == '' || newData.child('investors').child(data.child('registeredOwner').val()).val() == data.child('investors').child(data.child('registeredOwner').val()).val()) && (newData.child('defaultRate').val() == data.child('defaultRate').val() || (data.child('registeredOwner').val() == auth.uid && newData.child('defaultRate').exists())) && ((!data.child('promotion').exists() && !newData.child('promotion').exists()) || ($project.matches(/^depot-(stjohns|reykjavik|mogadishu|davao|cairns|comodoro)$/) && newData.child('promotion').exists() && ((newData.child('promotion').child('level').val() == (data.child('promotion/level').exists()?data.child('promotion/level').val():0) && newData.child('promotion').child('support').val() == (data.child('promotion/support').exists()?data.child('promotion/support').val():0) && newData.child('promotion').child('startedAt').val() == data.child('promotion').child('startedAt').val()) || (data.child('readyAt').isNumber() && data.child('readyAt').val() <= now && data.child('registeredCapital').isNumber() && data.child('investors').child(auth.uid).val() > 0 && (data.child('promotion/level').exists()?data.child('promotion/level').val():0) < 3 && (($project == 'depot-stjohns' && !newData.parent().parent().parent().parent().child('harborRegistry').child('developed-stjohns').exists()) || ($project == 'depot-reykjavik' && !newData.parent().parent().parent().parent().child('harborRegistry').child('developed-reykjavik').exists()) || ($project == 'depot-mogadishu' && !newData.parent().parent().parent().parent().child('harborRegistry').child('developed-mogadishu').exists()) || ($project == 'depot-davao' && !newData.parent().parent().parent().parent().child('harborRegistry').child('developed-davao').exists()) || ($project == 'depot-cairns' && !newData.parent().parent().parent().parent().child('harborRegistry').child('developed-cairns').exists()) || ($project == 'depot-comodoro' && !newData.parent().parent().parent().parent().child('harborRegistry').child('developed-comodoro').exists())) && ((newData.child('promotion').child('level').val() == (data.child('promotion/level').exists()?data.child('promotion/level').val():0) && newData.child('promotion').child('startedAt').val() == data.child('promotion').child('startedAt').val() && ((root.child('gameV2').child('depotPromotionVotes').child($project).child(auth.uid).val() == (data.child('promotion/level').exists()?data.child('promotion/level').val():0)+1 && newData.parent().parent().parent().parent().child('depotPromotionVotes').child($project).child(auth.uid).val() == 0 && newData.child('promotion').child('support').val() == (data.child('promotion/support').exists()?data.child('promotion/support').val():0)-data.child('investors').child(auth.uid).val()) || (root.child('gameV2').child('depotPromotionVotes').child($project).child(auth.uid).val() != (data.child('promotion/level').exists()?data.child('promotion/level').val():0)+1 && newData.parent().parent().parent().parent().child('depotPromotionVotes').child($project).child(auth.uid).val() == (data.child('promotion/level').exists()?data.child('promotion/level').val():0)+1 && newData.child('promotion').child('support').val() == (data.child('promotion/support').exists()?data.child('promotion/support').val():0)+data.child('investors').child(auth.uid).val()))) || (root.child('gameV2').child('depotPromotionVotes').child($project).child(auth.uid).val() == (data.child('promotion/level').exists()?data.child('promotion/level').val():0)+1 && (data.child('promotion/support').exists()?data.child('promotion/support').val():0)*2 > data.child('registeredCapital').val() && newData.child('promotion').child('level').val() == (data.child('promotion/level').exists()?data.child('promotion/level').val():0)+1 && newData.child('promotion').child('support').val() == 0 && newData.parent().parent().parent().parent().child('harborRegistry').child($project).child('promotionLevel').val() == newData.child('promotion').child('level').val() && (((data.child('promotion/level').exists()?data.child('promotion/level').val():0) == 0 && newData.child('promotion').child('startedAt').isNumber() && newData.child('promotion').child('startedAt').val() >= now-10000 && newData.child('promotion').child('startedAt').val() <= now+5000) || ((data.child('promotion/level').exists()?data.child('promotion/level').val():0) > 0 && newData.child('promotion').child('startedAt').val() == data.child('promotion').child('startedAt').val())))))))))))",
               "_version": {
                 ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 1 && newData.val()%1 == 0"
               },
@@ -780,7 +1000,7 @@
               },
               "investors": {
                 "$uid": {
-                  ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 10000000 && newData.val()%1 == 0 && (auth.uid == $uid || newData.val() == data.val()) && (!data.parent().parent().child('registeredCapital').exists() || newData.val() == data.val())"
+                  ".validate": "(newData.parent().parent().child('equityVersion').val() == 1?(newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val() > 0 && (auth.uid == $uid || newData.val() == data.val()) && (newData.val()*2 <= newData.parent().parent().child('equityTotal').val() || newData.parent().parent().child('ownerUid').val() == $uid) && (newData.val() == data.val() || newData.parent().parent().child('equityRevision').val() == data.parent().parent().child('equityRevision').val()+1 || !data.parent().parent().child('equityVersion').exists())):(newData.isNumber() && newData.val() >= 1 && newData.val() <= 10000000 && newData.val()%1 == 0 && (auth.uid == $uid || newData.val() == data.val()) && (!data.parent().parent().child('registeredCapital').exists() || newData.val() == data.val())))"
                 }
               },
               "startedAt": {
@@ -800,27 +1020,59 @@
                   ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"
                 }
               },
-              "activationDividends": {"$uid": {".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"}},
+              "activationDividends": {
+                "$uid": {
+                  ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"
+                }
+              },
               "activation": {
                 ".validate": "newData.hasChildren(['week','captains','awarded'])",
-                "week": {".validate": "newData.isNumber() && newData.val()%1 == 0"},
-                "awarded": {".validate": "newData.isBoolean()"},
-                "captains": {"$uid": {".validate": "newData.val() == true && (auth.uid == $uid || data.val() == true)"}},
-                "$other": {".validate": false}
+                "week": {
+                  ".validate": "newData.isNumber() && newData.val()%1 == 0"
+                },
+                "awarded": {
+                  ".validate": "newData.isBoolean()"
+                },
+                "captains": {
+                  "$uid": {
+                    ".validate": "newData.val() == true && (auth.uid == $uid || data.val() == true)"
+                  }
+                },
+                "$other": {
+                  ".validate": false
+                }
               },
-              "trafficSince": {".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 5000 && (!data.exists() || newData.val() == data.val())"},
+              "trafficSince": {
+                ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 5000 && (!data.exists() || newData.val() == data.val())"
+              },
               "traffic": {
                 "$day": {
                   ".validate": "$day.matches(/^[0-9]{4,7}$/) && newData.hasChildren(['entries','ships','paid','free','fees'])",
-                  "entries": {".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"},
-                  "ships": {".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"},
-                  "paid": {".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"},
-                  "free": {".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"},
-                  "fees": {".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"},
-                  "$other": {".validate": false}
+                  "entries": {
+                    ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"
+                  },
+                  "ships": {
+                    ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"
+                  },
+                  "paid": {
+                    ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"
+                  },
+                  "free": {
+                    ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"
+                  },
+                  "fees": {
+                    ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0"
+                  },
+                  "$other": {
+                    ".validate": false
+                  }
                 }
               },
-              "collectedDividends": {"$uid": {".validate": "auth.uid == $uid ? (newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0) : newData.val() == data.val()"}},
+              "collectedDividends": {
+                "$uid": {
+                  ".validate": "auth.uid == $uid ? (newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val()%1 == 0) : newData.val() == data.val()"
+                }
+              },
               "toll": {
                 ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 300 && newData.val()%1 == 0"
               },
@@ -868,7 +1120,7 @@
                   ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 3"
                 },
                 "support": {
-                  ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= newData.parent().parent().child('registeredCapital').val()"
+                  ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= (newData.parent().parent().child('equityVersion').val() == 1?newData.parent().parent().child('equityTotal').val():newData.parent().parent().child('registeredCapital').val())"
                 },
                 "startedAt": {
                   ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() <= now+5000"
@@ -902,13 +1154,98 @@
                 }
               },
               "defaultRate": {
-                ".validate": "newData.parent().child('promotion/level').val() >= 2 && (newData.val() == data.val() || data.parent().child('registeredOwner').val() == auth.uid) && newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 30"
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 30 && (newData.val() == data.val() || (data.parent().child('equityVersion').val() == 1?data.parent().child('ownerUid').val() == auth.uid:data.parent().child('registeredOwner').val() == auth.uid) || (newData.val() == 0 && newData.parent().child('ownerUid').val() != data.parent().child('ownerUid').val()))"
               },
               "markets": {
                 ".validate": "newData.parent().child('promotion/level').val() >= 2",
                 "$good": {
                   ".validate": "$good.matches(/^[a-z0-9-]{1,48}$/) && newData.hasChildren(['pressureVersion','buyPressure','sellPressure','at']) && newData.child('pressureVersion').val() == 3 && newData.child('buyPressure').isNumber() && newData.child('buyPressure').val() >= 0 && newData.child('buyPressure').val() <= 1200000 && newData.child('sellPressure').isNumber() && newData.child('sellPressure').val() >= -1200000 && newData.child('sellPressure').val() <= 0 && newData.child('at').isNumber() && newData.child('at').val() <= now+5000"
                 }
+              },
+              "equityVersion": {
+                ".validate": "newData.val() == 1"
+              },
+              "equitySince": {
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() > 0 && newData.val() <= now+5000 && (!data.exists() || newData.val() == data.val())"
+              },
+              "equityRevision": {
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 1 && newData.val() <= 1000000000"
+              },
+              "equityTotal": {
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000"
+              },
+              "equityAction": {
+                ".validate": "newData.hasChildren(['kind','uid','amount'])",
+                "kind": {
+                  ".validate": "newData.val() == 'invest' || newData.val() == 'withdraw'"
+                },
+                "uid": {
+                  ".validate": "newData.isString() && newData.val().length <= 128"
+                },
+                "amount": {
+                  ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              },
+              "foundingInvestors": {
+                "$uid": {
+                  ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000 && (!data.exists() || newData.val() == data.val())"
+                }
+              },
+              "withdrawableCapital": {
+                "$uid": {
+                  ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000 && newData.val() <= newData.parent().parent().child('investors').child($uid).val() && (auth.uid == $uid || newData.val() == data.val() || (!data.parent().parent().child('equityVersion').exists() && newData.val() == data.parent().parent().child('investors').child($uid).val()))"
+                }
+              },
+              "supplyRemainders": {
+                "$uid": {
+                  ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 1.000001"
+                }
+              },
+              "equityExpansionVotes": {
+                "$uid": {
+                  ".validate": "newData.isNumber() && newData.val()%1 == 0 && (auth.uid == $uid || newData.val() == data.val()) && newData.val() == newData.parent().parent().child('equityRevision').val()"
+                }
+              },
+              "ownerUid": {
+                ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 128"
+              },
+              "ownerSince": {
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= now+5000"
+              },
+              "foundingPaid": {
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000"
+              },
+              "foundingValuation": {
+                ".validate": "newData.isNumber() && newData.val()%1 == 0 && newData.val() >= 0 && newData.val() <= 1000000000000"
+              },
+              "investorNames": {
+                "$uid": {
+                  ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 16 && (auth.uid == $uid || !data.exists() || newData.val() == data.val())"
+                }
+              },
+              "rates": {
+                ".validate": "newData.parent().child('equityVersion').val() == 1"
+              },
+              "blacklist": {
+                ".validate": "newData.parent().child('equityVersion').val() == 1"
+              },
+              "harborOfficer": {
+                ".validate": "newData.parent().child('equityVersion').val() == 1"
+              },
+              "harborMessage": {
+                ".validate": "newData.parent().child('equityVersion').val() == 1"
+              },
+              "officerIncome": {
+                ".validate": "newData.parent().child('equityVersion').val() == 1"
+              },
+              "domestic": {
+                ".validate": "newData.parent().child('equityVersion').val() == 1"
+              },
+              "registryName": {
+                ".validate": "newData.parent().child('equityVersion').val() == 1"
               }
             },
             "$other": {
@@ -1076,15 +1413,15 @@
           "$uid": {
             ".read": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com'",
             ".write": "auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'google.com' && $project.matches(/^depot-(stjohns|reykjavik|mogadishu|davao|cairns|comodoro)$/) && newData.exists() && newData.parent().parent().parent().child('shared/projects').child($project).child('revision').val() == root.child('gameV2/shared/projects').child($project).child('revision').val()+1 && newData.parent().parent().parent().child('shared/projects').child($project).child('lastOperation/uid').val() == auth.uid && newData.parent().parent().parent().child('shared/projects').child($project).child('content/promotion/level').val() == (root.child('gameV2/shared/projects').child($project).child('content/promotion/level').exists()?root.child('gameV2/shared/projects').child($project).child('content/promotion/level').val():0) && newData.parent().parent().parent().child('shared/projects').child($project).child('content/promotion/support').val() != (root.child('gameV2/shared/projects').child($project).child('content/promotion/support').exists()?root.child('gameV2/shared/projects').child($project).child('content/promotion/support').val():0)",
-            ".validate": "newData.isNumber() && ((newData.val() == (root.child('gameV2/shared/projects').child($project).child('content/promotion/level').exists()?root.child('gameV2/shared/projects').child($project).child('content/promotion/level').val():0)+1 && data.val() != newData.val()) || (newData.val() == 0 && data.val() == (root.child('gameV2/shared/projects').child($project).child('content/promotion/level').exists()?root.child('gameV2/shared/projects').child($project).child('content/promotion/level').val():0)+1))"
+            ".validate": "root.child('gameV2/shared/projects').child($project).child('content/equityVersion').val() == 1?(newData.isNumber() && ((newData.val() == ((root.child('gameV2/shared/projects').child($project).child('content/equityRevision').exists()?root.child('gameV2/shared/projects').child($project).child('content/equityRevision').val():1)*10+root.child('gameV2/shared/projects').child($project).child('content/promotion/level').val()+1) && data.val() != newData.val()) || (newData.val() == 0 && data.val() == ((root.child('gameV2/shared/projects').child($project).child('content/equityRevision').exists()?root.child('gameV2/shared/projects').child($project).child('content/equityRevision').val():1)*10+root.child('gameV2/shared/projects').child($project).child('content/promotion/level').val()+1)))):(newData.isNumber() && ((newData.val() == (root.child('gameV2/shared/projects').child($project).child('content/promotion/level').exists()?root.child('gameV2/shared/projects').child($project).child('content/promotion/level').val():0)+1 && data.val() != newData.val()) || (newData.val() == 0 && data.val() == (root.child('gameV2/shared/projects').child($project).child('content/promotion/level').exists()?root.child('gameV2/shared/projects').child($project).child('content/promotion/level').val():0)+1)))"
           }
         }
       },
       "harborRegistry": {
         ".read": "auth != null && auth.token.firebase.sign_in_provider == 'google.com'",
         "$port": {
-          ".write": "(!$port.matches(/^depot-/) && auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && newData.parent().parent().child('shared/ports').child($port).child('content/developedOwner').val() == auth.uid && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == $port && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'ports') || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && ($port.matches(/^depot-(stjohns|reykjavik|mogadishu|davao|cairns|comodoro)$/)) && !data.exists() && newData.exists() && newData.parent().parent().child('shared/projects').child($port).child('revision').val() == (root.child('gameV2/shared/projects').child($port).child('revision').exists()?root.child('gameV2/shared/projects').child($port).child('revision').val():0)+1 && newData.parent().parent().child('shared/projects').child($port).child('lastOperation/uid').val() == auth.uid && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.parent().parent().child('shared/projects').child($port).child('lastOperation/id').val() && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == $port && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'projects') || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && $port.matches(/^depot-(stjohns|reykjavik|mogadishu|davao|cairns|comodoro)$/) && data.exists() && newData.exists() && newData.parent().parent().child('shared/projects').child($port).child('revision').val() == root.child('gameV2/shared/projects').child($port).child('revision').val()+1 && newData.parent().parent().child('shared/projects').child($port).child('lastOperation/uid').val() == auth.uid && newData.parent().parent().child('shared/projects').child($port).child('content/promotion/level').val() == newData.child('promotionLevel').val() && newData.child('promotionLevel').val() == (data.child('promotionLevel').exists()?data.child('promotionLevel').val():0)+1)",
-          ".validate": "(!(($port == 'developed-stjohns' && newData.parent().child('depot-stjohns').child('promotionLevel').exists()) || ($port == 'developed-reykjavik' && newData.parent().child('depot-reykjavik').child('promotionLevel').exists()) || ($port == 'developed-mogadishu' && newData.parent().child('depot-mogadishu').child('promotionLevel').exists()) || ($port == 'developed-davao' && newData.parent().child('depot-davao').child('promotionLevel').exists()) || ($port == 'developed-cairns' && newData.parent().child('depot-cairns').child('promotionLevel').exists()) || ($port == 'developed-comodoro' && newData.parent().child('depot-comodoro').child('promotionLevel').exists()))) && ((!newData.child('promotionLevel').exists() && ((newData.hasChildren(['id','name','level','ownerUid']) && newData.child('id').val() == $port && newData.child('ownerUid').val() == auth.uid && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 16 && newData.child('level').val() >= 1 && newData.child('level').val() <= 3 && newData.child('level').val()%1 == 0 && $port.matches(/^(developed-stjohns|developed-reykjavik|developed-bergen|developed-casablanca|developed-douala|developed-mogadishu|developed-salalah|developed-chittagong|developed-davao|developed-cairns|developed-dunedin|developed-comodoro)$/)) || (($port.matches(/^depot-(stjohns|reykjavik|mogadishu|davao|cairns|comodoro)$/)) && newData.hasChildren(['id','name','level','kind','opensAt','ownerUid','ownerShare']) && newData.child('id').val() == $port && newData.child('kind').val() == 'depot' && newData.child('level').val() == 1 && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 24 && newData.child('opensAt').val() == newData.parent().parent().child('shared/projects').child($port).child('content').child('readyAt').val() && newData.parent().parent().child('shared/projects').child($port).child('content').child('startedAt').isNumber() && newData.child('opensAt').val() == newData.parent().parent().child('shared/projects').child($port).child('content').child('startedAt').val()+21600000 && (newData.parent().parent().child('shared/projects').child($port).child('content').child('startedAt').val() >= now-5000 || root.child('gameV2/shared/projects').child($port).child('content/readyAt').val() <= now) && newData.parent().parent().child('shared/projects').child($port).child('content').child('registeredCapital').val()+(newData.parent().parent().child('shared/projects').child($port).child('content').child('materialCredit').exists()?newData.parent().parent().child('shared/projects').child($port).child('content').child('materialCredit').val():0) == 300000 && newData.child('ownerUid').isString() && newData.child('ownerUid').val() == newData.parent().parent().child('shared/projects').child($port).child('content').child('registeredOwner').val() && newData.child('ownerShare').isNumber() && ((newData.child('ownerUid').val() == '' && newData.child('ownerShare').val() == 0) || (newData.parent().parent().child('shared/projects').child($port).child('content').child('investors').child(newData.child('ownerUid').val()).val()*2 > newData.parent().parent().child('shared/projects').child($port).child('content').child('registeredCapital').val() && newData.child('ownerShare').val() >= 50 && newData.child('ownerShare').val() <= 100 && newData.child('ownerShare').val()*newData.parent().parent().child('shared/projects').child($port).child('content').child('registeredCapital').val() <= newData.parent().parent().child('shared/projects').child($port).child('content').child('investors').child(newData.child('ownerUid').val()).val()*100+1 && (newData.child('ownerShare').val()+0.011)*newData.parent().parent().child('shared/projects').child($port).child('content').child('registeredCapital').val() > newData.parent().parent().child('shared/projects').child($port).child('content').child('investors').child(newData.child('ownerUid').val()).val()*100))))) || (data.child('kind').val() == 'depot' && newData.child('promotionLevel').isNumber() && newData.child('promotionLevel').val() <= 3 && newData.child('id').val() == data.child('id').val() && newData.child('name').val() == data.child('name').val() && newData.child('level').val() == data.child('level').val() && newData.child('kind').val() == data.child('kind').val() && newData.child('opensAt').val() == data.child('opensAt').val() && newData.child('ownerUid').val() == data.child('ownerUid').val() && newData.child('ownerShare').val() == data.child('ownerShare').val()))"
+          ".write": "((!$port.matches(/^depot-/) && auth != null && auth.token.firebase.sign_in_provider == 'google.com' && newData.exists() && newData.parent().parent().child('shared/ports').child($port).child('content/developedOwner').val() == auth.uid && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == $port && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'ports') || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && ($port.matches(/^depot-(stjohns|reykjavik|mogadishu|davao|cairns|comodoro)$/)) && !data.exists() && newData.exists() && newData.parent().parent().child('shared/projects').child($port).child('revision').val() == (root.child('gameV2/shared/projects').child($port).child('revision').exists()?root.child('gameV2/shared/projects').child($port).child('revision').val():0)+1 && newData.parent().parent().child('shared/projects').child($port).child('lastOperation/uid').val() == auth.uid && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.parent().parent().child('shared/projects').child($port).child('lastOperation/id').val() && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/key').val() == $port && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/kind').val() == 'projects') || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && $port.matches(/^depot-(stjohns|reykjavik|mogadishu|davao|cairns|comodoro)$/) && data.exists() && newData.exists() && newData.parent().parent().child('shared/projects').child($port).child('revision').val() == root.child('gameV2/shared/projects').child($port).child('revision').val()+1 && newData.parent().parent().child('shared/projects').child($port).child('lastOperation/uid').val() == auth.uid && newData.parent().parent().child('shared/projects').child($port).child('content/promotion/level').val() == newData.child('promotionLevel').val() && newData.child('promotionLevel').val() == (data.child('promotionLevel').exists()?data.child('promotionLevel').val():0)+1)) || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && data.exists() && newData.exists() && newData.parent().parent().child('shared').child($port.matches(/^depot-/)?'projects':'ports').child($port).child('content').child('equityVersion').val() == 1 && newData.parent().parent().child('shared').child($port.matches(/^depot-/)?'projects':'ports').child($port).child('lastOperation/uid').val() == auth.uid && newData.parent().parent().child('shared').child($port.matches(/^depot-/)?'projects':'ports').child($port).child('revision').val() == root.child('gameV2/shared').child($port.matches(/^depot-/)?'projects':'ports').child($port).child('revision').val()+1 && newData.parent().parent().child('privateSaves').child(auth.uid).child('lastOperation/id').val() == newData.parent().parent().child('shared').child($port.matches(/^depot-/)?'projects':'ports').child($port).child('lastOperation/id').val())",
+          ".validate": "newData.parent().parent().child('shared').child($port.matches(/^depot-/)?'projects':'ports').child($port).child('content').child('equityVersion').val() == 1?(newData.child('id').val() == data.child('id').val() && ($port.matches(/^depot-/)?newData.child('name').val() == data.child('name').val():(newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 16 && newData.child('name').val() == newData.parent().parent().child('shared/ports').child($port).child('content/development/name').val())) && newData.child('ownerUid').val() == (newData.parent().parent().child('shared').child($port.matches(/^depot-/)?'projects':'ports').child($port).child('content').child('ownerUid').exists()?newData.parent().parent().child('shared').child($port.matches(/^depot-/)?'projects':'ports').child($port).child('content').child('ownerUid').val():'') && newData.child('ownerShare').isNumber() && newData.child('ownerShare').val() >= 0 && newData.child('ownerShare').val() <= 100 && ($port.matches(/^depot-/)?(newData.child('opensAt').val() == data.child('opensAt').val() && newData.child('kind').val() == 'depot' && newData.child('promotionLevel').val() == newData.parent().parent().child('shared').child($port.matches(/^depot-/)?'projects':'ports').child($port).child('content').child('promotion/level').val()):(newData.child('level').val() == newData.parent().parent().child('shared').child($port.matches(/^depot-/)?'projects':'ports').child($port).child('content').child('development/level').val() && !newData.child('kind').exists()))):((!(($port == 'developed-stjohns' && newData.parent().child('depot-stjohns').child('promotionLevel').exists()) || ($port == 'developed-reykjavik' && newData.parent().child('depot-reykjavik').child('promotionLevel').exists()) || ($port == 'developed-mogadishu' && newData.parent().child('depot-mogadishu').child('promotionLevel').exists()) || ($port == 'developed-davao' && newData.parent().child('depot-davao').child('promotionLevel').exists()) || ($port == 'developed-cairns' && newData.parent().child('depot-cairns').child('promotionLevel').exists()) || ($port == 'developed-comodoro' && newData.parent().child('depot-comodoro').child('promotionLevel').exists()))) && ((!newData.child('promotionLevel').exists() && ((newData.hasChildren(['id','name','level','ownerUid']) && newData.child('id').val() == $port && newData.child('ownerUid').val() == auth.uid && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 16 && newData.child('level').val() >= 1 && newData.child('level').val() <= 3 && newData.child('level').val()%1 == 0 && $port.matches(/^(developed-stjohns|developed-reykjavik|developed-bergen|developed-casablanca|developed-douala|developed-mogadishu|developed-salalah|developed-chittagong|developed-davao|developed-cairns|developed-dunedin|developed-comodoro)$/)) || (($port.matches(/^depot-(stjohns|reykjavik|mogadishu|davao|cairns|comodoro)$/)) && newData.hasChildren(['id','name','level','kind','opensAt','ownerUid','ownerShare']) && newData.child('id').val() == $port && newData.child('kind').val() == 'depot' && newData.child('level').val() == 1 && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 24 && newData.child('opensAt').val() == newData.parent().parent().child('shared/projects').child($port).child('content').child('readyAt').val() && newData.parent().parent().child('shared/projects').child($port).child('content').child('startedAt').isNumber() && newData.child('opensAt').val() == newData.parent().parent().child('shared/projects').child($port).child('content').child('startedAt').val()+21600000 && (newData.parent().parent().child('shared/projects').child($port).child('content').child('startedAt').val() >= now-5000 || root.child('gameV2/shared/projects').child($port).child('content/readyAt').val() <= now) && newData.parent().parent().child('shared/projects').child($port).child('content').child('registeredCapital').val()+(newData.parent().parent().child('shared/projects').child($port).child('content').child('materialCredit').exists()?newData.parent().parent().child('shared/projects').child($port).child('content').child('materialCredit').val():0) == 300000 && newData.child('ownerUid').isString() && newData.child('ownerUid').val() == newData.parent().parent().child('shared/projects').child($port).child('content').child('registeredOwner').val() && newData.child('ownerShare').isNumber() && ((newData.child('ownerUid').val() == '' && newData.child('ownerShare').val() == 0) || (newData.parent().parent().child('shared/projects').child($port).child('content').child('investors').child(newData.child('ownerUid').val()).val()*2 > newData.parent().parent().child('shared/projects').child($port).child('content').child('registeredCapital').val() && newData.child('ownerShare').val() >= 50 && newData.child('ownerShare').val() <= 100 && newData.child('ownerShare').val()*newData.parent().parent().child('shared/projects').child($port).child('content').child('registeredCapital').val() <= newData.parent().parent().child('shared/projects').child($port).child('content').child('investors').child(newData.child('ownerUid').val()).val()*100+1 && (newData.child('ownerShare').val()+0.011)*newData.parent().parent().child('shared/projects').child($port).child('content').child('registeredCapital').val() > newData.parent().parent().child('shared/projects').child($port).child('content').child('investors').child(newData.child('ownerUid').val()).val()*100))))) || (data.child('kind').val() == 'depot' && newData.child('promotionLevel').isNumber() && newData.child('promotionLevel').val() <= 3 && newData.child('id').val() == data.child('id').val() && newData.child('name').val() == data.child('name').val() && newData.child('level').val() == data.child('level').val() && newData.child('kind').val() == data.child('kind').val() && newData.child('opensAt').val() == data.child('opensAt').val() && newData.child('ownerUid').val() == data.child('ownerUid').val() && newData.child('ownerShare').val() == data.child('ownerShare').val())))"
         }
       },
       "combatSlots": {
