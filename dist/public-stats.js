@@ -1,12 +1,12 @@
-import {activeTitle} from './title-effects.js?v=2026.11.20-coastal-commissions';
-import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.20-coastal-commissions';
-import {GOODS} from './data.js?v=2026.11.20-coastal-commissions';
-import {Exploration} from './voyage-core.js?v=2026.11.20-coastal-commissions';
-import {explorationStats} from './exploration-score.js?v=2026.11.20-coastal-commissions';
-import {discoveryStats} from './discoveries.js?v=2026.11.20-coastal-commissions';
-import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.20-coastal-commissions';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-coastal-commissions';
-import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.20-coastal-commissions';
+import {activeTitle} from './title-effects.js?v=2026.11.20-harbor-repairs';
+import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.20-harbor-repairs';
+import {GOODS} from './data.js?v=2026.11.20-harbor-repairs';
+import {Exploration} from './voyage-core.js?v=2026.11.20-harbor-repairs';
+import {explorationStats} from './exploration-score.js?v=2026.11.20-harbor-repairs';
+import {discoveryStats} from './discoveries.js?v=2026.11.20-harbor-repairs';
+import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.20-harbor-repairs';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
+import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.20-harbor-repairs';
 export function collectionRankStats(game){
  const progress=game.rumorProgress,acquired=new Set(progress?.acquiredItems||[]),officers=new Set(progress?.officers||[]);
  return {shoreCompleted:game.shoreProgress?.count||0,rareFinds:DISCOVERIES.filter(d=>d.tier>=3&&game.discoveries?.[d.id]).length,

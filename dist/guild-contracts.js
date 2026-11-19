@@ -1,12 +1,12 @@
-import {titleEffect} from './title-effects.js?v=2026.11.20-coastal-commissions';
-import {blessingBonus} from './blessings.js?v=2026.11.20-coastal-commissions';
-import {shipyardReport} from './historical-ships.js?v=2026.11.20-coastal-commissions';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-coastal-commissions';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-coastal-commissions';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-coastal-commissions';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-coastal-commissions';
+import {titleEffect} from './title-effects.js?v=2026.11.20-harbor-repairs';
+import {blessingBonus} from './blessings.js?v=2026.11.20-harbor-repairs';
+import {shipyardReport} from './historical-ships.js?v=2026.11.20-harbor-repairs';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-harbor-repairs';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-harbor-repairs';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-harbor-repairs';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-coastal-commissions';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[
@@ -29,7 +29,13 @@ export function guildObjective(row){
 export const isGuildReport=tier=>['survey','pirate'].includes(GUILD_TYPES[tier]?.kind);
 const validGood=id=>Object.hasOwn(GOODS,id)&&!GOODS[id].legacy&&!GOODS[id].premium;
 const eligibleProof=row=>Number.isSafeInteger(row.proofAt)&&row.proofAt>=row.acceptedAt&&row.proofAt<=row.deadline;
-const freeToWork=s=>!!s.port&&!PORT_BY_ID[s.port]?.depot&&!s.voyage&&!s.shoreTrip&&!s.battleId&&!s.npcBattle&&!s.raidId;
+function guildFacility(id,goods=false){
+ const p=PORT_BY_ID[id];
+ return !!p?.active&&(!p.depot||p.promotionLevel>=2)&&(!goods||!p.developable||p.developmentLevel>=2);
+}
+export const unavailableCharter=row=>!guildFacility(row.target,!!row.good);
+const docked=s=>!!PORT_BY_ID[s.port]&&!s.voyage&&!s.shoreTrip&&!s.battleId&&!s.npcBattle&&!s.raidId;
+const freeToWork=s=>docked(s)&&guildFacility(s.port);
 export function normalizeGuild(game){
   const old=game.guild;
   if(!old||typeof old!=='object'){delete game.guild;return;}
@@ -72,7 +78,7 @@ export function charterCargo(game){
 export function availableCharters(game,findRoute,room,now,findPointRoute=()=>false){
   if(!freeToWork(game))return [];
   const origin=PORT_BY_ID[game.port], seen=game.guild?.history||[];
-  const candidates=game.knownPorts.filter(id=>id!==origin.id&&PORT_BY_ID[id]?.active)
+  const candidates=game.knownPorts.filter(id=>id!==origin.id&&guildFacility(id))
     .sort((a,b)=>Math.hypot(PORT_BY_ID[a].lon-origin.lon,PORT_BY_ID[a].lat-origin.lat)-Math.hypot(PORT_BY_ID[b].lon-origin.lon,PORT_BY_ID[b].lat-origin.lat));
   const result=[];
   const available=id=>!game.guild?.active.some(x=>x.id===id)&&!seen.some(x=>x.id===id&&now-x.at<24*HOUR);
@@ -81,7 +87,7 @@ export function availableCharters(game,findRoute,room,now,findPointRoute=()=>fal
     const route=findRoute(PORT_BY_ID[target]);
     if(!route)continue;
     const good=origin.specialty;
-    if(!delivery&&route.total<=GUILD_TYPES[5].limit&&validGood(good)&&room+(game.cargo[good]?.qty||0)>=8){
+    if(!delivery&&guildFacility(target,true)&&route.total<=GUILD_TYPES[5].limit&&validGood(good)&&room+(game.cargo[good]?.qty||0)>=8){
       const id=byId(origin.id,target,5,good);
       if(available(id))delivery={id,origin:origin.id,target,tier:5,good,qty:8,reward:180};
     }
@@ -127,7 +133,7 @@ export function expireCharters(game,now,baseFame){
   const book=game.guild, missed=book?.active.filter(row=>now>row.deadline&&!eligibleProof(row))||[];
   let loss=0;
   for(const row of missed){
-    loss+=removeFame(game,baseFame,GUILD_TYPES[row.tier].fame);
+    if(!unavailableCharter(row))loss+=removeFame(game,baseFame,GUILD_TYPES[row.tier].fame);
     closeCharter(book,row,now,'expired');
   }
   return {count:missed.length,loss};
@@ -135,7 +141,8 @@ export function expireCharters(game,now,baseFame){
 export function charterAction(game,action,id,now,{findRoute,room,baseFame,findPointRoute,trade,domesticTrade}){
   const book=guild(game);
   const expired=expireCharters(game,now,baseFame);
-  if(!freeToWork(game))throw Error('항구에 입항해 조합을 이용하세요.');
+  const canReturn=action==='cancel'&&book.active.some(r=>r.id===id&&unavailableCharter(r))||action==='expire'&&expired.count;
+  if(!(canReturn?docked(game):freeToWork(game)))throw Error('항구에 입항해 조합을 이용하세요.');
   if(action==='accept'||['I041','I043','I061'].includes(action)){
     if(book.active.length>=3)throw Error('진행할 수 있는 의뢰는 3건까지예요.');
     const offer=availableCharters(game,findRoute,room,now,findPointRoute).find(x=>x.id===id);
@@ -163,11 +170,13 @@ export function charterAction(game,action,id,now,{findRoute,room,baseFame,findPo
     return {message:'의뢰 기한을 25% 연장했어요.'};
   }
   if(action==='cancel'){
-    const loss=removeFame(game,baseFame,GUILD_TYPES[row.tier].fame);
+    const unavailable=unavailableCharter(row);
+    const loss=unavailable?0:removeFame(game,baseFame,GUILD_TYPES[row.tier].fame);
     closeCharter(book,row,now,'cancelled');
-    return {message:'의뢰 포기 · 명성 −'+loss};
+    return {message:unavailable?'목적지 시설 미개설 · 명성 차감 없이 의뢰를 반납했어요.':'의뢰 포기 · 명성 −'+loss};
   }
   const type=GUILD_TYPES[row.tier], report=isGuildReport(row.tier);
+  if(unavailableCharter(row))throw Error('목적지 시설이 아직 열리지 않았어요. 이 의뢰는 명성 차감 없이 반납할 수 있어요.');
   if(action!==(report?'report':'deliver')||row.target!==game.port||game.explorationLockedUntilSailing)
     throw Error('지정한 항구의 조합에서 완료하세요.');
   if(report&&!eligibleProof(row))throw Error('의뢰를 수락한 뒤 기한 안에 지정 목표를 완료하세요.');
@@ -192,5 +201,5 @@ export function charterAction(game,action,id,now,{findRoute,room,baseFame,findPo
   addOfficerExperience(game,25+GUILD_TYPES[row.tier].fame);
   book.earned=Math.min(1e9,book.earned+GUILD_TYPES[row.tier].fame);
   closeCharter(book,row,now,'complete');
-  return {message:(report?'보고 완료':'납품 완료')+' · '+(sale?'판매 '+sale.total+' D + 조합 보수 ':'')+reward+' D'+(blessing?' · 축복 +'+blessing+' D':'')+' · 명성 +'+type.fame};
+  return {...(sale?{receipt:sale.receipt,eraWindow:sale.eraWindow,noviceTax:sale.noviceTax}:{}),message:(report?'보고 완료':'납품 완료')+' · '+(sale?'판매 '+sale.total+' D + 조합 보수 ':'')+reward+' D'+(blessing?' · 축복 +'+blessing+' D':'')+' · 명성 +'+type.fame};
 }

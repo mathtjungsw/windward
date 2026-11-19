@@ -1,7 +1,7 @@
-import {requireCombatAllowed} from './blessings.js?v=2026.11.20-coastal-commissions';
-import {ownership} from './commerce.js?v=2026.11.20-coastal-commissions';
-import {advanceBasicIncome} from './port-income.js?v=2026.11.20-coastal-commissions';
-import {noviceActive} from './novice.js?v=2026.11.20-coastal-commissions';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.20-harbor-repairs';
+import {ownership} from './commerce.js?v=2026.11.20-harbor-repairs';
+import {advanceBasicIncome} from './port-income.js?v=2026.11.20-harbor-repairs';
+import {noviceActive} from './novice.js?v=2026.11.20-harbor-repairs';
 
 const HOUR=3600000, DAY=24*HOUR, WINDOW=2*HOUR;
 export const CONTESTED_PORTS=['jamestown','georgetown-ascension','sanjuan-robinson','portvila'];

@@ -1,7 +1,9 @@
-import {COASTS} from './coast-sketches.js?v=2026.11.20-coastal-commissions';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-coastal-commissions';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-coastal-commissions';
-import {segmentDistance} from './voyage-core.js?v=2026.11.20-coastal-commissions';
+import {COASTS} from './coast-sketches.js?v=2026.11.20-harbor-repairs';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-harbor-repairs';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-harbor-repairs';
+import {segmentDistance} from './voyage-core.js?v=2026.11.20-harbor-repairs';
+
+import {inlandBlocksSailing,settleInlandVisit} from './inland.js?v=2026.11.20-harbor-repairs';
 
 export {COASTS};
 const coastById=new Map(COASTS.map(site=>[site.id,site]));
@@ -21,9 +23,14 @@ export const ORDERS=[
 ];
 const orderById=new Map(ORDERS.map(order=>[order.id,order]));
 export const orderDay=now=>Math.floor((now+9*3600000)/86400000);
-function inHarbor(game){
- return !!PORT_BY_ID[game.port]&&!game.voyage&&!game.shoreTrip&&!game.battleId&&!game.npcBattle&&!game.raidId&&!game.inland?.visit;
+export function coastHarborReason(game,now=Date.now()){
+ if(inlandBlocksSailing(game,now))return game.inland.visit.returning?'항구로 돌아오는 중이에요. 도착하면 다시 확인하세요.':'내륙에서 연결 항구로 돌아온 뒤 받을 수 있어요.';
+ if(game.shoreTrip)return '상륙 탐사를 마치고 배로 돌아오세요.';
+ if(game.battleId||game.npcBattle||game.raidId)return '전투를 마친 뒤 주점을 이용하세요.';
+ if(!PORT_BY_ID[game.port]||game.voyage)return '항구에 입항한 뒤 주점에서 해도 조각을 받으세요.';
+ return '';
 }
+const inHarbor=(game,now)=>!coastHarborReason(game,now);
 export function normalizeCoastOrders(game){
  const book=game.coastBook;
  if(book){
@@ -50,14 +57,18 @@ export function nextCoast(game){
  return COASTS.filter(site=>!game.coastBook?.found?.[site.id])
   .sort((a,b)=>mapDistance(game.position,a.point)-mapDistance(game.position,b.point))[0];
 }
-export function takeCoast(game,id){
- if(!inHarbor(game)||game.coastBook?.active||nextCoast(game)?.id!==id)throw Error('정박한 주점에서 현재 해도 조각을 확인하세요.');
+export function takeCoast(game,id,now=Date.now()){
+ const reason=coastHarborReason(game,now);
+ if(reason)throw Error(reason);
+ if(game.coastBook?.active===id)return {noWrite:true,message:'이미 이 해도 조각을 추적하고 있어요.'};
+ if(game.coastBook?.active||nextCoast(game)?.id!==id)return {noWrite:true,message:'현재 해도 조각을 다시 표시했어요.'};
+ settleInlandVisit(game,now);
  game.coastBook??={found:{},active:null};
  game.coastBook.active=id;
  return {message:'해도 조각을 항해일지에 넣었어요.'};
 }
-export function abandonCoast(game,id){
- if(!inHarbor(game)||game.coastBook?.active!==id)throw Error('주점에서 진행 중인 조각을 확인하세요.');
+export function abandonCoast(game,id,now=Date.now()){
+ if(!inHarbor(game,now)||game.coastBook?.active!==id)throw Error('주점에서 진행 중인 조각을 확인하세요.');
  game.coastBook.active=null;
  return {message:'해도 조각을 돌려주었어요.'};
 }

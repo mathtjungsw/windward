@@ -1,81 +1,81 @@
-import {reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-coastal-commissions';
-import {createTitleUI} from './title-ui.js?v=2026.11.20-coastal-commissions';
+import {reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-harbor-repairs';
+import {createTitleUI} from './title-ui.js?v=2026.11.20-harbor-repairs';
 let titleUI;
-import {createCaptainsMail} from './captains-mail.js?v=2026.11.20-coastal-commissions';
-import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.20-coastal-commissions';
-import {regionalEvent} from './market-events.js?v=2026.11.20-coastal-commissions';
-import {createUiUsage} from './ui-usage.js?v=2026.11.20-coastal-commissions';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-coastal-commissions';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.20-coastal-commissions';
-import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.20-coastal-commissions';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.20-coastal-commissions';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.20-coastal-commissions';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.20-coastal-commissions';
-import {createWeeklyChart} from './weekly-chart.js?v=2026.11.20-coastal-commissions';
-import {TAVERN_GAMES} from './tavern-games.js?v=2026.11.20-coastal-commissions';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.20-coastal-commissions';
-import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.20-coastal-commissions';
-import {createBlessings} from './blessings-ui.js?v=2026.11.20-coastal-commissions';
-import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.20-coastal-commissions';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.20-coastal-commissions';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.20-coastal-commissions';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.20-coastal-commissions';
-import {createCommunity} from './community.js?v=2026.11.20-coastal-commissions';
-import {createTaxCollector} from './tax-collector.js?v=2026.11.20-coastal-commissions';
-import {createStoryUI} from './story-ui.js?v=2026.11.20-coastal-commissions';
-import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.20-coastal-commissions';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.20-coastal-commissions';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.20-coastal-commissions';
-import {createCombat} from './combat-ui.js?v=2026.11.20-coastal-commissions';
-import {createBusiness} from './business-ui.js?v=2026.11.20-coastal-commissions';
-import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.20-coastal-commissions';
-import {createInlandUI} from './inland-ui.js?v=2026.11.20-coastal-commissions';
-import {INLAND_CITIES,INLAND_PORTS,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.20-coastal-commissions';
-import {createExpansion} from './expansion-ui.js?v=2026.11.20-coastal-commissions';
-import {gameStats} from './public-stats.js?v=2026.11.20-coastal-commissions';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.20-coastal-commissions';
-import {shipGlyph} from './art.js?v=2026.11.20-coastal-commissions';
-import {inspectDiscovery,explorationAllowed,discoveryStats,hasClues} from './discoveries.js?v=2026.11.20-coastal-commissions';
-import {RELEASE} from './release-notes.js?v=2026.11.20-coastal-commissions';
-import {createUX} from './ux.js?v=2026.11.20-coastal-commissions';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.20-coastal-commissions';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.20-coastal-commissions';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.20-coastal-commissions';
-import {AtlasView} from './atlas-view.js?v=2026.11.20-coastal-commissions';
-import {FleetPresence} from './multiplayer.js?v=2026.11.20-coastal-commissions';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.20-coastal-commissions';
-import {CaptainChat} from './chat.js?v=2026.11.20-coastal-commissions';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.20-coastal-commissions';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.20-coastal-commissions';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.20-coastal-commissions';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-coastal-commissions';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.20-coastal-commissions';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.20-coastal-commissions';
-import {CaptainRankings} from './rankings.js?v=2026.11.20-coastal-commissions';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.20-coastal-commissions';
+import {createCaptainsMail} from './captains-mail.js?v=2026.11.20-harbor-repairs';
+import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.20-harbor-repairs';
+import {regionalEvent} from './market-events.js?v=2026.11.20-harbor-repairs';
+import {createUiUsage} from './ui-usage.js?v=2026.11.20-harbor-repairs';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.20-harbor-repairs';
+import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.20-harbor-repairs';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.20-harbor-repairs';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.20-harbor-repairs';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.20-harbor-repairs';
+import {createWeeklyChart} from './weekly-chart.js?v=2026.11.20-harbor-repairs';
+import {TAVERN_GAMES} from './tavern-games.js?v=2026.11.20-harbor-repairs';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.20-harbor-repairs';
+import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.20-harbor-repairs';
+import {createBlessings} from './blessings-ui.js?v=2026.11.20-harbor-repairs';
+import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.20-harbor-repairs';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.20-harbor-repairs';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.20-harbor-repairs';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.20-harbor-repairs';
+import {createCommunity} from './community.js?v=2026.11.20-harbor-repairs';
+import {createTaxCollector} from './tax-collector.js?v=2026.11.20-harbor-repairs';
+import {createStoryUI} from './story-ui.js?v=2026.11.20-harbor-repairs';
+import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.20-harbor-repairs';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.20-harbor-repairs';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.20-harbor-repairs';
+import {createCombat} from './combat-ui.js?v=2026.11.20-harbor-repairs';
+import {createBusiness} from './business-ui.js?v=2026.11.20-harbor-repairs';
+import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.20-harbor-repairs';
+import {createInlandUI} from './inland-ui.js?v=2026.11.20-harbor-repairs';
+import {INLAND_CITIES,INLAND_PORTS,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.20-harbor-repairs';
+import {createExpansion} from './expansion-ui.js?v=2026.11.20-harbor-repairs';
+import {gameStats} from './public-stats.js?v=2026.11.20-harbor-repairs';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.20-harbor-repairs';
+import {shipGlyph} from './art.js?v=2026.11.20-harbor-repairs';
+import {inspectDiscovery,explorationAllowed,discoveryStats,hasClues} from './discoveries.js?v=2026.11.20-harbor-repairs';
+import {RELEASE} from './release-notes.js?v=2026.11.20-harbor-repairs';
+import {createUX} from './ux.js?v=2026.11.20-harbor-repairs';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.20-harbor-repairs';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.20-harbor-repairs';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.20-harbor-repairs';
+import {AtlasView} from './atlas-view.js?v=2026.11.20-harbor-repairs';
+import {FleetPresence} from './multiplayer.js?v=2026.11.20-harbor-repairs';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.20-harbor-repairs';
+import {CaptainChat} from './chat.js?v=2026.11.20-harbor-repairs';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.20-harbor-repairs';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.20-harbor-repairs';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.20-harbor-repairs';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-harbor-repairs';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.20-harbor-repairs';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.20-harbor-repairs';
+import {CaptainRankings} from './rankings.js?v=2026.11.20-harbor-repairs';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.20-harbor-repairs';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.20-coastal-commissions';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.20-coastal-commissions';
-import {portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.20-coastal-commissions';
-import {harborMarket,harborSupply} from './data.js?v=2026.11.20-coastal-commissions';
-import {configurePortDividends} from './port-income.js?v=2026.11.20-coastal-commissions';
-import {configureEra,ERA_PERIOD,eraAt,setEraServerOffset} from './era-cycle.js?v=2026.11.20-coastal-commissions';
-import {createGuildUI} from './guild-ui.js?v=2026.11.20-coastal-commissions';
-import {createCoastOrders} from './coast-orders-ui.js?v=2026.11.20-coastal-commissions';
-import {visitCoast} from './coast-orders.js?v=2026.11.20-coastal-commissions';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.20-coastal-commissions';
-import {ownership} from './commerce.js?v=2026.11.20-coastal-commissions';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.20-coastal-commissions';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,changeDepotPromotion,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.20-coastal-commissions';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.20-coastal-commissions';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.20-coastal-commissions';
-import {createShoreUI} from './shore-ui.js?v=2026.11.20-coastal-commissions';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.20-coastal-commissions';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.20-coastal-commissions';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.20-coastal-commissions';
-import {useRepairKit} from './activities.js?v=2026.11.20-coastal-commissions';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.20-coastal-commissions';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.20-coastal-commissions';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.20-harbor-repairs';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.20-harbor-repairs';
+import {marketKind,portMarketItem,portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.20-harbor-repairs';
+import {harborMarket,harborSupply} from './data.js?v=2026.11.20-harbor-repairs';
+import {configurePortDividends} from './port-income.js?v=2026.11.20-harbor-repairs';
+import {configureEra,ERA_PERIOD,eraAt,setEraServerOffset} from './era-cycle.js?v=2026.11.20-harbor-repairs';
+import {createGuildUI} from './guild-ui.js?v=2026.11.20-harbor-repairs';
+import {createCoastOrders} from './coast-orders-ui.js?v=2026.11.20-harbor-repairs';
+import {COASTS,visitCoast} from './coast-orders.js?v=2026.11.20-harbor-repairs';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.20-harbor-repairs';
+import {ownership} from './commerce.js?v=2026.11.20-harbor-repairs';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.20-harbor-repairs';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,changeDepotPromotion,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.20-harbor-repairs';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.20-harbor-repairs';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.20-harbor-repairs';
+import {createShoreUI} from './shore-ui.js?v=2026.11.20-harbor-repairs';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.20-harbor-repairs';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.20-harbor-repairs';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
+import {useRepairKit} from './activities.js?v=2026.11.20-harbor-repairs';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.20-harbor-repairs';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.20-harbor-repairs';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -198,7 +198,7 @@ function exploreMove(from,to){
   exploration.frozen=!explorationAllowed(state);if(exploration.frozen)return;
   if(state.coastBook?.active){
     const sketch=visitCoast(state,from,to,guildTime());
-    if(sketch){log(sketch.name+' 해안 스케치 완성','discovery');toast(sketch.name+' 발견 · 항해일지에 스케치를 넣었어요.','discovery');save();}
+    if(sketch){log(sketch.name+' 해안 스케치 완성','discovery');toast(sketch.name+' 발견 · 해안선 스케치 '+Object.keys(state.coastBook.found).length+'/'+COASTS.length,'discovery');save();}
   }
   exploration.travel(from,to);const found=discoverPorts(state,from,to,portPoint);if(found.length){for(const p of found){log(`${p.name}의 항구를 찾았습니다. 자동 항해 목적지가 열렸어요.`,'discovery');toast(`새 항구 정보 · ${p.name}`,'discovery');}renderPorts();renderPanel();save();}renderFog();
 }
@@ -1506,7 +1506,7 @@ $('#novice-status').onclick=()=>showModal('초보 선장 보호','교역세 면�
   `<p>현재 항구 교역세가 면제됩니다. 다른 선장과 자유 공격을 주고받을 수 없어요. 합의 결투와 NPC 토벌은 이용할 수 있습니다.</p><p>처음 항구를 소유하거나, 맡긴 배까지 3척을 보유하거나, 선박이 ${NOVICE_MAX_STAGE}단계에 닿으면 보호를 졸업해요.</p><p><a href="guide/captains/" target="_blank" rel="noopener">초보 보호 설명 보기</a></p>`,'small');
 setupInterface();ux=createUX({getState:()=>state,getAccount:()=>account,getNav:()=>nav,getSelection:()=>selected,getPlan:()=>planned,getFleet:()=>fleet,getVisibleShips:visibleShips,getChat:()=>chat,storage,onTrade:(mode,id)=>business?.trade(mode,id),onStop:stopForUI,onHome:centerShip,onSelect:selectPort,onPlan:planDestination,onSail:startVoyage,onManual:startManual,onMode:setControlMode,onSave:changed,onPanel:renderPanel,onSea:()=>seaUI?.open(),onGuild:()=>guildUI?.open(),onProjects:()=>projectsUI?.open(),onDepot:id=>projectsUI?.inspect(id),onShareRecord:(message,from,port)=>{if(appendItemRecord(state,'shares',String(message.id||((from?.id||'')+':'+port.id)),(from?from.name+' → ':'')+port.name,guildTime()))save();},onShore:()=>shoreUI?.open(),onModal:showModal,onClose:()=>modal.close(),onToast:toast,onRescue:launchRescue,onTab:setTab,onChat:toggleChat,onMapLabels:()=>renderChartLabels(true),onRankVisibility:visible=>rankings.setVisible(visible),onAtlas:showAtlas,onJournal:showJournal,onHelp:showHelp,onMenuFinder:openMenuFinder,onNote:()=>rumorUI?.showNote(),onEra:showEraDetails,onStory:()=>storyUI?.open(),onShip:()=>expansion?.showShip(),onCollection:()=>expansion?.showAlbum(),onBusiness:()=>business?.showHub(),onGuns:()=>business?.showArmory(),onSaleSearch:()=>saleFinder?.open(),onOfficers:()=>rumorUI?.showDirectory('officer'),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show(),onCombatTarget:uid=>combat?.attack(uid),onMail:()=>mail.open(),onMailUnread:()=>mail.unreadCount(),onSuggestions:()=>community?.showSuggestions(true),onOwnedPorts:()=>community?.showOwnedPorts(),onCaptains:()=>expansion?.showCaptains('all',true)});renderHUD();renderMission();renderPanel();$('#latest-log').textContent=state.log[0]?.text||'당신의 항로를 시작하세요.';
 const albumQuiz=createAlbumQuiz({uid:()=>account.uid,game:()=>state,now:guildTime,modal:showModal,album:id=>expansion.showAlbum(id),run:fn=>business.run('personal',account.uid,fn)});
-expansion=createExpansion({onQuiz:albumQuiz.menu,onMailBlock:(id,name)=>mail.blockButton(id,name),getState:()=>state,getNav:()=>nav,getFleet:()=>fleet,getRankings:()=>rankings,getStats:()=>gameStats(state,exploration),onModal:showModal,onToast:toast,onChanged:changed,onClose:()=>modal.close(),onContinueVoyage:continueInvestigationVoyage,canShowDiscovery:()=>playing&&!!nav&&!currentCanal(state.voyage)&&!state.shoreTrip&&$('.chart')?.classList.contains('shore-map-open')===false&&!modal.open&&!state.battleId&&!state.npcBattle&&!state.raidId&&!ux?.isBlocking(),onDiscoveryPause:()=>{stopForUI();paused=!!state.voyage;},onInspect:inspectNearby,onApproach:approachDiscovery,approachStatus:discoveryApproach,onShowDiscoveryPoint:showDiscoveryOnChart,onResumeRoute:resumeDetour,onShipAction:fn=>business?.shipAction(fn),onTitles:()=>titleUI?.open(),onStorageAction:fn=>business?.run('personal',account.uid,fn),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show()});
+expansion=createExpansion({onQuiz:albumQuiz.menu,onCoastBook:()=>coastOrders.coast(false,()=>expansion.showAlbum()),onMailBlock:(id,name)=>mail.blockButton(id,name),getState:()=>state,getNav:()=>nav,getFleet:()=>fleet,getRankings:()=>rankings,getStats:()=>gameStats(state,exploration),onModal:showModal,onToast:toast,onChanged:changed,onClose:()=>modal.close(),onContinueVoyage:continueInvestigationVoyage,canShowDiscovery:()=>playing&&!!nav&&!currentCanal(state.voyage)&&!state.shoreTrip&&$('.chart')?.classList.contains('shore-map-open')===false&&!modal.open&&!state.battleId&&!state.npcBattle&&!state.raidId&&!ux?.isBlocking(),onDiscoveryPause:()=>{stopForUI();paused=!!state.voyage;},onInspect:inspectNearby,onApproach:approachDiscovery,approachStatus:discoveryApproach,onShowDiscoveryPoint:showDiscoveryOnChart,onResumeRoute:resumeDetour,onShipAction:fn=>business?.shipAction(fn),onTitles:()=>titleUI?.open(),onStorageAction:fn=>business?.run('personal',account.uid,fn),onItems:()=>rumorUI?.showDirectory('item'),onCombat:()=>combat?.show()});
 rumorUI=createRumorUI({onReread:()=>storyUI?.reread(),extraHarborRumor:(game,keepId)=>business?.extraRumor(game,keepId),getState:()=>state,now:guildTime,nav:()=>nav,modal:showModal,toast,changed,depart:autoToPort,onCanals:()=>projectsUI?.open('canal'),share:(text,card)=>ux?.share(text,card),action:(id,action,replaceId)=>{
   if(!account.ready)return toast('로그인 뒤 이용하세요.','error');
   const port=state.port;
@@ -1550,9 +1550,9 @@ guildUI=createGuildUI({getState:()=>state,now:guildTime,modal:showModal,customOr
   if(!row||row.target!==state.port||!account.ready)return null;
   try{
     if((state.cargo[row.good]?.qty||0)<row.qty)throw Error('납품할 화물이 부족해요.');
-    const shared=await account.readShared('ports',row.target),content=shared.content||{};
+    const shared=await account.readShared(marketKind(row.target,row.good),row.target),content=shared.content||{};
     if(!permitted(content,account.uid))throw Error('이 항구의 교역이 제한됐어요.');
-    return captainTradeQuote(state,row.target,row.good,row.qty,'sell',{...content.markets?.[row.good],revision:shared.revision},guildTime(),taxRate(content,account.uid,row.target,state));
+    return captainTradeQuote(state,row.target,row.good,row.qty,'sell',portMarketItem(content,row.target,row.good,shared.revision),guildTime(),taxRate(content,account.uid,row.target,state));
   }catch(error){toast(error.message,'error');return null;}
 },action:async(action,id,quote)=>{
   if(!account.ready)return toast('로그인 뒤 이용하세요.','error');
@@ -1562,9 +1562,9 @@ guildUI=createGuildUI({getState:()=>state,now:guildTime,modal:showModal,customOr
   const acceptance=['accept','I041','I043','I061'].includes(action)?availableCharters(state,options.findRoute,options.room,guildTime(),options.findPointRoute).find(offer=>offer.id===id):null;
   let domesticTrade=false;
   if(acceptance?.good){
-   try{domesticTrade=portDevelopment((await account.readShared('ports',acceptance.target)).content,acceptance.target)==='trade';}catch{}
+   try{domesticTrade=portDevelopment((await account.readShared(marketKind(acceptance.target),acceptance.target)).content,acceptance.target)==='trade';}catch{}
   }
-  return business.run(delivery?'ports':'personal',delivery?row.target:account.uid,(game,shared,time,revision)=>
+  return business.run(delivery?marketKind(row.target,row.good):'personal',delivery?row.target:account.uid,(game,shared,time,revision)=>
     charterAction(game,action,id,time,{
       ...charterOptions(game),domesticTrade,
       trade:delivery?order=>executeTrade(game,shared,account.uid,order.target,order.good,order.qty,'sell',quote,time,revision):null
@@ -1580,7 +1580,7 @@ async function readDepotPromotionVote(id){
   return (await sdk.get(sdk.ref(account.db,'gameV2/depotPromotionVotes/'+id+'/'+account.uid))).val()||0;
 }
 projectsUI=createProjectsUI({game:()=>state,uid:()=>account.uid,now:guildTime,nav:()=>nav,modal:showModal,close:()=>{modal.close();paused=false;centerShip();},
-  openInvestment:()=>business.showHub(true),openSpecialty:id=>business.showDepotMarket(id),
+  openInvestment:()=>business.showHub(true),openGuild:()=>guildUI.open(),openSpecialty:id=>business.showDepotMarket(id),
   openMarket:id=>{modal.close();selected=id;setTab('trade');renderPanel();if(innerWidth<=850)ux?.openPort('target',false);},
   openShipyard:()=>expansion.showShip(),
   openTaxPolicy:id=>business.showDepotTaxPolicy(id),

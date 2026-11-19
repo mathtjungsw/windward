@@ -1,8 +1,8 @@
-import {reconcileTitles} from './titles.js?v=2026.11.20-coastal-commissions';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.20-coastal-commissions';
-import {ownershipRankChanges} from './port-rankings.js?v=2026.11.20-coastal-commissions';
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.20-coastal-commissions';
-import {blessingAt} from './blessings.js?v=2026.11.20-coastal-commissions';
+import {reconcileTitles} from './titles.js?v=2026.11.20-harbor-repairs';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.20-harbor-repairs';
+import {ownershipRankChanges} from './port-rankings.js?v=2026.11.20-harbor-repairs';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.20-harbor-repairs';
+import {blessingAt} from './blessings.js?v=2026.11.20-harbor-repairs';
 async function bounded(task,ms=5000){let timer;try{return await Promise.race([task,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('network-timeout')),ms))]);}finally{clearTimeout(timer);}}
 // Economic writes share the same queue as autosave. Acknowledgement precedes UI state.
 export function installAtomicAccount(Type){

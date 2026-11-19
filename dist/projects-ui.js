@@ -1,7 +1,7 @@
-import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.20-coastal-commissions';
-import {fleetCount} from './ship-rules.js?v=2026.11.20-coastal-commissions';
-import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,depotPromotion,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.20-coastal-commissions';
-import {canalPassDiscount} from './canal-reservations.js?v=2026.11.20-coastal-commissions';
+import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.20-harbor-repairs';
+import {fleetCount} from './ship-rules.js?v=2026.11.20-harbor-repairs';
+import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,depotPromotion,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.20-harbor-repairs';
+import {canalPassDiscount} from './canal-reservations.js?v=2026.11.20-harbor-repairs';
 
 const $=s=>document.querySelector(s), fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const time=at=>at?new Date(at).toLocaleString('ko-KR',{dateStyle:'short',timeStyle:'short'}):'';
@@ -83,7 +83,7 @@ export function createProjectsUI(api){
             details+='<p>정박 중 · 공격 보호</p>';
             actions+=field(1,10,1000,1,'보급 일수')+button('supply','보급 구매');
             if(game.port===id&&ACTIVE_PORT_BY_ID[id])actions+=button('specialty-market','특산품·공용 납품');
-            if(promotion.level>=2)actions+=button('market','교역소 열기')+button('equity','지분 투자·세금 관리');
+            if(promotion.level>=2)actions+=button('market','교역소 열기')+button('guild','항구 조합')+button('equity','지분 투자·세금 관리');
             if(promotion.level>=3)actions+=button('shipyard','조선소 열기');
             if(promotion.level>=2&&view.owner===api.uid())actions+=button('tax-policy','교역 세율 관리');
             if(has('I053'))actions+=button('stock','보급 창고 증서 사용');
@@ -117,6 +117,7 @@ export function createProjectsUI(api){
     $('#project-list').onclick=()=>open(project.kind);
     document.querySelectorAll('[data-project-action]').forEach(b=>b.onclick=async()=>{
       const action=b.dataset.projectAction;
+      if(action==='guild')return api.openGuild?.();
       if(action==='specialty-market')return api.openSpecialty?.(project.id);
       if(action==='candidate')return api.lookCandidate?.(project.site.previousPoint,project.site.cityName+' 정식 항구 후보지');
       if(action==='equity')return api.openInvestment?.(id);

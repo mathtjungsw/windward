@@ -1,15 +1,15 @@
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.20-coastal-commissions';
-import {collectionArt} from './art.js?v=2026.11.20-coastal-commissions';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-coastal-commissions';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-coastal-commissions';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.20-coastal-commissions';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.20-coastal-commissions';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-coastal-commissions';
-import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.20-coastal-commissions';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
+import {collectionArt} from './art.js?v=2026.11.20-harbor-repairs';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-harbor-repairs';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.20-harbor-repairs';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.20-harbor-repairs';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-harbor-repairs';
+import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
 
-import {readRumor} from './discoveries.js?v=2026.11.20-coastal-commissions';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.20-coastal-commissions';
-import {eraAvailable} from './era-cycle.js?v=2026.11.20-coastal-commissions';
+import {readRumor} from './discoveries.js?v=2026.11.20-harbor-repairs';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.20-harbor-repairs';
+import {eraAvailable} from './era-cycle.js?v=2026.11.20-harbor-repairs';
 
 const labels={all:'전체',pending:'미완료',complete:'완료'};
 const inFilter=(filter,complete)=>filter==='all'||(filter==='complete')===!!complete;

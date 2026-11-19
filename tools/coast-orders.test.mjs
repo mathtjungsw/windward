@@ -30,7 +30,7 @@ test('every chart fragment exists, is unlabeled cartography and has a water-side
 test('starting harbor offers a nearby fragment, real passage awards one sketch, rescue and old saves handled',()=>{
  let game=parseState(initialState(),initialState);
  const site=nextCoast(game);assert.equal(site.id,'roca');
- takeCoast(game,site.id);assert.throws(()=>takeCoast(game,site.id));
+ takeCoast(game,site.id);assert.equal(takeCoast(game,site.id).noWrite,true);
  game=parseState(JSON.stringify(game),initialState);
  game.port=null;game.voyage={kind:'rescue'};
  const [x,y]=site.point,from=[x-.65,y],to=[x+.65,y];
@@ -69,4 +69,72 @@ test('tavern acceptance and guild selection/settlement work through their displa
  assert.equal(dialog.querySelector('[data-fill]').disabled,false);await click('[data-fill]');
  assert.match(dialog.textContent,/오늘 주문을 완료/);assert.deepEqual(game.cargo,{});
  await window.happyDOM.abort();
+});
+
+test('a captain returning from any inland city can collect the fragment exactly when the return completes',async()=>{
+ const {INLAND_CITIES,inlandWalk}=await import('../dist/inland.js');
+ for(const city of Object.values(INLAND_CITIES)){
+  let game=initialState();game.port=city.port;
+  inlandWalk(game,city,time,false);
+  let site=nextCoast(game);
+  assert.throws(()=>takeCoast(game,site.id,time),/내륙/);
+  inlandWalk(game,city,game.inland.visit.due,true);
+  const due=game.inland.visit.due;
+  game=parseState(JSON.stringify(game),initialState);
+  site=nextCoast(game);
+  assert.throws(()=>takeCoast(game,site.id,due-1),/돌아오는 중/);
+  assert.equal(takeCoast(game,'old-offer',due).noWrite,true);
+  takeCoast(game,site.id,due);
+  assert.equal(game.inland.visit,undefined);
+  assert.equal(parseState(JSON.stringify(game),initialState).coastBook.active,site.id);
+ }
+});
+test('all coast sketches survive manual and automatic passage and save reload',()=>{
+ for(const site of COASTS)for(const auto of [false,true]){
+  let g=initialState();g.coastBook={found:{},active:site.id};g.port=null;
+  const [x,y]=site.point;
+  if(auto)g.voyage={path:[[x-.8,y],[x+.8,y]],lengths:[80],total:80,travelled:65,foodRemaining:2,target:null};
+  assert.equal(visitCoast(g,[x-.01,y+.5],[x+.01,y+.5],time),null);
+  assert.equal(visitCoast(g,[x-.8,y],[x+.8,y],time),site);
+  g=parseState(JSON.stringify(g),initialState);
+  assert.deepEqual(g.coastBook.found,{[site.id]:time});
+ }
+});
+
+test('guild freight and ordinary sales settle once at each promoted destination including saved charters',async()=>{
+ const {RELEASE}=await import('../dist/release-notes.js');
+ const {registerDevelopedPorts,PORT_BY_ID}=await import('../dist/data.js?v='+RELEASE);
+ const {availableCharters,charterAction,expireCharters}=await import('../dist/guild-contracts.js');
+ const {marketKind,captainTradeQuote,executeTrade,portMarketItem}=await import('../dist/commerce.js');
+ for(const name of ['mogadishu','cairns','comodoro','davao','reykjavik','stjohns']){
+  const dest='depot-'+name;
+  const register=level=>registerDevelopedPorts({[dest]:{id:dest,kind:'depot',level:1,promotionLevel:level,opensAt:time-1000,name}},time);
+  register(2);
+  const opts={room:200,findRoute:()=>({total:250}),baseFame:100};
+  for(const tier of [0,5]){
+   let game=initialState();game.knownPorts=['lisbon',dest];
+   const offer=availableCharters(game,opts.findRoute,opts.room,time).find(r=>r.tier===tier);
+   assert.equal(offer.target,dest);charterAction(game,'accept',offer.id,time,opts);
+   game=parseState(JSON.stringify(game),initialState);game.port=dest;
+   const content={promotion:{level:2}};
+   if(offer.good){
+    assert.equal(marketKind(dest,offer.good),'projects');
+    game.cargo[offer.good]={qty:8,cost:80};
+    const quote=captainTradeQuote(game,dest,offer.good,8,'sell',portMarketItem(content,dest,offer.good,1),time,0);
+    opts.trade=row=>executeTrade(game,content,'captain',dest,row.good,row.qty,'sell',quote,time,1);
+   }
+   const result=charterAction(game,'deliver',offer.id,time,opts);
+   if(offer.good){assert.equal(result.receipt.good,offer.good);assert.equal(game.cargo[offer.good],undefined);}
+   assert.equal(game.guild.completed,1);assert.equal(game.guild.history[0].state,'complete');
+   assert.throws(()=>charterAction(game,'deliver',offer.id,time,opts));
+  }
+  const game=initialState();game.knownPorts=['lisbon',dest];
+  const old=availableCharters(game,opts.findRoute,opts.room,time).find(r=>r.tier===0);
+  charterAction(game,'accept',old.id,time,opts);
+  register(1);
+  assert.ok(!availableCharters(game,opts.findRoute,opts.room,time).some(r=>r.target===dest));
+  const expired=structuredClone(game);assert.equal(expireCharters(expired,time+86400000,100).loss,0);
+  assert.match(charterAction(game,'cancel',old.id,time,opts).message,/명성 차감 없이/);
+  assert.equal(game.guild.active.length,0);assert.equal(game.guild.lost,0);
+ }
 });

@@ -1,16 +1,16 @@
-import {currentPortOwner,equityEnabled,withdrawableCapital,preserveSupplyRemainders,equityRegistry} from './port-equity.js?v=2026.11.20-coastal-commissions';
-import {titleEffect} from './title-effects.js?v=2026.11.20-coastal-commissions';
-import {shipyardTrade} from './historical-ships.js?v=2026.11.20-coastal-commissions';
-import {recordTrade} from './rank-progress.js?v=2026.11.20-coastal-commissions';
-import {PORT_BY_ID,PORT_GROWTH_GOODS,GOODS,harborMarket} from './data.js?v=2026.11.20-coastal-commissions';
-import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.20-coastal-commissions';
-import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.20-coastal-commissions';
-import {advanceBasicIncome,claimBasicIncome,claimTradeTax,creditTradeDividends,dividendsEnabled} from './port-income.js?v=2026.11.20-coastal-commissions';
-import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.20-coastal-commissions';
-import {recordStoryTrade} from './story-core.js?v=2026.11.20-coastal-commissions';
-import {harborOfficerRole} from './harbor-officers.js?v=2026.11.20-coastal-commissions';
-import {noviceActive} from './novice.js?v=2026.11.20-coastal-commissions';
-import {blessingBonus} from './blessings.js?v=2026.11.20-coastal-commissions';
+import {currentPortOwner,equityEnabled,withdrawableCapital,preserveSupplyRemainders,equityRegistry} from './port-equity.js?v=2026.11.20-harbor-repairs';
+import {titleEffect} from './title-effects.js?v=2026.11.20-harbor-repairs';
+import {shipyardTrade} from './historical-ships.js?v=2026.11.20-harbor-repairs';
+import {recordTrade} from './rank-progress.js?v=2026.11.20-harbor-repairs';
+import {PORT_BY_ID,PORT_GROWTH_GOODS,GOODS,harborMarket} from './data.js?v=2026.11.20-harbor-repairs';
+import {usedSpace,capacity,tradingPort} from './engine.js?v=2026.11.20-harbor-repairs';
+import {tradeQuote,specialtyStage,specialtyStock} from './market-rules.js?v=2026.11.20-harbor-repairs';
+import {advanceBasicIncome,claimBasicIncome,claimTradeTax,creditTradeDividends,dividendsEnabled} from './port-income.js?v=2026.11.20-harbor-repairs';
+import {activeOfficer,saleBonus,tradeVoucher} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
+import {recordStoryTrade} from './story-core.js?v=2026.11.20-harbor-repairs';
+import {harborOfficerRole} from './harbor-officers.js?v=2026.11.20-harbor-repairs';
+import {noviceActive} from './novice.js?v=2026.11.20-harbor-repairs';
+import {blessingBonus} from './blessings.js?v=2026.11.20-harbor-repairs';
 export function captainTradeQuote(game,portId,goodId,qty,mode,item,now,rate,effectAt=now){
  const quote=tradeQuote(portId,goodId,qty,mode,item,now,rate);
  const bonus=mode==='sell'&&game?Math.floor(quote.total*saleBonus(game,portId,goodId)+1e-9):0;
@@ -92,9 +92,9 @@ export function growthDeliveryInfo(content,portId,now,uid){
  const community=NEUTRAL_PORTS.includes(portId)||port.depot,points=community?10:Math.round(investmentBase(portId)*.025);
  return {day,good:port.specialty,quantity:10,reward:Math.max(100,GOODS[port.specialty].base*12),points,done:(community&&(content.growthContribution||0)>=300)||entries?.day===day&&entries.captains?.[uid]};
 }
-export function deliverForGrowth(game,content,uid,portId,now,expectedDay){
+export function deliverForGrowth(game,content,uid,portId,now,expectedDay,policy=content){
  const order=growthDeliveryInfo(content,portId,now,uid);
- if(!order||order.day!==expectedDay||order.done||game.port!==portId||game.voyage||!permitted(content,uid))throw Error('정박 위치와 오늘의 성장 납품 조건을 확인하세요.');
+ if(!order||order.day!==expectedDay||order.done||game.port!==portId||game.voyage||!permitted(policy,uid))throw Error('정박 위치와 오늘의 성장 납품 조건을 확인하세요.');
  const cargo=game.cargo[order.good];
  if(!cargo||cargo.qty<order.quantity)throw Error('납품할 화물이 부족해요.');
  const prior=portGrowth(content,portId).stage;
@@ -182,6 +182,7 @@ export function assignHarborOfficer(game,content,uid,id,officer,now){
  advanceBasicIncome(content,id,uid,now);
  return {message:officer?'부선장을 항구에 배치했어요.':'부선장을 회수했어요.'};
 }
+export const marketKind=(id,good)=>PORT_BY_ID[id]?.promotionLevel>=2&&good!==PORT_GROWTH_GOODS[id]?'projects':'ports';
 export const openTradeFacility=port=>!!port?.active&&(!port.depot||port.promotionLevel>=2)&&(!port.developable||port.developmentLevel>=2);
 export function delegateGoods(port,now){
  return openTradeFacility(port)?harborMarket(port,now).filter(id=>GOODS[id]&&!GOODS[id].premium&&!GOODS[id].legacy):[];

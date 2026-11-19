@@ -1,8 +1,8 @@
-import {GOODS} from './data.js?v=2026.11.20-coastal-commissions';
-import {capacity,usedSpace} from './engine.js?v=2026.11.20-coastal-commissions';
-import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.20-coastal-commissions';
-import {recordTrade} from './rank-progress.js?v=2026.11.20-coastal-commissions';
-import {blessingRate} from './blessings.js?v=2026.11.20-coastal-commissions';
+import {GOODS} from './data.js?v=2026.11.20-harbor-repairs';
+import {capacity,usedSpace} from './engine.js?v=2026.11.20-harbor-repairs';
+import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.20-harbor-repairs';
+import {recordTrade} from './rank-progress.js?v=2026.11.20-harbor-repairs';
+import {blessingRate} from './blessings.js?v=2026.11.20-harbor-repairs';
 
 export const INLAND_CITIES={
  cordoba:{id:'cordoba',name:'코르도바',port:'seville',point:[-4.7794,37.8847],path:[[-5.6,37.53],[-5.16,37.77]],seconds:60,terrain:0,goods:{leather:.83,oliveoil:.87}},

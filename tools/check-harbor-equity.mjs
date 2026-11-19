@@ -3,7 +3,8 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {initialState} from '../dist/engine.js';
 import {initializePortEquity} from '../dist/equity-migration.js';
 import {equityRegistry} from '../dist/port-equity.js';
-import {invest,withdrawInvestment,deliverForGrowth,growthDeliveryInfo} from '../dist/commerce.js';
+import {executeTrade,captainTradeQuote,portMarketItem,marketKind,invest,withdrawInvestment,deliverForGrowth,growthDeliveryInfo} from '../dist/commerce.js';
+import {availableCharters,charterAction} from '../dist/guild-contracts.js';
 import {RELEASE} from '../dist/release-notes.js';
 import {voyageWeek} from '../dist/weekly-chart.js';
 import {ownershipRankChanges,ownedPortSummary} from '../dist/port-rankings.js';
@@ -47,8 +48,8 @@ async function prepare(uid,id,action,amount,kind=id.startsWith('depot-')?'projec
  }
  const seq=old.operationSequence+1,op=uid+':'+seq;
  const sdk={ref:(_,p)=>p,get:async p=>({val:()=>(undefined)}),serverTimestamp:()=>timestamp};sdk.get=async p=>{const row=await req(p,{uid});return {val:()=>row.value};};
- const ranks=await ownershipRankChanges({uid,name:uid,sdk},id,shared.content,content,op,kind);
- return {['privateSaves/'+uid]:{...old,revision:old.revision+1,data:JSON.stringify(game),operationSequence:seq,updatedAt:timestamp,lastOperation:{id:op,sequence:seq,kind,key:id,sharedRevision:shared.revision+1,blessingStart:0}},
+ const ranks=kind==='personal'?{}:await ownershipRankChanges({uid,name:uid,sdk},id,shared.content,content,op,kind);
+ return {['privateSaves/'+uid]:{...old,revision:old.revision+1,data:JSON.stringify(game),operationSequence:seq,updatedAt:timestamp,lastOperation:{id:op,sequence:seq,kind,key:id,sharedRevision:shared.revision+1,blessingStart:0,...(Number.isSafeInteger(result.eraWindow)?{marketEra:result.eraWindow}:{})}},
   ['shared/'+kind+'/'+id]:{revision:shared.revision+1,content,updatedAt:timestamp,lastOperation:{id:op,uid,sequence:seq,saveRevision:old.revision+1}},...ranks,...(result.registry?{['harborRegistry/'+id]:result.registry}:{})};
 }
 async function commit(uid,patch,expected=200){const response=await req('gameV2',{uid,method:'PATCH',body:patch});if(response.status!==expected)await writeFile('.qa/equity-rejected-patch.json',JSON.stringify({uid,patch,ns}));assert.equal(response.status,expected,JSON.stringify(response.value));}
@@ -106,6 +107,59 @@ const afterDelivery=(await req('gameV2/shared/ports/'+depot,{uid:a})).value;
 assert.equal(afterDelivery.content.growthContribution,20);
 assert.equal(afterDelivery.content.growthDelivery.captains[a],true);
 assert.equal((await req('gameV2/shared/projects/'+depot,{uid:a})).value.revision,arrival.value.revision);
+
+await req('gameV2/shared/ports/'+depot+'/content/growthContribution',{admin:true,method:'PUT',body:290});
+const finalGrowth=await prepare(b,depot,(g,c,t)=>{
+ const info=growthDeliveryInfo(c,depot,t,b);
+ g.cargo[info.good]={qty:10,cost:80};
+ return deliverForGrowth(g,c,b,depot,t,info.day);
+},0,'ports');
+await commit(b,finalGrowth);
+await commit(b,finalGrowth,401);
+const fullGrowth=(await req('gameV2/shared/ports/'+depot,{uid:b})).value;
+assert.equal(fullGrowth.content.growthContribution,300);
+assert.equal(growthDeliveryInfo(fullGrowth.content,depot,Date.now(),c).done,true);
+const guildPatch=await prepare(b,depot,(game,c,time,revision)=>{
+ const opts={room:200,findRoute:()=>({total:250}),baseFame:100};
+ game.port='lisbon';game.knownPorts=['lisbon',depot];
+ const row=availableCharters(game,opts.findRoute,opts.room,time).find(r=>r.tier===5);
+ charterAction(game,'accept',row.id,time,opts);
+ game.port=depot;game.cargo[row.good]={qty:row.qty,cost:40};
+ assert.equal(marketKind(depot,row.good),'projects');
+ const q=captainTradeQuote(game,depot,row.good,row.qty,'sell',portMarketItem(c,depot,row.good,revision),time,0);
+ return charterAction(game,'deliver',row.id,time,{...opts,trade:r=>executeTrade(game,c,b,depot,r.good,r.qty,'sell',q,time,revision)});
+});
+await commit(b,guildPatch);
+const guildSave=JSON.parse((await req('gameV2/privateSaves/'+b,{uid:b})).value.data);
+assert.equal(guildSave.guild.completed,1);
+assert.ok(!guildSave.cargo.wine);
+assert.equal((await req('gameV2/shared/ports/'+depot,{uid:a})).value.revision,fullGrowth.revision);
+
+const {INLAND_CITIES,inlandWalk}=await import('../dist/inland.js');
+const {nextCoast,takeCoast,visitCoast}=await import('../dist/coast-orders.js');
+const personal='gameV2/shared/personal/'+c;
+await req(personal,{admin:true,method:'PUT',body:{revision:1,content:{_version:1},updatedAt:now}});
+for(const city of Object.values(INLAND_CITIES)){
+ let target;
+ const received=await prepare(c,c,(game,_content,time)=>{
+  game.port=city.port;game.voyage=null;
+  inlandWalk(game,city,time-600000,false);
+  inlandWalk(game,city,game.inland.visit.due,true);
+  target=nextCoast(game);
+  return takeCoast(game,target.id,time);
+ },0,'personal');
+ await commit(c,received);
+ const readGame=async()=>JSON.parse((await req('gameV2/privateSaves/'+c,{uid:c})).value.data);
+ assert.equal((await readGame()).coastBook.active,target.id);
+ const passage=await prepare(c,c,(game,_content,time)=>{
+  const [x,y]=target.point;game.port=null;
+  assert.equal(visitCoast(game,[x-.6,y],[x+.6,y],time).id,target.id);
+  return {};
+ },0,'personal');
+ await commit(c,passage);
+ assert.ok((await readGame()).coastBook.found[target.id]);
+}
+console.log('PASS: promoted guild sale, final shared growth delivery, and three inland returns with fragment receipt and sketch read back from Firebase.');
 
 const week=voyageWeek(Date.now()),route='lisbon|porto',chart='gameV2/real/weeklyVoyages/';
 assert.equal((await req(chart+week+'/'+a+'/'+route,{uid:a,method:'PUT',body:true})).status,200);

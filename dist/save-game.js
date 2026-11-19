@@ -1,21 +1,21 @@
-import {normalizeTitles} from './title-effects.js?v=2026.11.20-coastal-commissions';
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.20-coastal-commissions';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.20-coastal-commissions';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-coastal-commissions';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.20-coastal-commissions';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-coastal-commissions';
+import {normalizeTitles} from './title-effects.js?v=2026.11.20-harbor-repairs';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.20-harbor-repairs';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.20-harbor-repairs';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-harbor-repairs';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.20-harbor-repairs';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.20-coastal-commissions';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.20-coastal-commissions';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.20-coastal-commissions';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.20-coastal-commissions';
-import {normalizeDepotDock} from './projects.js?v=2026.11.20-coastal-commissions';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.20-coastal-commissions';
-import {normalizeTavernRound} from './tavern-games.js?v=2026.11.20-coastal-commissions';
-import {normalizeCoastOrders} from './coast-orders.js?v=2026.11.20-coastal-commissions';
-import {normalizeStories} from './story-core.js?v=2026.11.20-coastal-commissions';
-import {validInlandSave} from './inland.js?v=2026.11.20-coastal-commissions';
+import {normalizeSea} from './sea-activities.js?v=2026.11.20-harbor-repairs';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.20-harbor-repairs';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.20-harbor-repairs';
+import {normalizeDepotDock} from './projects.js?v=2026.11.20-harbor-repairs';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.20-harbor-repairs';
+import {normalizeTavernRound} from './tavern-games.js?v=2026.11.20-harbor-repairs';
+import {normalizeCoastOrders} from './coast-orders.js?v=2026.11.20-harbor-repairs';
+import {normalizeStories} from './story-core.js?v=2026.11.20-harbor-repairs';
+import {validInlandSave} from './inland.js?v=2026.11.20-harbor-repairs';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;

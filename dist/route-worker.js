@@ -1,5 +1,5 @@
-import {Navigator} from './engine.js?v=2026.11.20-coastal-commissions';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.20-coastal-commissions';
+import {Navigator} from './engine.js?v=2026.11.20-harbor-repairs';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.20-harbor-repairs';
 
 let nav;
 self.onmessage=({data})=>{

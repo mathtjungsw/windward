@@ -1,6 +1,6 @@
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-coastal-commissions';
-import {COASTS,ORDERS,nextCoast,takeCoast,abandonCoast,takeOrder,cancelOrder,fillOrder,orderDay} from './coast-orders.js?v=2026.11.20-coastal-commissions';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-coastal-commissions';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-harbor-repairs';
+import {COASTS,ORDERS,coastHarborReason,nextCoast,takeCoast,abandonCoast,takeOrder,cancelOrder,fillOrder,orderDay} from './coast-orders.js?v=2026.11.20-harbor-repairs';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-harbor-repairs';
 
 const quantity=value=>value.toLocaleString('ko-KR');
 const fragment=site=>`<img class="coast-fragment" width="330" height="224" src="assets/coast-sketches/${site.id}.webp" alt="북쪽이 위인 해안선 조각. ${site.hint}">`;
@@ -12,29 +12,38 @@ export function createCoastOrders({state,now,modal,run}){
    const previous=[...root.querySelectorAll('button,select')].map(el=>[el,el.disabled]);
    previous.forEach(([el])=>el.disabled=true);
    try{
+    const status=root.querySelector('#business-result');
+    if(status)status.textContent='저장 중이에요…';
     const result=await run(mutate);
+    if(!result&&status){
+     if(status.textContent==='저장 중이에요…')status.textContent='잠시 후 다시 시도하세요.';
+     root.querySelector('[data-refresh]')?.removeAttribute('hidden');
+    }
     if(result&&root.isConnected&&root.closest('dialog')?.open)refresh();
    }finally{previous.forEach(([el,disabled])=>el.disabled=disabled);}
   };
  }
- function coast(tavern=false){
+ function coast(tavern=false,back=null){
   const game=state(),site=nextCoast(game),active=game.coastBook?.active;
   const collected=COASTS.filter(s=>game.coastBook?.found?.[s.id]);
+  const reason=coastHarborReason(game,now());
   let current='<p>주점에서 다음 해도 조각을 받을 수 있어요.</p>';
-  if(!site)current='<p>모든 해안 스케치를 모았어요.</p>';
+  if(!site)current='<p>해안선 스케치 '+COASTS.length+'/'+COASTS.length+' 완성! 모든 해안 스케치를 모았어요.</p>';
   else if(active||tavern){
    const distance=Math.round(mapDistance(game.position,site.point));
-   current=`<h3>${active?'찾고 있는 해안':'주점의 해도 조각'}</h3>${fragment(site)}<p>${site.hint}</p><p>그림 속 해안을 찾아 22해리 안으로 항해하면 스케치가 완성돼요.</p>`+
+   current=`<h3>${active?'찾고 있는 해안 · 추적 중':'주점의 해도 조각'}</h3>${fragment(site)}<p>${site.hint}</p><p>그림 속 해안을 찾아 22해리 안으로 항해하면 스케치가 완성돼요.</p>`+
     (active?(tavern?'<button class="service-button" data-return>이 조각 돌려주기</button>':''):
-     `<p class="modal-meta">이 항구에서 약 ${Math.max(10,Math.round(distance/10)*10)}해리</p><button class="primary-button" data-take>해도 조각 받기</button>`);
+     `<p class="modal-meta">이 항구에서 약 ${Math.max(10,Math.round(distance/10)*10)}해리</p><button class="primary-button" data-take ${reason?'disabled':''}>해도 조각 받기</button>${reason?'<p>'+esc(reason)+'</p><button data-refresh>상태 다시 확인</button>':''}`);
   }
   const gallery=collected.map(s=>`<details><summary>${s.name}</summary>${fragment(s)}<p>${s.hint}</p></details>`).join('');
   modal('해안선 보물찾기','항해일지 · 스케치 '+collected.length+' / '+COASTS.length,
-   '<div id="coast-book">'+current+'<h3>모은 스케치</h3>'+(gallery||'<p>첫 해안을 발견하면 여기에 이름과 그림이 남아요.</p>')+'</div>','medium');
+   '<div id="coast-book">'+current+'<p id="business-result" role="status" aria-live="polite"></p>'+(!reason?'<button data-refresh hidden>상태 다시 확인</button>':'')+(back?'<button data-back>발견 수집 도감으로</button>':'')+'<h3>모은 스케치</h3>'+(gallery||'<p>첫 해안을 발견하면 여기에 이름과 그림이 남아요.</p>')+'</div>','medium');
   const root=document.querySelector('#coast-book');
   const take=root.querySelector('[data-take]'),giveBack=root.querySelector('[data-return]');
-  if(take)action(root,take,g=>takeCoast(g,site.id),()=>coast(true));
-  if(giveBack)action(root,giveBack,g=>abandonCoast(g,active),()=>coast(true));
+  root.querySelector('[data-refresh]')?.addEventListener('click',()=>coast(tavern,back));
+  if(back)root.querySelector('[data-back]').onclick=back;
+  if(take)action(root,take,(g,t)=>takeCoast(g,site.id,t),()=>coast(tavern,back));
+  if(giveBack)action(root,giveBack,(g,t)=>abandonCoast(g,active,t),()=>coast(tavern,back));
  }
  function orders(){
   const game=state(),ticket=game.customOrders?.active,port=game.port;
