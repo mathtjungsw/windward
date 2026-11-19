@@ -1,5 +1,5 @@
-import {GlobeAtlas} from './globe.js?v=2026.11.18-captain-workflow';
-import {wrapPosition} from './world-wrap.js?v=2026.11.18-captain-workflow';
+import {GlobeAtlas,ATLAS_WIDTH,ATLAS_HEIGHT} from './globe.js?v=2026.11.20-coastal-commissions';
+import {wrapPosition} from './world-wrap.js?v=2026.11.20-coastal-commissions';
 export function viewportRects(points){if(!points?.length)return [];const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),rects=[];for(const dx of [-360,0,360])for(const dy of [-140,0,140]){const left=Math.max(-180,Math.min(...xs)+dx),right=Math.min(180,Math.max(...xs)+dx),south=Math.max(-60,Math.min(...ys)+dy),north=Math.min(80,Math.max(...ys)+dy);if(right>left&&north>south)rects.push({left,right,south,north});}return rects;}
 export class AtlasView extends GlobeAtlas{
  constructor(canvas,land,rivers,ports,onLook){
@@ -17,7 +17,7 @@ export class AtlasView extends GlobeAtlas{
  line(points,color,width){if(points===this.viewport&&this.rects){for(const r of this.rects)super.line([[r.left,r.south],[r.right,r.south],[r.right,r.north],[r.left,r.north],[r.left,r.south]],color,width);}else super.line(points,color,width);}
  draw(force=false){if(this.mode!=='flat')return super.draw(force);if(!this.state||!this.flatCtx||!this.canPaint())return;const now=performance.now();if(!force&&now-this.lastDraw<200)return;const background=this.backgroundKey('flat'),paint=this.paintKey(background);if(!force&&paint===this.lastFlatPaint)return;this.lastFlatPaint=paint;this.lastDraw=now;const a=this.flatImage.data;
   if(background!==this.lastFlatBackground){this.lastFlatBackground=background;this.backgroundBuilds=(this.backgroundBuilds||0)+1;
-  for(let y=0;y<180;y++)for(let x=0;x<360;x++){const lat=90-y,lon=x-180,src=(Math.min(799,Math.floor(y*800/180))*1600+Math.min(1599,Math.floor(x*1600/360)))*4,i=(y*360+x)*4,v=this.exploration?.visibility([lon,lat],this.state.position)??2;for(let c=0;c<3;c++)a[i+c]=v===0?[128,159,169][c]:v===1?(this.texture[src+c]+180)/2:this.texture[src+c];a[i+3]=255;}
+  for(let y=0;y<180;y++)for(let x=0;x<360;x++){const lat=90-y,lon=x-180,src=(Math.floor(y*ATLAS_HEIGHT/180)*ATLAS_WIDTH+Math.floor(x*ATLAS_WIDTH/360))*4,i=(y*360+x)*4,v=this.exploration?.visibility([lon,lat],this.state.position)??2;for(let c=0;c<3;c++)a[i+c]=v===0?[128,159,169][c]:v===1?(this.texture[src+c]+180)/2:this.texture[src+c];a[i+3]=255;}
   this.flatCtx.putImageData(this.flatImage,0,0);}
   const ctx=this.ctx;ctx.drawImage(this.flat,0,0);const p=q=>[(q[0]+180),90-q[1]];
   for(const port of this.ports)if(this.state.knownPorts.includes(port.id)){const [x,y]=p([port.lon,port.lat]);ctx.fillStyle='#5a7349';ctx.fillRect(x-1,y-1,2,2);}

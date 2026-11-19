@@ -1,4 +1,4 @@
-import {equityEnabled} from './port-equity.js?v=2026.11.18-captain-workflow';
+import {equityEnabled} from './port-equity.js?v=2026.11.20-coastal-commissions';
 const HOUR=3600000;
 const CAP_HOURS=72;
 const NEUTRAL=new Set(['lisbon','porto']);

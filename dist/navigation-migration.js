@@ -1,6 +1,6 @@
-import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.18-captain-workflow';
-import {ship,voyageEstimate,positionAlong,makeRoute,canDepart} from './engine.js?v=2026.11.18-captain-workflow';
-import {currentCanal,refundCanalTolls,RETIRED_CANAL} from './canal-reservations.js?v=2026.11.18-captain-workflow';
+import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.20-coastal-commissions';
+import {ship,voyageEstimate,positionAlong,makeRoute,canDepart} from './engine.js?v=2026.11.20-coastal-commissions';
+import {currentCanal,refundCanalTolls,RETIRED_CANAL} from './canal-reservations.js?v=2026.11.20-coastal-commissions';
 
 export const NAVIGATION_VERSION=3;
 

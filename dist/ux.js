@@ -1,13 +1,13 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.18-captain-workflow';
-import {shipArtPath} from './art.js?v=2026.11.18-captain-workflow';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.18-captain-workflow';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.18-captain-workflow';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.18-captain-workflow';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.18-captain-workflow';
-import {findMenus} from './menu-finder.js?v=2026.11.18-captain-workflow';
-import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.18-captain-workflow';
-import {isTypingTarget} from './controls.js?v=2026.11.18-captain-workflow';
-import {validCard} from './social-core.js?v=2026.11.18-captain-workflow';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.20-coastal-commissions';
+import {shipArtPath} from './art.js?v=2026.11.20-coastal-commissions';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.20-coastal-commissions';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-coastal-commissions';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.20-coastal-commissions';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.20-coastal-commissions';
+import {findMenus} from './menu-finder.js?v=2026.11.20-coastal-commissions';
+import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.20-coastal-commissions';
+import {isTypingTarget} from './controls.js?v=2026.11.20-coastal-commissions';
+import {validCard} from './social-core.js?v=2026.11.20-coastal-commissions';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');

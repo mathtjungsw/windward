@@ -1,4 +1,4 @@
-import {canDepart,voyageEstimate,ship,supplyCost} from './engine.js?v=2026.11.18-captain-workflow';
+import {canDepart,voyageEstimate,ship,supplyCost} from './engine.js?v=2026.11.20-coastal-commissions';
 
 const number=n=>Math.round(n).toLocaleString('ko-KR');
 export function summarizeSearchRoute(game,port,route,canalNames={},preliminary=false,at){

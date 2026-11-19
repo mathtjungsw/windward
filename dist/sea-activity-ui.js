@@ -1,4 +1,4 @@
-import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.18-captain-workflow';
+import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.20-coastal-commissions';
 
 export function createSeaActivityUI(api){
   let pending=false, timer, signature='';

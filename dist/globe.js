@@ -1,5 +1,7 @@
 const GLOBE_RAD=Math.PI/180;
 const globeLongitude=lon=>((lon+540)%360)-180;
+// Two samples per degree covers both the 240px globe and the 360px flat atlas.
+export const ATLAS_WIDTH=720,ATLAS_HEIGHT=360;
 
 // Orthographic projection, including the hidden hemisphere test.
 export function globeProject(point,center){
@@ -29,14 +31,34 @@ export class GlobeAtlas{
     canvas.addEventListener('keydown',e=>{const deltas={ArrowLeft:[-20,0],ArrowRight:[20,0],ArrowUp:[0,15],ArrowDown:[0,-15]};if(deltas[e.key]){e.preventDefault();e.stopPropagation();this.follow=false;const d=deltas[e.key];this.center=[globeLongitude(this.center[0]+d[0]),Math.max(-75,Math.min(75,this.center[1]+d[1]))];this.draw(true);}else if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();this.home();}});
   }
   makeTexture(land,rivers){
-    const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=800;const ctx=canvas.getContext('2d');
-    ctx.fillStyle='#b6dbe4';ctx.fillRect(0,0,1600,800);
-    const p=([lon,lat])=>[(lon+180)/360*1600,(90-lat)/180*800];
+    const canvas=document.createElement('canvas');canvas.width=ATLAS_WIDTH;canvas.height=ATLAS_HEIGHT;const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#b6dbe4';ctx.fillRect(0,0,ATLAS_WIDTH,ATLAS_HEIGHT);
+    const p=([lon,lat])=>[(lon+180)/360*ATLAS_WIDTH,(90-lat)/180*ATLAS_HEIGHT];
     ctx.fillStyle='#e7dbaf';ctx.strokeStyle='#b6ab7d';ctx.lineWidth=.7;
     for(const feature of land.features){const g=feature.geometry,polygons=g.type==='Polygon'?[g.coordinates]:g.coordinates;for(const rings of polygons){ctx.beginPath();for(const ring of rings){ring.forEach((q,i)=>{const a=p(q);if(i)ctx.lineTo(...a);else ctx.moveTo(...a);});ctx.closePath();}ctx.fill('evenodd');ctx.stroke();}}
     ctx.strokeStyle='#7aafb8';ctx.lineWidth=1.5;for(const r of rivers){ctx.beginPath();r.path.forEach((q,i)=>{const a=p(q);if(i)ctx.lineTo(...a);else ctx.moveTo(...a);});ctx.stroke();}
-    ctx.strokeStyle='#4c8b993d';ctx.lineWidth=.7;for(let lon=-180;lon<=180;lon+=30){const x=p([lon,0])[0];ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,800);ctx.stroke();}for(let lat=-60;lat<=60;lat+=30){const y=p([0,lat])[1];ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(1600,y);ctx.stroke();}
-    return ctx.getImageData(0,0,1600,800).data;
+    ctx.strokeStyle='#4c8b993d';ctx.lineWidth=.7;for(let lon=-180;lon<=180;lon+=30){const x=p([lon,0])[0];ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,ATLAS_HEIGHT);ctx.stroke();}for(let lat=-60;lat<=60;lat+=30){const y=p([0,lat])[1];ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(ATLAS_WIDTH,y);ctx.stroke();}
+    return ctx.getImageData(0,0,ATLAS_WIDTH,ATLAS_HEIGHT).data;
+  }
+  setChartOverview(url){
+    if(!url||url===this.overviewUrl)return;
+    this.overviewUrl=url;
+    const image=document.createElement('img');
+    image.onload=()=>{
+      if(this.overviewUrl!==url)return;
+      // The sailing sheet covers 80°N to 60°S. Keep the atlas's polar caps.
+      const northRows=ATLAS_HEIGHT*10/180,chartRows=ATLAS_HEIGHT*140/180;
+      const canvas=document.createElement('canvas');canvas.width=ATLAS_WIDTH;canvas.height=chartRows;
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(image,0,0,ATLAS_WIDTH,chartRows);
+      this.texture.set(ctx.getImageData(0,0,ATLAS_WIDTH,chartRows).data,northRows*ATLAS_WIDTH*4);
+      this.lastGlobeBackground=null;
+      this.lastFlatBackground=null;
+      this.lastFlatPaint=null;
+      this.lastGlobePaint=null;
+      this.draw(true);
+    };
+    image.src=url;
   }
   home(){this.follow=true;if(this.state){this.center=[this.state.position[0],Math.max(-60,Math.min(60,this.state.position[1]*.6))];this.draw(true);}}
   update(state,viewport,route,force=false){this.state=state;this.viewport=viewport;this.route=route;if(this.follow&&!this.drag)this.center=[state.position[0],Math.max(-60,Math.min(60,state.position[1]*.6))];this.draw(force);}
@@ -46,7 +68,7 @@ export class GlobeAtlas{
   draw(force=false){
     if(!this.state||!this.canPaint())return;const now=performance.now();if(!force&&now-this.lastDraw<200)return;const background=this.backgroundKey('globe'),paint=this.paintKey(background);if(!force&&paint===this.lastGlobePaint)return;this.lastDraw=now;this.lastGlobePaint=paint;
     const angle=this.center[1]*GLOBE_RAD,co=Math.cos(angle),si=Math.sin(angle),data=this.image.data,tex=this.texture;
-    if(background!==this.lastGlobeBackground){this.lastGlobeBackground=background;this.backgroundBuilds=(this.backgroundBuilds||0)+1;for(const p of this.pixels){const lat=Math.asin(Math.max(-1,Math.min(1,p.y*co+p.z*si))),lon=globeLongitude(this.center[0]+Math.atan2(p.x,p.z*co-p.y*si)/GLOBE_RAD),x=Math.max(0,Math.min(1599,Math.floor((lon+180)/360*1600))),y=Math.max(0,Math.min(799,Math.floor((90-lat/GLOBE_RAD)/180*800))),i=(y*1600+x)*4,shade=.78+.19*p.z+.05*(p.y-p.x);
+    if(background!==this.lastGlobeBackground){this.lastGlobeBackground=background;this.backgroundBuilds=(this.backgroundBuilds||0)+1;for(const p of this.pixels){const lat=Math.asin(Math.max(-1,Math.min(1,p.y*co+p.z*si))),lon=globeLongitude(this.center[0]+Math.atan2(p.x,p.z*co-p.y*si)/GLOBE_RAD),x=Math.max(0,Math.min(ATLAS_WIDTH-1,Math.floor((lon+180)/360*ATLAS_WIDTH))),y=Math.max(0,Math.min(ATLAS_HEIGHT-1,Math.floor((90-lat/GLOBE_RAD)/180*ATLAS_HEIGHT))),i=(y*ATLAS_WIDTH+x)*4,shade=.78+.19*p.z+.05*(p.y-p.x);
       const visibility=this.exploration?.visibility([lon,lat/GLOBE_RAD],this.state.position)??2;
       if(visibility===0){data[p.offset]=43*shade;data[p.offset+1]=69*shade;data[p.offset+2]=83*shade;}
       else if(visibility===1){const gray=(tex[i]+tex[i+1]+tex[i+2])/3;data[p.offset]=(gray*.45+110)*shade;data[p.offset+1]=(gray*.45+117)*shade;data[p.offset+2]=(gray*.45+120)*shade;}

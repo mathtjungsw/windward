@@ -2,6 +2,22 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {chartTilePlacements,ChartTerrain} from '../dist/chart-terrain.js';
 import {Window} from 'happy-dom';
+test('cached tiles match fresh placement across world edges, resizes and overview changes',()=>{
+ const window=new Window();
+ globalThis.document=window.document;
+ const root=document.createElementNS('http://www.w3.org/2000/svg','g');
+ const terrain=new ChartTerrain(root,manifest,'assets/chart-color');
+ for(const k of [12,7,3,12]){
+  for(const [w,h] of [[390,600],[900,480]]){
+   for(let step=-45;step<=45;step++){
+    const view={x:1600+step,y:800+step,w,h,k},detail=k>3;
+    terrain.update(view,detail);
+    const expected=detail?chartTilePlacements(view,manifest).map(tile=>tile.id):[];
+    assert.deepEqual([...terrain.nodes.keys()].sort(),expected.sort());
+   }
+  }
+ }
+});
 const manifest=JSON.parse(readFileSync(new URL('../dist/assets/chart-tiles/manifest.json',import.meta.url)));
 test('terrain requests only nearby detailed tiles and reuses nodes while moving inside the same tile set',()=>{
  const window=new Window();globalThis.document=window.document;const root=document.createElementNS('http://www.w3.org/2000/svg','g'),terrain=new ChartTerrain(root,manifest),view={x:760,y:236,w:390,h:600,k:12};terrain.update(view);assert.ok(root.children.length>0&&root.children.length<=9);const nodes=[...root.children];for(let i=0;i<60;i++)terrain.update(view);assert.deepEqual([...root.children],nodes);terrain.update({...view,x:1200});assert.ok([...root.children].every(n=>!nodes.includes(n)));assert.ok(root.children.length<=9);

@@ -1,12 +1,12 @@
-import {titleEffect} from './title-effects.js?v=2026.11.18-captain-workflow';
-import {blessingBonus} from './blessings.js?v=2026.11.18-captain-workflow';
-import {shipyardReport} from './historical-ships.js?v=2026.11.18-captain-workflow';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.18-captain-workflow';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.18-captain-workflow';
-import {mapDistance} from './world-wrap.js?v=2026.11.18-captain-workflow';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.18-captain-workflow';
+import {titleEffect} from './title-effects.js?v=2026.11.20-coastal-commissions';
+import {blessingBonus} from './blessings.js?v=2026.11.20-coastal-commissions';
+import {shipyardReport} from './historical-ships.js?v=2026.11.20-coastal-commissions';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-coastal-commissions';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-coastal-commissions';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-coastal-commissions';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-coastal-commissions';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.18-captain-workflow';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-coastal-commissions';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[

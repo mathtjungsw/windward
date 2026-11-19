@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.18-captain-workflow';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.18-captain-workflow';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.18-captain-workflow';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.18-captain-workflow';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.18-captain-workflow';
-import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.18-captain-workflow';
-import {eraAt} from './era-cycle.js?v=2026.11.18-captain-workflow';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.20-coastal-commissions';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.20-coastal-commissions';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.20-coastal-commissions';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.20-coastal-commissions';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.20-coastal-commissions';
+import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.20-coastal-commissions';
+import {eraAt} from './era-cycle.js?v=2026.11.20-coastal-commissions';
 Object.assign(GOODS,PREMIUM_GOODS,ERA_GOODS);
 
 export {GOODS};

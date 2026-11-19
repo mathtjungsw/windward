@@ -1,5 +1,5 @@
-import {DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.18-captain-workflow';
-import {QUIZ_KINDS,quizStatus,quizResetAt,quizPrompt,openQuiz,answerQuiz,quizCommit} from './album-quiz.js?v=2026.11.18-captain-workflow';
+import {DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-coastal-commissions';
+import {QUIZ_KINDS,quizStatus,quizResetAt,quizPrompt,openQuiz,answerQuiz,quizCommit} from './album-quiz.js?v=2026.11.20-coastal-commissions';
 
 const fmt=n=>Number(n).toLocaleString('ko-KR');
 const $=s=>document.querySelector(s);

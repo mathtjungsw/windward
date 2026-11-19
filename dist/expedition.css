@@ -270,7 +270,6 @@ button.shore-pin:focus-visible { outline:2px solid #265f65; outline-offset:2px; 
 .owned-captain-group{border-bottom:1px solid var(--line);padding:.3rem 0}
 .owned-captain-group summary{padding:.8rem .25rem;cursor:pointer;font-weight:600}
 .owned-captain-group .owned-port-row{padding-inline-start:.8rem}
-.map-controls #chart-style{font:600 11px var(--sans)}
 .album-quiz-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:.5rem; margin-block:.8rem; }
 .album-quiz-list button { display:grid; justify-items:start; min-height:52px; width:100%; margin:0; }
 .album-quiz-list span { font-size:.84rem; }
@@ -382,3 +381,6 @@ button:disabled{color:#546761;opacity:.78}
  .fleet-vessel-list{grid-template-columns:repeat(2,minmax(0,1fr))}
  .fleet-vessel-list button{font-size:12px;padding:4px}
 }
+.coast-fragment{display:block;width:min(100%,330px);height:auto;margin:.65rem auto;border:1px solid #a99365;border-radius:5px}
+.order-slot{display:grid;gap:.3rem;margin:.85rem 0;font-weight:600}
+.order-slot select{width:100%;min-height:44px}

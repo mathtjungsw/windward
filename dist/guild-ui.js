@@ -1,5 +1,5 @@
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.18-captain-workflow';
-import {GUILD_TYPES,guildObjective,isGuildReport} from './guild-contracts.js?v=2026.11.18-captain-workflow';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-coastal-commissions';
+import {GUILD_TYPES,guildObjective,isGuildReport} from './guild-contracts.js?v=2026.11.20-coastal-commissions';
 
 const escape=text=>String(text).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const clock=new Intl.DateTimeFormat('ko-KR',{dateStyle:'short',timeStyle:'short',timeZone:'Asia/Seoul'});
@@ -33,6 +33,11 @@ export function createGuildUI(api){
     api.modal('항구 조합','현재 진행 중 '+active.length+' / 3건',
       `<div id="guild-view">${api.projects?'<button class="service-button" id="guild-projects">공동 수송 · 보급소 · 운하</button>':''}<h3>진행 중 의뢰</h3>${rows||'<p>진행 중인 의뢰가 없어요.</p>'}<h3>이 항구에서 수락</h3>${choices||'<p>정박한 항구에서 현재 선단과 보급으로 수락 가능한 의뢰를 확인하세요.</p>'}</div>`,'medium');
     const root=document.querySelector('#guild-view');
+    if(api.customOrders){
+      const custom=document.createElement('button');
+      custom.className='service-button';custom.textContent='맞춤 주문';custom.onclick=api.customOrders;
+      root.prepend(custom);
+    }
     const projects=root.querySelector('#guild-projects');if(projects)projects.onclick=api.projects;
     root.querySelectorAll('[data-charter-action]').forEach(el=>{el.onclick=async()=>{
       if(pending)return;

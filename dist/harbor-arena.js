@@ -1,4 +1,4 @@
-import {harborGoal,harborPresenceOutcome,harborPracticeAction,settleHarborConnection,harborBattleAction} from './harbor-battles.js?v=2026.11.18-captain-workflow';
+import {harborGoal,harborPresenceOutcome,harborPracticeAction,settleHarborConnection,harborBattleAction} from './harbor-battles.js?v=2026.11.20-coastal-commissions';
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

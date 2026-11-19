@@ -10,7 +10,59 @@ export function chartTilePlacements({x,y,w,h,k},manifest,padding=16){
    }
  }return out;
 }
-export class ChartTerrain{
- constructor(root,manifest,assetPath='assets/chart-tiles'){this.root=root;this.manifest=manifest;this.assetPath=assetPath;this.nodes=new Map();}
- update(view,detail=true){const live=new Set();for(const p of detail?chartTilePlacements(view,this.manifest):[]){live.add(p.id);if(this.nodes.has(p.id))continue;const image=document.createElementNS('http://www.w3.org/2000/svg','image');for(const [key,value]of Object.entries({x:p.x,y:p.y,width:p.w,height:p.h,href:`${this.assetPath}/${p.file}?v=${p.sha256.slice(0,16)}`,preserveAspectRatio:'none','pointer-events':'none','data-tile':p.id}))image.setAttribute(key,value);this.root.append(image);this.nodes.set(p.id,image);}for(const [id,node]of this.nodes)if(!live.has(id)){node.remove();this.nodes.delete(id);}}
+// Each repeat includes the chart's shorter last row.
+function tileIndex(position, extent, size) {
+ const repeat = Math.floor(position / extent);
+ return repeat * Math.ceil(extent / size) + Math.floor((position - repeat * extent) / size);
+}
+
+export class ChartTerrain {
+ constructor(root, manifest, assetPath = 'assets/chart-tiles') {
+  this.root = root;
+  this.manifest = manifest;
+  this.assetPath = assetPath;
+  this.nodes = new Map();
+  this.bounds = null;
+ }
+
+ update(view, detail = true) {
+  if (!detail) {
+   if (this.bounds) {
+    for (const node of this.nodes.values()) node.remove();
+    this.nodes.clear();
+    this.bounds = null;
+   }
+   return;
+  }
+  const {width, height, size} = this.manifest;
+  const halfWidth = view.w / (2 * view.k) + 16;
+  const halfHeight = view.h / (2 * view.k) + 16;
+  const left = tileIndex(view.x - halfWidth, width, size);
+  const right = tileIndex(view.x + halfWidth, width, size);
+  const top = tileIndex(view.y - halfHeight, height, size);
+  const bottom = tileIndex(view.y + halfHeight, height, size);
+  const last = this.bounds;
+  if (last && left === last.left && right === last.right && top === last.top && bottom === last.bottom) return;
+  this.bounds = {left, right, top, bottom};
+
+  const live = new Set();
+  for (const tile of chartTilePlacements(view, this.manifest)) {
+   live.add(tile.id);
+   if (this.nodes.has(tile.id)) continue;
+   const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+   const attributes = {
+    x:tile.x, y:tile.y, width:tile.w, height:tile.h,
+    href:`${this.assetPath}/${tile.file}?v=${tile.sha256.slice(0,16)}`,
+    preserveAspectRatio:'none', 'pointer-events':'none', 'data-tile':tile.id
+   };
+   for (const [key, value] of Object.entries(attributes)) image.setAttribute(key, value);
+   this.root.append(image);
+   this.nodes.set(tile.id, image);
+  }
+  for (const [id, node] of this.nodes) {
+   if (live.has(id)) continue;
+   node.remove();
+   this.nodes.delete(id);
+  }
+ }
 }

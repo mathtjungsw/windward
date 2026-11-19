@@ -1,4 +1,4 @@
-import {PORT_BY_ID} from './data.js?v=2026.11.18-captain-workflow';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-coastal-commissions';
 
 const WEEK=604800000,offset=3*86400000+9*3600000;
 export const voyageWeek=at=>Math.floor((at+offset)/WEEK);
@@ -45,10 +45,10 @@ function renderChart(rows){
  }).join('');
  const grid=[...Array.from({length:11},(_,i)=>'<path d="M'+((i+1)*60)+' 0v322"/>'),
   ...Array.from({length:6},(_,i)=>'<path d="M0 '+((i+1)*46)+'h720"/>')].join('');
- return '<svg class="weekly-route-map" viewBox="0 0 720 322" role="img" aria-label="이번 주 공동 항해도"><image href="assets/weekly-chart-land.svg" width="720" height="322"/><g class="weekly-grid">'+grid+'</g><g class="weekly-lines">'+lines+'</g><g class="weekly-ports">'+labels+'</g></svg>';
+ return '<svg class="weekly-route-map" viewBox="0 0 720 322" role="img" aria-label="이번 주 공동 항해도"><image width="720" height="322" preserveAspectRatio="none"/><g class="weekly-grid">'+grid+'</g><g class="weekly-lines">'+lines+'</g><g class="weekly-ports">'+labels+'</g></svg>';
 }
 
-export function createWeeklyChart({account,game,now,storage,modal}){
+export function createWeeklyChart({account,game,now,storage,modal,overview}){
  const root='gameV2/real/weeklyVoyages/';
  let sending=false,renderId=0;
  const key=uid=>'windward-weekly-legs:'+uid;
@@ -97,6 +97,10 @@ export function createWeeklyChart({account,game,now,storage,modal}){
    target.innerHTML='<p>방문 항구 '+chart.ports+'곳 · 연결 항로 '+chart.connections+'개 · 참여 선장 '+chart.captains+'명</p>'+renderChart(chart.visible)+
     (chart.unknown?'<p>아직 발견하지 않은 항구 '+chart.unknown+'곳도 다른 선장이 방문했어요.</p>':'')+
     '<p class="modal-meta">두 항구를 완주한 선장이 많을수록 연결선이 굵어져요. 지도 지형은 Natural Earth 자료를 사용합니다.</p>';
+   const background=target.querySelector('.weekly-route-map image');
+   const fallback='assets/weekly-chart-land.svg',url=overview?.()||fallback;
+   if(url!==fallback)background.addEventListener('error',()=>background.setAttribute('href',fallback),{once:true});
+   background.setAttribute('href',url);
   }catch(error){if(target.isConnected&&id===renderId)target.textContent=error.message;}
  }
  window.addEventListener('online',flush);

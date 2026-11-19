@@ -208,6 +208,8 @@ gameV2/real/chat/...               최근 대화 50개
 
 ## 지도 / 설정
 
+색채 해도는 Natural Earth II의 산지·식생·건조 지대와 해저 음영을 기존 해안선·강에 맞춰 미리 그립니다. Pillow·NumPy가 있는 환경에서 `python tools/build-color-chart.py`로 타일과 축소용 지도를 다시 만들 수 있습니다. 모든 선장은 색채 해도로 시작하며 미니맵도 축소용 지도 이미지를 재사용합니다. 지도 파일을 불러올 수 없거나 운영자가 긴급 복구를 켜면 클래식 해도로 자동 전환합니다. [Natural Earth II 원자료](https://www.naturalearthdata.com/downloads/50m-raster-data/50m-natural-earth-2/)
+
 [Natural Earth](https://www.naturalearthdata.com/) 퍼블릭 도메인 1:110m 해안선·국가 경계. 원본은 [Natural Earth vector](https://github.com/nvkelso/natural-earth-vector)의 GeoJSON입니다. `python tools/build-map.py`로 0.5도 간격의 항해용 육지 마스크를 재생성합니다. A* 바다 항로와 시야선 평활화를 사용합니다. 항구 입출항 연결과 좁은 해협은 단순화되어 있어 실제 항해에 사용할 수 없습니다.
 
 강 중심선은 [Natural Earth 1:10m rivers + lake centerlines](https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-rivers-lake-centerlines/), 도시 좌표는 [Natural Earth 1:10m populated places](https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-populated-places/)를 사용합니다. `python tools/build-waterways.py`로 `dist/assets/rivers.json`과 `dist/harbors.js`를 재생성합니다. 필요한 원본 GeoJSON은 `tools/source-data/`에 캐시하며 Git에는 포함하지 않습니다.

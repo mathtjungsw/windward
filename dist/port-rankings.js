@@ -1,6 +1,6 @@
-import {equityEnabled,currentPortOwner} from './port-equity.js?v=2026.11.18-captain-workflow';
-import {ownership} from './commerce.js?v=2026.11.18-captain-workflow';
-import {PORT_BY_ID} from './data.js?v=2026.11.18-captain-workflow';
+import {equityEnabled,currentPortOwner} from './port-equity.js?v=2026.11.20-coastal-commissions';
+import {ownership} from './commerce.js?v=2026.11.20-coastal-commissions';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-coastal-commissions';
 export function ownedPortSummary(portId,content,ownerName){const o=ownership(content);if(!o.ownerUid)return null;return {ownerUid:o.ownerUid,ownerName:content.investorNames?.[o.ownerUid]||content.developerName||ownerName,portName:content.development?.name||PORT_BY_ID[portId]?.name||portId,share:content.developedOwner&&!equityEnabled(content)?100:content.investors[o.ownerUid]/o.total*100,defaultRate:content.defaultRate||0,kind:content.developedOwner?'developed':'general'};}
 // Counters are independent of personal summaries: another investor may change
 // an offline captain's ownership, without ever writing that captain's save.
