@@ -1,21 +1,21 @@
-import {normalizeTitles} from './title-effects.js?v=2026.11.20-inland-auto-route';
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.20-inland-auto-route';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.20-inland-auto-route';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-auto-route';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.20-inland-auto-route';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-inland-auto-route';
+import {normalizeTitles} from './title-effects.js?v=2026.11.20-inland-return';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.20-inland-return';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.20-inland-return';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-return';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.20-inland-return';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-inland-return';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.20-inland-auto-route';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.20-inland-return';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.20-inland-auto-route';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.20-inland-auto-route';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.20-inland-auto-route';
-import {normalizeDepotDock} from './projects.js?v=2026.11.20-inland-auto-route';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.20-inland-auto-route';
-import {normalizeTavernRound} from './tavern-games.js?v=2026.11.20-inland-auto-route';
-import {normalizeCoastOrders} from './coast-orders.js?v=2026.11.20-inland-auto-route';
-import {normalizeStories} from './story-core.js?v=2026.11.20-inland-auto-route';
-import {validInlandSave} from './inland.js?v=2026.11.20-inland-auto-route';
+import {normalizeSea} from './sea-activities.js?v=2026.11.20-inland-return';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.20-inland-return';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.20-inland-return';
+import {normalizeDepotDock} from './projects.js?v=2026.11.20-inland-return';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.20-inland-return';
+import {normalizeTavernRound} from './tavern-games.js?v=2026.11.20-inland-return';
+import {normalizeCoastOrders} from './coast-orders.js?v=2026.11.20-inland-return';
+import {normalizeStories} from './story-core.js?v=2026.11.20-inland-return';
+import {validInlandSave} from './inland.js?v=2026.11.20-inland-return';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;

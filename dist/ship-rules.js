@@ -1,6 +1,6 @@
-import {titleEffect} from './title-effects.js?v=2026.11.20-inland-auto-route';
-import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.20-inland-auto-route';
-import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.20-inland-auto-route';
+import {titleEffect} from './title-effects.js?v=2026.11.20-inland-return';
+import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.20-inland-return';
+import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.20-inland-return';
 
 export const ACTIVE_SECONDS_PER_DAY=2;
 const rows=[

@@ -1,4 +1,4 @@
-import {revealLandTile,validLandChart} from './land-exploration.js?v=2026.11.20-inland-auto-route';
+import {revealLandTile,validLandChart} from './land-exploration.js?v=2026.11.20-inland-return';
 
 // The display and collision checks share one row-indexed physical map.
 export const GROUND=['바다','육지','강','산등성이','호수'];

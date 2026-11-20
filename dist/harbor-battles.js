@@ -1,7 +1,7 @@
-import {requireCombatAllowed} from './blessings.js?v=2026.11.20-inland-auto-route';
-import {ownership} from './commerce.js?v=2026.11.20-inland-auto-route';
-import {advanceBasicIncome} from './port-income.js?v=2026.11.20-inland-auto-route';
-import {noviceActive} from './novice.js?v=2026.11.20-inland-auto-route';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.20-inland-return';
+import {ownership} from './commerce.js?v=2026.11.20-inland-return';
+import {advanceBasicIncome} from './port-income.js?v=2026.11.20-inland-return';
+import {noviceActive} from './novice.js?v=2026.11.20-inland-return';
 
 const HOUR=3600000, DAY=24*HOUR, WINDOW=2*HOUR;
 export const CONTESTED_PORTS=['jamestown','georgetown-ascension','sanjuan-robinson','portvila'];

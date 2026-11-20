@@ -1,9 +1,9 @@
-import {watchSectorPages} from './sector-pages.js?v=2026.11.20-inland-auto-route';
-import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.20-inland-auto-route';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-auto-route';
-import {REAL_WORLD_ROOT} from './account.js?v=2026.11.20-inland-auto-route';
-import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.20-inland-auto-route';
-import {CaptainRoster} from './captains.js?v=2026.11.20-inland-auto-route';
+import {watchSectorPages} from './sector-pages.js?v=2026.11.20-inland-return';
+import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.20-inland-return';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-return';
+import {REAL_WORLD_ROOT} from './account.js?v=2026.11.20-inland-return';
+import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.20-inland-return';
+import {CaptainRoster} from './captains.js?v=2026.11.20-inland-return';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{

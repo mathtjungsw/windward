@@ -1,10 +1,10 @@
-import {shortestInlandRoute} from './inland-route.js?v=2026.11.20-inland-auto-route';
-import {FieldTerrain,startField,returnField,walkField,fieldNear,fieldDistance} from './overland.js?v=2026.11.20-inland-auto-route';
-import {INLAND_CITIES,INLAND_TIERS,inlandVehicle,inlandWarehouse,inlandAvailable,knownTown,settleInlandVisit,fieldPace,fieldCargo,fieldLoad,fieldTransfer,boardFieldCargo,upgradeInlandVehicle} from './inland.js?v=2026.11.20-inland-auto-route';
-import {landTileSeen,landExplorationArea} from './land-exploration.js?v=2026.11.20-inland-auto-route';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-auto-route';
-import {inspectFieldDiscovery} from './discoveries.js?v=2026.11.20-inland-auto-route';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-auto-route';
+import {shortestInlandRoute} from './inland-route.js?v=2026.11.20-inland-return';
+import {FieldTerrain,startField,returnField,walkField,fieldNear,fieldDistance} from './overland.js?v=2026.11.20-inland-return';
+import {INLAND_CITIES,INLAND_TIERS,inlandVehicle,inlandWarehouse,inlandAvailable,knownTown,settleInlandVisit,fieldPace,fieldCargo,fieldLoad,fieldTransfer,boardFieldCargo,upgradeInlandVehicle} from './inland.js?v=2026.11.20-inland-return';
+import {landTileSeen,landExplorationArea} from './land-exploration.js?v=2026.11.20-inland-return';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-return';
+import {inspectFieldDiscovery} from './discoveries.js?v=2026.11.20-inland-return';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-return';
 
 let terrainPromise;
 function loadTerrain(){
@@ -124,25 +124,29 @@ export function createFieldUI(api){
   const town=panel.querySelector('#field-town'),investigate=panel.querySelector('#field-inspect');
   town.hidden=!nearTown;if(nearTown)town.textContent=nearTown.name+' 입장';
   investigate.hidden=!nearFind;
-  panel.querySelector('#field-ship').hidden=!atOrigin();
-  panel.querySelector('#field-transfer').hidden=!atOrigin();
-  panel.querySelector('#field-vehicle').hidden=!atOrigin()&&!nearTown;
+  const atLanding=atOrigin();
+  panel.querySelector('#field-return').hidden=atLanding;
+  panel.querySelector('#field-ship').hidden=!atLanding;
+  panel.querySelector('#field-transfer').hidden=!atLanding;
+  panel.querySelector('#field-vehicle').hidden=!atLanding&&!nearTown;
   const vehicle=inlandVehicle(game);
   panel.querySelector('#field-stat').textContent=vehicle.name+' · 화물 '+fmt(fieldLoad(game))+'/'+fmt(vehicle.load)+'상자';
   const dx=f.origin[0]-f.cell[0],dy=f.origin[1]-f.cell[1],bearing=(dy<0?'북':dy>0?'남':'')+(dx<0?'서':dx>0?'동':'');
-  panel.querySelector('#field-bear').textContent=atOrigin()?'상륙지':bearing+'쪽 상륙지 · '+Math.ceil(fieldDistance(f.cell,f.origin))+'칸';
+  panel.querySelector('#field-bear').textContent=atLanding?'상륙지':bearing+'쪽 상륙지 · '+Math.ceil(fieldDistance(f.cell,f.origin))+'칸';
   const landArea=Math.round(landExplorationArea(game.inland).walked/1000000);
   panel.querySelector('#field-area').textContent='밝힌 육지 '+fmt(landArea)+' km²';
  }
- async function setGoal(point){
+ function setGoal(point){
+  if(terrain)return planRoute(terrain.cell(point));
+ }
+ async function planRoute(destination,returning=false){
   const current=field();
   if(!terrain||!current||!api.ready())return;
   api.stop();
   setMode('auto');
-  const destination=terrain.cell(point);
   if(terrain.kind(...destination)!==1){api.toast('이동할 수 있는 육지를 선택하세요.');return;}
   const request=new AbortController();
-  planning=request;showRoute('육상 경로 계산 중…');
+  planning=request;showRoute(returning?'상륙지로 돌아가는 길 계산 중…':'육상 경로 계산 중…');
   const path=await shortestInlandRoute(terrain,current.cell,destination,request.signal);
   if(planning!==request)return;
   planning=null;
@@ -151,9 +155,13 @@ export function createFieldUI(api){
    if(!path)api.toast('이 목적지까지 이어지는 육상 경로가 없어요.');
    return;
   }
-  route={path,index:0};
-  showRoute('자동 이동 · '+fmt(path.length)+'칸 남음');
+  route={path,index:0,returning};
+  showRemainingRoute();
   api.follow();
+ }
+ function showRemainingRoute(){
+  const label=route.returning?'상륙지로 돌아가는 중':'자동 이동';
+  showRoute(label+' · '+fmt(route.path.length-route.index)+'칸 남음');
  }
  function point(now=performance.now()){
   const f=field();if(!terrain||!f)return null;
@@ -184,9 +192,10 @@ export function createFieldUI(api){
      if(route){
       route.index++;
       if(route.index===route.path.length){
+       const returning=route.returning;
        park();
-       api.toast('목적지에 도착했어요.');
-      }else showRoute('자동 이동 · '+fmt(route.path.length-route.index)+'칸 남음');
+       api.toast(returning?'상륙지에 도착했어요. 배에 오를 수 있어요.':'목적지에 도착했어요.');
+      }else showRemainingRoute();
      }
      if(dirty&&now-lastSave>=5000){api.save();dirty=false;lastSave=now;}
     }
@@ -299,6 +308,10 @@ export function createFieldUI(api){
  }
  const panel=api.panel();
  panel.querySelector('#field-ship').onclick=board;
+ panel.querySelector('#field-return').onclick=()=>{
+  const landing=field();
+  if(landing&&!atOrigin(landing))void planRoute(landing.origin,true);
+ };
  panel.querySelector('#field-route-stop').onclick=park;
  panel.querySelector('#field-town').onclick=()=>{if(nearTown){park();api.town(nearTown.id);}};
  panel.querySelector('#field-inspect').onclick=()=>{

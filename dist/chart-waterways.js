@@ -1,4 +1,4 @@
-import {CoastalDetail} from './coastal-detail.js?v=2026.11.20-inland-auto-route';
+import {CoastalDetail} from './coastal-detail.js?v=2026.11.20-inland-return';
 
 // Connect world-grid cells through narrow waters using shore-checked waypoints.
 export const COARSE_CONNECTIONS=[

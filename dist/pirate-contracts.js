@@ -1,7 +1,7 @@
-import {SEA_SITES} from './sea-activities.js?v=2026.11.20-inland-auto-route';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.20-inland-auto-route';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-auto-route';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-auto-route';
+import {SEA_SITES} from './sea-activities.js?v=2026.11.20-inland-return';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.20-inland-return';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-return';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-return';
 
 const types={smuggler:{name:'밀수선 화물 회수',reward:1200},salvage:{name:'표류 화물 수색',reward:520}};
 const incidents={

@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.20-inland-auto-route';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.20-inland-auto-route';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.20-inland-auto-route';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.20-inland-auto-route';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.20-inland-auto-route';
-import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.20-inland-auto-route';
-import {eraAt} from './era-cycle.js?v=2026.11.20-inland-auto-route';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.20-inland-return';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.20-inland-return';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.20-inland-return';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.20-inland-return';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.20-inland-return';
+import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.20-inland-return';
+import {eraAt} from './era-cycle.js?v=2026.11.20-inland-return';
 Object.assign(GOODS,PREMIUM_GOODS,ERA_GOODS);
 
 export {GOODS};
