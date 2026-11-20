@@ -1,13 +1,13 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.20-land-caravans';
-import {shipArtPath} from './art.js?v=2026.11.20-land-caravans';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.20-land-caravans';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-land-caravans';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.20-land-caravans';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.20-land-caravans';
-import {findMenus} from './menu-finder.js?v=2026.11.20-land-caravans';
-import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.20-land-caravans';
-import {isTypingTarget} from './controls.js?v=2026.11.20-land-caravans';
-import {validCard} from './social-core.js?v=2026.11.20-land-caravans';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.20-inland-map-visibility';
+import {shipArtPath} from './art.js?v=2026.11.20-inland-map-visibility';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.20-inland-map-visibility';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-map-visibility';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.20-inland-map-visibility';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.20-inland-map-visibility';
+import {findMenus} from './menu-finder.js?v=2026.11.20-inland-map-visibility';
+import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.20-inland-map-visibility';
+import {isTypingTarget} from './controls.js?v=2026.11.20-inland-map-visibility';
+import {validCard} from './social-core.js?v=2026.11.20-inland-map-visibility';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');

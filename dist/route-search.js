@@ -1,4 +1,4 @@
-import {canDepart,voyageEstimate,ship,supplyCost} from './engine.js?v=2026.11.20-land-caravans';
+import {canDepart,voyageEstimate,ship,supplyCost} from './engine.js?v=2026.11.20-inland-map-visibility';
 
 const number=n=>Math.round(n).toLocaleString('ko-KR');
 export function summarizeSearchRoute(game,port,route,canalNames={},preliminary=false,at){

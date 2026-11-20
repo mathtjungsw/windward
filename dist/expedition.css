@@ -394,7 +394,7 @@ button:disabled{color:#546761;opacity:.78}
 .field-actions button{min-height:36px;padding:.25rem .6rem}
 .field-site text{fill:#73501f;font:700 12px system-ui;paint-order:stroke;stroke:#fff9e5;stroke-width:3px;stroke-linejoin:round}
 .field-site text:first-child{font-size:18px}
-.chart.field-active #map-labels,.chart.field-active #routes,.chart.field-active #exploration-fog,.chart.field-active #sight-boundary,.chart.field-active #mobile-port-btn,.chart.field-active .map-legend,.chart.field-active .compass-rose,.field-active .map-caption{display:none}
+.chart.field-active #map-labels,.chart.field-active #routes,.chart.field-active #chart-fog,.chart.field-active use[href="#chart-fog"],.chart.field-active #mobile-port-btn,.chart.field-active .map-legend,.chart.field-active .compass-rose,.field-active .map-caption{display:none}
 
 .map-controls #chart-landfall{font-size:.75rem;white-space:nowrap;line-height:1;font-weight:700}
 

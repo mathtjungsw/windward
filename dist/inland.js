@@ -1,10 +1,10 @@
-import {validFieldRecord,fieldNear} from './overland.js?v=2026.11.20-land-caravans';
-import {FIELD_TOWNS} from './inland-places.js?v=2026.11.20-land-caravans';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-land-caravans';
-import {capacity,usedSpace} from './engine.js?v=2026.11.20-land-caravans';
-import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.20-land-caravans';
-import {recordTrade} from './rank-progress.js?v=2026.11.20-land-caravans';
-import {blessingRate} from './blessings.js?v=2026.11.20-land-caravans';
+import {validFieldRecord,fieldNear} from './overland.js?v=2026.11.20-inland-map-visibility';
+import {FIELD_TOWNS} from './inland-places.js?v=2026.11.20-inland-map-visibility';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-map-visibility';
+import {capacity,usedSpace} from './engine.js?v=2026.11.20-inland-map-visibility';
+import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.20-inland-map-visibility';
+import {recordTrade} from './rank-progress.js?v=2026.11.20-inland-map-visibility';
+import {blessingRate} from './blessings.js?v=2026.11.20-inland-map-visibility';
 
 export const INLAND_CITIES={
  cordoba:{id:'cordoba',name:'코르도바',port:'seville',point:[-4.7794,37.8847],path:[[-5.6,37.53],[-5.16,37.77]],seconds:60,terrain:0,goods:{leather:.83,oliveoil:.87}},

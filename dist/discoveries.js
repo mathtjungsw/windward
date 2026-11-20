@@ -1,12 +1,12 @@
-import {fieldNear} from './overland.js?v=2026.11.20-land-caravans';
-import {titleEffect} from './title-effects.js?v=2026.11.20-land-caravans';
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-land-caravans';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-land-caravans';
-import {segmentDistance} from './voyage-core.js?v=2026.11.20-land-caravans';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.20-land-caravans';
-import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.20-land-caravans';
-import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.20-land-caravans';
-import {eraAvailable} from './era-cycle.js?v=2026.11.20-land-caravans';
+import {fieldNear} from './overland.js?v=2026.11.20-inland-map-visibility';
+import {titleEffect} from './title-effects.js?v=2026.11.20-inland-map-visibility';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-inland-map-visibility';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-map-visibility';
+import {segmentDistance} from './voyage-core.js?v=2026.11.20-inland-map-visibility';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.20-inland-map-visibility';
+import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.20-inland-map-visibility';
+import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.20-inland-map-visibility';
+import {eraAvailable} from './era-cycle.js?v=2026.11.20-inland-map-visibility';
 const shipTrace=s=>(s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0)+(explorationGear(s)?.spotBonus||0)+titleEffect(s,'spotBonus');
 export const explorationAllowed=s=>!s.inland?.field&&!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{

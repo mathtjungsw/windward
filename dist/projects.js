@@ -1,12 +1,12 @@
-import {equityEnabled,currentPortOwner,capitalTotal} from './port-equity.js?v=2026.11.20-land-caravans';
-import {initializePortEquity} from './equity-migration.js?v=2026.11.20-land-caravans';
-import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.20-land-caravans';
-import {fleetCount,ship} from './ship-rules.js?v=2026.11.20-land-caravans';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-land-caravans';
-import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.20-land-caravans';
-import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-land-caravans';
-import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.20-land-caravans';
-import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome,advanceBasicIncome,pendingTradeTax,claimTradeTax} from './port-income.js?v=2026.11.20-land-caravans';
+import {equityEnabled,currentPortOwner,capitalTotal} from './port-equity.js?v=2026.11.20-inland-map-visibility';
+import {initializePortEquity} from './equity-migration.js?v=2026.11.20-inland-map-visibility';
+import {ACTIVE_PORT_BY_ID,DEPOT_SITES,FREIGHT_ORDERS} from './data.js?v=2026.11.20-inland-map-visibility';
+import {fleetCount,ship} from './ship-rules.js?v=2026.11.20-inland-map-visibility';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-map-visibility';
+import {autoSupplyShortfall,supplyRoom,tradingPort} from './engine.js?v=2026.11.20-inland-map-visibility';
+import {activeOfficer,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-inland-map-visibility';
+import {pendingCanal,canalPassDiscount} from './canal-reservations.js?v=2026.11.20-inland-map-visibility';
+import {initializeBasicIncome,estimateBasicIncome,claimBasicIncome,advanceBasicIncome,pendingTradeTax,claimTradeTax} from './port-income.js?v=2026.11.20-inland-map-visibility';
 
 const HOUR=3600000;
 const depots=DEPOT_SITES.map(site=>({id:site.id,kind:'depot',name:site.name,site,cost:300000,duration:6*HOUR}));

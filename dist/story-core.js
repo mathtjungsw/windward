@@ -1,6 +1,6 @@
-import {STORIES,STORY_BY_ID,FIRST_ROUTE_ORDER} from './story-catalog.js?v=2026.11.20-land-caravans';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-land-caravans';
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.20-land-caravans';
+import {STORIES,STORY_BY_ID,FIRST_ROUTE_ORDER} from './story-catalog.js?v=2026.11.20-inland-map-visibility';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-map-visibility';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.20-inland-map-visibility';
 
 const tradeKeys=new Set(STORIES.flatMap(story=>story.steps.filter(step=>step.kind==='buy'||step.kind==='sell').map(step=>[step.kind,step.port,step.good].join(':'))));
 const viewKeys=new Set(STORIES.flatMap(story=>story.steps.flatMap(step=>step.menus||[])));

@@ -1,7 +1,7 @@
-import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.20-land-caravans';
-import {GOODS} from './data.js?v=2026.11.20-land-caravans';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-land-caravans';
-import {explorationGear,activeOfficer,appendItemRecord,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-land-caravans';
+import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.20-inland-map-visibility';
+import {GOODS} from './data.js?v=2026.11.20-inland-map-visibility';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-map-visibility';
+import {explorationGear,activeOfficer,appendItemRecord,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-inland-map-visibility';
 
 export const SEA_TYPES={
   fishing:{label:'어장',wait:20000,cooldown:1800000,good:'driedfish',qty:2},

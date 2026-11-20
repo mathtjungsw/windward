@@ -1,12 +1,12 @@
-import {activeTitle} from './title-effects.js?v=2026.11.20-land-caravans';
-import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.20-land-caravans';
-import {GOODS} from './data.js?v=2026.11.20-land-caravans';
-import {Exploration} from './voyage-core.js?v=2026.11.20-land-caravans';
-import {explorationStats} from './exploration-score.js?v=2026.11.20-land-caravans';
-import {discoveryStats} from './discoveries.js?v=2026.11.20-land-caravans';
-import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.20-land-caravans';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-land-caravans';
-import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.20-land-caravans';
+import {activeTitle} from './title-effects.js?v=2026.11.20-inland-map-visibility';
+import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.20-inland-map-visibility';
+import {GOODS} from './data.js?v=2026.11.20-inland-map-visibility';
+import {Exploration} from './voyage-core.js?v=2026.11.20-inland-map-visibility';
+import {explorationStats} from './exploration-score.js?v=2026.11.20-inland-map-visibility';
+import {discoveryStats} from './discoveries.js?v=2026.11.20-inland-map-visibility';
+import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.20-inland-map-visibility';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-map-visibility';
+import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.20-inland-map-visibility';
 export function collectionRankStats(game){
  const progress=game.rumorProgress,acquired=new Set(progress?.acquiredItems||[]),officers=new Set(progress?.officers||[]);
  return {shoreCompleted:game.shoreProgress?.count||0,rareFinds:DISCOVERIES.filter(d=>d.tier>=3&&game.discoveries?.[d.id]).length,

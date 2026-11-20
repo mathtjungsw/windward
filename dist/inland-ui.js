@@ -1,7 +1,7 @@
-import {GOODS,PORT_BY_ID,harborMarket} from './data.js?v=2026.11.20-land-caravans';
-import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.20-land-caravans';
-import {inlandHarborStorage} from './inland.js?v=2026.11.20-land-caravans';
-import {INLAND_CITIES,freightTown,knownTown,townRoute,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,fieldCargo,fieldLoad,fieldTransfer,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.20-land-caravans';
+import {GOODS,PORT_BY_ID,harborMarket} from './data.js?v=2026.11.20-inland-map-visibility';
+import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.20-inland-map-visibility';
+import {inlandHarborStorage} from './inland.js?v=2026.11.20-inland-map-visibility';
+import {INLAND_CITIES,freightTown,knownTown,townRoute,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,fieldCargo,fieldLoad,fieldTransfer,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.20-inland-map-visibility';
 
 const $=s=>document.querySelector(s),fmt=n=>Number(n).toLocaleString('ko-KR');
 const time=ms=>{const seconds=Math.max(0,Math.ceil(ms/1000));return seconds>=60?`${Math.floor(seconds/60)}분 ${seconds%60}초`:`${seconds}초`;};

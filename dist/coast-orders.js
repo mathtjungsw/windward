@@ -1,9 +1,9 @@
-import {COASTS} from './coast-sketches.js?v=2026.11.20-land-caravans';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-land-caravans';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-land-caravans';
-import {segmentDistance} from './voyage-core.js?v=2026.11.20-land-caravans';
+import {COASTS} from './coast-sketches.js?v=2026.11.20-inland-map-visibility';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-map-visibility';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-map-visibility';
+import {segmentDistance} from './voyage-core.js?v=2026.11.20-inland-map-visibility';
 
-import {inlandBlocksSailing,settleInlandVisit} from './inland.js?v=2026.11.20-land-caravans';
+import {inlandBlocksSailing,settleInlandVisit} from './inland.js?v=2026.11.20-inland-map-visibility';
 
 export {COASTS};
 const coastById=new Map(COASTS.map(site=>[site.id,site]));

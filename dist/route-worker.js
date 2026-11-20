@@ -1,5 +1,5 @@
-import {Navigator} from './engine.js?v=2026.11.20-land-caravans';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.20-land-caravans';
+import {Navigator} from './engine.js?v=2026.11.20-inland-map-visibility';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.20-inland-map-visibility';
 
 let nav;
 self.onmessage=({data})=>{

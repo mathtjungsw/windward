@@ -1,4 +1,4 @@
-import {PRESENCE_TTL,PRESENCE_COLORS} from './presence-core.js?v=2026.11.20-land-caravans';
+import {PRESENCE_TTL,PRESENCE_COLORS} from './presence-core.js?v=2026.11.20-inland-map-visibility';
 
 // Global membership contains no coordinates, cargo, scores or account secrets.
 export function validCaptain(value,now=Date.now()){

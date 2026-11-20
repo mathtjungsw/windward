@@ -1,9 +1,9 @@
-import {FieldTerrain,startField,returnField,walkField,fieldNear,fieldDistance} from './overland.js?v=2026.11.20-land-caravans';
-import {INLAND_CITIES,INLAND_TIERS,inlandVehicle,inlandWarehouse,inlandAvailable,knownTown,settleInlandVisit,fieldPace,fieldCargo,fieldLoad,fieldTransfer,boardFieldCargo,upgradeInlandVehicle} from './inland.js?v=2026.11.20-land-caravans';
-import {landTileSeen,landExplorationArea} from './land-exploration.js?v=2026.11.20-land-caravans';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-land-caravans';
-import {inspectFieldDiscovery} from './discoveries.js?v=2026.11.20-land-caravans';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-land-caravans';
+import {FieldTerrain,startField,returnField,walkField,fieldNear,fieldDistance} from './overland.js?v=2026.11.20-inland-map-visibility';
+import {INLAND_CITIES,INLAND_TIERS,inlandVehicle,inlandWarehouse,inlandAvailable,knownTown,settleInlandVisit,fieldPace,fieldCargo,fieldLoad,fieldTransfer,boardFieldCargo,upgradeInlandVehicle} from './inland.js?v=2026.11.20-inland-map-visibility';
+import {landTileSeen,landExplorationArea} from './land-exploration.js?v=2026.11.20-inland-map-visibility';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-map-visibility';
+import {inspectFieldDiscovery} from './discoveries.js?v=2026.11.20-inland-map-visibility';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-map-visibility';
 
 let terrainPromise;
 function loadTerrain(){
@@ -12,7 +12,9 @@ function loadTerrain(){
   return new FieldTerrain(await response.arrayBuffer());
  }).catch(error=>{terrainPromise=null;throw error;});
 }
-const fieldColors=['#a7ccd8',null,'#609db6','#9b815b','#81b5c7','rgba(29,53,64,.54)'];
+// Draw each terrain kind through the fog so the player can still plan a route.
+const litTerrain=['#a7ccd8','#e9ecd0','#5a96ae','#a5845d','#81b5c7'];
+const unvisitedTerrain=['#8aafb9','#c6ccb3','#557d8d','#877358','#7099a3'];
 const glyphs={
  walk:'<path d="M-5 5v9m10-9v9M-7 0l-5 7m18-7 5 6" stroke="#38473a" stroke-width="3" stroke-linecap="round"/><rect x="-9" y="-6" width="6" height="11" rx="2" fill="#af7744"/><rect x="-6" y="-5" width="12" height="12" rx="4" fill="#276065"/><circle cy="-10" r="5" fill="#c98d55"/><path d="M-8-12H8L5-16h-9Z" fill="#51412e"/>',
  handcart:'<path d="M-17 7h19l5-5m3-1v12" stroke="#67432c" stroke-width="2" fill="none"/><path d="M-19 0h17l-3 9h-10Z" fill="#a87642" stroke="#614a37"/><circle cx="-12" cy="11" r="4" fill="#4b3c2e"/><path d="m6 5 1 8m5-8 1 8" stroke="#38473a" stroke-width="2"/><rect x="6" y="-4" width="8" height="11" rx="3" fill="#276065"/><circle cx="10" cy="-8" r="4" fill="#c98d55"/>',
@@ -22,7 +24,7 @@ const glyphs={
 const fmt=n=>Number(n).toLocaleString('ko-KR');
 export function createFieldUI(api){
  let terrain,towns=[],finds=[],opening=false,goal=null,motion=null,nextStep=0,dirty=false,lastSave=0,terrainKey='',terrainChart,markerKey='',nearTown,nearFind;
- let tint=[],places=[],avatar=null;
+ let raster,canvas,spots,avatar;
  const svg=api.svg;
  const field=()=>api.game().inland?.field;
  const atOrigin=(f=field())=>!!terrain&&fieldNear(f,terrain,f?.origin,1.5);
@@ -32,13 +34,13 @@ export function createFieldUI(api){
  }
  function mount(){
   const terrainLayer=api.terrainLayer(),siteLayer=api.siteLayer();
-  if(!tint.length){
-   tint=fieldColors.map(color=>color&&svg('path',{fill:color,'shape-rendering':'crispEdges'}));
-   terrainLayer.append(...tint.filter(Boolean));
-   const spot=svg('g');
+  if(!raster){
+   canvas=document.createElement('canvas');
+   raster=svg('image',{preserveAspectRatio:'none',style:'image-rendering:pixelated'});
+   terrainLayer.append(raster);
+   spots=svg('g');
    avatar=svg('g',{'aria-label':'육상 이동'});
-   siteLayer.append(spot,avatar);
-   places=[spot];
+   siteLayer.append(spots,avatar);
   }
  }
  async function open(restore=false){
@@ -145,26 +147,23 @@ export function createFieldUI(api){
   const chart=api.game().inland.chart;
   if(key===terrainKey&&chart===terrainChart)return;
   terrainKey=key;terrainChart=chart;
-  const paths=fieldColors.map(()=>[]);
-  const coord=api.project;
-  const [ox,oy]=coord([-180,90]);
-  const [ex,ey]=coord([-179.95,89.95]);
-  const dx=ex-ox,dy=ey-oy;
-  for(let y=y0;y<=y1;y++){
-   for(let x=x0;x<=x1;){
-    const code=revealCode(x,y,f);
-    if(code===1){x++;continue;}
-    let end=x+1;
-    while(end<=x1&&revealCode(end,y,f)===code)end++;
-    paths[code].push('M'+(ox+x*dx)+' '+(oy+y*dy)+'h'+((end-x)*dx)+'v'+dy+'h-'+((end-x)*dx)+'Z');
-    x=end;
-   }
+  const width=x1-x0+1,height=y1-y0+1;
+  if(width<=0||height<=0){raster.removeAttribute('href');return;}
+  // One canvas pixel per ground cell matches the shoreline and movement barrier.
+  canvas.width=width;canvas.height=height;
+  const context=canvas.getContext('2d');
+  const inland=api.game().inland;
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
+   const palette=Math.hypot(x-f.cell[0],y-f.cell[1])<=8||landTileSeen(inland,[x,y])?litTerrain:unvisitedTerrain;
+   context.fillStyle=palette[terrain.kind(x,y)];
+   context.fillRect(x-x0,y-y0,1,1);
   }
-  tint.forEach((node,i)=>node?.setAttribute('d',paths[i].join('')));
- }
- function revealCode(x,y,f){
-  if(Math.hypot(x-f.cell[0],y-f.cell[1])>8&&!landTileSeen(api.game().inland,[x,y]))return 5;
-  return terrain.kind(x,y);
+  const [leftEdge,topEdge]=terrain.geo([x0-.5,y0-.5]);
+  const [rightEdge,bottomEdge]=terrain.geo([x1+.5,y1+.5]);
+  const [x,y]=api.project([leftEdge,topEdge]),[rightX,bottomY]=api.project([rightEdge,bottomEdge]);
+  raster.setAttribute('x',x);raster.setAttribute('y',y);
+  raster.setAttribute('width',rightX-x);raster.setAttribute('height',bottomY-y);
+  raster.setAttribute('href',canvas.toDataURL());
  }
  function draw(){
   const f=field();
@@ -181,12 +180,12 @@ export function createFieldUI(api){
   const key=[f.cell.join(),view.scale,Object.keys(game.discoveries||{}).length].join('|');
   if(key===markerKey)return;
   markerKey=key;
-  places[0].replaceChildren();
+  spots.replaceChildren();
   function mark(cell,symbol,label){
    const [x,y]=api.project(terrain.geo(cell)),g=svg('g',{class:'field-site',transform:'translate('+x+' '+y+') scale('+s+')'});
    const pin=svg('text',{'text-anchor':'middle',y:6});pin.textContent=symbol;g.append(pin);
    if(label){const title=svg('text',{'text-anchor':'middle',y:-11});title.textContent=label;g.append(title);}
-   places[0].append(g);
+   spots.append(g);
   }
   mark(f.origin,'⚑','상륙지');
   for(const {town,cell} of towns)if(fieldDistance(f.cell,cell)<=8||knownTown(game,town.id)&&landTileSeen(game.inland,cell))mark(cell,'◆',knownTown(game,town.id)?town.name:'');

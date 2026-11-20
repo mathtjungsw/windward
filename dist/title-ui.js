@@ -1,6 +1,6 @@
-import {TITLES,activeTitle,normalizeTitles} from './title-effects.js?v=2026.11.20-land-caravans';
-import {titleStats,chooseTitle,reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-land-caravans';
-import {RANK_BY_ID} from './rank-metrics.js?v=2026.11.20-land-caravans';
+import {TITLES,activeTitle,normalizeTitles} from './title-effects.js?v=2026.11.20-inland-map-visibility';
+import {titleStats,chooseTitle,reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-inland-map-visibility';
+import {RANK_BY_ID} from './rank-metrics.js?v=2026.11.20-inland-map-visibility';
 export function createTitleUI(api){
  let busy=false;
  const esc=text=>String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
