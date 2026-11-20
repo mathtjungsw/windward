@@ -1,4 +1,4 @@
-import {equityEnabled} from './port-equity.js?v=2026.11.20-inland-map-visibility';
+import {equityEnabled} from './port-equity.js?v=2026.11.20-inland-fog';
 const HOUR=3600000;
 const CAP_HOURS=72;
 const NEUTRAL=new Set(['lisbon','porto']);

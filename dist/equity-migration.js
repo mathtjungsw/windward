@@ -1,5 +1,5 @@
-import {advanceBasicIncome} from './port-income.js?v=2026.11.20-inland-map-visibility';
-import {capitalTotal,currentPortOwner,preserveSupplyRemainders,equityEnabled} from './port-equity.js?v=2026.11.20-inland-map-visibility';
+import {advanceBasicIncome} from './port-income.js?v=2026.11.20-inland-fog';
+import {capitalTotal,currentPortOwner,preserveSupplyRemainders,equityEnabled} from './port-equity.js?v=2026.11.20-inland-fog';
 // Idempotent. The operator calls this only on a backed-up harbor during maintenance;
 // new harbors enter it in the same atomic action that opens their trading post.
 export function initializePortEquity(content,id,now){

@@ -1,11 +1,11 @@
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.20-inland-map-visibility';
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.20-inland-map-visibility';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.20-inland-map-visibility';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.20-inland-map-visibility';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-inland-map-visibility';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.20-inland-map-visibility';
-import {applyRaftStart} from './raft-start.js?v=2026.11.20-inland-map-visibility';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.20-inland-map-visibility';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.20-inland-fog';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.20-inland-fog';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.20-inland-fog';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.20-inland-fog';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-inland-fog';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.20-inland-fog';
+import {applyRaftStart} from './raft-start.js?v=2026.11.20-inland-fog';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.20-inland-fog';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';

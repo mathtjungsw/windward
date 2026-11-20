@@ -1,7 +1,7 @@
-import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.20-inland-map-visibility';
-import {fleetCount} from './ship-rules.js?v=2026.11.20-inland-map-visibility';
-import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,depotPromotion,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.20-inland-map-visibility';
-import {canalPassDiscount} from './canal-reservations.js?v=2026.11.20-inland-map-visibility';
+import {GOODS,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.20-inland-fog';
+import {fleetCount} from './ship-rules.js?v=2026.11.20-inland-fog';
+import {CANAL_DELIVERY,canalLedger,PROJECTS,canalAccess,depotAccess,depotPromotion,FREIGHT_DAILY_BOX_LIMIT,freightParticipation,projectView} from './projects.js?v=2026.11.20-inland-fog';
+import {canalPassDiscount} from './canal-reservations.js?v=2026.11.20-inland-fog';
 
 const $=s=>document.querySelector(s), fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const time=at=>at?new Date(at).toLocaleString('ko-KR',{dateStyle:'short',timeStyle:'short'}):'';

@@ -1,8 +1,8 @@
-import {tradeEvent} from './market-events.js?v=2026.11.20-inland-map-visibility';
-import {PORT_BY_ID,GOODS,eraMarketBoost} from './data.js?v=2026.11.20-inland-map-visibility';
-import {eraAt} from './era-cycle.js?v=2026.11.20-inland-map-visibility';
-import {eraTradeFactor} from './era-goods.js?v=2026.11.20-inland-map-visibility';
-import {regionalFactor} from './regional-economy.js?v=2026.11.20-inland-map-visibility';
+import {tradeEvent} from './market-events.js?v=2026.11.20-inland-fog';
+import {PORT_BY_ID,GOODS,eraMarketBoost} from './data.js?v=2026.11.20-inland-fog';
+import {eraAt} from './era-cycle.js?v=2026.11.20-inland-fog';
+import {eraTradeFactor} from './era-goods.js?v=2026.11.20-inland-fog';
+import {regionalFactor} from './regional-economy.js?v=2026.11.20-inland-fog';
 export const PREMIUM_STOCK_LIMIT=30,STOCK_PERIOD=7200000,MARKET_VERSION=3;
 // Version boundary is a fixed release epoch, never reset by a page reload.
 export const MARKET_V2_AT=1794293996252;

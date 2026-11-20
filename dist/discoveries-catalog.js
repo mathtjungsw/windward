@@ -1,8 +1,8 @@
-import {FIELD_DISCOVERIES} from './field-discoveries.js?v=2026.11.20-inland-map-visibility';
+import {FIELD_DISCOVERIES} from './field-discoveries.js?v=2026.11.20-inland-fog';
 // Static discovery stories and game observation points.
-import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.20-inland-map-visibility';
-import {LIBRARY_DISCOVERIES} from './discoveries-library.js?v=2026.11.20-inland-map-visibility';
-import {ERA_DISCOVERIES} from './era-discoveries.js?v=2026.11.20-inland-map-visibility';
+import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.20-inland-fog';
+import {LIBRARY_DISCOVERIES} from './discoveries-library.js?v=2026.11.20-inland-fog';
+import {ERA_DISCOVERIES} from './era-discoveries.js?v=2026.11.20-inland-fog';
 export const DISCOVERY_CATALOG_VERSION='2026.11.15-era-preview';
 export const RETIRED_DISCOVERY_FAME={'ruin-itsukushima':400};
 const source=(label,url)=>({label,url});

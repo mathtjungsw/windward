@@ -1,12 +1,12 @@
-import {titleEffect} from './title-effects.js?v=2026.11.20-inland-map-visibility';
-import {blessingBonus} from './blessings.js?v=2026.11.20-inland-map-visibility';
-import {shipyardReport} from './historical-ships.js?v=2026.11.20-inland-map-visibility';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-inland-map-visibility';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-inland-map-visibility';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-map-visibility';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-map-visibility';
+import {titleEffect} from './title-effects.js?v=2026.11.20-inland-fog';
+import {blessingBonus} from './blessings.js?v=2026.11.20-inland-fog';
+import {shipyardReport} from './historical-ships.js?v=2026.11.20-inland-fog';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-inland-fog';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-inland-fog';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-fog';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-fog';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-inland-map-visibility';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-inland-fog';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[

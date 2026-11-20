@@ -1,4 +1,4 @@
-import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-map-visibility';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-fog';
 
 const WEEK=604800000,offset=3*86400000+9*3600000;
 export const voyageWeek=at=>Math.floor((at+offset)/WEEK);

@@ -1,8 +1,8 @@
-import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.20-inland-map-visibility';
-import {GOODS} from './data.js?v=2026.11.20-inland-map-visibility';
-import {explorationGear} from './rumor-progress.js?v=2026.11.20-inland-map-visibility';
-import {shipGlyph} from './art.js?v=2026.11.20-inland-map-visibility';
-import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.20-inland-map-visibility';
+import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.20-inland-fog';
+import {GOODS} from './data.js?v=2026.11.20-inland-fog';
+import {explorationGear} from './rumor-progress.js?v=2026.11.20-inland-fog';
+import {shipGlyph} from './art.js?v=2026.11.20-inland-fog';
+import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.20-inland-fog';
 
 const button=(title,action,target='')=>`<button type="button" class="service-button" data-shore-action="${action}" data-shore-target="${target}">${title}</button>`;
 const nodes=['harbor','market','site','ridge'];

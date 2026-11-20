@@ -1,4 +1,4 @@
-import {LAND_COVERAGE_RUNS,LAND_TILE_COUNT} from './land-exploration-data.js?v=2026.11.20-inland-map-visibility';
+import {LAND_COVERAGE_RUNS,LAND_TILE_COUNT} from './land-exploration-data.js?v=2026.11.20-inland-fog';
 
 const WIDTH=1440;
 const ROWS=720;
