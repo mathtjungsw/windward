@@ -1,5 +1,5 @@
 // Each licensed image links to its source file or museum object.
-import {SURVEY_DISCOVERIES} from './survey-discoveries.js?v=2026.11.20-inland-overview';
+import {SURVEY_DISCOVERIES} from './survey-discoveries.js?v=2026.11.20-inland-auto-route';
 export const ERA_DISCOVERIES=[
   {
     "id": "era-sutton-hoo",

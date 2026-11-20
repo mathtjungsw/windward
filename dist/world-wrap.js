@@ -1,4 +1,4 @@
-import {distance,helmToward} from './engine.js?v=2026.11.20-inland-overview';
+import {distance,helmToward} from './engine.js?v=2026.11.20-inland-auto-route';
 
 // The playable chart spans 80° N to 60° S. Its top and bottom join as a game rule.
 export const MAP_NORTH=80,MAP_SOUTH=-60,MAP_LAT_SPAN=140;

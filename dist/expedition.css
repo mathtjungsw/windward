@@ -399,3 +399,7 @@ button:disabled{color:#546761;opacity:.78}
 .map-controls #chart-landfall{font-size:.75rem;white-space:nowrap;line-height:1;font-weight:700}
 
 .chart.field-active #port-markers *,.chart.field-active #npc-markers *{pointer-events:none!important}
+
+.field-route{fill:none;stroke:#bd7924;stroke-width:3;stroke-dasharray:7 4;stroke-linecap:round;stroke-linejoin:round}
+.field-route-end{fill:#fff7db;stroke:#1d626b;stroke-width:2}
+#field-route-status{font-weight:700;color:#1d626b}

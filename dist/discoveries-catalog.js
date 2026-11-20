@@ -1,8 +1,8 @@
-import {FIELD_DISCOVERIES} from './field-discoveries.js?v=2026.11.20-inland-overview';
+import {FIELD_DISCOVERIES} from './field-discoveries.js?v=2026.11.20-inland-auto-route';
 // Static discovery stories and game observation points.
-import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.20-inland-overview';
-import {LIBRARY_DISCOVERIES} from './discoveries-library.js?v=2026.11.20-inland-overview';
-import {ERA_DISCOVERIES} from './era-discoveries.js?v=2026.11.20-inland-overview';
+import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.20-inland-auto-route';
+import {LIBRARY_DISCOVERIES} from './discoveries-library.js?v=2026.11.20-inland-auto-route';
+import {ERA_DISCOVERIES} from './era-discoveries.js?v=2026.11.20-inland-auto-route';
 export const DISCOVERY_CATALOG_VERSION='2026.11.15-era-preview';
 export const RETIRED_DISCOVERY_FAME={'ruin-itsukushima':400};
 const source=(label,url)=>({label,url});

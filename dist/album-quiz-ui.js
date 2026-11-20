@@ -1,5 +1,5 @@
-import {DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-inland-overview';
-import {QUIZ_KINDS,quizStatus,quizResetAt,quizPrompt,openQuiz,answerQuiz,quizCommit} from './album-quiz.js?v=2026.11.20-inland-overview';
+import {DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-inland-auto-route';
+import {QUIZ_KINDS,quizStatus,quizResetAt,quizPrompt,openQuiz,answerQuiz,quizCommit} from './album-quiz.js?v=2026.11.20-inland-auto-route';
 
 const fmt=n=>Number(n).toLocaleString('ko-KR');
 const $=s=>document.querySelector(s);

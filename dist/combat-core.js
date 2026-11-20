@@ -1,18 +1,18 @@
-import {titleEffect} from './title-effects.js?v=2026.11.20-inland-overview';
-import {requireCombatAllowed} from './blessings.js?v=2026.11.20-inland-overview';
-import {shipyardVictory} from './historical-ships.js?v=2026.11.20-inland-overview';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.20-inland-overview';
-import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-inland-overview';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-inland-overview';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-inland-overview';
-import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.20-inland-overview';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.20-inland-overview';
-import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.20-inland-overview';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-overview';
-import {currentCanal} from './canal-reservations.js?v=2026.11.20-inland-overview';
+import {titleEffect} from './title-effects.js?v=2026.11.20-inland-auto-route';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.20-inland-auto-route';
+import {shipyardVictory} from './historical-ships.js?v=2026.11.20-inland-auto-route';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.20-inland-auto-route';
+import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-inland-auto-route';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-inland-auto-route';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-inland-auto-route';
+import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.20-inland-auto-route';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.20-inland-auto-route';
+import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.20-inland-auto-route';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-auto-route';
+import {currentCanal} from './canal-reservations.js?v=2026.11.20-inland-auto-route';
 export const COMBAT_RANGE=180,COMBAT_TIMEOUT=180000,PROTECTION_MS=120000;
 export function npcSlotChanges(game,uid,currentSlot){currentSlot??=null;const expected='npc:'+uid;if(currentSlot&&currentSlot!==expected)throw Error('선장 간 전투를 먼저 마치세요.');const next=game.npcBattle?expected:null;return currentSlot===next?{}:{['combatSlots/'+uid]:next};}
-export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-inland-overview';
+export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-inland-auto-route';
 const copy=o=>structuredClone(o||{});
 export function splitCargo(cargo,limit){const taken={},rest={};for(const [id,c]of Object.entries(cargo||{}).sort(([a],[b])=>a.localeCompare(b))){const qty=Math.min(c.qty,Math.max(0,limit)),cost=c.qty?c.cost*qty/c.qty:0;if(qty)taken[id]={qty,cost};if(qty<c.qty)rest[id]={qty:c.qty-qty,cost:c.cost-cost};limit-=qty;}return {taken,rest};}
 export const cargoCount=c=>Object.values(c||{}).reduce((n,c)=>n+c.qty,0);

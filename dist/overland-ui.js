@@ -1,9 +1,10 @@
-import {FieldTerrain,startField,returnField,walkField,fieldNear,fieldDistance} from './overland.js?v=2026.11.20-inland-overview';
-import {INLAND_CITIES,INLAND_TIERS,inlandVehicle,inlandWarehouse,inlandAvailable,knownTown,settleInlandVisit,fieldPace,fieldCargo,fieldLoad,fieldTransfer,boardFieldCargo,upgradeInlandVehicle} from './inland.js?v=2026.11.20-inland-overview';
-import {landTileSeen,landExplorationArea} from './land-exploration.js?v=2026.11.20-inland-overview';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-overview';
-import {inspectFieldDiscovery} from './discoveries.js?v=2026.11.20-inland-overview';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-overview';
+import {shortestInlandRoute} from './inland-route.js?v=2026.11.20-inland-auto-route';
+import {FieldTerrain,startField,returnField,walkField,fieldNear,fieldDistance} from './overland.js?v=2026.11.20-inland-auto-route';
+import {INLAND_CITIES,INLAND_TIERS,inlandVehicle,inlandWarehouse,inlandAvailable,knownTown,settleInlandVisit,fieldPace,fieldCargo,fieldLoad,fieldTransfer,boardFieldCargo,upgradeInlandVehicle} from './inland.js?v=2026.11.20-inland-auto-route';
+import {landTileSeen,landExplorationArea} from './land-exploration.js?v=2026.11.20-inland-auto-route';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-auto-route';
+import {inspectFieldDiscovery} from './discoveries.js?v=2026.11.20-inland-auto-route';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-auto-route';
 
 let terrainPromise;
 function loadTerrain(){
@@ -24,14 +25,43 @@ const glyphs={
 };
 const fmt=n=>Number(n).toLocaleString('ko-KR');
 export function createFieldUI(api){
- let terrain,towns=[],finds=[],opening=false,goal=null,motion=null,nextStep=0,dirty=false,lastSave=0,terrainKey='',terrainChart,seaChart,markerKey='',nearTown,nearFind;
- let raster,canvas,spots,avatar;
+ let terrain,towns=[],finds=[],opening=false,motion=null,nextStep=0,dirty=false,lastSave=0,terrainKey='',terrainChart,seaChart,markerKey='',nearTown,nearFind;
+ let raster,canvas,spots,avatar,routeLine,routeEnd;
+ let controlMode='auto',route=null,planning=null;
  const svg=api.svg;
  const field=()=>api.game().inland?.field;
  const atOrigin=(f=field())=>!!terrain&&fieldNear(f,terrain,f?.origin,1.5);
+ function showRoute(message=''){
+  const panel=api.panel(),status=panel.querySelector('#field-route-status');
+  status.textContent=message;
+  status.hidden=!message;
+  panel.querySelector('#field-route-stop').hidden=!route&&!planning;
+  if(!routeLine)return;
+  routeLine.style.display=route?'':'none';
+  routeEnd.style.display=route?'':'none';
+  if(!route)return;
+  const current=field().cell;
+  const coordinates=[current,...route.path.slice(route.index)].map(cell=>api.project(terrain.geo(cell)));
+  routeLine.setAttribute('points',coordinates.map(([x,y])=>x+','+y).join(' '));
+  const [x,y]=coordinates.at(-1);routeEnd.setAttribute('cx',x);routeEnd.setAttribute('cy',y);
+  scaleTarget();
+ }
+ function scaleTarget(){
+  const scale=api.view().scale;
+  if(scale&&route)routeEnd.setAttribute('r',6/scale);
+ }
  function park(){
-  goal=null;
+  if(planning||route){
+   planning?.abort();
+   planning=null;route=null;showRoute();
+  }
   if(dirty){api.save();dirty=false;}
+ }
+ function setMode(mode){
+  if(controlMode===mode)return;
+  if(mode==='manual')park();
+  controlMode=mode;
+  api.onMode();
  }
  function mount(){
   const terrainLayer=api.terrainLayer(),siteLayer=api.siteLayer();
@@ -39,9 +69,11 @@ export function createFieldUI(api){
    canvas=document.createElement('canvas');
    raster=svg('image',{preserveAspectRatio:'none',style:'image-rendering:pixelated'});
    terrainLayer.append(raster);
+   routeLine=svg('polyline',{id:'field-route-line',class:'field-route','vector-effect':'non-scaling-stroke',style:'display:none'});
+   routeEnd=svg('circle',{class:'field-route-end','vector-effect':'non-scaling-stroke',style:'display:none'});
    spots=svg('g');
    avatar=svg('g',{'aria-label':'육상 이동'});
-   siteLayer.append(spots,avatar);
+   siteLayer.append(routeLine,routeEnd,spots,avatar);
   }
  }
  async function open(restore=false){
@@ -62,6 +94,7 @@ export function createFieldUI(api){
    const chart=game.inland?.chart;
    api.stop();
    startField(game,terrain,point,game.port);
+   controlMode='auto';
    mount();
    if(restore){motion=null;terrainKey='';markerKey='';}
    updateSites();
@@ -101,9 +134,25 @@ export function createFieldUI(api){
   const landArea=Math.round(landExplorationArea(game.inland).walked/1000000);
   panel.querySelector('#field-area').textContent='밝힌 육지 '+fmt(landArea)+' km²';
  }
- function setGoal(point){
-  if(!terrain||!field())return;
-  goal=terrain.cell(point);
+ async function setGoal(point){
+  const current=field();
+  if(!terrain||!current||!api.ready())return;
+  api.stop();
+  setMode('auto');
+  const destination=terrain.cell(point);
+  if(terrain.kind(...destination)!==1){api.toast('이동할 수 있는 육지를 선택하세요.');return;}
+  const request=new AbortController();
+  planning=request;showRoute('육상 경로 계산 중…');
+  const path=await shortestInlandRoute(terrain,current.cell,destination,request.signal);
+  if(planning!==request)return;
+  planning=null;
+  if(!path?.length){
+   showRoute();
+   if(!path)api.toast('이 목적지까지 이어지는 육상 경로가 없어요.');
+   return;
+  }
+  route={path,index:0};
+  showRoute('자동 이동 · '+fmt(path.length)+'칸 남음');
   api.follow();
  }
  function point(now=performance.now()){
@@ -119,24 +168,31 @@ export function createFieldUI(api){
   if(!terrain||!field())return;
   if(allowed&&now>=nextStep){
    const dx=Number(keys.has('ArrowRight'))-Number(keys.has('ArrowLeft')),dy=Number(keys.has('ArrowDown'))-Number(keys.has('ArrowUp'));
-   if(dx||dy)goal=null;
-   const f=field(),before=f.cell;
-   const step=dx||dy?[dx,dy]:goal?.map((v,i)=>Math.sign(v-before[i]));
+   if(dx||dy)setMode('manual');
+   const before=field().cell,next=route?.path[route.index];
+   const step=dx||dy?[dx,dy]:next&&[next[0]-before[0],next[1]-before[1]];
    if(step?.some(Boolean)){
-    const duration=1000/fieldPace(inlandVehicle(api.game()));
+    const duration=1000*Math.hypot(...step)/fieldPace(inlandVehicle(api.game()));
     nextStep=now+duration;
     const blocked=walkField(api.game(),terrain,...step);
     if(blocked){
-     goal=null;
+     park();
      api.toast(blocked+'에는 들어갈 수 없어요. 길을 돌아가세요.');
     }else{
      dirty=true;motion={from:before,at:now,duration};
      api.follow();updateSites();
-     if(now-lastSave>=5000){api.save();dirty=false;lastSave=now;}
+     if(route){
+      route.index++;
+      if(route.index===route.path.length){
+       park();
+       api.toast('목적지에 도착했어요.');
+      }else showRoute('자동 이동 · '+fmt(route.path.length-route.index)+'칸 남음');
+     }
+     if(dirty&&now-lastSave>=5000){api.save();dirty=false;lastSave=now;}
     }
-   }else if(goal)goal=null;
+   }
   }
-  if(!motion&&!keys.size&&!goal&&dirty)park();
+  if(!motion&&!keys.size&&!route&&dirty)park();
   if(motion)api.repaint();
  }
  function paintTerrain(f,view){
@@ -187,6 +243,7 @@ export function createFieldUI(api){
   const view=api.view(),s=1/view.scale;
   if(!view.scale)return;
   paintTerrain(f,view);
+  scaleTarget();
   const game=api.game(),vehicle=inlandVehicle(game),icon=vehicle.tier<=3?'walk':vehicle.tier===4?'handcart':vehicle.tier<=8?'horse':'wagon';
   const position=point(),[x,y]=api.project(position);
   avatar.setAttribute('transform','translate('+x+' '+y+') scale('+s+')');
@@ -242,6 +299,7 @@ export function createFieldUI(api){
  }
  const panel=api.panel();
  panel.querySelector('#field-ship').onclick=board;
+ panel.querySelector('#field-route-stop').onclick=park;
  panel.querySelector('#field-town').onclick=()=>{if(nearTown){park();api.town(nearTown.id);}};
  panel.querySelector('#field-inspect').onclick=()=>{
   park();
@@ -250,5 +308,5 @@ export function createFieldUI(api){
  };
  panel.querySelector('#field-vehicle').onclick=vehicleMenu;
  panel.querySelector('#field-transfer').onclick=()=>cargoMenu();
- return {open,point,tick,draw,park,setGoal,cargoMenu,updateSites};
+ return {open,point,tick,draw,park,setGoal,setMode,mode:()=>controlMode,cargoMenu,updateSites};
 }

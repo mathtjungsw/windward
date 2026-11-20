@@ -1,4 +1,4 @@
-import {canDepart,voyageEstimate,ship,supplyCost} from './engine.js?v=2026.11.20-inland-overview';
+import {canDepart,voyageEstimate,ship,supplyCost} from './engine.js?v=2026.11.20-inland-auto-route';
 
 const number=n=>Math.round(n).toLocaleString('ko-KR');
 export function summarizeSearchRoute(game,port,route,canalNames={},preliminary=false,at){

@@ -1,6 +1,6 @@
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-overview';
-import {COASTS,ORDERS,coastHarborReason,nextCoast,takeCoast,abandonCoast,takeOrder,cancelOrder,fillOrder,orderDay} from './coast-orders.js?v=2026.11.20-inland-overview';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-overview';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-auto-route';
+import {COASTS,ORDERS,coastHarborReason,nextCoast,takeCoast,abandonCoast,takeOrder,cancelOrder,fillOrder,orderDay} from './coast-orders.js?v=2026.11.20-inland-auto-route';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-auto-route';
 
 const quantity=value=>value.toLocaleString('ko-KR');
 const fragment=site=>`<img class="coast-fragment" width="330" height="224" src="assets/coast-sketches/${site.id}.webp" alt="북쪽이 위인 해안선 조각. ${site.hint}">`;

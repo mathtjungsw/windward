@@ -1,4 +1,4 @@
-import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.20-inland-overview';
+import {visibleSeaActivities,SEA_SITES,SEA_TYPES} from './sea-activities.js?v=2026.11.20-inland-auto-route';
 
 export function createSeaActivityUI(api){
   let pending=false, timer, signature='';

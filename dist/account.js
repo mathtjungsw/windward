@@ -1,11 +1,11 @@
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.20-inland-overview';
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.20-inland-overview';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.20-inland-overview';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.20-inland-overview';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-inland-overview';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.20-inland-overview';
-import {applyRaftStart} from './raft-start.js?v=2026.11.20-inland-overview';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.20-inland-overview';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.20-inland-auto-route';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.20-inland-auto-route';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.20-inland-auto-route';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.20-inland-auto-route';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-inland-auto-route';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.20-inland-auto-route';
+import {applyRaftStart} from './raft-start.js?v=2026.11.20-inland-auto-route';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.20-inland-auto-route';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';

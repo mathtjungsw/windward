@@ -233,3 +233,29 @@ test('caravan upgrades improve live pace and cargo capacity, and local transfers
  boardFieldCargo(restored,terrain);returnField(restored,terrain);
  assert.deepEqual(restored.cargo.wine,{qty:11,cost:66});
 });
+
+test('automatic inland travel finds the shortest legal detour, rejects islands and respects cancellation',async()=>{
+ const {FieldTerrain}=await import('../dist/overland.js');
+ const {shortestInlandRoute}=await import('../dist/inland-route.js');
+ const cells=['11120','11120','11121','11121','11111','11110'];
+ const width=cells[0].length,offsets=[0],ends=[];
+ for(const row of cells){
+  for(let x=1;x<=width;x++)if(row[x]!==row[x-1])ends.push((x<<3)|Number(row[x-1]));
+  offsets.push(ends.length);
+ }
+ const bytes=new ArrayBuffer(8+offsets.length*4+ends.length*2),header=new DataView(bytes);
+ header.setUint32(0,0x57574c31);header.setUint16(4,width,true);header.setUint16(6,cells.length,true);
+ new Uint32Array(bytes,8,offsets.length).set(offsets);new Uint16Array(bytes,8+offsets.length*4).set(ends);
+ const terrain=new FieldTerrain(bytes),start=[2,2],destination=[4,2];
+ const detour=await shortestInlandRoute(terrain,start,destination);
+ assert.deepEqual(detour,[[2,3],[2,4],[3,4],[4,4],[4,3],[4,2]]);
+ assert.equal(await shortestInlandRoute(terrain,start,[3,2]),null);
+ assert.deepEqual(await shortestInlandRoute(terrain,start,[0,0]),[[1,1],[0,0]]);
+ assert.deepEqual(await shortestInlandRoute(terrain,start,start),[]);
+ assert.equal(await shortestInlandRoute(terrain,start,destination,AbortSignal.abort()),null);
+ // A water gap at the shoreline makes this second plot unreachable.
+ const disconnectedStart=[4,2];
+ const cut=new FieldTerrain(bytes.slice(0));
+ for(let i=cut.rows[4];i<cut.rows[5];i++)cut.ends[i]=(cut.ends[i]&~7)|0;
+ assert.equal(await shortestInlandRoute(cut,start,disconnectedStart),null);
+});

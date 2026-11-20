@@ -1,16 +1,16 @@
-import {officerPortrait} from './officer-portrait.js?v=2026.11.20-inland-overview';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.20-inland-overview';
-import {collectionArt} from './art.js?v=2026.11.20-inland-overview';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-overview';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-overview';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.20-inland-overview';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.20-inland-overview';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-inland-overview';
-import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.20-inland-overview';
+import {officerPortrait} from './officer-portrait.js?v=2026.11.20-inland-auto-route';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.20-inland-auto-route';
+import {collectionArt} from './art.js?v=2026.11.20-inland-auto-route';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-auto-route';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-auto-route';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.20-inland-auto-route';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.20-inland-auto-route';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-inland-auto-route';
+import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.20-inland-auto-route';
 
-import {readRumor} from './discoveries.js?v=2026.11.20-inland-overview';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.20-inland-overview';
-import {eraAvailable} from './era-cycle.js?v=2026.11.20-inland-overview';
+import {readRumor} from './discoveries.js?v=2026.11.20-inland-auto-route';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.20-inland-auto-route';
+import {eraAvailable} from './era-cycle.js?v=2026.11.20-inland-auto-route';
 
 const labels={all:'전체',pending:'미완료',complete:'완료'};
 const inFilter=(filter,complete)=>filter==='all'||(filter==='complete')===!!complete;

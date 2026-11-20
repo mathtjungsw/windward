@@ -1,18 +1,19 @@
-import {blessingBonus,blessingBoundary,blessingNow,blessingRate} from './blessings.js?v=2026.11.20-inland-overview';
-import {inlandBlocksSailing} from './inland.js?v=2026.11.20-inland-overview';
-import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.20-inland-overview';
-import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.20-inland-overview';
-import {regionalFactor} from './regional-economy.js?v=2026.11.20-inland-overview';
-import {recordTrade} from './rank-progress.js?v=2026.11.20-inland-overview';
-import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.20-inland-overview';
-import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.20-inland-overview';
-import {parseState} from './save-game.js?v=2026.11.20-inland-overview';
-import {gunWeight} from './cannons.js?v=2026.11.20-inland-overview';
-import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.20-inland-overview';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.20-inland-overview';
-import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.20-inland-overview';
-import {charterCargo} from './guild-contracts.js?v=2026.11.20-inland-overview';
-export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.20-inland-overview';
+import {Heap} from './navigation-heap.js?v=2026.11.20-inland-auto-route';
+import {blessingBonus,blessingBoundary,blessingNow,blessingRate} from './blessings.js?v=2026.11.20-inland-auto-route';
+import {inlandBlocksSailing} from './inland.js?v=2026.11.20-inland-auto-route';
+import {HISTORICAL_BY_ID,historicalProgress,shipyardRecord,shipyardTrade} from './historical-ships.js?v=2026.11.20-inland-auto-route';
+import {COARSE_CONNECTIONS} from './chart-waterways.js?v=2026.11.20-inland-auto-route';
+import {regionalFactor} from './regional-economy.js?v=2026.11.20-inland-auto-route';
+import {recordTrade} from './rank-progress.js?v=2026.11.20-inland-auto-route';
+import { PORTS, PORT_BY_ID, GOODS, LEGACY_PORTS } from './data.js?v=2026.11.20-inland-auto-route';
+import {ship,shipTier,fleetCount,fleetShips,syncFleet,fleetCapacity,upgradeCost,additionalShipCost,supplySpace,supplyUnits,fleetMaxHP,shipCostBasis,fleetLimit,vesselSpec,vesselSeaSpeed,ACTIVE_SECONDS_PER_DAY,SHIPS,storedShips,highestOwnedTier} from './ship-rules.js?v=2026.11.20-inland-auto-route';
+import {parseState} from './save-game.js?v=2026.11.20-inland-auto-route';
+import {gunWeight} from './cannons.js?v=2026.11.20-inland-auto-route';
+import {activeOfficer,gearOnShip,recordContractArrival,supplyDiscount,couponAmount,consumeCoupon,addOfficerExperience,appendItemRecord} from './rumor-progress.js?v=2026.11.20-inland-auto-route';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.20-inland-auto-route';
+import {pendingCanal,refundCanalTolls} from './canal-reservations.js?v=2026.11.20-inland-auto-route';
+import {charterCargo} from './guild-contracts.js?v=2026.11.20-inland-auto-route';
+export {ship,supplySpace,ACTIVE_SECONDS_PER_DAY} from './ship-rules.js?v=2026.11.20-inland-auto-route';
 
 export const SAVE_KEY='windward-save-v1';
 export const START_DATE=Date.UTC(1522,3,6);
@@ -232,13 +233,6 @@ export function sell(s,goodId,qty){
   if(!c.qty)delete s.cargo[goodId];
   if(s.port!=='lisbon'&&goodId==='wine'&&s.boughtLisbonWine)s.soldAway=true;
   if(!s.explorationLockedUntilSailing)shipyardTrade(s,goodId);recordTrade(s,goodId,'sell',total-cost);return {ok:true,total,qty,unit,profit:Math.round(total-cost)};
-}
-
-class Heap{
-  data=[];
-  push(id,score){let i=this.data.length;this.data.push([id,score]);while(i){const p=(i-1)>>1;if(this.data[p][1]<=score)break;this.data[i]=this.data[p];i=p;}this.data[i]=[id,score];}
-  pop(){const top=this.data[0],last=this.data.pop();if(this.data.length){let i=0;while(i*2+1<this.data.length){let c=i*2+1;if(c+1<this.data.length&&this.data[c+1][1]<this.data[c][1])c++;if(this.data[c][1]>=last[1])break;this.data[i]=this.data[c];i=c;}this.data[i]=last;}return top[0];}
-  get size(){return this.data.length;}
 }
 
 export class Navigator{

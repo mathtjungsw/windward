@@ -1,12 +1,12 @@
-import {titleEffect} from './title-effects.js?v=2026.11.20-inland-overview';
-import {blessingBonus} from './blessings.js?v=2026.11.20-inland-overview';
-import {shipyardReport} from './historical-ships.js?v=2026.11.20-inland-overview';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-inland-overview';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-inland-overview';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-overview';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-overview';
+import {titleEffect} from './title-effects.js?v=2026.11.20-inland-auto-route';
+import {blessingBonus} from './blessings.js?v=2026.11.20-inland-auto-route';
+import {shipyardReport} from './historical-ships.js?v=2026.11.20-inland-auto-route';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-inland-auto-route';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-inland-auto-route';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-auto-route';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-auto-route';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-inland-overview';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-inland-auto-route';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[
