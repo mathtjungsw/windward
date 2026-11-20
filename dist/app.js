@@ -1,82 +1,82 @@
-import {createFieldUI} from './overland-ui.js?v=2026.11.20-survey-voyages';
-import {reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-survey-voyages';
-import {createTitleUI} from './title-ui.js?v=2026.11.20-survey-voyages';
+import {createFieldUI} from './overland-ui.js?v=2026.11.20-land-caravans';
+import {reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-land-caravans';
+import {createTitleUI} from './title-ui.js?v=2026.11.20-land-caravans';
 let titleUI;
-import {createCaptainsMail} from './captains-mail.js?v=2026.11.20-survey-voyages';
-import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.20-survey-voyages';
-import {regionalEvent} from './market-events.js?v=2026.11.20-survey-voyages';
-import {createUiUsage} from './ui-usage.js?v=2026.11.20-survey-voyages';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.20-survey-voyages';
-import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.20-survey-voyages';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.20-survey-voyages';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.20-survey-voyages';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.20-survey-voyages';
-import {createWeeklyChart} from './weekly-chart.js?v=2026.11.20-survey-voyages';
-import {TAVERN_GAMES} from './tavern-games.js?v=2026.11.20-survey-voyages';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.20-survey-voyages';
-import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.20-survey-voyages';
-import {createBlessings} from './blessings-ui.js?v=2026.11.20-survey-voyages';
-import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.20-survey-voyages';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.20-survey-voyages';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.20-survey-voyages';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.20-survey-voyages';
-import {createCommunity} from './community.js?v=2026.11.20-survey-voyages';
-import {createTaxCollector} from './tax-collector.js?v=2026.11.20-survey-voyages';
-import {createStoryUI} from './story-ui.js?v=2026.11.20-survey-voyages';
-import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.20-survey-voyages';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.20-survey-voyages';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.20-survey-voyages';
-import {createCombat} from './combat-ui.js?v=2026.11.20-survey-voyages';
-import {createBusiness} from './business-ui.js?v=2026.11.20-survey-voyages';
-import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.20-survey-voyages';
-import {createInlandUI} from './inland-ui.js?v=2026.11.20-survey-voyages';
-import {INLAND_CITIES,knownTown,townRoute,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.20-survey-voyages';
-import {createExpansion} from './expansion-ui.js?v=2026.11.20-survey-voyages';
-import {gameStats} from './public-stats.js?v=2026.11.20-survey-voyages';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.20-survey-voyages';
-import {shipGlyph} from './art.js?v=2026.11.20-survey-voyages';
-import {inspectDiscovery,explorationAllowed,discoveryStats,hasClues} from './discoveries.js?v=2026.11.20-survey-voyages';
-import {RELEASE} from './release-notes.js?v=2026.11.20-survey-voyages';
-import {createUX} from './ux.js?v=2026.11.20-survey-voyages';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.20-survey-voyages';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.20-survey-voyages';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.20-survey-voyages';
-import {AtlasView} from './atlas-view.js?v=2026.11.20-survey-voyages';
-import {FleetPresence} from './multiplayer.js?v=2026.11.20-survey-voyages';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.20-survey-voyages';
-import {CaptainChat} from './chat.js?v=2026.11.20-survey-voyages';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.20-survey-voyages';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.20-survey-voyages';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.20-survey-voyages';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-survey-voyages';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.20-survey-voyages';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.20-survey-voyages';
-import {CaptainRankings} from './rankings.js?v=2026.11.20-survey-voyages';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.20-survey-voyages';
+import {createCaptainsMail} from './captains-mail.js?v=2026.11.20-land-caravans';
+import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.20-land-caravans';
+import {regionalEvent} from './market-events.js?v=2026.11.20-land-caravans';
+import {createUiUsage} from './ui-usage.js?v=2026.11.20-land-caravans';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-land-caravans';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.20-land-caravans';
+import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.20-land-caravans';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.20-land-caravans';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.20-land-caravans';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.20-land-caravans';
+import {createWeeklyChart} from './weekly-chart.js?v=2026.11.20-land-caravans';
+import {TAVERN_GAMES} from './tavern-games.js?v=2026.11.20-land-caravans';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.20-land-caravans';
+import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.20-land-caravans';
+import {createBlessings} from './blessings-ui.js?v=2026.11.20-land-caravans';
+import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.20-land-caravans';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.20-land-caravans';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.20-land-caravans';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.20-land-caravans';
+import {createCommunity} from './community.js?v=2026.11.20-land-caravans';
+import {createTaxCollector} from './tax-collector.js?v=2026.11.20-land-caravans';
+import {createStoryUI} from './story-ui.js?v=2026.11.20-land-caravans';
+import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.20-land-caravans';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.20-land-caravans';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.20-land-caravans';
+import {createCombat} from './combat-ui.js?v=2026.11.20-land-caravans';
+import {createBusiness} from './business-ui.js?v=2026.11.20-land-caravans';
+import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.20-land-caravans';
+import {createInlandUI} from './inland-ui.js?v=2026.11.20-land-caravans';
+import {INLAND_CITIES,knownTown,townRoute,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.20-land-caravans';
+import {createExpansion} from './expansion-ui.js?v=2026.11.20-land-caravans';
+import {gameStats} from './public-stats.js?v=2026.11.20-land-caravans';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.20-land-caravans';
+import {shipGlyph} from './art.js?v=2026.11.20-land-caravans';
+import {inspectDiscovery,explorationAllowed,discoveryStats,hasClues} from './discoveries.js?v=2026.11.20-land-caravans';
+import {RELEASE} from './release-notes.js?v=2026.11.20-land-caravans';
+import {createUX} from './ux.js?v=2026.11.20-land-caravans';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.20-land-caravans';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.20-land-caravans';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.20-land-caravans';
+import {AtlasView} from './atlas-view.js?v=2026.11.20-land-caravans';
+import {FleetPresence} from './multiplayer.js?v=2026.11.20-land-caravans';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.20-land-caravans';
+import {CaptainChat} from './chat.js?v=2026.11.20-land-caravans';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.20-land-caravans';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.20-land-caravans';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.20-land-caravans';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-land-caravans';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.20-land-caravans';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.20-land-caravans';
+import {CaptainRankings} from './rankings.js?v=2026.11.20-land-caravans';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.20-land-caravans';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.20-survey-voyages';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.20-survey-voyages';
-import {marketKind,portMarketItem,portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.20-survey-voyages';
-import {harborMarket,harborSupply} from './data.js?v=2026.11.20-survey-voyages';
-import {configurePortDividends} from './port-income.js?v=2026.11.20-survey-voyages';
-import {configureEra,ERA_PERIOD,eraAt,setEraServerOffset} from './era-cycle.js?v=2026.11.20-survey-voyages';
-import {createGuildUI} from './guild-ui.js?v=2026.11.20-survey-voyages';
-import {createCoastOrders} from './coast-orders-ui.js?v=2026.11.20-survey-voyages';
-import {COASTS,visitCoast} from './coast-orders.js?v=2026.11.20-survey-voyages';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.20-survey-voyages';
-import {ownership} from './commerce.js?v=2026.11.20-survey-voyages';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.20-survey-voyages';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,changeDepotPromotion,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.20-survey-voyages';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.20-survey-voyages';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.20-survey-voyages';
-import {createShoreUI} from './shore-ui.js?v=2026.11.20-survey-voyages';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.20-survey-voyages';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.20-survey-voyages';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.20-survey-voyages';
-import {useRepairKit} from './activities.js?v=2026.11.20-survey-voyages';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.20-survey-voyages';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.20-survey-voyages';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.20-land-caravans';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.20-land-caravans';
+import {marketKind,portMarketItem,portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.20-land-caravans';
+import {harborMarket,harborSupply} from './data.js?v=2026.11.20-land-caravans';
+import {configurePortDividends} from './port-income.js?v=2026.11.20-land-caravans';
+import {configureEra,ERA_PERIOD,eraAt,setEraServerOffset} from './era-cycle.js?v=2026.11.20-land-caravans';
+import {createGuildUI} from './guild-ui.js?v=2026.11.20-land-caravans';
+import {createCoastOrders} from './coast-orders-ui.js?v=2026.11.20-land-caravans';
+import {COASTS,visitCoast} from './coast-orders.js?v=2026.11.20-land-caravans';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.20-land-caravans';
+import {ownership} from './commerce.js?v=2026.11.20-land-caravans';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.20-land-caravans';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,changeDepotPromotion,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.20-land-caravans';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.20-land-caravans';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.20-land-caravans';
+import {createShoreUI} from './shore-ui.js?v=2026.11.20-land-caravans';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.20-land-caravans';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.20-land-caravans';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.20-land-caravans';
+import {useRepairKit} from './activities.js?v=2026.11.20-land-caravans';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.20-land-caravans';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.20-land-caravans';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -108,14 +108,16 @@ account.onBusy=value=>{sailingClock.reset(performance.now());document.querySelec
 account.onStatus=text=>{const status=$('#save-status');status.textContent=text;status.classList.toggle('save-warning',/끊|실패|오프라인|확인|중단|충돌/.test(text));};
 account.onUncertain=()=>{sessionBlocked=true;paused=true;stopForUI();fleet.stop();showModal('거래 결과를 확인해야 해요','항해 기록 보호','<p>서버 응답을 확인하지 못해 항해와 저장을 멈췄어요. 요청 기록을 보관했습니다. 새로고침하면 서버에 확정된 기록으로 이어집니다.</p><button id="reload-economic" class="primary-button">새로고침해 결과 확인</button>','small');$('#reload-economic').onclick=()=>location.reload();};
 account.onConflict=()=>{sessionBlocked=true;paused=true;heldKeys.clear();manualActive=false;fleet.stop();showModal('항해 기록이 갱신됐어요','항해 기록 보호','<p>다른 화면이나 서버에서 기록이 변경되어 이 화면의 항해와 저장을 멈췄어요. 이 기기 기록은 보존했습니다. 새로고침하면 최신 기록과 전환 보상을 확인할 수 있어요.</p>');};
-const FIXED_MAP_SCALE=12,ZOOM_STEPS=[.25,.5,.75,1];
+const FIXED_MAP_SCALE=12,ZOOM_STEPS=[.25,.5,.75,1],LAND_ZOOM_STEPS=[2,4,6,8];
+let seaZoom=null;
+const landMode=()=>!!state.inland?.field;
 const CHART_ZOOM_KEY='windward-chart-zoom';
 let mapZoom=readMapZoom();
 function readMapZoom(){
  try{const value=Number(localStorage.getItem(CHART_ZOOM_KEY));return value>=.25&&value<=1?value:1;}catch{return 1;}
 }
 function changeMapZoom(value,anchor,remember=true){
- const next=Math.max(.25,Math.min(1,value));
+ const next=landMode()?Math.max(2,Math.min(8,value)):Math.max(.25,Math.min(1,value));
  if(!Number.isFinite(next)||Math.abs(next-mapZoom)<.00001)return;
  if(mapReady&&anchor&&!followShip){
   const rect=$('#world-map').getBoundingClientRect();
@@ -128,10 +130,12 @@ function changeMapZoom(value,anchor,remember=true){
  if(mapReady)applyCamera();
 }
 function rememberMapZoom(){
+ if(landMode())return;
  try{localStorage.setItem(CHART_ZOOM_KEY,String(mapZoom));}catch{}
 }
 function stepMapZoom(direction){
- const steps=direction>0?ZOOM_STEPS:[...ZOOM_STEPS].reverse();
+ const levels=landMode()?LAND_ZOOM_STEPS:ZOOM_STEPS;
+ const steps=direction>0?levels:[...levels].reverse();
  const next=steps.find(value=>(value-mapZoom)*direction>.00001);
  if(next!==undefined)changeMapZoom(next);
 }
@@ -232,6 +236,8 @@ function beginPlaying(game){
   blessings.connect();
   sailingClock.reset(performance.now());
   manualTrail=[];state=game;reconcileTitles(state,guildTime());refreshTitleContext(account,true).then(verified=>{if(playing&&account.ready&&state===game){reconcileTitles(state,guildTime(),verified);save();}}).catch(()=>{});normalizeDepotDock(state);const navigationNotice=reconcileNavigation(state,nav);if(navigationNotice)toast(navigationNotice);if(state.port&&ACTIVE_PORT_BY_ID[state.port])state.legacyHarbor=false;exploration=new Exploration(state.explored);exploration.seed(state);selected=state.port||state.voyage?.target||'lisbon';planned=null;paused=!!game.offlinePaused&&!!game.voyage;delete game.offlinePaused;playing=true;sessionBlocked=false;lastPanelPort=null;manualActive=false;manualTarget=null;manualChannel=null;departedPort=null;heldKeys.clear();
+    if(state.inland?.field)void fieldUI?.open(true);
+    else if(seaZoom!==null){mapZoom=seaZoom;seaZoom=null;}
   settleGuildDeadlines();uiUsage.entered?.();mail.watch();setTimeout(()=>business?.reconcileHarborRecords().catch(()=>{}),1100);setTimeout(()=>taxCollector?.tick(true),100);
   account.stopNoviceWatch?.();
   if(noviceActive(state)&&account.sdk){
@@ -364,7 +370,7 @@ function renderFleetStatus(){
   if($('#fleet-live-list'))renderFleetList();
 }
 function setupRankControls(){const tabs=$('.rank-tabs');tabs.className='rank-controls';tabs.innerHTML=`<div class="rank-groups" role="group" aria-label="랭킹 분야">${RANK_GROUPS.map(([id,label])=>`<button data-rank-group="${id}">${label}</button>`).join('')}</div><label class="rank-choice">순위 기준 <select id="rank-metric-select"></select></label><p class="rank-notice">각 기준 상위 5명 · 오프라인 기록 유지</p><button type="button" class="service-button" id="rank-blessing" hidden>오늘의 축복</button>`;document.querySelectorAll('[data-rank-group]').forEach(b=>b.onclick=()=>{const metric=RANK_DEFINITIONS.find(m=>m.group===b.dataset.rankGroup).id;rankMetric=metric;rankings.select(metric);renderRanks();});$('#rank-blessing').onclick=()=>blessings.open();$('#rank-metric-select').onchange=e=>{rankMetric=e.target.value;rankings.select(rankMetric);renderRanks();};paintRankControls();}
-function paintRankControls(){const select=$('#rank-metric-select');if(!select)return;const definition=RANK_BY_ID[rankMetric],group=definition.group;if(select.dataset.group!==group){select.dataset.group=group;select.innerHTML=RANK_DEFINITIONS.filter(m=>m.group===group).map(m=>`<option value="${m.id}">${m.label}</option>`).join('');}select.value=rankMetric;document.querySelectorAll('[data-rank-group]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.rankGroup===group)));const notice=$('.rank-notice');notice.textContent=['pirateKills','fleetDefeats','duelWins','tradedGoodCount','bestTradeProfit'].includes(rankMetric)?'각 기준 상위 5명 · 새 횟수·최고 기록은 이번 업데이트부터 집계':'각 기준 상위 5명 · 기존 기록 포함 · 오프라인 유지';}
+function paintRankControls(){const select=$('#rank-metric-select');if(!select)return;const definition=RANK_BY_ID[rankMetric],group=definition.group;if(select.dataset.group!==group){select.dataset.group=group;select.innerHTML=RANK_DEFINITIONS.filter(m=>m.group===group).map(m=>`<option value="${m.id}">${m.label}</option>`).join('');}select.value=rankMetric;document.querySelectorAll('[data-rank-group]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.rankGroup===group)));const notice=$('.rank-notice');notice.textContent=rankMetric==='explorationScore'?'상위 5명 · 해상과 육상에서 밝힌 면적을 한 번씩 집계':['pirateKills','fleetDefeats','duelWins','tradedGoodCount','bestTradeProfit'].includes(rankMetric)?'각 기준 상위 5명 · 새 횟수·최고 기록은 이번 업데이트부터 집계':'각 기준 상위 5명 · 기존 기록 포함 · 오프라인 유지';}
 let ranksPaintKey='';
 function renderRanks(){
   paintRankControls();
@@ -495,13 +501,20 @@ function renderHUD(){
   $('#mobile-port-btn').classList.toggle('hidden',!!state.voyage||manualActive);
   $('#auto-mode').setAttribute('aria-pressed',String(state.controlMode==='auto'));
   $('#manual-mode').setAttribute('aria-pressed',String(state.controlMode==='manual'));
-  $('#manual-pad').classList.toggle('visible',state.controlMode==='manual');
-  $('#mode-hint').textContent=state.controlMode==='manual'?'W 위 · S 아래 · A 왼쪽 · D 오른쪽 / 방향키 · Space 정지':'항구 선택 → 출항 · 배가 바다 항로를 따라 이동해요.';
-  $('#current-location').textContent=state.voyage?`${toward(state.voyage.target?PORT_BY_ID[state.voyage.target].name:'선택한 해역')} 항해 중`:state.port?`${PORT_BY_ID[state.port].name}에 정박 중`:'바다 위 · 다음 항로를 정하세요';
+  const walking=landMode();
+  $('#manual-pad').classList.toggle('visible',walking||state.controlMode==='manual');
+  $('#field-controls').hidden=!walking;
+  $('.chart').classList.toggle('field-active',walking);
+  $('#chart-landfall').textContent=walking?'육상':'상륙';
+  $('#chart-landfall').setAttribute('aria-label',walking?'육상 탐사대 위치':'상륙 · 육상 탐험');
+  $('#home-map').setAttribute('aria-label',walking?'육상 탐사대 위치로 이동':'내 배 위치로 이동');
+  for(const id of ['auto-mode','manual-mode'])document.getElementById(id).disabled=walking;
+  $('#mode-hint').textContent=walking?'지도 클릭 · 방향키 또는 WASD로 육상 이동':state.controlMode==='manual'?'W 위 · S 아래 · A 왼쪽 · D 오른쪽 / 방향키 · Space 정지':'항구 선택 → 출항 · 배가 바다 항로를 따라 이동해요.';
+  $('#current-location').textContent=walking?'육상 탐험 중':state.voyage?`${toward(state.voyage.target?PORT_BY_ID[state.voyage.target].name:'선택한 해역')} 항해 중`:state.port?`${PORT_BY_ID[state.port].name}에 정박 중`:'바다 위 · 다음 항로를 정하세요';
   $('#sailing-banner').classList.toggle('hidden',!state.voyage);
   $('.voyage-progress').classList.toggle('hidden',!state.voyage);
   if(state.voyage){const v=state.voyage,percent=Math.min(100,v.travelled/v.total*100),days=voyageEstimate(state,v,v.travelled).days,name=v.target?PORT_BY_ID[v.target].name:'새로운 해역';$('#sail-title').textContent=v.kind?`${name} · 구조 중`:paused?`${name} · 일시 정지`:`${toward(name)} 항해 중`;$('#sail-percent').textContent=Math.floor(percent)+'%';$('#voyage-bar').style.width=percent+'%';$('#sail-remaining').textContent=`${fmt(v.total-v.travelled)} 해리 · 약 ${days.toFixed(1)}일 남음`;$('#pause-btn').textContent=paused?'▶':'Ⅱ';$('#pause-btn').setAttribute('aria-label',paused?'항해 재개':'항해 일시 정지');}
-  else if(manualActive){$('#current-location').textContent='직접 조종 · '+coordinates({lon:state.position[0],lat:state.position[1]});}
+  else if(!walking&&manualActive){$('#current-location').textContent='직접 조종 · '+coordinates({lon:state.position[0],lat:state.position[1]});}
   ux?.renderHUD();expansion?.renderHUD();shoreUI?.render();seaUI?.render();renderPirates();
   $('#world-badge')?.replaceChildren(document.createTextNode('현실서버 · 1배속'));
 }
@@ -793,6 +806,7 @@ function installChart({manifest,style}){
 function setupChartWrapping(selected){
   const root=$('#map-camera'),routes=$('#routes'),labels=$('#map-labels'),grid=$('#graticule'),terrain=svgEl('g',{id:'chart-terrain','clip-path':'url(#chart-tile-clip)'}),fog=svgEl('g',{id:'chart-fog','clip-path':'url(#chart-tile-clip)'});
   const clip=svgEl('clipPath',{id:'chart-tile-clip',clipPathUnits:'userSpaceOnUse'});clip.append(svgEl('rect',{x:0,y:0,width:1600,height:800}));$('#world-map defs').append(clip);
+  const fieldTerrain=$('#field-terrain');fieldTerrain.remove();
   labels.remove();grid.remove();fog.append($('#exploration-fog'),$('#sight-boundary'));for(const [x,y]of CHART_TILES)if(x||y)fog.append(svgEl('use',{href:'#sight-boundary',x,y,'pointer-events':'none'}));
   // Remove the live noise filter; the decorative surface is baked in assets.
   root.querySelector('[filter="url(#paper)"]')?.remove();
@@ -800,7 +814,7 @@ function setupChartWrapping(selected){
   while(root.firstChild!==routes)terrain.append(root.firstChild);root.prepend(terrain);
   chartOverview=svgEl('image',{x:0,y:0,width:1600,height:800,preserveAspectRatio:'none','pointer-events':'none'});
   terrain.append(chartOverview);
-  const tiles=svgEl('g',{id:'terrain-tiles','pointer-events':'none'});routes.before(tiles,grid,labels,fog);terrainRoot=tiles;
+  const tiles=svgEl('g',{id:'terrain-tiles','pointer-events':'none'});routes.before(tiles,grid,fieldTerrain,labels,fog);terrainRoot=tiles;
   const fallback=()=>{
    if(chartTerrain.assetPath!==chartPaths.color||colorChartFailed)return;
    colorChartFailed=true;void refreshChartStyle();
@@ -845,11 +859,11 @@ function applyCamera(){
   const value=Math.round(mapZoom*100)+'%';
   const output=$('#chart-zoom-value');
   if(output.textContent!==value)output.textContent=value;
-  $('#chart-zoom-in').disabled=mapZoom>=1;
-  $('#chart-zoom-out').disabled=mapZoom<=.25;
+  $('#chart-zoom-in').disabled=mapZoom>=(landMode()?8:1);
+  $('#chart-zoom-out').disabled=mapZoom<=(landMode()?2:.25);
   $('#map-camera').setAttribute('transform',`translate(${screen.w/2},${screen.h/2}) scale(${screen.k}) translate(${-camera.x},${-camera.y})`);
   chartTerrain?.update({...camera,w:screen.w,h:screen.h,k:screen.k},mapZoom>.5);
-  if(Math.abs(oldScale-screen.k)>.00001||!$('#port-markers').children.length)renderPorts();renderShip();renderPeers();renderMinimap();renderChartLabels(oldScale!==screen.k);
+  if(Math.abs(oldScale-screen.k)>.00001||!$('#port-markers').children.length)renderPorts();renderShip();renderPeers();renderMinimap();renderChartLabels(oldScale!==screen.k);fieldUI?.draw();
 }
 const labelOffsets={lisbon:[-13,-12,'end'],seville:[10,23,'start'],london:[-12,-15,'end'],amsterdam:[12,-6,'start'],venice:[10,19,'start'],alexandria:[12,5,'start'],accra:[-11,3,'end'],cape:[-11,3,'end'],zanzibar:[12,3,'start'],muscat:[10,-9,'start'],goa:[10,1,'start'],malacca:[-12,2,'end'],batavia:[12,18,'start'],macau:[-12,-8,'end'],nagasaki:[13,13,'start'],busan:[-12,-11,'end'],havana:[-11,-10,'end'],cartagena:[-12,4,'end'],recife:[12,4,'start'],buenos:[-12,4,'end'],sydney:[12,4,'start']};
 function renderPorts(){
@@ -875,10 +889,10 @@ function renderPorts(){
     const label=ownerDisplay?`${p.name}(${ownerDisplay})`:p.name;
     {const [dx,dy,anchor]=p.id==='sanlucar'?[-12,20,'end']:labelOffsets[p.id]||[12,-8,'start'];const text=svgEl('text',{x:dx,y:dy,'text-anchor':anchor,class:'port-text'});text.textContent=label;g.append(text);if(chosen){const en=svgEl('text',{x:dx,y:dy+13,'text-anchor':anchor,class:'port-text port-subtitle'});en.textContent=p.en.toUpperCase();g.append(en);}}
     const title=svgEl('title');title.textContent=`${p.name} · ${p.country} · 특산물 ${GOODS[p.specialty].name}${owner?' · 소유 '+owner:''}`;g.append(title);
-    g.onclick=e=>{e.stopPropagation();if(dragged)return;selectPort(p.id);};g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectPort(p.id);}};root.append(g);
+    g.onclick=e=>{e.stopPropagation();if(dragged||landMode())return;selectPort(p.id);};g.onkeydown=e=>{if(!landMode()&&(e.key==='Enter'||e.key===' ')){e.preventDefault();selectPort(p.id);}};root.append(g);
   }
   for(const city of Object.values(INLAND_CITIES)){
-    if(!knownTown(state,city.id))continue;
+    if(landMode()||!knownTown(state,city.id))continue;
     const [x,y]=project(city.point);
     for(const [dx,dy] of CHART_TILES){
       const cityMarker=svgEl('g',{class:'inland-marker',transform:`translate(${x+dx},${y+dy}) scale(${1/screen.k})`,role:'button',tabindex:dx||dy?-1:0,'aria-label':city.name+' 내륙 도시','data-inland-city':city.id});
@@ -1260,7 +1274,7 @@ function showHelp(){
 }
 
 
-function followPosition(){const [x,y]=project(state.position),offset=innerWidth>850&&screen.w<850?80:0;camera.x=x+offset/screen.k;camera.y=y;}
+function followPosition(){const [x,y]=project(fieldUI?.point()||state.position),offset=innerWidth>850&&screen.w<850?80:0;camera.x=x+offset/screen.k;camera.y=y;}
 function showDiscoveryOnChart(discovery){
   if(!mapReady||!state.discoveries?.[discovery.id])return;
   showPointOnChart(discovery.point||[discovery.lon,discovery.lat],discovery.name);
@@ -1283,9 +1297,10 @@ function showPointOnChart(point,labelText){
   $('#map-camera').append(root);camera.x=x;camera.y=y;applyCamera();
   if(innerWidth<=850)$('.chart').scrollIntoView({block:'center',behavior:'smooth'});
 }
-function centerShip(){$('#discovery-study-pin')?.remove();followPosition();followShip=!!state.voyage||state.controlMode==='manual';globe?.home();applyCamera();}
+function centerShip(){$('#discovery-study-pin')?.remove();followPosition();followShip=landMode()||!!state.voyage||state.controlMode==='manual';globe?.home();applyCamera();}
 function stopManual(){stopForUI();paused=false;renderRoutes();renderHUD();save();}
 function setControlMode(mode){
+  if(landMode())return;
   navigationIntent++;
   if(currentCanal(state.voyage)){toast('운하를 빠져나온 뒤 조종을 바꿀 수 있어요.');return;}
   if(state.voyage?.kind||state.voyage?.legacy){toast('진행 중인 구조·이전 항해를 마친 뒤 조종을 바꿀 수 있어요.');return;}
@@ -1327,7 +1342,7 @@ function launchRescue(transition=false,damaged=false){
   exploration.frozen=true;renderFog(true);manualActive=false;manualTarget=null;manualChannel=null;heldKeys.clear();planned=null;paused=false;
   log(`${result.port.name}까지 ${transition?'안전 귀환':'자동 구조'} · 실제 비용 ${fmt(result.cost)} D`);toast(`${result.port.name}로 ${result.emergency?'안전 귀환합니다':'구조 이동합니다'} · ${fmt(result.cost)} D`);if(result.arrived)arrive();else {changed();renderRoutes();centerShip();}return true;
 }
-function stopForUI(){heldKeys.clear();heldKeyboard.clear();heldPointers.clear();manualTarget=null;manualChannel=null;manualActive=false;}
+function stopForUI(){fieldUI?.park();heldKeys.clear();heldKeyboard.clear();heldPointers.clear();manualTarget=null;manualChannel=null;manualActive=false;}
 async function enterReservedCanal(id){
   if(settlingCanal)return;
   settlingCanal=true;
@@ -1377,7 +1392,7 @@ world.addEventListener('pointerdown',e=>{
    return;
   }
  }
- if(e.button!==0||!e.isPrimary)return;$('.chart').focus({preventScroll:true});dragged=false;drag={x:e.clientX,y:e.clientY,cx:camera.x,cy:camera.y,id:e.pointerId};if(!e.target.closest('.port-marker,.fleet-ship'))world.setPointerCapture(e.pointerId);});
+ if(e.button!==0||!e.isPrimary)return;$('.chart').focus({preventScroll:true});dragged=false;drag={x:e.clientX,y:e.clientY,cx:camera.x,cy:camera.y,id:e.pointerId};if(landMode()||!e.target.closest('.port-marker,.fleet-ship'))world.setPointerCapture(e.pointerId);});
 world.addEventListener('pointermove',e=>{
  if(chartTouches.has(e.pointerId))chartTouches.set(e.pointerId,{x:e.clientX,y:e.clientY});
  if(pinching){
@@ -1389,7 +1404,7 @@ world.addEventListener('pointermove',e=>{
   return;
  }
  if(!drag||drag.id!==e.pointerId)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(dx,dy)>(e.pointerType==='touch'?10:5))dragged=true;if(dragged){followShip=false;[camera.x,camera.y]=wrapCamera([drag.cx-dx/screen.k,drag.cy-dy/screen.k]);applyCamera();}});
-function endDrag(e){if(!drag||drag.id!==e.pointerId)return;const didDrag=dragged;drag=null;if(world.hasPointerCapture(e.pointerId))world.releasePointerCapture(e.pointerId);if(didDrag){setTimeout(()=>dragged=false,0);return;}if(e.target.closest('.port-marker,.fleet-ship'))return;const rect=world.getBoundingClientRect(),point=wrapPosition(unproject([(e.clientX-rect.left-screen.w/2)/screen.k+camera.x,(e.clientY-rect.top-screen.h/2)/screen.k+camera.y]));if(!nav)return;if(state.voyage){toast('항해 중에는 조종 모드를 바꾼 뒤 목적지를 선택하세요.');return;}if(nav.isLand(point)){toast('육지에는 배가 갈 수 없어요. 항구나 바다를 선택하세요.');return;}if(e.pointerType==='touch')ux?.confirmSea(point);else if(state.controlMode==='manual')startManual(point);else planDestination(null,point);}
+function endDrag(e){if(!drag||drag.id!==e.pointerId)return;const didDrag=dragged;drag=null;if(world.hasPointerCapture(e.pointerId))world.releasePointerCapture(e.pointerId);if(didDrag){setTimeout(()=>dragged=false,0);return;}if(!landMode()&&e.target.closest('.port-marker,.fleet-ship'))return;const rect=world.getBoundingClientRect(),point=wrapPosition(unproject([(e.clientX-rect.left-screen.w/2)/screen.k+camera.x,(e.clientY-rect.top-screen.h/2)/screen.k+camera.y]));if(!nav)return;if(landMode()){fieldUI.setGoal(point);return;}if(state.voyage){toast('항해 중에는 조종 모드를 바꾼 뒤 목적지를 선택하세요.');return;}if(nav.isLand(point)){toast('육지에는 배가 갈 수 없어요. 항구나 바다를 선택하세요.');return;}if(e.pointerType==='touch')ux?.confirmSea(point);else if(state.controlMode==='manual')startManual(point);else planDestination(null,point);}
 function finishChartPointer(e){
  chartTouches.delete(e.pointerId);
  if(pinching){
@@ -1410,7 +1425,7 @@ $('#home-map').onclick=centerShip;$('#ports-map').onclick=showAtlas;
 $('#auto-mode').onclick=()=>setControlMode('auto');$('#manual-mode').onclick=()=>setControlMode('manual');
 $('#manual-stop').onclick=stopManual;
 function releaseHelmPointer(id){const direction=heldPointers.get(id);heldPointers.delete(id);if(direction&&![...heldPointers.values(),...heldKeyboard.values()].includes(direction))heldKeys.delete(direction);}
-$$('[data-direction]').forEach(button=>{button.oncontextmenu=e=>e.preventDefault();button.onpointerdown=async e=>{e.preventDefault();button.setPointerCapture(e.pointerId);if(!nav)return;setControlMode('manual');manualTarget=null;heldPointers.set(e.pointerId,button.dataset.direction);if(combat&&!combat.hasReserve()){try{await combat.prepare();}catch(error){releaseHelmPointer(e.pointerId);toast(error.message,'error');return;}if(!button.hasPointerCapture(e.pointerId)||!heldPointers.has(e.pointerId))return;}if(beginManual()){heldKeys.add(button.dataset.direction);renderHUD();}};button.onpointerup=e=>releaseHelmPointer(e.pointerId);button.onpointercancel=e=>releaseHelmPointer(e.pointerId);button.onlostpointercapture=e=>releaseHelmPointer(e.pointerId);});
+$$('[data-direction]').forEach(button=>{button.oncontextmenu=e=>e.preventDefault();button.onpointerdown=async e=>{e.preventDefault();button.setPointerCapture(e.pointerId);if(!nav)return;if(landMode()){heldPointers.set(e.pointerId,button.dataset.direction);heldKeys.add(button.dataset.direction);return;}setControlMode('manual');manualTarget=null;heldPointers.set(e.pointerId,button.dataset.direction);if(combat&&!combat.hasReserve()){try{await combat.prepare();}catch(error){releaseHelmPointer(e.pointerId);toast(error.message,'error');return;}if(!button.hasPointerCapture(e.pointerId)||!heldPointers.has(e.pointerId))return;}if(beginManual()){heldKeys.add(button.dataset.direction);renderHUD();}};button.onpointerup=e=>releaseHelmPointer(e.pointerId);button.onpointercancel=e=>releaseHelmPointer(e.pointerId);button.onlostpointercapture=e=>releaseHelmPointer(e.pointerId);});
 $('#manual-pad').addEventListener('selectstart',e=>e.preventDefault());
 
 $('#minimap-home').onclick=centerShip;
@@ -1425,10 +1440,13 @@ document.addEventListener('keydown',e=>{
   if(!playing||sessionBlocked||e.defaultPrevented||$('.chart').classList.contains('shore-map-open')||modal.open||ux?.isBlocking()||isTypingTarget(document.activeElement)||e.isComposing||e.ctrlKey||e.metaKey||e.altKey||document.activeElement?.closest('.rank-card,.chat-panel,#entry-screen,#port-panel'))return;
   const direction=directionForKey(e,ux?.letterKeys!==false);
   if(direction){
-    e.preventDefault();if(!nav||e.repeat)return;setControlMode('manual');if(state.controlMode!=='manual')return;
+    e.preventDefault();if(!nav||e.repeat)return;
+    if(landMode()){heldKeyboard.set(e.code||e.key,direction);heldKeys.add(direction);return;}
+    setControlMode('manual');if(state.controlMode!=='manual')return;
     if(combat&&!combat.hasReserve()){const code=e.code||e.key;heldKeyboard.set(code,direction);combat.prepare().then(()=>{if(heldKeyboard.has(code)&&beginManual()){heldKeys.add(direction);renderHUD();}}).catch(error=>toast(error.message,'error'));return;}
     manualTarget=null;if(beginManual()){heldKeyboard.set(e.code||e.key,direction);heldKeys.add(direction);renderHUD();}return;
   }
+  if(e.code==='Space'&&landMode()){e.preventDefault();stopManual();return;}
   if(e.code==='Space'&&(state.voyage||manualActive)){e.preventDefault();if(e.repeat)return;sailingClock.reset(performance.now());if(state.controlMode==='manual')stopManual();else{paused=!paused;renderHUD();}}
 });
 document.addEventListener('keyup',e=>{const key=e.code||e.key,direction=heldKeyboard.get(key);heldKeyboard.delete(key);if(direction&&![...heldKeyboard.values(),...heldPointers.values()].includes(direction))heldKeys.delete(direction);});
@@ -1445,7 +1463,8 @@ function tick(now){
  renderInlandProgress(now);
  if(now>=ownershipCheckAt&&playing&&account.ready&&!document.hidden){ownershipCheckAt=now+60000;uiUsage.tick?.();community?.syncOwnership().catch(()=>{});taxCollector?.tick();}
  const allowed=playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!combat?.blocked()&&!paused&&!modal.open&&!ux?.isBlocking()&&!document.hidden;
- const mode=allowed?(state.voyage?'auto':state.controlMode==='manual'&&(manualActive||heldKeys.size||manualTarget)?'manual':null):null;
+ if(landMode())fieldUI?.tick(now,heldKeys,allowed);
+ const mode=allowed&&!landMode()?(state.voyage?'auto':state.controlMode==='manual'&&(manualActive||heldKeys.size||manualTarget)?'manual':null):null;
  const before=[...state.position];
  for(const delta of sailingClock.steps(now,!!mode)){
   if(mode==='auto'){
@@ -1457,7 +1476,7 @@ function tick(now){
   }else{stepManual(delta,false);if(state.port||state.voyage||modal.open||!manualActive&&!heldKeys.size&&!manualTarget){sailingClock.reset(now);break;}}
  }
  if(before[0]!==state.position[0]||before[1]!==state.position[1]){if(followShip){followPosition();applyCamera();}else renderShip();if(now-lastHud>150){renderHUD();lastHud=now;}if(now-lastSave>(mode==='auto'?1800:1500)){save();lastSave=now;}}
- if(playing&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!state.port&&!state.depotDock&&!state.voyage&&!state.transitionPending&&state.food<=1e-8&&!modal.open&&!ux?.isBlocking())launchRescue();
+ if(playing&&!landMode()&&!account.busy&&!account.economicUncertain&&!sessionBlocked&&!state.port&&!state.depotDock&&!state.voyage&&!state.transitionPending&&state.food<=1e-8&&!modal.open&&!ux?.isBlocking())launchRescue();
  if(now-peerDrawTime>80&&fleet.peers.size){renderPeers();renderMinimap();peerDrawTime=now;}
  frame=requestAnimationFrame(tick);
 }
@@ -1525,9 +1544,20 @@ rumorUI=createRumorUI({onReread:()=>storyUI?.reread(),extraHarborRumor:(game,kee
 }});
 renderPanel();
 business=createBusiness({account,online:()=>fleet.roster?.list?.()||[],onTradeComplete:mode=>uiUsage.complete('action-trade-'+mode),onOwnership:()=>community?.syncOwnership(true).catch(()=>{}),directory:after=>rankings.page(after),getState:()=>state,modal:showModal,toast,pause:()=>{stopForUI();paused=!!state.voyage;},beforeService:()=>combat?.releaseIfPort(),onDepot:id=>projectsUI?.inspect(id),onMarket:id=>{modal.close();selectPort(id);ux.openPort('port');},record:(port,income,cost)=>{if(appendItemRecord(state,'income',port.id,port.name+' · 기본 세수 '+income.accrued+' D · 시간당 '+income.rate+' D · 시설 투자 '+cost+' D',guildTime()))save();},changed,render:()=>{if(mapReady)renderPanel();},nav:()=>nav,rescue:()=>{delete state.offlineRescuePending;return launchRescue(false,true);},look:showPointOnChart,onPorts:added=>{if(nav)for(const p of added)portApproaches.set(p.id,nav.approach(p));if(globe)globe.ports=atlasPorts();const wasDocked=state.depotDock;normalizeDepotDock(state);if(wasDocked&&state.port===wasDocked){selected=state.port;changed();}if(state.port&&ACTIVE_PORT_BY_ID[state.port])state.legacyHarbor=false;renderPorts();}});
-fieldUI=createFieldUI({game:()=>state,ready:()=>playing&&!sessionBlocked&&!account.busy&&!account.economicUncertain,now:guildTime,modal:showModal,stop:stopForUI,changed,save,toast,town:id=>inlandUI?.open(id)});
+fieldUI=createFieldUI({
+ game:()=>state,ready:()=>playing&&!sessionBlocked&&!account.busy&&!account.economicUncertain,
+ now:guildTime,blocked:()=>!!combat?.blocked(),modal:showModal,stop:stopForUI,changed,save,toast,
+ town:id=>inlandUI?.open(id),run:(fn,done)=>business.run('personal',account.uid,fn,done),
+ svg:svgEl,project,panel:()=>$('#field-controls'),terrainLayer:()=>$('#field-terrain'),siteLayer:()=>$('#field-sites'),
+ view:()=>({scale:screen.k,nw:unproject([camera.x-screen.w/2/screen.k,camera.y-screen.h/2/screen.k]),
+  se:unproject([camera.x+screen.w/2/screen.k,camera.y+screen.h/2/screen.k])}),
+ focus:centerShip,follow:()=>{followShip=true;},
+ repaint:()=>{if(followShip)followPosition();applyCamera();},
+ enter:()=>{seaZoom??=mapZoom;mapZoom=6;centerShip();renderHUD();},
+ exit:()=>{mapZoom=seaZoom??readMapZoom();seaZoom=null;centerShip();renderHUD();}
+});
 $('#chart-landfall').onclick=()=>fieldUI.open();
-inlandUI=createInlandUI({field:()=>fieldUI.open(),game:()=>state,now:guildTime,uid:()=>account.uid,modal:showModal,run:(...args)=>business.run(...args),read:key=>account.readShared('ports',key),toast,port:id=>{modal.close();selectPort(id);}});
+inlandUI=createInlandUI({field:()=>{modal.close();fieldUI.open();},fieldCargo:id=>fieldUI.cargoMenu(id),game:()=>state,now:guildTime,uid:()=>account.uid,modal:showModal,run:(...args)=>business.run(...args),read:key=>account.readShared('ports',key),toast,port:id=>{modal.close();selectPort(id);}});
 const mail=createCaptainsMail({account,state:()=>state,modal:showModal,toast,now:guildTime,directory:after=>rankings.page(after),run:(...args)=>business.run(...args),onUnread:count=>{
  for(const [selector,label] of [['#captain-mail','외교 서신'],['#quick-more','더보기'],['[data-menu="mail"]','외교 서신']]){
   const button=$(selector);if(!button)continue;button.textContent=count?label+' · '+Math.min(count,99)+(count>99?'+':''):label;

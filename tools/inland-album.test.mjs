@@ -160,3 +160,76 @@ test('real inland terrain, manual travel, album investigation and safe return su
  assert.ok(parseSavedGame(JSON.stringify(game)).discoveries[d.id]);
  assert.throws(()=>returnField(game,terrain));field.cell=[...field.origin];returnField(game,terrain);assert.equal(game.port,'lisbon');
 });
+
+test('walking lifts persistent fog and the ranking counts overlapping land and sea once',async()=>{
+ const {FieldTerrain,startField,walkField,returnField}=await import('../dist/overland.js');
+ const {landTileSeen,landExplorationArea}=await import('../dist/land-exploration.js');
+ const {Exploration}=await import('../dist/voyage-core.js');
+ const {explorationStats,chartPercentFromScore}=await import('../dist/exploration-score.js');
+ const {formatRankScore}=await import('../dist/rank-metrics.js');
+ const {gameStats}=await import('../dist/public-stats.js');
+ const bytes=await readFile(new URL('../dist/assets/overland-terrain.bin',import.meta.url));
+ const terrain=new FieldTerrain(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength));
+ const game=initialState();
+ const field=startField(game,terrain,[-9.14,38.72],'lisbon');
+ const original=field.cell,sea=new Exploration();
+ const first=explorationStats(sea,game.inland);
+ assert.ok(first.explorationArea>0);assert.ok(landTileSeen(game.inland,original));
+ assert.equal(gameStats(game).explorationScore,first.explorationScore);
+ const moves=[[1,0],[-1,0],[0,-1],[0,1]];
+ const todo=[[original,[]]],seen=new Set([String(original)]);let path;
+ for(let i=0;i<todo.length;i++){
+  const [cell,walk]=todo[i];
+  if(cell.some((n,k)=>Math.floor(n/5)!==Math.floor(original[k]/5))){path=walk;break;}
+  for(const step of moves){
+   const next=cell.map((n,k)=>n+step[k]);
+   if(!seen.has(String(next))&&!terrain.barrier(cell,...step)){seen.add(String(next));todo.push([next,[...walk,step]]);}
+  }
+ }
+ assert.ok(path);
+ for(const step of path)assert.equal(walkField(game,terrain,...step),'');
+ assert.ok(explorationStats(sea,game.inland).explorationScore>first.explorationScore);
+ assert.equal(landTileSeen(game.inland,field.cell),true);
+ const chart=game.inland.chart;
+ for(const step of path.slice().reverse())assert.equal(walkField(game,terrain,...step.map(n=>-n)),'');
+ assert.equal(game.inland.chart,chart);
+ returnField(game,terrain);
+ const restored=parseSavedGame(JSON.stringify(game));
+ assert.equal(restored.inland.chart,chart);
+ assert.ok(landExplorationArea(restored.inland).walked>0);
+ assert.ok(explorationStats(sea,restored.inland).explorationArea>first.explorationArea);
+ sea.reveal([-9.14,38.72]);
+ const legacy=explorationStats(sea);
+ assert.deepEqual(explorationStats(sea,restored.inland),legacy);
+ assert.equal(formatRankScore({...legacy,explorationPercent:99},'explorationScore'),chartPercentFromScore(legacy.explorationScore).toFixed(4)+'%');
+ assert.throws(()=>parseSavedGame({...restored,inland:{...restored.inland,chart:'broken'}}));
+});
+
+test('caravan upgrades improve live pace and cargo capacity, and local transfers preserve cost',async()=>{
+ const {FieldTerrain,startField,returnField}=await import('../dist/overland.js');
+ const {fieldPace,inlandVehicle,fieldLoad,fieldTransfer,upgradeInlandVehicle,boardFieldCargo}=await import('../dist/inland.js');
+ const bytes=await readFile(new URL('../dist/assets/overland-terrain.bin',import.meta.url));
+ const terrain=new FieldTerrain(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength));
+ const game=gameAt('lisbon');
+ game.cargo.wine={qty:16,cost:96};
+ const field=startField(game,terrain,[-9.14,38.72],'lisbon'),old=inlandVehicle(game);
+ assert.throws(()=>fieldTransfer(game,terrain,'wine',11,true),/적재 공간/);
+ upgradeInlandVehicle(game);
+ assert.ok(fieldPace(inlandVehicle(game))>fieldPace(old));
+ assert.equal(inlandVehicle(game).load,15);
+ fieldTransfer(game,terrain,'wine',15,true);
+ assert.equal(fieldLoad(game),15);
+ assert.equal(game.cargo.wine.qty,1);
+ assert.equal(field.cargo.wine.cost,90);
+ const city=INLAND_CITIES.sintra;
+ field.town=city.id;game.inland.towns={sintra:{at:now,port:'lisbon'}};
+ const quote=inlandMarketQuote(city,'wine',3,'sell',{},0,now);
+ inlandTrade(game,city,'wine',3,'sell',{},0,now,quote);
+ assert.equal(fieldLoad(game),12);
+ fieldTransfer(game,terrain,'wine',2,false,city.id);
+ assert.equal(game.inland.warehouses.sintra.wine.qty,2);
+ const restored=parseSavedGame(game);
+ assert.equal(restored.inland.field.cargo.wine.qty,10);
+ boardFieldCargo(restored,terrain);returnField(restored,terrain);
+ assert.deepEqual(restored.cargo.wine,{qty:11,cost:66});
+});

@@ -1,3 +1,5 @@
+import {revealLandTile,validLandChart} from './land-exploration.js?v=2026.11.20-land-caravans';
+
 // The display and collision checks share one row-indexed physical map.
 export const GROUND=['바다','육지','강','산등성이','호수'];
 export class FieldTerrain{
@@ -38,15 +40,23 @@ export class FieldTerrain{
 }
 export const fieldDistance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 export function startField(game,terrain,point,port){
- if(game.inland?.field)return game.inland.field;
+ if(game.inland?.field){revealLandTile(game.inland,game.inland.field.cell);return game.inland.field;}
  if(game.voyage||game.shoreTrip||game.seaJob||game.inland?.visit)throw Error('진행 중인 이동을 마친 뒤 상륙해 주세요.');
  const origin=terrain.landing(point,port?10:3);if(!origin)throw Error('가까운 해안으로 접근하거나 항구에 정박해 주세요.');
- game.inland??={tier:0,warehouses:{}};return game.inland.field={origin,cell:[...origin],port:port||null};
+ game.inland??={tier:0,warehouses:{}};
+ revealLandTile(game.inland,origin);
+ return game.inland.field={origin,cell:[...origin],port:port||null};
 }
 export function moveField(field,terrain,dx,dy){
  if(!field||![dx,dy].every(v=>Number.isInteger(v)&&Math.abs(v)<=1))return '이동 방향을 확인해 주세요.';
  const blocked=terrain.barrier(field.cell,dx,dy);
  if(!blocked)field.cell=[field.cell[0]+dx,field.cell[1]+dy];return blocked;
+}
+export function walkField(game,terrain,dx,dy){
+ const field=game.inland?.field;
+ const blocked=moveField(field,terrain,dx,dy);
+ if(!blocked)revealLandTile(game.inland,field.cell);
+ return blocked;
 }
 export function fieldNear(field,terrain,point,radius){
  return !!field&&!!point&&fieldDistance(field.cell,point)<=radius&&terrain.clear(field.cell,point);
@@ -57,5 +67,5 @@ export function returnField(game,terrain){
 }
 export function validFieldRecord(data){
  const cell=p=>Array.isArray(p)&&p.length===2&&p.every(Number.isInteger)&&p[0]>=0&&p[0]<7200&&p[1]>=0&&p[1]<3600;
- const f=data.field;return !f||(cell(f.cell)&&cell(f.origin)&&(f.port===null||typeof f.port==='string')&&!data.visit);
+ const f=data.field;return validLandChart(data.chart)&&(!f||(cell(f.cell)&&cell(f.origin)&&(f.port===null||typeof f.port==='string')&&!data.visit));
 }

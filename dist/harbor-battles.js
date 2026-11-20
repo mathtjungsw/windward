@@ -1,7 +1,7 @@
-import {requireCombatAllowed} from './blessings.js?v=2026.11.20-survey-voyages';
-import {ownership} from './commerce.js?v=2026.11.20-survey-voyages';
-import {advanceBasicIncome} from './port-income.js?v=2026.11.20-survey-voyages';
-import {noviceActive} from './novice.js?v=2026.11.20-survey-voyages';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.20-land-caravans';
+import {ownership} from './commerce.js?v=2026.11.20-land-caravans';
+import {advanceBasicIncome} from './port-income.js?v=2026.11.20-land-caravans';
+import {noviceActive} from './novice.js?v=2026.11.20-land-caravans';
 
 const HOUR=3600000, DAY=24*HOUR, WINDOW=2*HOUR;
 export const CONTESTED_PORTS=['jamestown','georgetown-ascension','sanjuan-robinson','portvila'];

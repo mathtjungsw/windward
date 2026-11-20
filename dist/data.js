@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.20-survey-voyages';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.20-survey-voyages';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.20-survey-voyages';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.20-survey-voyages';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.20-survey-voyages';
-import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.20-survey-voyages';
-import {eraAt} from './era-cycle.js?v=2026.11.20-survey-voyages';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.20-land-caravans';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.20-land-caravans';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.20-land-caravans';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.20-land-caravans';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.20-land-caravans';
+import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.20-land-caravans';
+import {eraAt} from './era-cycle.js?v=2026.11.20-land-caravans';
 Object.assign(GOODS,PREMIUM_GOODS,ERA_GOODS);
 
 export {GOODS};

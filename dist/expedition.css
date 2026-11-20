@@ -385,4 +385,17 @@ button:disabled{color:#546761;opacity:.78}
 .order-slot{display:grid;gap:.3rem;margin:.85rem 0;font-weight:600}
 .order-slot select{width:100%;min-height:44px}
 
-.field-panel{display:grid;gap:.55rem}.field-panel canvas{display:block;width:100%;height:clamp(180px,41dvh,430px);border-radius:.5rem;border:1px solid #9ea986;touch-action:none;image-rendering:pixelated}.field-controls,.field-actions{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}.field-controls{justify-content:space-between}.field-pad{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px);gap:2px;touch-action:none;user-select:none}.field-pad button{padding:0;min-width:0}.field-pad button:first-child{grid-column:2}.field-pad button:nth-child(2){grid-column:1;grid-row:2}.field-pad button:nth-child(3){grid-column:2;grid-row:2}.field-pad button:nth-child(4){grid-column:3;grid-row:2}.field-actions{max-width:100%}.field-actions button[hidden]{display:none}.field-key,.field-panel small{font-size:.8rem;color:#425e51}.field-panel #field-status{margin:.1rem 0;color:#284a43;font-weight:650}.map-controls #chart-landfall{font-size:.78rem}.field-pad button:active{background:#c6dbcb}
+
+
+#field-controls{position:absolute;z-index:4;bottom:.65rem;left:50%;transform:translateX(-50%);width:min(32rem,calc(100% - 1.3rem));box-sizing:border-box;padding:.55rem .75rem;border:1px solid #b5c0aa;border-radius:.55rem;background:#fbf8ed;color:#274f55;box-shadow:0 2px 12px #1b3e4526}
+#field-controls[hidden],#field-controls [hidden]{display:none}
+.field-details,.field-actions{display:flex;align-items:center;justify-content:center;gap:.35rem .7rem;flex-wrap:wrap}
+.field-details{font-size:.82rem}.field-actions:has(button:not([hidden])){margin-top:.4rem}
+.field-actions button{min-height:36px;padding:.25rem .6rem}
+.field-site text{fill:#73501f;font:700 12px system-ui;paint-order:stroke;stroke:#fff9e5;stroke-width:3px;stroke-linejoin:round}
+.field-site text:first-child{font-size:18px}
+.chart.field-active #map-labels,.chart.field-active #routes,.chart.field-active #exploration-fog,.chart.field-active #sight-boundary,.chart.field-active #mobile-port-btn,.chart.field-active .map-legend,.chart.field-active .compass-rose,.field-active .map-caption{display:none}
+
+.map-controls #chart-landfall{font-size:.75rem;white-space:nowrap;line-height:1;font-weight:700}
+
+.chart.field-active #port-markers *,.chart.field-active #npc-markers *{pointer-events:none!important}

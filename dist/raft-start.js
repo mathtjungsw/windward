@@ -1,5 +1,5 @@
-import {SHIPS,shipTier,fleetCount,syncFleet} from './ship-rules.js?v=2026.11.20-survey-voyages';
-import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.20-survey-voyages';
+import {SHIPS,shipTier,fleetCount,syncFleet} from './ship-rules.js?v=2026.11.20-land-caravans';
+import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.20-land-caravans';
 
 export const RAFT_START_ID='raft-start-2026-11-06';
 // Replacement value: one hull's cumulative upgrades plus the current quote

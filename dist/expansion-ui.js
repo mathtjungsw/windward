@@ -1,24 +1,24 @@
-import {officerPortrait} from './officer-portrait.js?v=2026.11.20-survey-voyages';
-import {COASTS} from './coast-sketches.js?v=2026.11.20-survey-voyages';
-import {ALBUM_MILESTONES,HERITAGE_IDS,canReportAlbum,reportHeritage} from './album-rewards.js?v=2026.11.20-survey-voyages';
-import {TITLE_BY_ID,activeTitle} from './title-effects.js?v=2026.11.20-survey-voyages';
-import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.20-survey-voyages';
-import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.20-survey-voyages';
-import {historicalArt} from './historical-ship-art.js?v=2026.11.20-survey-voyages';
-import {vesselGunLimits} from './cannons.js?v=2026.11.20-survey-voyages';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.20-survey-voyages';
-import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.20-survey-voyages';
-import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.20-survey-voyages';
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.20-survey-voyages';
-import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,storedShips} from './ship-rules.js?v=2026.11.20-survey-voyages';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-survey-voyages';
-import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.20-survey-voyages';
-import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS as KINDS} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
-import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.20-survey-voyages';
-import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.20-survey-voyages';
-import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.20-survey-voyages';
-import {lastSeenText} from './captain-time.js?v=2026.11.20-survey-voyages';
-import {nextShipEndsProtection} from './novice.js?v=2026.11.20-survey-voyages';
+import {officerPortrait} from './officer-portrait.js?v=2026.11.20-land-caravans';
+import {COASTS} from './coast-sketches.js?v=2026.11.20-land-caravans';
+import {ALBUM_MILESTONES,HERITAGE_IDS,canReportAlbum,reportHeritage} from './album-rewards.js?v=2026.11.20-land-caravans';
+import {TITLE_BY_ID,activeTitle} from './title-effects.js?v=2026.11.20-land-caravans';
+import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.20-land-caravans';
+import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.20-land-caravans';
+import {historicalArt} from './historical-ship-art.js?v=2026.11.20-land-caravans';
+import {vesselGunLimits} from './cannons.js?v=2026.11.20-land-caravans';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.20-land-caravans';
+import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.20-land-caravans';
+import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.20-land-caravans';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.20-land-caravans';
+import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,storedShips} from './ship-rules.js?v=2026.11.20-land-caravans';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-land-caravans';
+import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.20-land-caravans';
+import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS as KINDS} from './discoveries-catalog.js?v=2026.11.20-land-caravans';
+import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.20-land-caravans';
+import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.20-land-caravans';
+import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.20-land-caravans';
+import {lastSeenText} from './captain-time.js?v=2026.11.20-land-caravans';
+import {nextShipEndsProtection} from './novice.js?v=2026.11.20-land-caravans';
 const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createExpansion(api){
@@ -61,7 +61,7 @@ export function createExpansion(api){
   const s=get(),spec=ship(s),stats=api.getStats();
   const key=shipTier(s)+':'+fleetCount(s);
   if(tierKey!==key){tierKey=key;summary.innerHTML=`<img src="${shipArtPath(shipTier(s))}" alt="${esc(spec.name)}" width="160" height="120"><div><strong>${esc(spec.name)}</strong><span>${shipTier(s)+1} / 20단계 · ${fleetCount(s)}척</span><button class="service-button" id="overview-ship">내 배 보기</button></div>`;$('#overview-ship').onclick=()=>showShip();}
-  progress.textContent=`지도 ${stats.explorationPercent.toFixed(2)}% · 발견 ${stats.foundCount}/${DISCOVERIES.length} · 명성 ${fmt(stats.fame)}`;
+  progress.textContent=`지도 ${stats.explorationPercent.toFixed(4)}% · 발견 ${stats.foundCount}/${DISCOVERIES.length} · 명성 ${fmt(stats.fame)}`;
   const list=nearbyDiscoveries(s),key2=list.map(d=>d.id).join(',')+':'+(lastFound?.id||'')+':'+!!s.detourTarget+':'+explorationAllowed(s);
   for(const [id,value]of dismissed){const d=DISCOVERY_BY_ID[id];if(d&&mapDistance(s.position,d.point)>120)value.outside=true;}
   cue.hidden=!list.length;cue.textContent='◇ 주변 흔적 '+list.length+' · 조사 열기';
@@ -298,7 +298,7 @@ export function createExpansion(api){
   document.querySelectorAll('[data-kind]').forEach(b=>b.onclick=()=>{albumKind=b.dataset.kind;albumScroll=0;showAlbum();});
   document.querySelectorAll('[data-collection]').forEach(b=>b.onclick=()=>{albumScroll=$('#modal-content').scrollTop;showAlbum(b.dataset.collection);});$('#modal-content').scrollTop=albumScroll;
  }
- function summaryRow(p,online){return `<strong>${esc(p.name)}</strong><span>${online?'● 접속 중':'○ 오프라인'}</span><small>방문 ${p.visited??'—'}곳 · ${p.statsVersion===3?'지도 '+Number(p.explorationPercent).toFixed(2)+'% · 명성 '+fmt(p.fame):'새 정보 업데이트 대기'}</small><small>${esc(lastSeenText(p.lastSeenAt,online))}</small>`;}
+ function summaryRow(p,online){return `<strong>${esc(p.name)}</strong><span>${online?'● 접속 중':'○ 오프라인'}</span><small>방문 ${p.visited??'—'}곳 · ${p.statsVersion===3?'지도 '+formatRankScore(p,'explorationScore')+' · 명성 '+fmt(p.fame):'새 정보 업데이트 대기'}</small><small>${esc(lastSeenText(p.lastSeenAt,online))}</small>`;}
  async function showCaptains(tab=rosterTab,reset=false){
   const generation=++rosterGeneration;rosterTab=tab;if(reset){rosterHistory=[null];rosterIndex=0;}const online=api.getFleet().onlineCaptains(),onlineIds=new Set(online.map(p=>p.uid));
   api.onModal('선장 목록','현재 접속과 누적 항해 기록',`<nav class="expansion-tabs"><button id="roster-online" aria-pressed="${tab==='online'}">지금 접속</button><button id="roster-all" aria-pressed="${tab==='all'}">모든 선장</button></nav><p class="modal-meta">현실서버에 입장한 모든 선장이 명부에 남아요. 배 위치는 시야 안에서만 보여요.</p><div id="persistent-roster" class="persistent-roster" role="list"></div><div id="roster-pagination" class="dialog-actions"></div><p id="roster-status" role="status"></p>`,'wide');
@@ -315,7 +315,7 @@ export function createExpansion(api){
   const generation=++detailGeneration;const token=p.id||p.uid;api.onModal(p.name,'선장의 공개 기록','<p id="captain-detail-status">기록을 불러오는 중…</p>','medium');
   try{if(token!==api.getFleet().uid){const full=await api.getRankings().captain(token);if(full)p=full;}else if(token===api.getFleet().uid){const full=await api.getRankings().captain(token);p={...p,...(full||{}),...api.getStats()};}}catch{}
   if(generation!==detailGeneration||!$('#captain-detail-status'))return;
-  const modern=p.statsVersion===3;$('#modal-content').innerHTML=`<p>${online?'접속 중':'오프라인'}</p>${TITLE_BY_ID[p.titleId]?'<p>칭호 · '+esc(TITLE_BY_ID[p.titleId].name)+'</p>':''}<p>${esc(lastSeenText(p.lastSeenAt,online))}</p>${modern?`<img class="captain-ship" src="${shipArtPath(p.shipTier)}" alt="선박"><p>${p.shipTier+1}/20단계 · ${p.fleetCount}척${p.earnedFlag?' · ◆ 항해 깃발':''}</p>`:''}<dl class="vessel-stats"><dt>방문 도시</dt><dd>${p.visited??'—'}곳</dd><dt>지도 탐험</dt><dd>${modern?Number(p.explorationPercent).toFixed(2)+'% · '+fmt(p.explorationScore)+'점':'업데이트 대기'}</dd><dt>해도상 탐험 면적</dt><dd>${modern?fmt(p.explorationArea)+' km²':'업데이트 대기'}</dd><dt>발견 수</dt><dd>${modern?p.foundCount+'/'+DISCOVERIES.length:'업데이트 대기'}</dd><dt>발견 명성</dt><dd>${modern?fmt(p.fame):'업데이트 대기'}</dd></dl><h3>탐험·교역·성장·전투 기록</h3><dl class="vessel-stats">${RANK_DEFINITIONS.filter(m=>['tradedGoodCount','bestTradeProfit','islandPorts','fleetGrowth','ownedPortCount','pirateKills','fleetDefeats','duelWins'].includes(m.id)).map(m=>`<dt>${m.label}</dt><dd>${p.rankProgressVersion===1||m.id==='ownedPortCount'?formatRankScore(p,m.id):'집계 대기'}</dd>`).join('')}</dl><p class="modal-meta">해적 처치·격파·결투·거래 종류·최고 단일 이익은 이번 업데이트부터 기록합니다. 도감·섬 방문·선단 단계는 기존 저장을 이어 사용해요.</p><div class="dialog-actions"><button id="captain-collections">발견 도감</button><button id="captain-officers">부선장</button><button id="captain-back" class="service-button">선장 목록으로</button></div>`;$('#captain-back').onclick=()=>showCaptains();
+  const modern=p.statsVersion===3;$('#modal-content').innerHTML=`<p>${online?'접속 중':'오프라인'}</p>${TITLE_BY_ID[p.titleId]?'<p>칭호 · '+esc(TITLE_BY_ID[p.titleId].name)+'</p>':''}<p>${esc(lastSeenText(p.lastSeenAt,online))}</p>${modern?`<img class="captain-ship" src="${shipArtPath(p.shipTier)}" alt="선박"><p>${p.shipTier+1}/20단계 · ${p.fleetCount}척${p.earnedFlag?' · ◆ 항해 깃발':''}</p>`:''}<dl class="vessel-stats"><dt>방문 도시</dt><dd>${p.visited??'—'}곳</dd><dt>지도 탐험</dt><dd>${modern?formatRankScore(p,'explorationScore')+' · '+fmt(p.explorationScore)+'점':'업데이트 대기'}</dd><dt>해상·육상 탐험 면적</dt><dd>${modern?fmt(p.explorationArea)+' km²':'업데이트 대기'}</dd><dt>발견 수</dt><dd>${modern?p.foundCount+'/'+DISCOVERIES.length:'업데이트 대기'}</dd><dt>발견 명성</dt><dd>${modern?fmt(p.fame):'업데이트 대기'}</dd></dl><h3>탐험·교역·성장·전투 기록</h3><dl class="vessel-stats">${RANK_DEFINITIONS.filter(m=>['tradedGoodCount','bestTradeProfit','islandPorts','fleetGrowth','ownedPortCount','pirateKills','fleetDefeats','duelWins'].includes(m.id)).map(m=>`<dt>${m.label}</dt><dd>${p.rankProgressVersion===1||m.id==='ownedPortCount'?formatRankScore(p,m.id):'집계 대기'}</dd>`).join('')}</dl><p class="modal-meta">해적 처치·격파·결투·거래 종류·최고 단일 이익은 이번 업데이트부터 기록합니다. 도감·섬 방문·선단 단계는 기존 저장을 이어 사용해요.</p><div class="dialog-actions"><button id="captain-collections">발견 도감</button><button id="captain-officers">부선장</button><button id="captain-back" class="service-button">선장 목록으로</button></div>`;$('#captain-back').onclick=()=>showCaptains();
   $('#captain-collections').onclick=()=>showPublicCollection(p,online,'discoveries');
   $('#captain-officers').onclick=()=>showPublicCollection(p,online,'officers');
   const block=api.onMailBlock?.(token,p.name);if(block)$('#captain-back').before(block);

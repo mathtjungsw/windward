@@ -5,7 +5,7 @@ import {initialState,parseSavedGame,Navigator,capacity,usedSpace,addShip,upgrade
 import {SHIPS,ship,shipTier,fleetCount,fleetLimit,additionalShipCost,upgradeCost,supplySpace} from '../dist/ship-rules.js';
 import {PORTS,PORT_BY_ID,ALL_PORTS} from '../dist/data.js';
 import {Exploration,discoverPorts} from '../dist/voyage-core.js';
-import {explorationStats,ELIGIBLE_AREA_M2} from '../dist/exploration-score.js';
+import {explorationStats,ELIGIBLE_AREA_M2,chartPercentFromScore} from '../dist/exploration-score.js';
 import {EXPLORATION_MASK} from '../dist/exploration-mask.js';
 import {DISCOVERIES,RUMORS} from '../dist/discoveries-catalog.js';
 import {inspectDiscovery,discoveryStats,readRumor,nearbyDiscoveries} from '../dist/discoveries.js';
@@ -56,10 +56,10 @@ test('normal movement after rescue unlocks exploration, including manual helm, b
  const same=wrappedMotion(s.position,s.position);advanceManualMotion(s,nav,same,0);assert.equal(s.explorationLockedUntilSailing,true);
  advanceManualMotion(s,nav,wrappedMotion(s.position,helmStep(s.position,0,-1,1)),.1);assert.equal(s.explorationLockedUntilSailing,false);
 });
-test('exploration scoring is area weighted, deduplicated, deterministic and exactly capped at one million',()=>{
+test('exploration scoring is area weighted, deduplicated, deterministic and shares one fixed area score unit',()=>{
  const e=new Exploration();e.reveal([-12,38]);const a=explorationStats(e);assert.ok(a.explorationScore>0);e.reveal([-12,38]);assert.deepEqual(explorationStats(e),a);
  const restored=new Exploration(e.encode());assert.deepEqual(explorationStats(restored),a);
- const bits=Uint8Array.from(atob(EXPLORATION_MASK.bits),c=>c.charCodeAt(0));const all=new Exploration();all.bits.set(bits);assert.equal(explorationStats(all).explorationScore,1000000);assert.equal(explorationStats(all).explorationPercent,100);assert.ok(ELIGIBLE_AREA_M2>0);
+ const bits=Uint8Array.from(atob(EXPLORATION_MASK.bits),c=>c.charCodeAt(0));const all=new Exploration();all.bits.set(bits);assert.equal(explorationStats(all).explorationScore,1000000);assert.equal(explorationStats(all).explorationPercent,chartPercentFromScore(1000000));assert.ok(explorationStats(all).explorationPercent<100);assert.ok(ELIGIBLE_AREA_M2>0);
  const low=new Exploration(),high=new Exploration();for(const [x,y,obj]of [[360,160,low],[360,20,high]]){const i=y*720+x;obj.bits[i>>3]|=1<<(i&7);}assert.ok(explorationStats(low).explorationArea>explorationStats(high).explorationArea);
  const orderA=new Exploration(),orderB=new Exploration();for(const p of [[179,0],[-179,0],[0,79.9]])orderA.reveal(p);for(const p of [[0,79.9],[-179,0],[179,0]])orderB.reveal(p);assert.deepEqual(explorationStats(orderA),explorationStats(orderB));
 });

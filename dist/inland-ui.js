@@ -1,7 +1,7 @@
-import {GOODS,PORT_BY_ID,harborMarket} from './data.js?v=2026.11.20-survey-voyages';
-import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.20-survey-voyages';
-import {inlandHarborStorage} from './inland.js?v=2026.11.20-survey-voyages';
-import {INLAND_CITIES,freightTown,knownTown,townRoute,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.20-survey-voyages';
+import {GOODS,PORT_BY_ID,harborMarket} from './data.js?v=2026.11.20-land-caravans';
+import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.20-land-caravans';
+import {inlandHarborStorage} from './inland.js?v=2026.11.20-land-caravans';
+import {INLAND_CITIES,freightTown,knownTown,townRoute,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,fieldCargo,fieldLoad,fieldTransfer,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.20-land-caravans';
 
 const $=s=>document.querySelector(s),fmt=n=>Number(n).toLocaleString('ko-KR');
 const time=ms=>{const seconds=Math.max(0,Math.ceil(ms/1000));return seconds>=60?`${Math.floor(seconds/60)}분 ${seconds%60}초`:`${seconds}초`;};
@@ -49,6 +49,7 @@ export function createInlandUI(api){
   $('#inland-haul-resume')?.addEventListener('click',()=>haul(city,job.from,job.good,job.qty-job.delivered));
   root.querySelectorAll('[data-warehouse-move]').forEach(button=>button.onclick=()=>transfer(city,button.dataset.good,button.dataset.warehouseMove==='ship'));
   root.querySelectorAll('[data-inland-haul]').forEach(button=>button.onclick=()=>haul(city,button.dataset.inlandHaul,button.dataset.good));
+  root.querySelectorAll('[data-field-stock]').forEach(button=>button.onclick=()=>api.fieldCargo(city.id));
   if(tab==='market'||tab==='harborMarket')void market(city,root,tab==='harborMarket');
   if(tab==='overview'&&travel||tab==='storage'&&job?.phase==='running'&&job.due>now){
    const due=tab==='overview'?visit.due:job.due;
@@ -84,7 +85,7 @@ export function createInlandUI(api){
    ${job.phase==='running'&&job.due<=now?'<button id="inland-haul-refresh">운송 기록 다시 확인</button>':''}
    ${job.phase==='running'&&!job.stop?'<button id="inland-haul-stop">이번 구간 뒤 정지</button>':['funds','stopped'].includes(job.phase)&&job.city===city.id?'<button id="inland-haul-resume">남은 수량 다시 예약</button>':''}</article>`:'';
   const inventories=[[city.port,PORT_BY_ID[city.port].name+' 창고',atPort],[city.id,city.name+' 창고',atCity]];
-  return progress+inventories.map(([id,label,here])=>`<section><h3>${label} · ${inlandSpace(game,id)}/${WAREHOUSE_MAX}상자</h3>${inlandReserved(game,id)?'<p>들어올 화물 '+inlandReserved(game,id)+'상자 예약</p>':''}
+  return (atCity&&game.inland?.field?'<button data-field-stock>도시 창고와 육상 화물 옮기기</button>':'')+progress+inventories.map(([id,label,here])=>`<section><h3>${label} · ${inlandSpace(game,id)}/${WAREHOUSE_MAX}상자</h3>${inlandReserved(game,id)?'<p>들어올 화물 '+inlandReserved(game,id)+'상자 예약</p>':''}
     ${here&&id===city.port?'<button data-inland-panel="harborMarket">항구 창고로 구매·판매</button>':''}
     ${Object.entries(inlandWarehouse(game,id)).map(([good,item])=>`<p>${GOODS[good].name} · ${item.qty}상자 · 사용 가능 ${inlandAvailable(game,id,good)}상자
       ${inlandAvailable(game,id,good)>0&&townRoute(game,INLAND_CITIES[city.id],game.port)?`<button data-good="${good}" data-inland-haul="${id}" ${job?.phase==='running'?'disabled':''}>운송 예약</button>
@@ -115,16 +116,19 @@ export function createInlandUI(api){
    const record=await api.read(key);
    if(!root.isConnected)return;
    if(harbor&&!permitted(record.content,api.uid())){root.textContent='현재 항구의 교역이 제한되어 있어요.';return;}
-   const owned=inlandWarehouse(api.game(),place);
-   const row=(good,mode)=>`<p>${GOODS[good].name}${mode==='sell'?' · '+inlandAvailable(api.game(),place,good)+'상자':''} <button data-inland-trade="${mode}" data-good="${good}">${mode==='buy'?'구매':'판매'}</button></p>`;
+   const field=!harbor&&api.game().inland?.field,owned=field?fieldCargo(api.game()):inlandWarehouse(api.game(),place);
+   const available=good=>field?owned[good]?.qty||0:inlandAvailable(api.game(),place,good);
+   const row=(good,mode)=>`<p>${GOODS[good].name}${mode==='sell'?' · '+available(good)+'상자':''} <button data-inland-trade="${mode}" data-good="${good}">${mode==='buy'?'구매':'판매'}</button></p>`;
    const goods=harbor?harborMarket(PORT_BY_ID[city.port],api.now()).filter(id=>!GOODS[id].premium&&!GOODS[id].legacy):Object.keys(city.goods);
-   root.innerHTML=`<p>거래한 화물은 ${harbor?'항구':'도시'} 창고에 들어갑니다.</p><h3>구매</h3>`+goods.map(good=>row(good,'buy')).join('')+
-    '<h3>판매</h3>'+(Object.keys(owned).filter(good=>(harbor||!GOODS[good].premium&&!GOODS[good].legacy)&&inlandAvailable(api.game(),place,good)>0).map(good=>row(good,'sell')).join('')||'<p>판매할 화물이 없어요.</p>');
+   root.innerHTML=`<p>거래한 화물은 ${field?'육상 운송 수단에 실립니다.':(harbor?'항구':'도시')+' 창고에 들어갑니다.'}</p><h3>구매</h3>`+goods.map(good=>row(good,'buy')).join('')+
+    '<h3>판매</h3>'+(Object.keys(owned).filter(good=>(harbor||!GOODS[good].premium&&!GOODS[good].legacy)&&available(good)>0).map(good=>row(good,'sell')).join('')||'<p>판매할 화물이 없어요.</p>');
    root.querySelectorAll('[data-inland-trade]').forEach(button=>button.onclick=()=>quote(city,key,button.dataset.good,button.dataset.inlandTrade,record,harbor));
   }catch{if(root.isConnected)root.textContent='도시 시세를 불러오지 못했어요.';}
  }
  function quote(city,key,good,mode,record,harbor){
-  const game=api.game(),sale=mode==='sell',place=harbor?city.port:city.id,max=sale?inlandAvailable(game,place,good):Math.min(1000,WAREHOUSE_MAX-inlandSpace(game,place)-inlandReserved(game,place));
+  const game=api.game(),sale=mode==='sell',place=harbor?city.port:city.id,field=!harbor&&game.inland?.field;
+  const max=field?(sale?fieldCargo(game)[good]?.qty||0:inlandVehicle(game).load-fieldLoad(game))
+   :sale?inlandAvailable(game,place,good):Math.min(1000,WAREHOUSE_MAX-inlandSpace(game,place)-inlandReserved(game,place));
   const page=harbor?'harborMarket':'market';
   api.modal(GOODS[good].name+(sale?' 판매':' 구매'),harbor?PORT_BY_ID[city.port].name:city.name,`<label>상자 수 <input id="inland-qty" type="number" inputmode="numeric" min="1" max="${Math.min(max,1000)}" value="1"></label>
   <button id="inland-refresh">견적 다시 보기</button><p id="inland-estimate"></p><button id="inland-apply" class="primary-button">표시 금액으로 거래</button><button id="inland-back">교역소로</button>`,'small');

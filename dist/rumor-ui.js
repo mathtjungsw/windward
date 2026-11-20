@@ -1,16 +1,16 @@
-import {officerPortrait} from './officer-portrait.js?v=2026.11.20-survey-voyages';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
-import {collectionArt} from './art.js?v=2026.11.20-survey-voyages';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-survey-voyages';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.20-survey-voyages';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.20-survey-voyages';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-survey-voyages';
-import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.20-survey-voyages';
+import {officerPortrait} from './officer-portrait.js?v=2026.11.20-land-caravans';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.20-land-caravans';
+import {collectionArt} from './art.js?v=2026.11.20-land-caravans';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-land-caravans';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-land-caravans';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.20-land-caravans';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.20-land-caravans';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-land-caravans';
+import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.20-land-caravans';
 
-import {readRumor} from './discoveries.js?v=2026.11.20-survey-voyages';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.20-survey-voyages';
-import {eraAvailable} from './era-cycle.js?v=2026.11.20-survey-voyages';
+import {readRumor} from './discoveries.js?v=2026.11.20-land-caravans';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.20-land-caravans';
+import {eraAvailable} from './era-cycle.js?v=2026.11.20-land-caravans';
 
 const labels={all:'전체',pending:'미완료',complete:'완료'};
 const inFilter=(filter,complete)=>filter==='all'||(filter==='complete')===!!complete;

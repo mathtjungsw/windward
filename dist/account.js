@@ -1,16 +1,16 @@
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.20-survey-voyages';
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.20-survey-voyages';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.20-survey-voyages';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.20-survey-voyages';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-survey-voyages';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.20-survey-voyages';
-import {applyRaftStart} from './raft-start.js?v=2026.11.20-survey-voyages';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.20-survey-voyages';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.20-land-caravans';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.20-land-caravans';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.20-land-caravans';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.20-land-caravans';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-land-caravans';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.20-land-caravans';
+import {applyRaftStart} from './raft-start.js?v=2026.11.20-land-caravans';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.20-land-caravans';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
 export const localSaveKey = uid => 'windward-account-v4:' + uid;
-const SAVE_SCHEMA_VERSION = 21;
+const SAVE_SCHEMA_VERSION = 22;
 
 export function accountName(value) {
   const name = String(value || '').normalize('NFKC').trim();

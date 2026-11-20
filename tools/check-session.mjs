@@ -27,8 +27,8 @@ game=await a.enter({uid},{name:'검증'});clearInterval(a.timer);assert.equal(ga
 // Permanent map key is UID. Membership key must still include the session.
 const f={account:a,uid,shipKey:uid,root:'gameV2/real',sdk,active:true,connected:true,color:0,name:a.name,onChange:()=>{}},roster=new CaptainRoster(f);roster.connect();assert.equal(roster.selfRef,'gameV2/real/captains/'+uid+'_new-session');await roster.prepareDisconnect();await roster.publish({status:'정박'},true);const members=await req('gameV2/real/captains',{query:{orderBy:'updatedAt',limitToLast:100}});assert.equal(members.status,200);assert.ok(members.value[uid+'_new-session']);
 await sdk.set('gameV2/real/rankings/'+uid,{...gameStats(game),name:a.name,saveRevision:a.revision,updatedAt:stamp,lastSeenAt:stamp});const ranks=await req('gameV2/real/rankings',{query:{orderBy:'profit',startAt:-1e12,limitToLast:5}});assert.equal(ranks.status,200);assert.ok(ranks.value[uid]);
-assert.equal((await req('gameV2/privateSaves/'+uid)).value.schemaVersion,21);
-console.log('PASS: previous saves migrate to schema 21, outdated writes are rejected, and cloud save, online roster and rankings work.');
+assert.equal((await req('gameV2/privateSaves/'+uid)).value.schemaVersion,22);
+console.log('PASS: previous saves migrate to schema 22, outdated writes are rejected, and cloud save, online roster and rankings work.');
 
 // Story reward officers must be accepted by both canonical and public combat state.
 // This exercises actual enter() and save() instead of just matching a rule string.
@@ -57,8 +57,8 @@ for(const officer of ['OS01','OS02']){
   assert.equal((await req('gameV2/fleetStates/'+uid,{method:'PUT',body:{...fleet,revision:fleet.revision+1,at:stamp,skill:fleet.skill.replace(officer,'OS03')}})).status,401,'unknown canonical officer is rejected');
  }finally{clearInterval(account.timer);}
 }
-await req('gameV2/config/minSchema',{admin:true,method:'PUT',body:21});
+await req('gameV2/config/minSchema',{admin:true,method:'PUT',body:22});
 const cloud=(await req('gameV2/privateSaves/'+uid)).value;
-const rewind={...cloud,revision:cloud.revision+1,schemaVersion:20,updatedAt:stamp};
+const rewind={...cloud,revision:cloud.revision+1,schemaVersion:21,updatedAt:stamp};
 assert.equal((await req('gameV2/privateSaves/'+uid,{method:'PUT',body:rewind})).status,401);
 console.log('PASS: both story officers can migrate, log in, save and publish combat state; unknown officer IDs remain rejected.');

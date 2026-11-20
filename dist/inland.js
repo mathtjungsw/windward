@@ -1,10 +1,10 @@
-import {validFieldRecord} from './overland.js?v=2026.11.20-survey-voyages';
-import {FIELD_TOWNS} from './inland-places.js?v=2026.11.20-survey-voyages';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-survey-voyages';
-import {capacity,usedSpace} from './engine.js?v=2026.11.20-survey-voyages';
-import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.20-survey-voyages';
-import {recordTrade} from './rank-progress.js?v=2026.11.20-survey-voyages';
-import {blessingRate} from './blessings.js?v=2026.11.20-survey-voyages';
+import {validFieldRecord,fieldNear} from './overland.js?v=2026.11.20-land-caravans';
+import {FIELD_TOWNS} from './inland-places.js?v=2026.11.20-land-caravans';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-land-caravans';
+import {capacity,usedSpace} from './engine.js?v=2026.11.20-land-caravans';
+import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.20-land-caravans';
+import {recordTrade} from './rank-progress.js?v=2026.11.20-land-caravans';
+import {blessingRate} from './blessings.js?v=2026.11.20-land-caravans';
 
 export const INLAND_CITIES={
  cordoba:{id:'cordoba',name:'코르도바',port:'seville',point:[-4.7794,37.8847],path:[[-5.6,37.53],[-5.16,37.77]],seconds:60,terrain:0,goods:{leather:.83,oliveoil:.87}},
@@ -21,6 +21,9 @@ const roads=[1,1,1,.95,.92,.90,.84,.85,.95,.98,.84,.8,.78,.77,.76,.75,.74,.73,.7
 const passes=[1,1,.95,1.10,.88,.82,.82,.85,1.10,1.15,1.06,1.12,1.13,1.15,1.16,1.18,1.20,1.22,1.24,1.26];
 export const INLAND_TIERS=names.map((name,i)=>({name,tier:i+1,load:loads[i],cost:costs[i],speed:[roads[i],passes[i]]}));
 export const inlandVehicle=game=>INLAND_TIERS[game.inland?.tier||0];
+export const fieldPace=vehicle=>1.7+(vehicle.tier-1)*.12;
+export const fieldCargo=game=>game.inland?.field?.cargo||{};
+export const fieldLoad=game=>Object.values(fieldCargo(game)).reduce((sum,item)=>sum+item.qty,0);
 export const inlandWarehouse=(game,id)=>game.inland?.warehouses?.[id]||{};
 export const inlandSpace=(game,id)=>Object.values(inlandWarehouse(game,id)).reduce((n,item)=>n+item.qty,0);
 const fail=message=>{throw Error(message);};
@@ -94,12 +97,31 @@ export function inlandWalk(game,city,now,returning){
  data(game).visit={city:city.id,from:now,due,returning:!!returning};
  return {message:returning?'배가 있는 항구로 돌아갑니다.':city.name+'으로 출발합니다.'};
 }
-export function inlandUpgrade(game,city,now){
- if(!inlandAccess(game,city,city.id,now)&&!inlandAccess(game,city,city.port,now))fail('항구나 도시에 도착한 뒤 이용해 주세요.');
+export function upgradeInlandVehicle(game){
  const cur=inlandVehicle(game),next=INLAND_TIERS[cur.tier];
  if(!next||game.money<next.cost-cur.cost)fail('다음 단계에 필요한 두카트를 확인해 주세요.');
  game.money-=next.cost-cur.cost;data(game).tier=cur.tier;
  return {message:next.name+'으로 업그레이드했어요.'};
+}
+export function inlandUpgrade(game,city,now){
+ if(!inlandAccess(game,city,city.id,now)&&!inlandAccess(game,city,city.port,now))fail('항구나 도시에 도착한 뒤 이용해 주세요.');
+ return upgradeInlandVehicle(game);
+}
+export function fieldTransfer(game,terrain,good,qty,toField,city=null){
+ const field=game.inland?.field;
+ if(!field||!Object.hasOwn(GOODS,good)||!quantity(qty))fail('옮길 화물과 수량을 확인해 주세요.');
+ if(city?field.town!==city:!fieldNear(field,terrain,field.origin,1.5))fail('상륙지나 도시에 도착한 뒤 화물을 옮기세요.');
+ const cargo=field.cargo??={},other=city?warehouse(game,city):game.cargo;
+ const from=toField?other:cargo,to=toField?cargo:other;
+ const limit=toField?inlandVehicle(game).load-fieldLoad(game):city?inlandFree(game,city):capacity(game)-usedSpace(game);
+ const stock=city&&toField?inlandAvailable(game,city,good):from[good]?.qty||0;
+ if(qty>stock||qty>limit)fail('보유 수량과 적재 공간을 확인해 주세요.');
+ moveCargo(from,to,good,qty);
+ return {message:GOODS[good].name+' '+qty+'상자를 옮겼어요.'};
+}
+export function boardFieldCargo(game,terrain){
+ if(fieldLoad(game)>capacity(game)-usedSpace(game))fail('선단에 화물 공간이 부족해요. 육상 화물을 도시 창고에 맡기거나 선단 적재 공간을 비워 주세요.');
+ for(const [good,item] of Object.entries(fieldCargo(game)))fieldTransfer(game,terrain,good,item.qty,false);
 }
 export function inlandTransfer(game,city,good,qty,toShip,now){
  if(!inlandAccess(game,city,city.port,now)||!quantity(qty)||!Object.hasOwn(GOODS,good))fail('항구에 도착한 뒤 수량을 확인해 주세요.');
@@ -123,13 +145,14 @@ export function inlandTrade(game,city,good,qty,mode,content,revision,now,quote){
  settleInlandHaul(game,now);
  const current=inlandMarketQuote(city,good,qty,mode,content,revision,now);
  if(quote.revision!==revision||now-quote.at>10000||now<quote.at-1000||quote.total!==current.total)fail('시세가 달라졌어요. 새 견적을 확인해 주세요.');
- const inventory=warehouse(game,city.id);
+ const field=game.inland?.field;
+ const inventory=field?(field.cargo??={}):warehouse(game,city.id);
  let profit=0;
  if(mode==='buy'){
-  if(game.money<current.total||qty>inlandFree(game,city.id))fail('두카트와 도시 창고 공간을 확인하세요.');
+  if(game.money<current.total||qty>(field?inlandVehicle(game).load-fieldLoad(game):inlandFree(game,city.id)))fail('두카트와 도시 창고 공간을 확인하세요.');
   game.money-=current.total;changeCargo(inventory,good,qty,current.total);
  }else{
-  if(qty>inlandAvailable(game,city.id,good))fail('도시 창고의 판매 가능 수량이 부족해요.');
+  if(qty>(field?inventory[good]?.qty||0:inlandAvailable(game,city.id,good)))fail('도시 창고의 판매 가능 수량이 부족해요.');
   const cost=inventory[good].cost*qty/inventory[good].qty;
   game.money+=current.total;profit=current.total-cost;game.profit+=profit;
   changeCargo(inventory,good,-qty,-cost);
@@ -206,6 +229,11 @@ export function validInlandSave(data){
   const entries=Object.entries(items);
   if(entries.some(([good,item])=>!Object.hasOwn(GOODS,good)||!quantity(item?.qty)||!Number.isFinite(item.cost)||item.cost<0)
    ||entries.reduce((sum,[,item])=>sum+item.qty,0)>WAREHOUSE_MAX)return false;
+ }
+ const carried=data.field?.cargo;
+ if(carried){
+  if(typeof carried!=='object'||Array.isArray(carried)||Object.entries(carried).some(([good,entry])=>!Object.hasOwn(GOODS,good)||!quantity(entry?.qty)||!Number.isFinite(entry.cost)||entry.cost<0))return false;
+  if(fieldLoad({inland:data})>INLAND_TIERS[data.tier].load)return false;
  }
  if(!validFieldRecord(data)||data.field?.town&&!Object.hasOwn(INLAND_CITIES,data.field.town))return false;
  if(data.towns&&Object.values(data.towns).some(t=>t?.routes&&(!Array.isArray(t.routes)||t.routes.some(p=>typeof p!=='string'||!PORT_BY_ID[p]&&!p.startsWith('depot-')))))return false;

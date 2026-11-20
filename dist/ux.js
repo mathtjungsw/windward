@@ -1,13 +1,13 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.20-survey-voyages';
-import {shipArtPath} from './art.js?v=2026.11.20-survey-voyages';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.20-survey-voyages';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-survey-voyages';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.20-survey-voyages';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.20-survey-voyages';
-import {findMenus} from './menu-finder.js?v=2026.11.20-survey-voyages';
-import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.20-survey-voyages';
-import {isTypingTarget} from './controls.js?v=2026.11.20-survey-voyages';
-import {validCard} from './social-core.js?v=2026.11.20-survey-voyages';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.20-land-caravans';
+import {shipArtPath} from './art.js?v=2026.11.20-land-caravans';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.20-land-caravans';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-land-caravans';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.20-land-caravans';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.20-land-caravans';
+import {findMenus} from './menu-finder.js?v=2026.11.20-land-caravans';
+import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.20-land-caravans';
+import {isTypingTarget} from './controls.js?v=2026.11.20-land-caravans';
+import {validCard} from './social-core.js?v=2026.11.20-land-caravans';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -61,7 +61,7 @@ export function createUX(api){
     openPort('tavern');
   };
   $('#quick-more').onclick=()=>openMore();
-  $('#action-context').onclick=()=>tools().port?openPort('port'):api.onAtlas();
+  $('#action-context').onclick=()=>tools().inland?.field?$('#chart-landfall').click():tools().port?openPort('port'):api.onAtlas();
   notes.onclick=()=>patchNotes(true);
   settings.onclick=showSettings;
 
@@ -263,8 +263,9 @@ export function createUX(api){
   function renderHUD(){
     const s=tools(),v=s.voyage,p=PORT_BY_ID[s.port],name=PORT_BY_ID[v?.target]?.name||'선택한 해역';
     const remaining=v?voyageEstimate(s,v,v.travelled):null;
-    $('#action-status').textContent=p?`${p.name} 정박 · 교역 가능 · 보급 ${s.food.toFixed(1)}일분`:v?`${name} ${v.kind?'구조 이동':'항해'} · ${remaining.days.toFixed(1)}일 / 약 ${Math.ceil(remaining.seconds)}초 · 보급 ${s.food.toFixed(1)}일분`:`해상 · 보급 ${s.food.toFixed(1)}일분${s.food<=ship(s).reserve?' · 보급항을 확인하세요':''}`;
-    $('#action-context').textContent=p?'교역·보급':'항구 찾기';
+    $('#action-status').textContent=s.inland?.field?'육상 탐험 · 지도를 눌러 이동':p?`${p.name} 정박 · 교역 가능 · 보급 ${s.food.toFixed(1)}일분`:v?`${name} ${v.kind?'구조 이동':'항해'} · ${remaining.days.toFixed(1)}일 / 약 ${Math.ceil(remaining.seconds)}초 · 보급 ${s.food.toFixed(1)}일분`:`해상 · 보급 ${s.food.toFixed(1)}일분${s.food<=ship(s).reserve?' · 보급항을 확인하세요':''}`;
+    $('#action-context').textContent=s.inland?.field?'육상 지도':p?'교역·보급':'항구 찾기';
+    $('#action-home').textContent=s.inland?.field?'내 위치':'내 배 위치';
     $('#update-new').hidden=!getAccount().uid||getAccount().seenVersion===RELEASE||read(storage,pendingKey(),null)===RELEASE;
   }
   function renderShip(){

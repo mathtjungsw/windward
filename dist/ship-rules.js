@@ -1,6 +1,6 @@
-import {titleEffect} from './title-effects.js?v=2026.11.20-survey-voyages';
-import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.20-survey-voyages';
-import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.20-survey-voyages';
+import {titleEffect} from './title-effects.js?v=2026.11.20-land-caravans';
+import {HISTORICAL_BY_ID} from './historical-ships.js?v=2026.11.20-land-caravans';
+import {activeOfficer,gearOnShip,extraCapacity} from './rumor-progress.js?v=2026.11.20-land-caravans';
 
 export const ACTIVE_SECONDS_PER_DAY=2;
 const rows=[

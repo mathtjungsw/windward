@@ -1,12 +1,12 @@
-import {titleEffect} from './title-effects.js?v=2026.11.20-survey-voyages';
-import {blessingBonus} from './blessings.js?v=2026.11.20-survey-voyages';
-import {shipyardReport} from './historical-ships.js?v=2026.11.20-survey-voyages';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-survey-voyages';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-survey-voyages';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-survey-voyages';
+import {titleEffect} from './title-effects.js?v=2026.11.20-land-caravans';
+import {blessingBonus} from './blessings.js?v=2026.11.20-land-caravans';
+import {shipyardReport} from './historical-ships.js?v=2026.11.20-land-caravans';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-land-caravans';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-land-caravans';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-land-caravans';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-land-caravans';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-survey-voyages';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-land-caravans';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[

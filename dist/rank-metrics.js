@@ -1,3 +1,4 @@
+import {chartPercentFromScore} from './exploration-score.js?v=2026.11.20-land-caravans';
 export const RANK_GROUPS=[['trade','교역'],['explore','탐험'],['fleet','선단·경영'],['combat','전투'],['cooperation','협력'],['overall','종합']];
 export const RANK_DEFINITIONS=[
  ['profit','무역 이익','trade',' D'],['money','지금 가진 돈','trade',' D'],['tradedGoodCount','교역품 수집왕','trade','종'],['bestTradeProfit','최고의 한 거래','trade',' D'],
@@ -10,4 +11,4 @@ export const RANK_DEFINITIONS=[
 ].map(([id,label,group,unit])=>({id,label,group,unit}));
 export const RANK_METRICS=RANK_DEFINITIONS.map(m=>m.id);
 export const RANK_BY_ID=Object.fromEntries(RANK_DEFINITIONS.map(m=>[m.id,m]));
-export function formatRankScore(player,metric){if(metric==='overallScore')return ((player.overallScore||0)/100).toFixed(2)+'점';if(metric==='explorationScore')return Number(player.explorationPercent??player.explorationScore/10000).toFixed(2)+'%';return Number(player[metric]||0).toLocaleString('ko-KR')+(RANK_BY_ID[metric]?.unit||'');}
+export function formatRankScore(player,metric){if(metric==='overallScore')return ((player.overallScore||0)/100).toFixed(2)+'점';if(metric==='explorationScore')return Number(Number.isFinite(player.explorationScore)?chartPercentFromScore(player.explorationScore):player.explorationPercent||0).toFixed(4)+'%';return Number(player[metric]||0).toLocaleString('ko-KR')+(RANK_BY_ID[metric]?.unit||'');}

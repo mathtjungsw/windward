@@ -1,8 +1,8 @@
-import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.20-survey-voyages';
-import {GOODS} from './data.js?v=2026.11.20-survey-voyages';
-import {explorationGear} from './rumor-progress.js?v=2026.11.20-survey-voyages';
-import {shipGlyph} from './art.js?v=2026.11.20-survey-voyages';
-import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.20-survey-voyages';
+import {shoreSite,shoreName,visibleBeaches,SHORE_RECORDS,shoreMoves,shoreEdges,shoreNode,shorePosition,shoreTravelProgress,canRecordShore,shoreBagLimit} from './shore-expeditions.js?v=2026.11.20-land-caravans';
+import {GOODS} from './data.js?v=2026.11.20-land-caravans';
+import {explorationGear} from './rumor-progress.js?v=2026.11.20-land-caravans';
+import {shipGlyph} from './art.js?v=2026.11.20-land-caravans';
+import {SHORE_POINTS,shoreDisplayPoint,shoreMapPosition,drawShoreMap} from './shore-map.js?v=2026.11.20-land-caravans';
 
 const button=(title,action,target='')=>`<button type="button" class="service-button" data-shore-action="${action}" data-shore-target="${target}">${title}</button>`;
 const nodes=['harbor','market','site','ridge'];

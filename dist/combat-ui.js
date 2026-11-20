@@ -1,12 +1,12 @@
-import {requireCombatAllowed} from './blessings.js?v=2026.11.20-survey-voyages';
-import {assertFreeCombat} from './novice.js?v=2026.11.20-survey-voyages';
-import {createOfflineCombat} from './offline-combat.js?v=2026.11.20-survey-voyages';
-import {createMapCombat} from './combat-map.js?v=2026.11.20-survey-voyages';
-import {fleetMaxHP} from './ship-rules.js?v=2026.11.20-survey-voyages';
-import {combatProfile,combatEligible,reserveLoss,returnReserve,openBattle,fireCannon,finishExpired,claimBattle,fireAtPirate,defeatNPC,npcSlotChanges,PIRATE_ZONES,cargoCount,addCargo} from './combat-core.js?v=2026.11.20-survey-voyages';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.20-survey-voyages';
-import {usedSpace,capacity} from './engine.js?v=2026.11.20-survey-voyages';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-survey-voyages';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.20-land-caravans';
+import {assertFreeCombat} from './novice.js?v=2026.11.20-land-caravans';
+import {createOfflineCombat} from './offline-combat.js?v=2026.11.20-land-caravans';
+import {createMapCombat} from './combat-map.js?v=2026.11.20-land-caravans';
+import {fleetMaxHP} from './ship-rules.js?v=2026.11.20-land-caravans';
+import {combatProfile,combatEligible,reserveLoss,returnReserve,openBattle,fireCannon,finishExpired,claimBattle,fireAtPirate,defeatNPC,npcSlotChanges,PIRATE_ZONES,cargoCount,addCargo} from './combat-core.js?v=2026.11.20-land-caravans';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.20-land-caravans';
+import {usedSpace,capacity} from './engine.js?v=2026.11.20-land-caravans';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-land-caravans';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const roll=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
 export function createCombat(api){

@@ -1,3 +1,4 @@
+import {MAX_EXPLORATION_SCORE} from '../dist/exploration-score.js';
 // Isolated rules integration checks. Never connects to the production database.
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -37,7 +38,8 @@ const uid='world-test-a',other='world-test-b';
  assert.equal((await req(`gameV2/real/rankings/${uid}`,{uid,method:'PUT',body:modern})).status,200,'new saved summary');
  assert.equal((await req(`gameV2/real/rankings/${uid}`,{uid,method:'PUT',body:{...modern,saveRevision:3}})).status,401,'old summary revision denied');
  assert.equal((await req(`gameV2/real/rankings/${uid}`,{uid,method:'PUT',body:rank})).status,401,'legacy client cannot replace migrated summary');
- for(const [key,value] of [['fame',1000000000001],['explorationScore',1000001],['fleetCount',6],['shipTier',20]])assert.equal((await req(`gameV2/real/rankings/${uid}`,{uid,method:'PUT',body:{...modern,[key]:value}})).status,401,'summary bound '+key);
+ for(const [key,value] of [['fame',1000000000001],['explorationScore',MAX_EXPLORATION_SCORE+1],['fleetCount',6],['shipTier',20]])assert.equal((await req(`gameV2/real/rankings/${uid}`,{uid,method:'PUT',body:{...modern,[key]:value}})).status,401,'summary bound '+key);
+ assert.equal((await req(`gameV2/real/rankings/${uid}`,{uid,method:'PUT',body:{...modern,explorationScore:MAX_EXPLORATION_SCORE,explorationPercent:100}})).status,200,'joint exploration accepts a score above the old sea chart limit');
  assert.equal((await req(`gameV2/real/rankings`,{uid:other,query:{orderBy:'explorationScore',limitToLast:5}})).status,200,'exploration top five');
  assert.equal((await req(`gameV2/real/rankings`,{uid:other,query:{orderBy:'fame',limitToLast:5}})).status,200,'fame top five');
  assert.equal((await req(`gameV2/real/rankings`,{uid:other,query:{orderBy:'$key',limitToFirst:20}})).status,200,'persistent directory page');

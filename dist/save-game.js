@@ -1,21 +1,21 @@
-import {normalizeTitles} from './title-effects.js?v=2026.11.20-survey-voyages';
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.20-survey-voyages';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.20-survey-voyages';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-survey-voyages';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.20-survey-voyages';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
+import {normalizeTitles} from './title-effects.js?v=2026.11.20-land-caravans';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.20-land-caravans';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.20-land-caravans';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-land-caravans';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.20-land-caravans';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-land-caravans';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.20-survey-voyages';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.20-land-caravans';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.20-survey-voyages';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.20-survey-voyages';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.20-survey-voyages';
-import {normalizeDepotDock} from './projects.js?v=2026.11.20-survey-voyages';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.20-survey-voyages';
-import {normalizeTavernRound} from './tavern-games.js?v=2026.11.20-survey-voyages';
-import {normalizeCoastOrders} from './coast-orders.js?v=2026.11.20-survey-voyages';
-import {normalizeStories} from './story-core.js?v=2026.11.20-survey-voyages';
-import {validInlandSave} from './inland.js?v=2026.11.20-survey-voyages';
+import {normalizeSea} from './sea-activities.js?v=2026.11.20-land-caravans';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.20-land-caravans';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.20-land-caravans';
+import {normalizeDepotDock} from './projects.js?v=2026.11.20-land-caravans';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.20-land-caravans';
+import {normalizeTavernRound} from './tavern-games.js?v=2026.11.20-land-caravans';
+import {normalizeCoastOrders} from './coast-orders.js?v=2026.11.20-land-caravans';
+import {normalizeStories} from './story-core.js?v=2026.11.20-land-caravans';
+import {validInlandSave} from './inland.js?v=2026.11.20-land-caravans';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
