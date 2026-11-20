@@ -139,7 +139,8 @@ const {INLAND_CITIES,inlandWalk}=await import('../dist/inland.js');
 const {nextCoast,takeCoast,visitCoast}=await import('../dist/coast-orders.js');
 const personal='gameV2/shared/personal/'+c;
 await req(personal,{admin:true,method:'PUT',body:{revision:1,content:{_version:1},updatedAt:now}});
-for(const city of Object.values(INLAND_CITIES)){
+// These three locations can still have a saved pre-field timed return.
+for(const city of [INLAND_CITIES.cordoba,INLAND_CITIES.avignon,INLAND_CITIES.puebla]){
  let target;
  const received=await prepare(c,c,(game,_content,time)=>{
   game.port=city.port;game.voyage=null;

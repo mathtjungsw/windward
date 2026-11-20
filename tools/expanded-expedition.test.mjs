@@ -24,8 +24,8 @@ function progressed(){
 const emptyProgress=()=>({read:[],hidden:[],officers:[],items:{},contracts:{},shipGear:{},active:null,tradeGear:null,coupons:{}});
 
 test('every officer has a valid port, cargo and a persistent recruitment path',()=>{
-  assert.equal(OFFICERS.filter(row=>!row.scenario).length,40);
-  assert.equal(new Set(OFFICERS.map(o=>o.id)).size,42);
+  assert.equal(OFFICERS.filter(row=>!row.scenario).length,48);
+  assert.equal(new Set(OFFICERS.map(o=>o.id)).size,50);
   for(const officer of OFFICERS.filter(row=>!row.scenario)){
     const game=progressed();
     game.money=100000;game.port=officer.tavern;

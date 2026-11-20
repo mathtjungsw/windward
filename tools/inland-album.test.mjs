@@ -119,3 +119,44 @@ test('optional pirate incident can be chosen once and pays only at a qualifying 
  assert.equal(game.money,2500);
  assert.throws(()=>pirateContractAction(game,'report','',now+17000));
 });
+
+test('real inland terrain, manual travel, album investigation and safe return survive reload',async()=>{
+ const {FieldTerrain,startField,moveField,returnField}=await import('../dist/overland.js');
+ const {inspectDiscovery,inspectFieldDiscovery,nearbyDiscoveries}=await import('../dist/discoveries.js');
+ const bytes=await readFile(new URL('../dist/assets/overland-terrain.bin',import.meta.url));
+ const terrain=new FieldTerrain(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength));
+ const entries=DISCOVERIES.filter(d=>d.medium==='land');assert.equal(entries.length,40);
+ assert.equal(Object.keys(INLAND_CITIES).length,26);
+ const game=initialState();game.port='lisbon';const field=startField(game,terrain,[-9.14,38.72],'lisbon');
+ for(const kind of [0,2,3,4]){
+  let tested=false;
+  for(let y=1;y<terrain.height&&!tested;y++){
+   let previous=0;
+   for(let run=terrain.rows[y];run<terrain.rows[y+1];run++){
+    const end=terrain.ends[run]>>>3,type=terrain.ends[run]&7;
+    if(previous>0&&type===kind&&terrain.kind(previous-1,y)===1){
+     const testField={cell:[previous-1,y]};assert.ok(moveField(testField,terrain,1,0));assert.deepEqual(testField.cell,[previous-1,y]);tested=true;break;
+    }
+    previous=end;
+   }
+  }
+  assert.ok(tested);
+ }
+ for(const d of entries){
+  const dst=terrain.cell(d.point),town=terrain.landing(INLAND_CITIES[d.fieldCity].point,6);
+  assert.equal(terrain.kind(...dst),1);
+  let q=[town];const seen=new Set([String(town)]);
+  for(let n=0;n<14&&!seen.has(String(dst));n++){
+   const next=[];for(const p of q)for(const [dx,dy] of [[1,0],[-1,0],[0,-1],[0,1]]){
+    const v=[p[0]+dx,p[1]+dy];
+    if(!terrain.barrier(p,dx,dy)&&!seen.has(String(v))){seen.add(String(v));next.push(v);}
+   }q=next;
+  }
+  assert.ok(seen.has(String(dst)),d.id+' walking access');
+ }
+ const d=entries[0];field.cell=terrain.cell(d.point);
+ assert.equal(nearbyDiscoveries(game).length,0);assert.equal(inspectDiscovery(game,{clear:()=>true},d.id,now).ok,false);
+ assert.ok(inspectFieldDiscovery(game,terrain,d.id,now));assert.equal(inspectFieldDiscovery(game,terrain,d.id,now),null);
+ assert.ok(parseSavedGame(JSON.stringify(game)).discoveries[d.id]);
+ assert.throws(()=>returnField(game,terrain));field.cell=[...field.origin];returnField(game,terrain);assert.equal(game.port,'lisbon');
+});

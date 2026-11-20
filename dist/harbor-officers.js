@@ -1,8 +1,8 @@
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.20-harbor-repairs';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-harbor-repairs';
-import {eraAvailable} from './era-cycle.js?v=2026.11.20-harbor-repairs';
-import {canHearTavernRumor} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.20-survey-voyages';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-survey-voyages';
+import {eraAvailable} from './era-cycle.js?v=2026.11.20-survey-voyages';
+import {canHearTavernRumor} from './rumor-progress.js?v=2026.11.20-survey-voyages';
 
 export function harborOfficerRole(id){
  const entry=OFFICERS.find(row=>row.id===id);

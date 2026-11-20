@@ -356,7 +356,47 @@ for(const [id,name,port,tavern,cargo,type,effects,effect,title,story] of fifthGe
  ITEMS.push({id,name,port,tavern,cost:3000,stage:8,era:5,type,title,story,
   challenge:{ports:[tavern,port],cargo,qty:9,guild:2},effect,...effects});
 }
+OFFICERS.push(
+ {id:'O041',name:'제임스 쿡',port:'auckland',tavern:'london',cost:30000,era:6,
+  title:'두 섬 사이의 빈칸',story:'런던에서 본 해도는 두 땅덩이 사이를 비워 두었대요. 남쪽 섬으로 간 배의 측심 장부를 가져오면 그 빈칸을 채울 수 있다더군요.',
+  challenge:{ports:['london','cape','auckland'],cargo:'copper',qty:12,discoveries:12},effect:'원양 항해 보급 소모 4% 감소 · 흔적 확인 거리 +8해리',openSeaSupply:.04,spotBonus:8},
+ {id:'O042',name:'투파이아',port:'papeete',tavern:'apia',cost:30000,era:6,
+  title:'별이 기우는 쪽',story:'섬에서 섬으로 가는 길을 바람과 별의 이름으로 외운다더군요. 아피아를 거쳐 파페에테에 오면 그 길을 함께 읽을 이가 있대요.',
+  challenge:{ports:['apia','suva','papeete'],cargo:'cotton',qty:9,discoveries:10},effect:'흔적 확인 거리 +12해리 · 원양 항해 보급 소모 2% 감소',spotBonus:12,openSeaSupply:.02},
+ {id:'O043',name:'잔 바레',port:'portlouis',tavern:'bordeaux',cost:15000,era:6,
+  title:'압지 사이에 남은 잎',story:'표본 상자의 이름표가 빗물에 번졌는데도 어느 숲의 잎인지 알아본 사람이 있대요. 보르도에서 들은 이야기를 포트루이스로 가져가 보세요.',
+  challenge:{ports:['bordeaux','portlouis'],cargo:'cotton',qty:8,shore:2},effect:'상륙 탐사 보급 소모 5% 감소 · 흔적 확인 거리 +7해리',shoreFood:.05,spotBonus:7},
+ {id:'O044',name:'조지프 뱅크스',port:'sydney',tavern:'cape',cost:30000,era:6,
+  title:'병 속에 남긴 해안',story:'케이프의 창고지기가 빈 병을 가득 주문받았대요. 시드니 앞바다에서 본 것들을 육지까지 온전히 가져오려는 주문이래요.',
+  challenge:{ports:['cape','sydney'],cargo:'glass',qty:12,discoveries:12},effect:'흔적 확인 거리 +9해리 · 위탁 수송 보수 +3%',spotBonus:9,guildBonus:.03},
+ {id:'O045',name:'다니엘 솔란데르',port:'london',tavern:'batavia',cost:15000,era:6,
+  title:'뒤섞이지 않은 표본',story:'바타비아를 지난 상자에는 식물을 낱장마다 싸 두었대요. 런던까지 종잇장의 순서를 지키면 표본을 알아보는 사람이 기다린대요.',
+  challenge:{ports:['batavia','london'],cargo:'timber',qty:9,discoveries:9},effect:'상륙 탐사 보급 소모 4% 감소 · 내륙 장터 운반 한도 +2상자',shoreFood:.04,shoreBag:2},
+ {id:'O046',name:'시드니 파킨슨',port:'papeete',tavern:'sydney',cost:15000,era:6,
+  title:'꽃이 시들기 전의 밑그림',story:'선원이 물을 갈아 주는 동안 다른 사람이 꽃을 그렸대요. 시드니를 떠나 파페에테까지 그림을 말려 줄 배를 구한대요.',
+  challenge:{ports:['sydney','papeete'],cargo:'cotton',qty:8,discoveries:8},effect:'흔적 확인 거리 +10해리 · 주점 항구 정보비 4% 할인',spotBonus:10,infoDiscount:.04},
+ {id:'O047',name:'조지 밴쿠버',port:'vancouver',tavern:'honolulu',cost:30000,era:6,
+  title:'만 하나마다 한 장씩',story:'호놀룰루에 도착한 해도 뭉치를 풀었더니 북서 해안의 만이 한 장씩 따로 그려져 있었다더군요. 그 물길을 따라가 본 선장을 찾는대요.',
+  challenge:{ports:['honolulu','vancouver'],cargo:'copper',qty:12,guild:3},effect:'위탁 수송 중 바다 속도 +3% · 원양 항해 보급 소모 3% 감소',charterSpeed:.03,openSeaSupply:.03},
+ {id:'O048',name:'라페루즈',port:'macau',tavern:'manila',cost:30000,era:6,
+  title:'두 범선의 항로 대조',story:'마닐라의 선원들이 두 배의 관측 기록을 마카오에서 맞춰 본대요. 서로 다른 날 세 항구를 돌아본 장부가 필요하다더군요.',
+  challenge:{ports:['manila','macau','papeete'],cargo:'timber',qty:10,guild:3},effect:'2척 이상 항해 보급 소모 3% 감소 · 위탁 수송 보수 +3%',fleetSupply:.03,guildBonus:.03}
+);
+const surveyGear=[
+ ['I105','눈금 보정판','london','dublin','copper','explore',{spotBonus:12},'흔적 확인 거리 +12해리','거꾸로 읽은 각도','더블린의 선원이 같은 별을 두 번 재고 두 값의 차이를 적었대요.'],
+ ['I106','방습 표본 압착틀','portlouis','cape','timber','explore',{spotBonus:7,seaVision:6},'흔적 확인 거리 +7해리 · 해상 활동 인지 거리 +6해리','빗물이 닿지 않는 종이','케이프의 천막 밖은 젖어도 잎을 누른 종이만은 바삭했다더군요.'],
+ ['I107','표본병 칸막이','venice','marseille','glass','trade',{capacity:4,sellBonus:.01,sellGoods:['specimen-glass']},'적재 +4상자 · 표본 유리병 세후 판매 +1%','부딪치지 않는 유리','마르세유에서 유리 가득 실은 배가 풍랑을 지나도 소리 한 번 나지 않았대요.'],
+ ['I108','경위도 도판 보관함','amsterdam','bordeaux','timber','trade',{sellBonus:.02,sellGoods:['engraved-sea-chart','lunar-almanac','botanical-prints']},'동판 인쇄 해도·월거리 항해력·채색 식물 도판 세후 판매 +2%','구겨지지 않은 종이','보르도 상인이 종이 화물값을 더 쳐 준 이유가 보관함에 있다더군요.'],
+ ['I109','여울의 측심줄','vancouver','honolulu','copper','explore',{salvageSpeed:.14,seaVision:6},'표류 화물 회수 시간 14% 단축 · 해상 활동 인지 거리 +6해리','매듭 간격이 달라지는 줄','호놀룰루의 뱃사공이 바닥에 닿는 줄의 매듭만 보고 깊이를 불렀대요.'],
+ ['I110','고운 직물 압축대','goa','colombo','cotton','trade',{capacity:3,sellBonus:.01,sellGoods:['kashmir-shawls','blockprint-muslin','indian-palampore']},'적재 +3상자 · 숄·날염 모슬린·화문 침대보 세후 판매 +1%','주름 없는 천 꾸러미','콜롬보의 작은 짐칸에서 넓은 천을 펴 보였는데 접힌 자국이 없었대요.'],
+ ['I111','섬 항로 인양 뜸','papeete','suva','timber','explore',{rescueSpeed:.15,spotBonus:4},'해상 구조 시간 15% 단축 · 흔적 확인 거리 +4해리','물 위에 남겨 둔 길','수바에서 파도 너머까지 떠 있는 표지를 이어 배 한 척을 이끌었대요.'],
+ ['I112','정밀기구 완충 상자','boston','london','wool','trade',{sellBonus:.02,sellGoods:['survey-sextant','marine-timekeeper','brass-dividers']},'육분의·항해용 정밀시계·황동 제도 컴퍼스 세후 판매 +2%','흔들림을 견딘 눈금','런던에서 북대서양을 건넌 뒤에도 상자 속 정밀기구의 눈금이 그대로였다더군요.']
+];
+for(const [id,name,port,tavern,cargo,type,effects,effect,title,story] of surveyGear){
+ ITEMS.push({id,name,port,tavern,cost:3200,stage:8,era:6,type,title,story,
+  challenge:{ports:[tavern,port],cargo,qty:9,guild:2},effect,...effects});
+}
 export const OFFICER_BY_ID = Object.fromEntries(OFFICERS.map(x=>[x.id,x]));
 export const ITEM_BY_ID = Object.fromEntries(ITEMS.map(x=>[x.id,x]));
 export const MEDITERRANEAN_PORTS = new Set(['marseille','venice','athens','istanbul','alexandria']);
-import {EXTRA_ITEMS} from './item-catalog-extra.js?v=2026.11.20-harbor-repairs';
+import {EXTRA_ITEMS} from './item-catalog-extra.js?v=2026.11.20-survey-voyages';

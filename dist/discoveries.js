@@ -1,29 +1,40 @@
-import {titleEffect} from './title-effects.js?v=2026.11.20-harbor-repairs';
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-harbor-repairs';
-import {segmentDistance} from './voyage-core.js?v=2026.11.20-harbor-repairs';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.20-harbor-repairs';
-import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
-import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.20-harbor-repairs';
-import {eraAvailable} from './era-cycle.js?v=2026.11.20-harbor-repairs';
+import {fieldNear} from './overland.js?v=2026.11.20-survey-voyages';
+import {titleEffect} from './title-effects.js?v=2026.11.20-survey-voyages';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-survey-voyages';
+import {segmentDistance} from './voyage-core.js?v=2026.11.20-survey-voyages';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.20-survey-voyages';
+import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.20-survey-voyages';
+import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.20-survey-voyages';
+import {eraAvailable} from './era-cycle.js?v=2026.11.20-survey-voyages';
 const shipTrace=s=>(s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0)+(explorationGear(s)?.spotBonus||0)+titleEffect(s,'spotBonus');
-export const explorationAllowed=s=>!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
+export const explorationAllowed=s=>!s.inland?.field&&!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{
  const ids=Object.keys(s.discoveries||{}),active=ids.filter(id=>Object.hasOwn(DISCOVERY_BY_ID,id));
  const earned=active.reduce((n,id)=>n+DISCOVERY_BY_ID[id].fame+(s.discoveries[id]?.blessingFame||0),0)+ids.reduce((n,id)=>n+(Object.hasOwn(RETIRED_DISCOVERY_FAME,id)?RETIRED_DISCOVERY_FAME[id]:0),0);
  return {foundCount:active.length,fame:Math.max(0,earned+(s.pirateFame||0)+(s.seaLog?.fame||0)+(s.guild?.earned||0)-(s.guild?.lost||0))};
 };
-export const hasClues=(s,d,now)=>(eraAvailable(d,now)||s.investigationTarget===d.id)&&(d.rumorIds||[]).every(id=>(s.rumors||[]).includes(id));
+export const hasClues=(s,d,now)=>d.medium!=='land'&&(eraAvailable(d,now)||s.investigationTarget===d.id)&&(d.rumorIds||[]).every(id=>(s.rumors||[]).includes(id));
 const rareSight=s=>s.rareEffect?.kind==='sight'&&s.rareEffect.until>s.day?10:0;
 export function nearbyDiscoveries(s){if(!explorationAllowed(s))return [];return DISCOVERIES.filter(d=>!s.discoveries?.[d.id]&&hasClues(s,d)&&mapDistance(s.position,d.point||[d.lon,d.lat])<=d.spotRadius+(activeOfficer(s)?.spotBonus||0)+shipTrace(s)+rareSight(s)+blessingRate('lantern')+.01).sort((a,b)=>mapDistance(s.position,a.point)-mapDistance(s.position,b.point)||a.id.localeCompare(b.id));}
 export function discoveryEntry(s,from,to,allowed=()=>true){if(!explorationAllowed(s))return 1;let earliest=1;for(const d of DISCOVERIES){if(s.discoveries?.[d.id]||!hasClues(s,d)||!allowed(d))continue;const radius=d.spotRadius+(activeOfficer(s)?.spotBonus||0)+shipTrace(s)+rareSight(s)+blessingRate('lantern'),hit=segmentDistance(from,to,d.point);if(hit.distance>radius)continue;if(mapDistance(from,d.point)<=radius){earliest=0;continue;}let low=0,high=hit.t;for(let i=0;i<26;i++){const t=(low+high)/2,lon=from[0]+(((to[0]-from[0]+540)%360)-180)*t,p=[lon,from[1]+(to[1]-from[1])*t];if(mapDistance(p,d.point)<=radius)high=t;else low=t;}earliest=Math.min(earliest,Math.min(1,high+1e-7));}return earliest;}
 export function inspectDiscovery(s,nav,id,now=Date.now()){
  const d=DISCOVERY_BY_ID[id];if(!d)return {ok:false,error:'발견물을 확인할 수 없어요.'};
+ if(d.medium==='land')return {ok:false,error:'상륙해 육상 탐험 지도에서 조사해 주세요.'};
  if(!explorationAllowed(s))return {ok:false,error:'구조가 끝난 뒤 정상 항해를 시작하면 조사할 수 있어요.'};
  if(s.discoveries?.[id])return {ok:false,error:'이미 도감에 수집한 기록이에요.'};
  if(!hasClues(s,d,now))return {ok:false,error:eraAvailable(d,now)?'주점에서 탐험 소문을 더 확인해 주세요.':'해당 시대에 조사 지점이 다시 나타나요.'};
  const point=d.point||[d.lon,d.lat];
  if(mapDistance(s.position,point)>d.inspectRadius||!nav.clear(s.position,point))return {ok:false,error:'같은 바닷길로 조사 지점에 더 가까이 가 주세요.'};
+ return recordDiscovery(s,d,now);
+}
+export function inspectFieldDiscovery(s,terrain,id,now){
+ const d=DISCOVERY_BY_ID[id],field=s.inland?.field;
+ if(!field||d?.medium!=='land'||s.discoveries?.[id]||!fieldNear(field,terrain,terrain.cell(d.point),1.5))return null;
+ return recordDiscovery(s,d,now);
+}
+function recordDiscovery(s,d,now){
+ const id=d.id;
  const blessingFame=blessingBonus(d.fame,'fame',now);
  s.discoveries??={};s.discoveries[id]={foundDay:s.day,foundAt:now,catalogVersion:DISCOVERY_CATALOG_VERSION,...(blessingFame?{blessingFame}:{})};
  if(s.investigationTarget===id)delete s.investigationTarget;

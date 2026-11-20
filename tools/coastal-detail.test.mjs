@@ -89,7 +89,7 @@ test('all catalog berths are water points, and the starter berth is a valid manu
     assert.ok(point&&!nav.isLand(point),port.id);
     assert.ok(distance(point,[port.lon,port.lat])<60,port.id);
   }
-  for(const site of [...DISCOVERIES,...COASTAL_ACTIVITY_SITES,...DEVELOPMENT_SITES,...PIRATE_ZONES])assert.ok(!nav.isLand(site.point),site.id);
+  for(const site of [...DISCOVERIES.filter(d=>d.medium!=='land'),...COASTAL_ACTIVITY_SITES,...DEVELOPMENT_SITES,...PIRATE_ZONES])assert.ok(!nav.isLand(site.point),site.id);
   const approaches=new Map(PORTS.map(p=>[p.id,berth(p.id)]));
   assert.equal(dockAlong(nav,berth('lisbon'),berth('lisbon'),approaches)?.id,'lisbon');
   assert.equal(dockAlong(nav,berth('lisbon'),berth('lisbon'),approaches,'lisbon'),null);

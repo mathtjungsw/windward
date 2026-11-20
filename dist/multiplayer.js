@@ -1,9 +1,9 @@
-import {watchSectorPages} from './sector-pages.js?v=2026.11.20-harbor-repairs';
-import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.20-harbor-repairs';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-harbor-repairs';
-import {REAL_WORLD_ROOT} from './account.js?v=2026.11.20-harbor-repairs';
-import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.20-harbor-repairs';
-import {CaptainRoster} from './captains.js?v=2026.11.20-harbor-repairs';
+import {watchSectorPages} from './sector-pages.js?v=2026.11.20-survey-voyages';
+import {connectPersistent,publishPersistent,disconnectPersistent} from './persistent-fleet.js?v=2026.11.20-survey-voyages';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-survey-voyages';
+import {REAL_WORLD_ROOT} from './account.js?v=2026.11.20-survey-voyages';
+import {validShip,interpolateShip,PRESENCE_COLORS,seaSector,nearbySectors} from './presence-core.js?v=2026.11.20-survey-voyages';
+import {CaptainRoster} from './captains.js?v=2026.11.20-survey-voyages';
 
 // Nearby boat positions and a lightweight world-wide captain directory are separate.
 export class FleetPresence{

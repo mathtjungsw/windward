@@ -37,7 +37,7 @@ assert.equal(Object.keys((await expect(captain,200,{uid:other})).officers).lengt
 await expect(captain,401);
 await expect('gameV2/real/collections',401,{uid});
 await expect(captain,401,{uid:other,method:'PUT',body});
-for(const bad of [{...body,revision:13},{...body,discoveries:{'ruin-not-in-catalog':true}},{...body,officers:{O041:true}},{...body,officers:'private note'},{...body,cargo:'private note'}])
+for(const bad of [{...body,revision:13},{...body,discoveries:{'ruin-not-in-catalog':true}},{...body,officers:{O049:true}},{...body,officers:'private note'},{...body,cargo:'private note'}])
  await expect(captain,401,{uid,method:'PUT',body:bad});
 const rank='gameV2/real/overallRanking',mine=rank+'/captains/'+uid;
 await expect(rank,200,{owner:true,method:'PUT',body:{public:{top:{[uid]:{name:'검증 선장',rank:1,overallScore:500}},updatedAt:stamp},captains:{[uid]:{rank:1,overallScore:500}}}});

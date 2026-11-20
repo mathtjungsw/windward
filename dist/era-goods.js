@@ -37,10 +37,46 @@ const regionalGoods=[
  ['tea-chest','차 보관 상자',82,'macau shanghai',5,'timber','amsterdam london']
 ];
 export const REGIONAL_GOOD_IDS=regionalGoods.map(([id])=>id);
+const surveyGoods=[
+ ["survey-sextant","황동 육분의",212,"london",6,"copper","cape boston"],
+ ["marine-timekeeper","항해용 정밀시계",262,"london",6,"copper","cape macau"],
+ ["lunar-almanac","월거리 항해력",104,"london amsterdam",6,"silk","boston goa"],
+ ["engraved-sea-chart","동판 인쇄 해도",128,"amsterdam bordeaux",6,"copper","sydney buenos"],
+ ["sounding-lead","측심용 납추",65,"london venice",6,"copper","shanghai callao"],
+ ["brass-dividers","황동 제도 컴퍼스",90,"amsterdam london",6,"copper","manila veracruz"],
+ ["survey-chain","측량 사슬",97,"london",6,"copper","rio cape"],
+ ["specimen-paper","식물 압지",72,"amsterdam bordeaux",6,"cotton","batavia cape"],
+ ["specimen-glass","표본 유리병",92,"venice amsterdam",6,"glass","portlouis sydney"],
+ ["botanical-prints","채색 식물 도판",153,"london",6,"silk","shanghai boston"],
+ ["boxwood-rules","회양목 눈금자",74,"london bordeaux",6,"timber","goa callao"],
+ ["copper-sheathing","선저 피복 동판",113,"london",6,"copper","cape havana"],
+ ["kashmir-shawls","카슈미르 숄",198,"goa muscat",6,"wool","london marseille"],
+ ["blockprint-muslin","목판 날염 모슬린",143,"chennai goa",6,"cotton","bordeaux batavia"],
+ ["indian-palampore","인도산 화문 침대보",160,"chennai",6,"cotton","amsterdam cape"],
+ ["lac-dye","락충 붉은 염료",112,"goa chennai",6,"spice","london nagasaki"],
+ ["shellac-flakes","판상 셸락",88,"goa chennai",6,"spice","london venice"],
+ ["westlake-ink","그림 먹",122,"shanghai wuhan",6,"silk","nagasaki manila"],
+ ["pith-paper","통초 종이",90,"macau",6,"silk","london manila"],
+ ["qing-embroidered-satin","자수 공단",167,"shanghai",6,"silk","amsterdam nagasaki"],
+ ["lacquer-inro","옻칠 인롱",145,"nagasaki",6,"porcelain","macau london"],
+ ["blue-water-dropper","청화 연적",115,"busan",6,"porcelain","nagasaki shanghai"],
+ ["basalt-ware","검은 석기",118,"london",6,"porcelain","boston porto"],
+ ["printed-cotton-kerchief","날염 면 손수건",81,"bordeaux chennai",6,"cotton","havana recife"],
+ ["tapa-cloth","나무껍질 천",92,"papeete apia suva",6,"cotton","sydney manila"],
+ ["harakeke-fibre","하라케케 섬유",78,"auckland",6,"timber","sydney cape"],
+ ["breadfruit-flour","말린 빵나무 열매",56,"papeete suva",6,"grain","sydney portlouis"],
+ ["yerba-mate","예르바 마테",74,"buenos",6,"tea","valparaiso rio"],
+ ["quebracho-timber","케브라초 목재",84,"buenos",6,"timber","rio cape"],
+ ["quinine-bark","기나나무 껍질",138,"callao",6,"spice","lisbon london"],
+ ["brazilwood-chips","브라질목 염료 조각",112,"recife",6,"spice","bordeaux amsterdam"],
+ ["cape-wine-casks","케이프산 포도주",98,"cape",6,"wine","batavia london"]
+];
+export const SURVEY_GOOD_IDS=surveyGoods.map(([id])=>id);
 const goodsEntry=(id,name,base,ports,era,family,markets='')=>[id,{name,base,ports:ports.split(' '),era,family,markets:markets?markets.split(' '):[],icon:'◈',color:'#476c65'}];
 export const ERA_GOODS=Object.fromEntries([
  ...[...Object.entries(groups),...Object.entries(fifthGroups)].flatMap(([family,rows])=>rows.map(([id,name,base,ports,era])=>goodsEntry(id,name,base,ports,era,family))),
- ...regionalGoods.map(row=>goodsEntry(...row))
+ ...regionalGoods.map(row=>goodsEntry(...row)),
+ ...surveyGoods.map(row=>goodsEntry(...row))
 ]);
 
 const targetPorts={
@@ -48,15 +84,16 @@ const targetPorts={
  2:['lisbon','porto','seville','cape','malacca','ternate'],
  3:['manila','acapulco','callao','macau','shanghai','busan'],
  4:['amsterdam','london','bordeaux','havana','halifax','nagasaki','veracruz'],
- 5:['london','amsterdam','porto','halifax','boston','havana','rio','cape','portlouis','zanzibar','goa','malacca','manila','nagasaki','honolulu','sydney','batavia','cartagena']
+ 5:['london','amsterdam','porto','halifax','boston','havana','rio','cape','portlouis','zanzibar','goa','malacca','manila','nagasaki','honolulu','sydney','batavia','cartagena'],
+ 6:['cape','boston','london','amsterdam','papeete','auckland','sydney','portlouis','manila','callao','vancouver']
 };
 const regionalImports={
- '유럽':[['dates','sandalwood'],['pepper','cloves'],['silk','silver'],['cacao','indigo'],['tea','porcelain']],
- '아프리카':[['cotton','dates'],['driedfish','timber'],['copper','glass'],['sugar','coffee'],['tea','porcelain']],
- '아시아':[['oliveoil','dates'],['timber','cinnamon'],['silver','cacao'],['coffee','indigo'],['glass','sugar']],
- '북아메리카':[['salt','oliveoil'],['timber','pepper'],['silver','porcelain'],['indigo','coffee'],['tea','glass']],
- '남아메리카':[['oliveoil','dates'],['timber','pepper'],['silk','porcelain'],['coffee','indigo'],['tea','glass']],
- '오세아니아':[['cotton','oliveoil'],['timber','pepper'],['silver','porcelain'],['sugar','coffee'],['tea','glass']]
+ '유럽':[['dates','sandalwood'],['pepper','cloves'],['silk','silver'],['cacao','indigo'],['tea','porcelain'],["kashmir-shawls", "westlake-ink"]],
+ '아프리카':[['cotton','dates'],['driedfish','timber'],['copper','glass'],['sugar','coffee'],['tea','porcelain'],["sounding-lead", "specimen-paper"]],
+ '아시아':[['oliveoil','dates'],['timber','cinnamon'],['silver','cacao'],['coffee','indigo'],['glass','sugar'],["survey-sextant", "engraved-sea-chart"]],
+ '북아메리카':[['salt','oliveoil'],['timber','pepper'],['silver','porcelain'],['indigo','coffee'],['tea','glass'],["basalt-ware", "brass-dividers"]],
+ '남아메리카':[['oliveoil','dates'],['timber','pepper'],['silk','porcelain'],['coffee','indigo'],['tea','glass'],["lunar-almanac", "specimen-glass"]],
+ '오세아니아':[['cotton','oliveoil'],['timber','pepper'],['silver','porcelain'],['sugar','coffee'],['tea','glass'],["boxwood-rules", "specimen-paper"]]
 };
 export function regionalEraGoods(port,era){
  const region=regionalImports[port.region]||regionalImports['유럽'];

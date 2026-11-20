@@ -1,9 +1,9 @@
-import {COASTS} from './coast-sketches.js?v=2026.11.20-harbor-repairs';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-harbor-repairs';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-harbor-repairs';
-import {segmentDistance} from './voyage-core.js?v=2026.11.20-harbor-repairs';
+import {COASTS} from './coast-sketches.js?v=2026.11.20-survey-voyages';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-survey-voyages';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-survey-voyages';
+import {segmentDistance} from './voyage-core.js?v=2026.11.20-survey-voyages';
 
-import {inlandBlocksSailing,settleInlandVisit} from './inland.js?v=2026.11.20-harbor-repairs';
+import {inlandBlocksSailing,settleInlandVisit} from './inland.js?v=2026.11.20-survey-voyages';
 
 export {COASTS};
 const coastById=new Map(COASTS.map(site=>[site.id,site]));
@@ -24,7 +24,7 @@ export const ORDERS=[
 const orderById=new Map(ORDERS.map(order=>[order.id,order]));
 export const orderDay=now=>Math.floor((now+9*3600000)/86400000);
 export function coastHarborReason(game,now=Date.now()){
- if(inlandBlocksSailing(game,now))return game.inland.visit.returning?'항구로 돌아오는 중이에요. 도착하면 다시 확인하세요.':'내륙에서 연결 항구로 돌아온 뒤 받을 수 있어요.';
+ if(inlandBlocksSailing(game,now))return game.inland.visit?.returning?'항구로 돌아오는 중이에요. 도착하면 다시 확인하세요.':'내륙에서 연결 항구로 돌아온 뒤 받을 수 있어요.';
  if(game.shoreTrip)return '상륙 탐사를 마치고 배로 돌아오세요.';
  if(game.battleId||game.npcBattle||game.raidId)return '전투를 마친 뒤 주점을 이용하세요.';
  if(!PORT_BY_ID[game.port]||game.voyage)return '항구에 입항한 뒤 주점에서 해도 조각을 받으세요.';

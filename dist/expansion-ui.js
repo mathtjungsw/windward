@@ -1,23 +1,24 @@
-import {COASTS} from './coast-sketches.js?v=2026.11.20-harbor-repairs';
-import {ALBUM_MILESTONES,HERITAGE_IDS,canReportAlbum,reportHeritage} from './album-rewards.js?v=2026.11.20-harbor-repairs';
-import {TITLE_BY_ID,activeTitle} from './title-effects.js?v=2026.11.20-harbor-repairs';
-import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.20-harbor-repairs';
-import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.20-harbor-repairs';
-import {historicalArt} from './historical-ship-art.js?v=2026.11.20-harbor-repairs';
-import {vesselGunLimits} from './cannons.js?v=2026.11.20-harbor-repairs';
-import {OFFICERS} from './rumor-catalog.js?v=2026.11.20-harbor-repairs';
-import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
-import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.20-harbor-repairs';
-import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.20-harbor-repairs';
-import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,storedShips} from './ship-rules.js?v=2026.11.20-harbor-repairs';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-harbor-repairs';
-import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.20-harbor-repairs';
-import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS as KINDS} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
-import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.20-harbor-repairs';
-import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.20-harbor-repairs';
-import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.20-harbor-repairs';
-import {lastSeenText} from './captain-time.js?v=2026.11.20-harbor-repairs';
-import {nextShipEndsProtection} from './novice.js?v=2026.11.20-harbor-repairs';
+import {officerPortrait} from './officer-portrait.js?v=2026.11.20-survey-voyages';
+import {COASTS} from './coast-sketches.js?v=2026.11.20-survey-voyages';
+import {ALBUM_MILESTONES,HERITAGE_IDS,canReportAlbum,reportHeritage} from './album-rewards.js?v=2026.11.20-survey-voyages';
+import {TITLE_BY_ID,activeTitle} from './title-effects.js?v=2026.11.20-survey-voyages';
+import {discoveryStudy,discoveryCoordinates} from './discovery-study.js?v=2026.11.20-survey-voyages';
+import {HISTORICAL_SHIPS,turtleShipyard} from './historical-ships.js?v=2026.11.20-survey-voyages';
+import {historicalArt} from './historical-ship-art.js?v=2026.11.20-survey-voyages';
+import {vesselGunLimits} from './cannons.js?v=2026.11.20-survey-voyages';
+import {OFFICERS} from './rumor-catalog.js?v=2026.11.20-survey-voyages';
+import {gearOnShip,equippedGear} from './rumor-progress.js?v=2026.11.20-survey-voyages';
+import {RANK_DEFINITIONS,formatRankScore} from './rank-metrics.js?v=2026.11.20-survey-voyages';
+import {PORTS,PORT_BY_ID} from './data.js?v=2026.11.20-survey-voyages';
+import {SHIPS,ship,shipTier,fleetCount,fleetShips,fleetDisplayShips,fleetMaxHP,vesselSeaSpeed,syncFleet,fleetLimit,upgradeCost,additionalShipCost,vesselSpec,storedShips} from './ship-rules.js?v=2026.11.20-survey-voyages';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-survey-voyages';
+import {capacity,usedSpace,upgradeShip,addShip,quoteShipSale,sellShip,shipResaleValue,historicalQuote,buildHistoricalShip,quoteShipStorage,storeShip,quoteShipRecall,recallShip} from './engine.js?v=2026.11.20-survey-voyages';
+import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS as KINDS} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
+import {ARCHIVE_CREDITS} from './discovery-credits.js?v=2026.11.20-survey-voyages';
+import {nearbyDiscoveries,discoveryEntry,discoveryStats,explorationAllowed} from './discoveries.js?v=2026.11.20-survey-voyages';
+import {shipArt,shipArtPath,collectionArt} from './art.js?v=2026.11.20-survey-voyages';
+import {lastSeenText} from './captain-time.js?v=2026.11.20-survey-voyages';
+import {nextShipEndsProtection} from './novice.js?v=2026.11.20-survey-voyages';
 const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString('ko-KR');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createExpansion(api){
@@ -226,12 +227,12 @@ export function createExpansion(api){
   return `<figure class="discovery-photo"><img class="discovery-hero" src="${collectionArt(d.id,true)}" alt="${esc(d.name)} ${photo?'자료 이미지':'재현 그림'}">
     <figcaption>${photo?`${photo.referenceOnly?'관련 실물 참고 사진 · ':''}<a href="${esc(photo.url)}" target="_blank" rel="noopener noreferrer">원본 자료</a> · ${esc(photo.author)} · ${photo.licenseUrl?`<a href="${esc(photo.licenseUrl)}" target="_blank" rel="noopener noreferrer">${esc(photo.license)}</a>`:esc(photo.license)} · 웹 표시용 크기 조정`:'학습용으로 재현한 이미지'}</figcaption></figure>
     <dl class="discovery-location">
-      <dt>${d.fiction?'이야기 배경':d.kind==='book'?'제작·전승 지역':'실제 위치·서식지'}</dt><dd>${esc(d.place||study?.place||d.region)}</dd>
-      ${withPoint?`<dt>게임 발견 지점</dt><dd>${esc(discoveryCoordinates(point))} <button type="button" data-discovery-study-map>지도에서 보기</button></dd>`:''}
+      <dt>${d.medium==='land'?'실물의 문화권':d.fiction?'이야기 배경':d.kind==='book'?'제작·전승 지역':'실제 위치·서식지'}</dt><dd>${esc(d.place||study?.place||d.region)}</dd>
+      ${withPoint?`<dt>게임 발견 지점${d.medium==='land'?' · 육상 탐험':''}</dt><dd>${esc(discoveryCoordinates(point))} <button type="button" data-discovery-study-map>지도에서 보기</button></dd>`:''}
     </dl>
     <h3>자세히 알아보기</h3><p>${esc(study?.detail||d.description)}</p>
     ${d.fiction?'<p class="modal-meta">이 물건과 발견 이야기는 게임 속 창작이에요.</p>':
-      withPoint?'<p class="modal-meta">게임 속 발견 지점은 항해용 위치예요. 실제 유적의 좌표나 동물이 나타나는 위치는 자료를 확인하세요.</p>':''}
+      withPoint?'<p class="modal-meta">게임에서 조사를 진행하는 위치예요. 실물의 출토지와 제작 지역은 원본 자료에서 확인할 수 있어요.</p>':''}
     ${sources.length?`<p class="discovery-sources">${sources.map(source=>`<a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.label||'자료 보기')}</a>`).join('')}</p>`:''}`;
  }
  function bindStudyMap(root,d){
@@ -289,7 +290,7 @@ export function createExpansion(api){
    return;
   }
   const s=get(),stats=discoveryStats(s),items=DISCOVERIES.filter(d=>(albumKind==='all'||d.kind===albumKind)&&(albumOwned==='all'||(albumOwned==='found')===!!s.discoveries?.[d.id]));
-  api.onModal('발견 수집 도감',`수집 ${stats.foundCount}/${DISCOVERIES.length} · 명성 ${fmt(stats.fame)}`,`<div class="dialog-actions"><button id="album-quiz" class="primary-button">오늘의 도감 퀴즈</button><button id="album-rewards">수집 보상</button>${api.onCoastBook?'<button id="album-coast-book">해안선 스케치 '+Object.keys(get().coastBook?.found||{}).length+'/'+COASTS.length+'</button>':''}</div><nav class="expansion-tabs">${[['all','전체'],...Object.entries(KINDS)].map(([id,name])=>`<button data-kind="${id}" aria-pressed="${albumKind===id}">${name}</button>`).join('')}</nav><label class="album-filter">표시 <select id="album-owned"><option value="all">전체</option><option value="found">수집한 기록</option><option value="missing">미발견</option></select></label><div class="collection-grid">${items.map(d=>{const got=!!s.discoveries?.[d.id];return `<button class="collection-card ${got?'collected':'uncollected'}" data-collection="${d.id}" ${got?'':'disabled'}><img src="${got?collectionArt(d.id):'assets/discoveries/unknown.svg'}" alt="${got?esc(d.name):'아직 발견하지 못한 '+KINDS[d.kind]}" loading="lazy" width="240" height="180"><strong>${got?esc(d.name):'미발견 · '+KINDS[d.kind]}</strong><span>난도 ${d.tier} · 명성 ${fmt(d.fame)}</span></button>`;}).join('')}</div><p class="modal-meta">미발견 장소는 항해 중 흔적과 주점에서 들은 소문으로 찾아보세요. 같은 발견은 한 번만 명성을 얻어요.</p>`,'wide');
+  api.onModal('발견 수집 도감',`수집 ${stats.foundCount}/${DISCOVERIES.length} · 명성 ${fmt(stats.fame)}`,`<div class="dialog-actions"><button id="album-quiz" class="primary-button">오늘의 도감 퀴즈</button><button id="album-rewards">수집 보상</button>${api.onCoastBook?'<button id="album-coast-book">해안선 스케치 '+Object.keys(get().coastBook?.found||{}).length+'/'+COASTS.length+'</button>':''}</div><nav class="expansion-tabs">${[['all','전체'],...Object.entries(KINDS)].map(([id,name])=>`<button data-kind="${id}" aria-pressed="${albumKind===id}">${name}</button>`).join('')}</nav><label class="album-filter">표시 <select id="album-owned"><option value="all">전체</option><option value="found">수집한 기록</option><option value="missing">미발견</option></select></label><div class="collection-grid">${items.map(d=>{const got=!!s.discoveries?.[d.id];return `<button class="collection-card ${got?'collected':'uncollected'}" data-collection="${d.id}" ${got?'':'disabled'}><img src="${got?collectionArt(d.id):'assets/discoveries/unknown.svg'}" alt="${got?esc(d.name):'아직 발견하지 못한 '+KINDS[d.kind]}" loading="lazy" width="240" height="180"><strong>${got?esc(d.name):'미발견 · '+KINDS[d.kind]}</strong><span>난도 ${d.tier} · 명성 ${fmt(d.fame)}</span></button>`;}).join('')}</div><p class="modal-meta">해상은 항해 중 흔적과 주점 소문으로, 내륙은 상륙한 뒤 육상 탐험으로 찾아보세요. 같은 발견은 한 번만 명성을 얻어요.</p>`,'wide');
   $('#album-rewards').onclick=showMilestones;
   $('#album-coast-book')?.addEventListener('click',api.onCoastBook);
   $('#album-quiz').onclick=()=>api.onQuiz?.();
@@ -336,16 +337,14 @@ export function createExpansion(api){
   if(!entries.length){root.textContent='아직 모은 카드가 없어요.';return;}
   function paint(){
     root.innerHTML='<div class="collection-grid">'+entries.map(entry=>{
-      const i=Number(entry.id.slice(1))-1;
-      const image=officers?(entry.scenario?'<div class="fictional-officer">항해자의 동료<br>창작 인물</div>':i>=24?'':`<div class="officer-portrait" style="background-position:${i%6*20}% ${Math.floor(i/6)*100/3}%" aria-hidden="true"></div>`):
+      const image=officers?(entry.scenario?'<div class="fictional-officer">항해자의 동료<br>창작 인물</div>':officerPortrait(entry.id)):
         `<img loading="lazy" src="${collectionArt(entry.id)}" alt="">`;
       return `<button class="collection-card collected" data-public-card="${entry.id}">${image}<strong>${esc(entry.name)}</strong>${officers?`<small>${esc(entry.effect)}</small>`:''}</button>`;
     }).join('')+'</div>';
     for(const button of root.querySelectorAll('[data-public-card]'))button.onclick=()=>{
       const entry=entries.find(value=>value.id===button.dataset.publicCard);
-      const portrait=Number(entry.id.slice(1))-1;
       root.innerHTML=`<h3>${esc(entry.name)}</h3>${officers?
-        `${entry.scenario?'<p class="fictional-officer">항해자의 이야기에서 만난 창작 인물</p>':portrait>=24?'':`<div class="officer-portrait public-officer" style="background-position:${portrait%6*20}% ${Math.floor(portrait/6)*100/3}%"></div>`}<p>${esc(entry.effect)}</p>`:
+        `${entry.scenario?'<p class="fictional-officer">항해자의 이야기에서 만난 창작 인물</p>':officerPortrait(entry.id)}<p>${esc(entry.effect)}</p>`:
         discoveryCardDetail(entry)}<button data-usage-key="action-public-card-back" data-public-back>카드 목록</button>`;
       root.querySelector('[data-public-back]').onclick=paint;
     };

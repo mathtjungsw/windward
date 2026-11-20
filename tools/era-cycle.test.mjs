@@ -97,8 +97,8 @@ test('historic cards point to distinct, credited WebP evidence and a small local
 });
 
 test('ancient works and their tavern rumors remain discoverable across all five eras',()=>{
- const museum=ERA_DISCOVERIES.filter(d=>d.era!==5&&d.media.license==='CC0 1.0'&&d.media.url.startsWith('https://clevelandart.org/art/'));
- assert.equal(DISCOVERIES.length,237);
+ const museum=ERA_DISCOVERIES.filter(d=>(!d.era||d.era<5)&&d.media.license==='CC0 1.0'&&d.media.url.startsWith('https://clevelandart.org/art/'));
+ assert.equal(DISCOVERIES.length,301);
  assert.equal(museum.length,24);
  assert.equal(museum.filter(d=>d.kind==='book').length,18);
  assert.equal(museum.filter(d=>!d.era).length,21);
@@ -156,9 +156,9 @@ test('all new photos, trade goods, officers and equipment have a fifth-era entry
  for(const item of gear)for(const id of item.sellGoods||[])assert.ok(GOODS[id],id);
 });
 
-test('all 129 regular goods can be collected and restored across five trade eras',()=>{
+test('all regular goods can be collected and restored across trade eras',()=>{
  const game=initialState(),ids=Object.keys(GOODS).filter(id=>!GOODS[id].legacy&&!GOODS[id].premium);
- assert.equal(ids.length,129);
+ assert.equal(ids.length,161);
  assert.equal(REGIONAL_GOOD_IDS.length,15);
  try{
   configureEra(start,{at:start,first:1});
@@ -198,6 +198,30 @@ test('open depots unlock and sell their own regional item through public deliver
 
 test('all announcements use distinct compact WebP hero images',async()=>{
  const assets=await Promise.all(ERAS.map(era=>readFile(new URL(`../dist/assets/era-heroes/${era.art}.webp`,import.meta.url))));
- assert.equal(new Set(assets.map(bytes=>bytes.toString('base64'))).size,5);
+ assert.equal(new Set(assets.map(bytes=>bytes.toString('base64'))).size,6);
  assert.ok(assets.every(bytes=>bytes.subarray(8,12).toString()==='WEBP'&&bytes.length<250000));
+});
+
+test('sixth era begins at the scheduled midnight and all survey goods and crews are reachable',()=>{
+ const boundary=start+5*ERA_PERIOD;
+ configureEra(start,{at:start,first:1,sixAt:boundary});
+ try{
+  assert.deepEqual([-1,0,1,6].map(i=>eraAt(boundary+i*ERA_PERIOD).id),[5,6,1,6]);
+  assert.equal(eraAt(boundary-1).next.id,6);
+  const goods=Object.entries(ERA_GOODS).filter(([,g])=>g.era===6);
+  assert.equal(goods.length,32);
+  for(const [id,g] of goods){
+   for(const port of g.ports){assert.ok(PORT_BY_ID[port],port);assert.ok(harborMarket(PORT_BY_ID[port],boundary).includes(id),id);}
+   for(const port of g.markets)assert.ok(PORT_BY_ID[port],port);
+   const game=initialState(),quote=captainTradeQuote(game,g.ports[0],id,1,'buy',{},boundary,0);
+   assert.ok(g.markets.some(p=>captainTradeQuote(game,p,id,1,'sell',{},boundary,0).total>quote.total),id);
+  }
+  const windows=Array.from({length:6},(_,n)=>boundary+n*ERA_PERIOD);
+  for(const port of PORTS.filter(p=>!p.depot||p.promotionLevel>=2))assert.equal(new Set(windows.map(at=>harborMarket(port,at).slice().sort().join(','))).size,6,port.id);
+  assert.equal(ERA_DISCOVERIES.filter(d=>d.era===6).length,24);
+  for(const rows of [Object.values(OFFICER_BY_ID),ITEMS]){
+   const added=rows.filter(o=>o.era===6);assert.equal(added.length,8);
+   for(const o of added){assert.ok(PORT_BY_ID[o.tavern]&&PORT_BY_ID[o.port],o.id);assert.ok(eraAvailable(o,boundary));assert.ok(!eraAvailable(o,boundary+ERA_PERIOD));}
+  }
+ }finally{configureEra(null);}
 });

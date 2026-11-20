@@ -1,4 +1,4 @@
-import {BLESSINGS,BLESSING_MS,blessingDay,blessingAvailability,withBlessingEnd,setBlessing,setBlessingClock} from './blessings.js?v=2026.11.20-harbor-repairs';
+import {BLESSINGS,BLESSING_MS,blessingDay,blessingAvailability,withBlessingEnd,setBlessing,setBlessingClock} from './blessings.js?v=2026.11.20-survey-voyages';
 
 const $=s=>document.querySelector(s);
 const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

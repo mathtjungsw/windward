@@ -1,6 +1,6 @@
-import {TITLES,activeTitle,normalizeTitles} from './title-effects.js?v=2026.11.20-harbor-repairs';
-import {titleStats,chooseTitle,reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-harbor-repairs';
-import {RANK_BY_ID} from './rank-metrics.js?v=2026.11.20-harbor-repairs';
+import {TITLES,activeTitle,normalizeTitles} from './title-effects.js?v=2026.11.20-survey-voyages';
+import {titleStats,chooseTitle,reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-survey-voyages';
+import {RANK_BY_ID} from './rank-metrics.js?v=2026.11.20-survey-voyages';
 export function createTitleUI(api){
  let busy=false;
  const esc=text=>String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

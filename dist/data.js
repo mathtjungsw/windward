@@ -1,10 +1,10 @@
-import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.20-harbor-repairs';
-import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.20-harbor-repairs';
-import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.20-harbor-repairs';
-import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.20-harbor-repairs';
-import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.20-harbor-repairs';
-import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.20-harbor-repairs';
-import {eraAt} from './era-cycle.js?v=2026.11.20-harbor-repairs';
+import {ACTIVE_PORT_IDS,NEW_PORTS,NEW_PORT_ECONOMY,ECONOMY_OVERRIDES,regionForPort} from './world-catalog.js?v=2026.11.20-survey-voyages';
+import {EXTRA_PORTS, UPDATED_PORTS} from './harbors.js?v=2026.11.20-survey-voyages';
+import {GOODS, PORT_ECONOMY, NEW_PORT_IDS} from './port-economy.js?v=2026.11.20-survey-voyages';
+import {PREMIUM_GOODS} from './market-catalog.js?v=2026.11.20-survey-voyages';
+import {DEVELOPMENT_SITES} from './coastal-sites.js?v=2026.11.20-survey-voyages';
+import {ERA_GOODS,regionalEraGoods} from './era-goods.js?v=2026.11.20-survey-voyages';
+import {eraAt} from './era-cycle.js?v=2026.11.20-survey-voyages';
 Object.assign(GOODS,PREMIUM_GOODS,ERA_GOODS);
 
 export {GOODS};
@@ -63,7 +63,7 @@ for(const [id,g] of Object.entries(ERA_GOODS))for(const port of g.ports){
 }
 const eraHighlights={pepper:2,cloves:2,nutmeg:2,cinnamon:2,silver:3,cacao:4,coffee:4,indigo:4,sandalwood:1};
 export const PORT_GROWTH_GOODS=Object.fromEntries(Object.values(PORT_BY_ID).map(port=>{
- const material=port.id==='nagasaki'?'imari':(unmatched.get(port.id)?.find(id=>GOODS[id].era!==5)||port.specialty),base=GOODS[material];
+ const material=port.id==='nagasaki'?'imari':(unmatched.get(port.id)?.find(id=>!(GOODS[id].era>=5))||port.specialty),base=GOODS[material];
  const id='growth-'+port.id;
  GOODS[id]={name:port.name+' 특선 '+base.name,base:Math.round(base.base*1.6),icon:base.icon,color:base.color,premium:true,source:port.id,unlockStage:2};
  return [port.id,id];

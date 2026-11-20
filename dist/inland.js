@@ -1,15 +1,18 @@
-import {GOODS} from './data.js?v=2026.11.20-harbor-repairs';
-import {capacity,usedSpace} from './engine.js?v=2026.11.20-harbor-repairs';
-import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.20-harbor-repairs';
-import {recordTrade} from './rank-progress.js?v=2026.11.20-harbor-repairs';
-import {blessingRate} from './blessings.js?v=2026.11.20-harbor-repairs';
+import {validFieldRecord} from './overland.js?v=2026.11.20-survey-voyages';
+import {FIELD_TOWNS} from './inland-places.js?v=2026.11.20-survey-voyages';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-survey-voyages';
+import {capacity,usedSpace} from './engine.js?v=2026.11.20-survey-voyages';
+import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.20-survey-voyages';
+import {recordTrade} from './rank-progress.js?v=2026.11.20-survey-voyages';
+import {blessingRate} from './blessings.js?v=2026.11.20-survey-voyages';
 
 export const INLAND_CITIES={
  cordoba:{id:'cordoba',name:'코르도바',port:'seville',point:[-4.7794,37.8847],path:[[-5.6,37.53],[-5.16,37.77]],seconds:60,terrain:0,goods:{leather:.83,oliveoil:.87}},
  avignon:{id:'avignon',name:'아비뇽',port:'marseille',point:[4.8055,43.9493],path:[[5.24,43.51],[4.88,43.71]],seconds:70,terrain:0,goods:{wool:.84,wine:.86}},
  puebla:{id:'puebla',name:'푸에블라',port:'veracruz',point:[-98.2063,19.0414],path:[[-96.94,19.54],[-97.34,19.57],[-97.75,19.25]],seconds:120,terrain:1,goods:{cotton:.86,porcelain:.88}}
 };
-export const INLAND_PORTS=Object.fromEntries(Object.values(INLAND_CITIES).map(city=>[city.port,city]));
+for(const town of FIELD_TOWNS)INLAND_CITIES[town.id]=town;
+export const INLAND_PORTS=Object.fromEntries(Object.values(INLAND_CITIES).slice().reverse().map(city=>[city.port,city]));
 export const WAREHOUSE_MAX=2000;
 const names=['봇짐','큰 봇짐','지게','손수레','짐나귀','짐노새','짐말','짐말 무리','소형 우차','대형 우차','2륜 짐마차','4륜 짐마차','덮개 마차','대형 짐마차','2대 마차 행렬','3대 마차 행렬','4대 마차 행렬','5대 마차 행렬','6대 마차 행렬','대형 상단 마차 행렬'];
 const loads=[10,15,20,30,40,55,70,90,115,145,180,220,265,320,390,470,560,680,820,1000];
@@ -26,7 +29,23 @@ const normalGood=id=>Object.hasOwn(GOODS,id)&&!GOODS[id].premium&&!GOODS[id].leg
 const docked=(game,city)=>city&&game.port===city.port&&!game.voyage&&!game.shoreTrip&&!game.seaJob;
 const routeDuration=(city,game)=>Math.max(30,Math.ceil(city.seconds*inlandVehicle(game).speed[city.terrain]));
 export const inlandLocation=game=>game.inland?.visit?.city||null;
-export const inlandBlocksSailing=(game,now)=>!!game.inland?.visit&&(!game.inland.visit.returning||game.inland.visit.due>now);
+export const inlandBlocksSailing=(game,now)=>!!game.inland?.field||!!game.inland?.visit&&(!game.inland.visit.returning||game.inland.visit.due>now);
+export function knownTown(game,id){
+ const d=game.inland;return !!(d?.towns?.[id]||d?.visit?.city===id||d?.haul?.city===id||d?.guild?.[id]||d?.warehouses?.[id]);
+}
+export function townRoute(game,town,port){
+ if(!town||!port)return false;
+ const record=game.inland?.towns?.[town.id],job=game.inland?.haul;
+ if(record?.port===port||record?.routes?.includes(port))return true;
+ if(job?.city===town.id&&[job.from,job.to].includes(port))return true;
+ return !record&&town.port===port&&knownTown(game,town.id);
+}
+export function freightTown(game,id){
+ const town=INLAND_CITIES[id];if(!town)return null;
+ const job=game.inland?.haul,activePort=job?.city===id&&job.phase==='running'?(job.from===id?job.to:job.from):null;
+ const port=activePort||(townRoute(game,town,game.port)?game.port:game.inland?.towns?.[id]?.port);
+ return port?{...town,port}:town;
+}
 function data(game){return (game.inland??={tier:0,warehouses:{}});}
 function warehouse(game,id){return (data(game).warehouses[id]??={});}
 function changeCargo(cargo,id,qty,cost){
@@ -55,6 +74,7 @@ export function inlandHarborStorage(game,city,good,now){
  return {cargo:warehouse(game,city.port),room:inlandFree(game,city.port),available:inlandAvailable(game,city.port,good)};
 }
 export function inlandAccess(game,city,place,now){
+ if(game.inland?.field)return place===city.id&&game.inland.field.town===city.id&&knownTown(game,city.id);
  if(!docked(game,city))return false;
  const visit=game.inland?.visit;
  if(visit&&visit.due>now)return false;
@@ -70,6 +90,7 @@ export function inlandWalk(game,city,now,returning){
  const old=game.inland?.visit;
  if(returning?old?.city!==city.id||old.due>now||old.returning:old)fail('현재 육상 이동을 먼저 마쳐 주세요.');
  const due=now+routeDuration(city,game)*1000;
+ data(game).towns??={};game.inland.towns[city.id]??={at:now,port:city.port};
  data(game).visit={city:city.id,from:now,due,returning:!!returning};
  return {message:returning?'배가 있는 항구로 돌아갑니다.':city.name+'으로 출발합니다.'};
 }
@@ -124,7 +145,8 @@ export function inlandHaulQuote(game,city,qty,at){
  return {load:step.load,loads,legs,duration,legCost,cost:legs*legCost,elapsed:legs*duration};
 }
 export function startInlandHaul(game,city,from,good,qty,now,expected=null){
- if(!docked(game,city)||!Object.hasOwn(GOODS,good)||![city.id,city.port].includes(from))fail('연결 항구의 창고나 도시에서 예약해 주세요.');
+ const field=game.inland?.field;
+ if(!townRoute(game,INLAND_CITIES[city.id],city.port)||!docked(game,city)||(field&&field.town!==city.id)||!Object.hasOwn(GOODS,good)||![city.id,city.port].includes(from))fail('직접 발견한 도시나 출발 항구의 창고에서 예약해 주세요.');
  settleInlandHaul(game,now);
  if(game.inland?.haul?.phase==='running')fail('진행 중인 육상 운송을 먼저 마쳐 주세요.');
  const to=from===city.id?city.port:city.id,quote=inlandHaulQuote(game,city,qty,now);
@@ -179,17 +201,21 @@ export function inlandGuild(game,city,now){
 export function validInlandSave(data){
  if(!data||!Number.isInteger(data.tier)||!INLAND_TIERS[data.tier]||!data.warehouses||typeof data.warehouses!=='object'||Array.isArray(data.warehouses))return false;
  for(const [id,items] of Object.entries(data.warehouses)){
-  if(!Object.hasOwn(INLAND_CITIES,id)&&!Object.hasOwn(INLAND_PORTS,id))return false;
+  if(!Object.hasOwn(INLAND_CITIES,id)&&!PORT_BY_ID[id]&&!id.startsWith('depot-'))return false;
   if(!items||typeof items!=='object'||Array.isArray(items))return false;
   const entries=Object.entries(items);
   if(entries.some(([good,item])=>!Object.hasOwn(GOODS,good)||!quantity(item?.qty)||!Number.isFinite(item.cost)||item.cost<0)
    ||entries.reduce((sum,[,item])=>sum+item.qty,0)>WAREHOUSE_MAX)return false;
  }
+ if(!validFieldRecord(data)||data.field?.town&&!Object.hasOwn(INLAND_CITIES,data.field.town))return false;
+ if(data.towns&&Object.values(data.towns).some(t=>t?.routes&&(!Array.isArray(t.routes)||t.routes.some(p=>typeof p!=='string'||!PORT_BY_ID[p]&&!p.startsWith('depot-')))))return false;
+ if(data.towns&&Object.entries(data.towns).some(([id,t])=>!Object.hasOwn(INLAND_CITIES,id)||!t||!Number.isFinite(t.at)||(t.port!=null&&!PORT_BY_ID[t.port]&&!String(t.port).startsWith('depot-'))))return false;
  const visit=data.visit,job=data.haul;
  if(visit&&(!Object.hasOwn(INLAND_CITIES,visit.city)||typeof visit.returning!=='boolean'||!Number.isFinite(visit.due)||!Number.isFinite(visit.from)||visit.due<=visit.from))return false;
  if(job){
   const city=INLAND_CITIES[job.city];
-  if(!city||![city.id,city.port].includes(job.from)||job.to!==(job.from===city.id?city.port:city.id)||!Object.hasOwn(GOODS,job.good)||!quantity(job.qty)
+  const depot=job.from===job.city?job.to:job.from;
+  if(!city||!(PORT_BY_ID[depot]||String(depot).startsWith('depot-'))||![job.from,job.to].includes(city.id)||job.from===job.to||!Object.hasOwn(GOODS,job.good)||!quantity(job.qty)
    ||!INLAND_TIERS.some(t=>t.load===job.load)||!Number.isSafeInteger(job.leg)||job.leg<0||job.leg>job.legs
    ||job.legs!==Math.ceil(job.qty/job.load)*2-1||job.delivered!==Math.min(job.qty,Math.ceil(job.leg/2)*job.load)
    ||!Number.isSafeInteger(job.duration)||job.duration<30000||job.duration>180000||!Number.isSafeInteger(job.legCost)||job.legCost!==8+Math.ceil(job.duration/30000)*2

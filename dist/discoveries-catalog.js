@@ -1,7 +1,8 @@
+import {FIELD_DISCOVERIES} from './field-discoveries.js?v=2026.11.20-survey-voyages';
 // Static discovery stories and game observation points.
-import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.20-harbor-repairs';
-import {LIBRARY_DISCOVERIES} from './discoveries-library.js?v=2026.11.20-harbor-repairs';
-import {ERA_DISCOVERIES} from './era-discoveries.js?v=2026.11.20-harbor-repairs';
+import {NEW_DISCOVERIES} from './discoveries-expansion.js?v=2026.11.20-survey-voyages';
+import {LIBRARY_DISCOVERIES} from './discoveries-library.js?v=2026.11.20-survey-voyages';
+import {ERA_DISCOVERIES} from './era-discoveries.js?v=2026.11.20-survey-voyages';
 export const DISCOVERY_CATALOG_VERSION='2026.11.15-era-preview';
 export const RETIRED_DISCOVERY_FAME={'ruin-itsukushima':400};
 const source=(label,url)=>({label,url});
@@ -65,7 +66,7 @@ export const ATLAS_ADDITIONS=[
 }));
 const fame=[0,50,150,400,1000],spot=[0,100,100,100,100],inspect=[0,60,60,60,60];
 export const DISCOVERY_KINDS={ruin:'유적',relic:'유물',animal:'동물',treasure:'보물',book:'책·기록',nature:'자연'};
-export const DISCOVERIES=[...rows,...NEW_DISCOVERIES,...ATLAS_ADDITIONS,...LIBRARY_DISCOVERIES,...ERA_DISCOVERIES].map(d=>({...d,lon:d.point[0],lat:d.point[1],fiction:!!d.fiction,fame:fame[d.tier],spotRadius:spot[d.tier],inspectRadius:inspect[d.tier],rumorIds:d.hintPorts.map((p,i)=>d.id+'-rumor-'+(i+1)),image:d.image||'assets/discoveries/'+d.id+'.svg'}));
+export const DISCOVERIES=[...rows,...NEW_DISCOVERIES,...ATLAS_ADDITIONS,...LIBRARY_DISCOVERIES,...ERA_DISCOVERIES,...FIELD_DISCOVERIES].map(d=>({...d,lon:d.point[0],lat:d.point[1],fiction:!!d.fiction,fame:fame[d.tier],spotRadius:spot[d.tier],inspectRadius:inspect[d.tier],rumorIds:d.hintPorts.map((p,i)=>d.id+'-rumor-'+(i+1)),image:d.image||'assets/discoveries/'+d.id+'.svg'}));
 export const DISCOVERY_BY_ID=Object.fromEntries(DISCOVERIES.map(d=>[d.id,d]));
 export const RUMORS=DISCOVERIES.flatMap(d=>d.hintPorts.map((portId,i)=>({id:d.rumorIds[i],portId,discoveryId:d.id,text:d.hints[i],era:d.era})));
 export const RUMOR_BY_ID=Object.fromEntries(RUMORS.map(r=>[r.id,r]));

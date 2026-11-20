@@ -60,7 +60,7 @@ test('historical additions preserve the 102 original discovery records and their
 });
 
 test('all discovery observation points follow real navigable paths and the river pendant stays on its river',()=>{
- for(const d of DISCOVERIES){
+ for(const d of DISCOVERIES.filter(d=>d.medium!=='land')){
   assert.ok(!nav.isLand(d.point),d.id+' observation point is land');
   const route=nav.route(start,d.point);assert.ok(route,d.id+' lacks route');
   const finalShipDays=route.sections.reduce((sum,s)=>sum+(s.end-s.start)/(s.river?36:192),0);
@@ -89,10 +89,10 @@ test('the starter wine and dried fish cycle remains profitable before the first 
 
 test('hard discoveries have one rumor, legendary discoveries two distinct active port rumors',()=>{
  const coastal=new Set(COASTAL_OBSERVATIONS.map(d=>d.id));
- assert.equal(RUMORS.length,58+DISCOVERIES.filter(d=>d.media&&!coastal.has(d.id)).length+9);
+ assert.equal(RUMORS.length,58+DISCOVERIES.filter(d=>d.medium!=='land'&&d.media&&!coastal.has(d.id)).length+9);
  assert.equal(Object.keys(RUMOR_BY_ID).length,RUMORS.length);
  for(const d of DISCOVERIES){
-  assert.equal(d.rumorIds.length,d.media&&!coastal.has(d.id)?1:d.tier===4?2:d.tier===3?1:0,d.id);
+  assert.equal(d.rumorIds.length,d.medium==='land'?0:d.media&&!coastal.has(d.id)?1:d.tier===4?2:d.tier===3?1:0,d.id);
   const rumors=d.rumorIds.map(id=>RUMOR_BY_ID[id]);
   for(const r of rumors){assert.ok(ACTIVE_PORT_IDS.includes(r.portId));assert.equal(r.discoveryId,d.id);assert.ok(r.text.length>10);}
   assert.equal(new Set(rumors.map(r=>r.portId)).size,rumors.length);

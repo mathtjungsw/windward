@@ -1,12 +1,12 @@
-import {titleEffect} from './title-effects.js?v=2026.11.20-harbor-repairs';
-import {blessingBonus} from './blessings.js?v=2026.11.20-harbor-repairs';
-import {shipyardReport} from './historical-ships.js?v=2026.11.20-harbor-repairs';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-harbor-repairs';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-harbor-repairs';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-harbor-repairs';
+import {titleEffect} from './title-effects.js?v=2026.11.20-survey-voyages';
+import {blessingBonus} from './blessings.js?v=2026.11.20-survey-voyages';
+import {shipyardReport} from './historical-ships.js?v=2026.11.20-survey-voyages';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-survey-voyages';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-survey-voyages';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-survey-voyages';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-survey-voyages';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[
@@ -108,7 +108,7 @@ export function availableCharters(game,findRoute,room,now,findPointRoute=()=>fal
     const candidate=sorted.slice(0,4).find(({entry})=>available(byId(origin.id,origin.id,tier,entry.id))&&findPointRoute(entry.point));
     if(candidate)result.push({id:byId(origin.id,origin.id,tier,candidate.entry.id),origin:origin.id,target:origin.id,tier,objective:candidate.entry.id,reward:reward(candidate.entry)});
   };
-  open(3,DISCOVERIES.filter(d=>!game.discoveries?.[d.id]&&d.rumorIds.every(id=>(game.rumors||[]).includes(id))&&
+  open(3,DISCOVERIES.filter(d=>d.medium!=='land'&&!game.discoveries?.[d.id]&&d.rumorIds.every(id=>(game.rumors||[]).includes(id))&&
     !game.guild?.active.some(row=>row.objective===d.id)),d=>300+200*d.tier);
   if(game.cannons?.some(gun=>gun.shipId))open(4,PIRATE_ZONES.filter(zone=>
     zone.tier<=Math.min(2,Math.floor((game.shipTier||0)/6))&&!game.guild?.active.some(row=>row.objective===zone.id)),zone=>500+500*zone.tier);

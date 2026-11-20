@@ -1,13 +1,13 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.20-harbor-repairs';
-import {shipArtPath} from './art.js?v=2026.11.20-harbor-repairs';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.20-harbor-repairs';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-harbor-repairs';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.20-harbor-repairs';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.20-harbor-repairs';
-import {findMenus} from './menu-finder.js?v=2026.11.20-harbor-repairs';
-import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.20-harbor-repairs';
-import {isTypingTarget} from './controls.js?v=2026.11.20-harbor-repairs';
-import {validCard} from './social-core.js?v=2026.11.20-harbor-repairs';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.20-survey-voyages';
+import {shipArtPath} from './art.js?v=2026.11.20-survey-voyages';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.20-survey-voyages';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-survey-voyages';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.20-survey-voyages';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.20-survey-voyages';
+import {findMenus} from './menu-finder.js?v=2026.11.20-survey-voyages';
+import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.20-survey-voyages';
+import {isTypingTarget} from './controls.js?v=2026.11.20-survey-voyages';
+import {validCard} from './social-core.js?v=2026.11.20-survey-voyages';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');

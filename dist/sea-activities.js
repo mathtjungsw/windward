@@ -1,7 +1,7 @@
-import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.20-harbor-repairs';
-import {GOODS} from './data.js?v=2026.11.20-harbor-repairs';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-harbor-repairs';
-import {explorationGear,activeOfficer,appendItemRecord,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
+import {COASTAL_ACTIVITY_SITES} from './coastal-sites.js?v=2026.11.20-survey-voyages';
+import {GOODS} from './data.js?v=2026.11.20-survey-voyages';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-survey-voyages';
+import {explorationGear,activeOfficer,appendItemRecord,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-survey-voyages';
 
 export const SEA_TYPES={
   fishing:{label:'어장',wait:20000,cooldown:1800000,good:'driedfish',qty:2},

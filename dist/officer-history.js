@@ -40,5 +40,13 @@ export const OFFICER_HISTORY={
   O037:['George Anson','18세기 영국','1740년에 출항해 1744년에 돌아오는 세계일주 원정대를 이끌었어요. 원정의 항해기가 출판됐어요.','https://rgssa.org.au/heritage/treasures/anson-george-a-voyage-around-the-world-1740-1744'],
   O038:['Vitus Bering','18세기 덴마크·러시아','러시아의 원정대를 이끈 덴마크 출신 항해가예요. 1741년 원정은 북태평양을 건너 오늘날 알래스카 해역에 도달했어요.','https://home.nps.gov/places/bering-expedition-landing-site.htm'],
   O039:['Blas de Lezo','18세기 스페인','1741년 카르타헤나 데 인디아스 방어를 지휘한 스페인 해군 지휘관이에요.','https://armada.defensa.gob.es/ArmadaPortal/page/Portal/ArmadaEspannola/cienciaorgano/prefLang-es/01cienciamuseo--02museo--06prensa-museo-naval--01noticias--2013--09--NT-151-blasdelezo-es'],
-  O040:['Edward Vernon','18세기 영국','영국 해군 지휘관으로 1739년 카리브해의 포르토벨로를 공격한 함대를 이끌었어요.','https://www.rmg.co.uk/collections/objects/rmgc-object-11846']
+  O040:['Edward Vernon','18세기 영국','영국 해군 지휘관으로 1739년 카리브해의 포르토벨로를 공격한 함대를 이끌었어요.','https://www.rmg.co.uk/collections/objects/rmgc-object-11846'],
+  O041:["James Cook", "18세기 영국", "범선 엔데버호를 지휘해 뉴질랜드 해안을 측량했다. 두 번째 태평양 항해에서는 켄들의 항해용 시계를 시험했다.", "https://www.rmg.co.uk/stories/maritime-history/captain-james-cook-timeline"],
+  O042:["Tupaia", "18세기 라이아테아·타히티", "섬 사이 항로에 정통한 폴리네시아 항해자다. 엔데버호에 승선해 섬에 관한 지식을 나누고 언어가 통하는 지역에서 통역을 맡았다.", "https://www.nhm.ac.uk/discover/on-tour-with-tupaia.html"],
+  O043:["Jeanne Baret", "18세기 프랑스", "부갱빌 원정에 식물 채집가로 참여했다. 모리셔스에 머문 뒤 프랑스로 돌아가 세계 일주를 마친 최초의 여성으로 기록됐다.", "https://museum.wa.gov.au/exhibitions/journeys/The_Explorers/Jeanne_Baret.html"],
+  O044:["Joseph Banks", "18세기 영국", "엔데버호에서 솔란데르와 함께 식물을 채집하고 분류했다. 이 항해에서 모은 표본과 밑그림은 뒤에 식물 판화를 제작하는 바탕이 됐다.", "https://www.nma.gov.au/explore/features/cook_forster/background/voyages"],
+  O045:["Daniel Solander", "18세기 스웨덴", "린네에게 배운 식물학자로 영국에서 표본을 분류했다. 뱅크스와 엔데버호에 승선해 남태평양 식물을 채집하고 기록했다.", "https://www.nma.gov.au/exhibitions/endeavour-voyage/endeavour-reflections"],
+  O046:["Sydney Parkinson", "18세기 스코틀랜드", "엔데버호의 화가로 식물과 동물, 태평양 섬의 배와 풍경을 그렸다. 보존한 표본만으로는 알기 어려운 식물의 색과 형태를 그림에 남겼다.", "https://www.nhm.ac.uk/discover/hms-endeavour-250.html"],
+  O047:["George Vancouver", "18세기 영국", "1790년대 북아메리카 태평양 연안을 조사했다. 작은 배로 좁은 수로까지 측량한 원정대의 기록은 북서 해안의 해도로 이어졌다.", "https://www.pc.gc.ca/apps/dfhd/page_nhs_eng.aspx?id=938"],
+  O048:["Jean-François de La Pérouse", "18세기 프랑스", "1785년 프랑스에서 두 범선을 이끌고 출항했다. 북아메리카 서안과 동아시아, 남태평양을 오간 과학 탐사대의 지휘관이었다.", "https://npgallery.nps.gov/GetAsset/210cdffb-35f3-4f64-a8a9-d6258e8bb9f0"]
 };

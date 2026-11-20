@@ -1,18 +1,18 @@
-import {titleEffect} from './title-effects.js?v=2026.11.20-harbor-repairs';
-import {requireCombatAllowed} from './blessings.js?v=2026.11.20-harbor-repairs';
-import {shipyardVictory} from './historical-ships.js?v=2026.11.20-harbor-repairs';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.20-harbor-repairs';
-import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-harbor-repairs';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-harbor-repairs';
-import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.20-harbor-repairs';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.20-harbor-repairs';
-import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.20-harbor-repairs';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-harbor-repairs';
-import {currentCanal} from './canal-reservations.js?v=2026.11.20-harbor-repairs';
+import {titleEffect} from './title-effects.js?v=2026.11.20-survey-voyages';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.20-survey-voyages';
+import {shipyardVictory} from './historical-ships.js?v=2026.11.20-survey-voyages';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.20-survey-voyages';
+import {activeOfficer,gearOnShip,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-survey-voyages';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-survey-voyages';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-survey-voyages';
+import {recordPirateKill,recordBattleWin} from './rank-progress.js?v=2026.11.20-survey-voyages';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.20-survey-voyages';
+import {fleetMaxHP,fleetAppraisal,fleetShips} from './ship-rules.js?v=2026.11.20-survey-voyages';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-survey-voyages';
+import {currentCanal} from './canal-reservations.js?v=2026.11.20-survey-voyages';
 export const COMBAT_RANGE=180,COMBAT_TIMEOUT=180000,PROTECTION_MS=120000;
 export function npcSlotChanges(game,uid,currentSlot){currentSlot??=null;const expected='npc:'+uid;if(currentSlot&&currentSlot!==expected)throw Error('선장 간 전투를 먼저 마치세요.');const next=game.npcBattle?expected:null;return currentSlot===next?{}:{['combatSlots/'+uid]:next};}
-export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-harbor-repairs';
+export {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-survey-voyages';
 const copy=o=>structuredClone(o||{});
 export function splitCargo(cargo,limit){const taken={},rest={};for(const [id,c]of Object.entries(cargo||{}).sort(([a],[b])=>a.localeCompare(b))){const qty=Math.min(c.qty,Math.max(0,limit)),cost=c.qty?c.cost*qty/c.qty:0;if(qty)taken[id]={qty,cost};if(qty<c.qty)rest[id]={qty:c.qty-qty,cost:c.cost-cost};limit-=qty;}return {taken,rest};}
 export const cargoCount=c=>Object.values(c||{}).reduce((n,c)=>n+c.qty,0);

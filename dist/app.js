@@ -1,88 +1,89 @@
-import {reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-harbor-repairs';
-import {createTitleUI} from './title-ui.js?v=2026.11.20-harbor-repairs';
+import {createFieldUI} from './overland-ui.js?v=2026.11.20-survey-voyages';
+import {reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-survey-voyages';
+import {createTitleUI} from './title-ui.js?v=2026.11.20-survey-voyages';
 let titleUI;
-import {createCaptainsMail} from './captains-mail.js?v=2026.11.20-harbor-repairs';
-import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.20-harbor-repairs';
-import {regionalEvent} from './market-events.js?v=2026.11.20-harbor-repairs';
-import {createUiUsage} from './ui-usage.js?v=2026.11.20-harbor-repairs';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.20-harbor-repairs';
-import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.20-harbor-repairs';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.20-harbor-repairs';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.20-harbor-repairs';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.20-harbor-repairs';
-import {createWeeklyChart} from './weekly-chart.js?v=2026.11.20-harbor-repairs';
-import {TAVERN_GAMES} from './tavern-games.js?v=2026.11.20-harbor-repairs';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.20-harbor-repairs';
-import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.20-harbor-repairs';
-import {createBlessings} from './blessings-ui.js?v=2026.11.20-harbor-repairs';
-import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.20-harbor-repairs';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.20-harbor-repairs';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.20-harbor-repairs';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.20-harbor-repairs';
-import {createCommunity} from './community.js?v=2026.11.20-harbor-repairs';
-import {createTaxCollector} from './tax-collector.js?v=2026.11.20-harbor-repairs';
-import {createStoryUI} from './story-ui.js?v=2026.11.20-harbor-repairs';
-import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.20-harbor-repairs';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.20-harbor-repairs';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.20-harbor-repairs';
-import {createCombat} from './combat-ui.js?v=2026.11.20-harbor-repairs';
-import {createBusiness} from './business-ui.js?v=2026.11.20-harbor-repairs';
-import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.20-harbor-repairs';
-import {createInlandUI} from './inland-ui.js?v=2026.11.20-harbor-repairs';
-import {INLAND_CITIES,INLAND_PORTS,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.20-harbor-repairs';
-import {createExpansion} from './expansion-ui.js?v=2026.11.20-harbor-repairs';
-import {gameStats} from './public-stats.js?v=2026.11.20-harbor-repairs';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.20-harbor-repairs';
-import {shipGlyph} from './art.js?v=2026.11.20-harbor-repairs';
-import {inspectDiscovery,explorationAllowed,discoveryStats,hasClues} from './discoveries.js?v=2026.11.20-harbor-repairs';
-import {RELEASE} from './release-notes.js?v=2026.11.20-harbor-repairs';
-import {createUX} from './ux.js?v=2026.11.20-harbor-repairs';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.20-harbor-repairs';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.20-harbor-repairs';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.20-harbor-repairs';
-import {AtlasView} from './atlas-view.js?v=2026.11.20-harbor-repairs';
-import {FleetPresence} from './multiplayer.js?v=2026.11.20-harbor-repairs';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.20-harbor-repairs';
-import {CaptainChat} from './chat.js?v=2026.11.20-harbor-repairs';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.20-harbor-repairs';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.20-harbor-repairs';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.20-harbor-repairs';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-harbor-repairs';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.20-harbor-repairs';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.20-harbor-repairs';
-import {CaptainRankings} from './rankings.js?v=2026.11.20-harbor-repairs';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.20-harbor-repairs';
+import {createCaptainsMail} from './captains-mail.js?v=2026.11.20-survey-voyages';
+import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.20-survey-voyages';
+import {regionalEvent} from './market-events.js?v=2026.11.20-survey-voyages';
+import {createUiUsage} from './ui-usage.js?v=2026.11.20-survey-voyages';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.20-survey-voyages';
+import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.20-survey-voyages';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.20-survey-voyages';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.20-survey-voyages';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.20-survey-voyages';
+import {createWeeklyChart} from './weekly-chart.js?v=2026.11.20-survey-voyages';
+import {TAVERN_GAMES} from './tavern-games.js?v=2026.11.20-survey-voyages';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.20-survey-voyages';
+import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.20-survey-voyages';
+import {createBlessings} from './blessings-ui.js?v=2026.11.20-survey-voyages';
+import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.20-survey-voyages';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.20-survey-voyages';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.20-survey-voyages';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.20-survey-voyages';
+import {createCommunity} from './community.js?v=2026.11.20-survey-voyages';
+import {createTaxCollector} from './tax-collector.js?v=2026.11.20-survey-voyages';
+import {createStoryUI} from './story-ui.js?v=2026.11.20-survey-voyages';
+import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.20-survey-voyages';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.20-survey-voyages';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.20-survey-voyages';
+import {createCombat} from './combat-ui.js?v=2026.11.20-survey-voyages';
+import {createBusiness} from './business-ui.js?v=2026.11.20-survey-voyages';
+import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.20-survey-voyages';
+import {createInlandUI} from './inland-ui.js?v=2026.11.20-survey-voyages';
+import {INLAND_CITIES,knownTown,townRoute,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.20-survey-voyages';
+import {createExpansion} from './expansion-ui.js?v=2026.11.20-survey-voyages';
+import {gameStats} from './public-stats.js?v=2026.11.20-survey-voyages';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.20-survey-voyages';
+import {shipGlyph} from './art.js?v=2026.11.20-survey-voyages';
+import {inspectDiscovery,explorationAllowed,discoveryStats,hasClues} from './discoveries.js?v=2026.11.20-survey-voyages';
+import {RELEASE} from './release-notes.js?v=2026.11.20-survey-voyages';
+import {createUX} from './ux.js?v=2026.11.20-survey-voyages';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.20-survey-voyages';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.20-survey-voyages';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.20-survey-voyages';
+import {AtlasView} from './atlas-view.js?v=2026.11.20-survey-voyages';
+import {FleetPresence} from './multiplayer.js?v=2026.11.20-survey-voyages';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.20-survey-voyages';
+import {CaptainChat} from './chat.js?v=2026.11.20-survey-voyages';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.20-survey-voyages';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.20-survey-voyages';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.20-survey-voyages';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-survey-voyages';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.20-survey-voyages';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.20-survey-voyages';
+import {CaptainRankings} from './rankings.js?v=2026.11.20-survey-voyages';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.20-survey-voyages';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.20-harbor-repairs';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.20-harbor-repairs';
-import {marketKind,portMarketItem,portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.20-harbor-repairs';
-import {harborMarket,harborSupply} from './data.js?v=2026.11.20-harbor-repairs';
-import {configurePortDividends} from './port-income.js?v=2026.11.20-harbor-repairs';
-import {configureEra,ERA_PERIOD,eraAt,setEraServerOffset} from './era-cycle.js?v=2026.11.20-harbor-repairs';
-import {createGuildUI} from './guild-ui.js?v=2026.11.20-harbor-repairs';
-import {createCoastOrders} from './coast-orders-ui.js?v=2026.11.20-harbor-repairs';
-import {COASTS,visitCoast} from './coast-orders.js?v=2026.11.20-harbor-repairs';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.20-harbor-repairs';
-import {ownership} from './commerce.js?v=2026.11.20-harbor-repairs';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.20-harbor-repairs';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,changeDepotPromotion,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.20-harbor-repairs';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.20-harbor-repairs';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.20-harbor-repairs';
-import {createShoreUI} from './shore-ui.js?v=2026.11.20-harbor-repairs';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.20-harbor-repairs';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.20-harbor-repairs';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
-import {useRepairKit} from './activities.js?v=2026.11.20-harbor-repairs';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.20-harbor-repairs';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.20-harbor-repairs';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.20-survey-voyages';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.20-survey-voyages';
+import {marketKind,portMarketItem,portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.20-survey-voyages';
+import {harborMarket,harborSupply} from './data.js?v=2026.11.20-survey-voyages';
+import {configurePortDividends} from './port-income.js?v=2026.11.20-survey-voyages';
+import {configureEra,ERA_PERIOD,eraAt,setEraServerOffset} from './era-cycle.js?v=2026.11.20-survey-voyages';
+import {createGuildUI} from './guild-ui.js?v=2026.11.20-survey-voyages';
+import {createCoastOrders} from './coast-orders-ui.js?v=2026.11.20-survey-voyages';
+import {COASTS,visitCoast} from './coast-orders.js?v=2026.11.20-survey-voyages';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.20-survey-voyages';
+import {ownership} from './commerce.js?v=2026.11.20-survey-voyages';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.20-survey-voyages';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,changeDepotPromotion,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.20-survey-voyages';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.20-survey-voyages';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.20-survey-voyages';
+import {createShoreUI} from './shore-ui.js?v=2026.11.20-survey-voyages';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.20-survey-voyages';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.20-survey-voyages';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.20-survey-voyages';
+import {useRepairKit} from './activities.js?v=2026.11.20-survey-voyages';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.20-survey-voyages';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.20-survey-voyages';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
 const toward=name=>{const final=(name.charCodeAt(name.length-1)-0xac00)%28;return name+(final>0&&final!==8?'으로':'로');};
 const icon=(name,cls='')=>`<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
 let storage;try{storage=localStorage;}catch{storage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};}
-let ux,expansion,business,combat,community,saleFinder,rumorUI,shoreUI,guildUI,seaUI,projectsUI,taxCollector,storyUI,inlandUI,committedStats=null;
+let ux,expansion,business,combat,community,saleFinder,rumorUI,shoreUI,guildUI,seaUI,projectsUI,taxCollector,storyUI,inlandUI,fieldUI,committedStats=null;
 const surveyedCanals=new Map();
 let settlingCanal=false;
 let longRoutePlanner=null;
@@ -535,11 +536,14 @@ function renderPanel(){
   $('#port-coordinates').innerHTML=(p?coordinates(p):coordinates({lon:state.position[0],lat:state.position[1]}))+(visited&&!state.quiz.includes(p.id)?' <button class="quiz-link" id="port-quiz">지리 퀴즈 +100 D ↗</button>':'');
   if(p?.river)$('#port-coordinates').insertAdjacentHTML('beforeend',`<span class="river-badge">${nav?.rivers.find(r=>r.id===p.river)?.name||p.sea} · 강 항구</span>`);
   $('#port-quiz')?.addEventListener('click',()=>quiz(p));
-  const inlandCity=INLAND_PORTS[p?.id];
-  if(inlandCity&&visited){
+  if(atPort||state.inland?.field){
     const button=document.createElement('button');button.type='button';button.id='port-inland';
-    button.className='service-button';button.textContent=inlandCity.name+'로 가는 육로';
-    button.onclick=()=>inlandUI?.open(inlandCity.id);$('#port-coordinates').append(button);
+    button.className='service-button';button.textContent=state.inland?.field?'육상 탐험 계속':'상륙 · 육상 탐험';
+    button.onclick=()=>fieldUI?.open();$('#port-coordinates').append(button);
+    if(atPort)for(const city of Object.values(INLAND_CITIES)){
+      if(!townRoute(state,city,p?.id))continue;
+      const store=document.createElement('button');store.className='service-button';store.textContent=city.name+' 창고·운송';store.onclick=()=>inlandUI?.open(city.id,'storage');$('#port-coordinates').append(store);
+    }
   }
   $('#port-badge').textContent=atPort?'정박 중':visited?'방문한 항구':p?'정보를 얻은 항구':'항해 가능';
   $('#port-badge').classList.toggle('unknown',!atPort&&!visited);
@@ -684,7 +688,7 @@ function inspectNearby(id){
   log(`${result.discovery.name} 발견 · 명성 +${fame}`,'discovery');changed();expansion.found({...result.discovery,fame});toast(`✦ ${result.discovery.name} · 명성 +${fame}`,'discovery');account.flush();
 }
 function discoveryApproach(d){
- if(!d||!nav||!explorationAllowed(state)||state.voyage?.legacy)return {error:'현재 항해를 마친 뒤 조사 지점으로 이동할 수 있어요.'};
+ if(!d||d.medium==='land'||!nav||!explorationAllowed(state)||state.voyage?.legacy)return {error:'현재 항해를 마친 뒤 조사 지점으로 이동할 수 있어요.'};
  if(!hasClues(state,d,guildTime()))return {error:'지금은 이 조사 지점을 찾을 수 없어요.'};
  if(currentCanal(state.voyage))return {error:'운하 구간을 빠져나온 뒤 조사 지점으로 이동할 수 있어요.'};
  if(!playing||sessionBlocked||account.busy||account.economicUncertain||state.seaJob||combat?.blocked())return {error:'진행 중인 활동이나 저장을 마친 뒤 다시 시도해 주세요.'};
@@ -874,11 +878,9 @@ function renderPorts(){
     g.onclick=e=>{e.stopPropagation();if(dragged)return;selectPort(p.id);};g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectPort(p.id);}};root.append(g);
   }
   for(const city of Object.values(INLAND_CITIES)){
-    if(!knowsPort(state,city.port))continue;
-    const port=PORT_BY_ID[city.port],start=[port.cityLon??port.lon,port.cityLat??port.lat];
-    const path=routePath([start,...city.path,city.point]),[x,y]=project(city.point);
+    if(!knownTown(state,city.id))continue;
+    const [x,y]=project(city.point);
     for(const [dx,dy] of CHART_TILES){
-      root.append(svgEl('path',{d:path,transform:`translate(${dx},${dy})`,class:'inland-road','vector-effect':'non-scaling-stroke'}));
       const cityMarker=svgEl('g',{class:'inland-marker',transform:`translate(${x+dx},${y+dy}) scale(${1/screen.k})`,role:'button',tabindex:dx||dy?-1:0,'aria-label':city.name+' 내륙 도시','data-inland-city':city.id});
       const text=svgEl('text',{x:10,y:4,class:'port-text'});text.textContent=city.name;
       cityMarker.append(svgEl('circle',{r:17,class:'marker-hit'}),svgEl('rect',{x:-4,y:-4,width:8,height:8,rx:1}),text);
@@ -1100,7 +1102,7 @@ function applyDestination(target,point,route,scroll,depot){
   if(scroll&&innerWidth<=850)ux?.openPort('target',false);
 }
 async function startVoyage(intent=navigationIntent,replacing=false,investigation=null,canContinue=()=>true,resumedDetour=null){
-  if(inlandBlocksSailing(state,guildTime()))return inlandUI?.open(inlandLocation(state));
+  if(inlandBlocksSailing(state,guildTime()))return state.inland?.field?fieldUI?.open():inlandUI?.open(inlandLocation(state));
   if(typeof intent!=='number')intent=navigationIntent;
   if(!playing||sessionBlocked||account.busy||account.economicUncertain){
     investigation?.fail('항해 기록 저장이 끝난 뒤 다시 시도해 주세요.');
@@ -1294,7 +1296,7 @@ function setControlMode(mode){
   if(mode==='auto'&&selected&&selected!==state.port)planDestination(selected,portPoint(PORT_BY_ID[selected]),false);
 }
 function beginManual(){
- if(inlandBlocksSailing(state,guildTime())){inlandUI?.open(inlandLocation(state));return false;}
+ if(inlandBlocksSailing(state,guildTime())){state.inland?.field?fieldUI?.open():inlandUI?.open(inlandLocation(state));return false;}
   if(state.shoreTrip||state.seaJob){stopForUI();(state.shoreTrip?shoreUI:seaUI)?.open();return false;}
   if(combat?.blocked())return false;
   if(combat&&!combat.hasReserve()){combat.prepare().catch(e=>toast(e.message,'error'));return false;}
@@ -1304,7 +1306,7 @@ function beginManual(){
   delete state.depotDock;manualActive=true;paused=false;followShip=true;if(!state.storyBook)normalizeStories(state);state.storyBook.manual=true;refreshStories(state);return true;
 }
 function startManual(point){
-  if(inlandBlocksSailing(state,guildTime()))return inlandUI?.open(inlandLocation(state));
+  if(inlandBlocksSailing(state,guildTime()))return state.inland?.field?fieldUI?.open():inlandUI?.open(inlandLocation(state));
   if(!point||!nav)return;
   if(state.shoreTrip)return shoreUI?.open();
   if(state.food<=0){toast(state.port?'출항 전에 보급을 채워 주세요.':'보급이 떨어져 자동 구조합니다.','error');return;}
@@ -1335,7 +1337,7 @@ async function enterReservedCanal(id){
   }finally{settlingCanal=false;}
 }
 function stepManual(delta,paint=true){
-  if(state.transitionPending)return;
+  if(state.transitionPending||state.inland?.field)return;
   if(!state.port){const nearby=dockAlong(nav,state.position,state.position,portApproaches,departedPort);if(nearby){arrive(nearby.id);return;}}
   const east=Number(heldKeys.has('ArrowRight'))-Number(heldKeys.has('ArrowLeft')),north=Number(heldKeys.has('ArrowUp'))-Number(heldKeys.has('ArrowDown'));
   if(!east&&!north&&!manualTarget){if(manualActive){manualActive=false;renderHUD();save();}return;}
@@ -1523,7 +1525,9 @@ rumorUI=createRumorUI({onReread:()=>storyUI?.reread(),extraHarborRumor:(game,kee
 }});
 renderPanel();
 business=createBusiness({account,online:()=>fleet.roster?.list?.()||[],onTradeComplete:mode=>uiUsage.complete('action-trade-'+mode),onOwnership:()=>community?.syncOwnership(true).catch(()=>{}),directory:after=>rankings.page(after),getState:()=>state,modal:showModal,toast,pause:()=>{stopForUI();paused=!!state.voyage;},beforeService:()=>combat?.releaseIfPort(),onDepot:id=>projectsUI?.inspect(id),onMarket:id=>{modal.close();selectPort(id);ux.openPort('port');},record:(port,income,cost)=>{if(appendItemRecord(state,'income',port.id,port.name+' · 기본 세수 '+income.accrued+' D · 시간당 '+income.rate+' D · 시설 투자 '+cost+' D',guildTime()))save();},changed,render:()=>{if(mapReady)renderPanel();},nav:()=>nav,rescue:()=>{delete state.offlineRescuePending;return launchRescue(false,true);},look:showPointOnChart,onPorts:added=>{if(nav)for(const p of added)portApproaches.set(p.id,nav.approach(p));if(globe)globe.ports=atlasPorts();const wasDocked=state.depotDock;normalizeDepotDock(state);if(wasDocked&&state.port===wasDocked){selected=state.port;changed();}if(state.port&&ACTIVE_PORT_BY_ID[state.port])state.legacyHarbor=false;renderPorts();}});
-inlandUI=createInlandUI({game:()=>state,now:guildTime,uid:()=>account.uid,modal:showModal,run:(...args)=>business.run(...args),read:key=>account.readShared('ports',key),toast,port:id=>{modal.close();selectPort(id);}});
+fieldUI=createFieldUI({game:()=>state,ready:()=>playing&&!sessionBlocked&&!account.busy&&!account.economicUncertain,now:guildTime,modal:showModal,stop:stopForUI,changed,save,toast,town:id=>inlandUI?.open(id)});
+$('#chart-landfall').onclick=()=>fieldUI.open();
+inlandUI=createInlandUI({field:()=>fieldUI.open(),game:()=>state,now:guildTime,uid:()=>account.uid,modal:showModal,run:(...args)=>business.run(...args),read:key=>account.readShared('ports',key),toast,port:id=>{modal.close();selectPort(id);}});
 const mail=createCaptainsMail({account,state:()=>state,modal:showModal,toast,now:guildTime,directory:after=>rankings.page(after),run:(...args)=>business.run(...args),onUnread:count=>{
  for(const [selector,label] of [['#captain-mail','외교 서신'],['#quick-more','더보기'],['[data-menu="mail"]','외교 서신']]){
   const button=$(selector);if(!button)continue;button.textContent=count?label+' · '+Math.min(count,99)+(count>99?'+':''):label;
@@ -1765,7 +1769,8 @@ if(['localhost','127.0.0.1'].includes(location.hostname)){
   const previewEpoch=Date.UTC(2026,10,14,15);
   configurePortDividends(previewEpoch);
   const boundary=previewEpoch+Math.floor((Date.now()-previewEpoch)/ERA_PERIOD)*ERA_PERIOD;
-  configureEra(previewEpoch,Number.isInteger(requested)&&requested>=1&&requested<=5?{at:boundary,first:requested}:{at:previewEpoch,first:1});renderEra();
+  const previewAt=Number.isInteger(requested)&&requested>=1&&requested<=6?boundary-(requested-1)*ERA_PERIOD:previewEpoch;
+  configureEra(previewEpoch,{at:previewAt,first:1,sixAt:previewAt+5*ERA_PERIOD});renderEra();
 }
 if(await maintenanceInProgress()){
   location.replace('maintenance.html');

@@ -1,15 +1,16 @@
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
-import {collectionArt} from './art.js?v=2026.11.20-harbor-repairs';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-harbor-repairs';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-harbor-repairs';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.20-harbor-repairs';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.20-harbor-repairs';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-harbor-repairs';
-import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.20-harbor-repairs';
+import {officerPortrait} from './officer-portrait.js?v=2026.11.20-survey-voyages';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
+import {collectionArt} from './art.js?v=2026.11.20-survey-voyages';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-survey-voyages';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-survey-voyages';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.20-survey-voyages';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.20-survey-voyages';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-survey-voyages';
+import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.20-survey-voyages';
 
-import {readRumor} from './discoveries.js?v=2026.11.20-harbor-repairs';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.20-harbor-repairs';
-import {eraAvailable} from './era-cycle.js?v=2026.11.20-harbor-repairs';
+import {readRumor} from './discoveries.js?v=2026.11.20-survey-voyages';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.20-survey-voyages';
+import {eraAvailable} from './era-cycle.js?v=2026.11.20-survey-voyages';
 
 const labels={all:'전체',pending:'미완료',complete:'완료'};
 const inFilter=(filter,complete)=>filter==='all'||(filter==='complete')===!!complete;
@@ -151,8 +152,7 @@ export function createRumorUI(api){
     const level=officerLevel(s,entry.id);
     const statusLine=!entry.type&&status.owned?`<p>숙련도 ${level}/5 · 경험 ${fmt(s.rumorProgress.officerXP?.[entry.id]||0)} · 능력 ${100+(level-1)*10}%</p>`:'';
     const profile=!entry.type?OFFICER_HISTORY[entry.id]:null;
-    const tile=Number(entry.id.slice(1))-1;
-    const portrait=tile>=0&&tile<24?`<div class="officer-portrait" style="background-position:${tile%6*20}% ${Math.floor(tile/6)*100/3}%" role="img" aria-label="${escape(entry.name)} 게임 삽화"></div>`:'';
+    const portrait=officerPortrait(entry.id);
     const history=profile?`<div class="officer-history">${portrait}<div><strong>${escape(profile[0])}</strong><p>${escape(profile[1])} · ${escape(profile[2])}</p><a href="${escape(profile[3])}" target="_blank" rel="noopener noreferrer">역사 자료</a>${portrait?'<small> · 게임 삽화</small>':''}</div></div><details><summary>합류 이야기 · 창작</summary><p>${escape(entry.story)}</p></details>`:'';
     let preview='';
     if(profile&&status.owned){

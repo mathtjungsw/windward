@@ -1,5 +1,5 @@
-import {parseSavedGame} from './engine.js?v=2026.11.20-harbor-repairs';
-import {reserveLoss} from './combat-core.js?v=2026.11.20-harbor-repairs';
+import {parseSavedGame} from './engine.js?v=2026.11.20-survey-voyages';
+import {reserveLoss} from './combat-core.js?v=2026.11.20-survey-voyages';
 
 // One-time registration conserves total cash and cargo, including existing
 // escrow. It does not award/refund anything or move a captain to a new port.

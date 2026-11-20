@@ -1,4 +1,5 @@
 // Each licensed image links to its source file or museum object.
+import {SURVEY_DISCOVERIES} from './survey-discoveries.js?v=2026.11.20-survey-voyages';
 export const ERA_DISCOVERIES=[
   {
     "id": "era-sutton-hoo",
@@ -4921,3 +4922,4 @@ export const COASTAL_OBSERVATIONS=[
   }
 ];
 ERA_DISCOVERIES.push(...COASTAL_OBSERVATIONS);
+ERA_DISCOVERIES.push(...SURVEY_DISCOVERIES);

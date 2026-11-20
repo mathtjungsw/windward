@@ -1,7 +1,7 @@
-import {GOODS,PORT_BY_ID,harborMarket} from './data.js?v=2026.11.20-harbor-repairs';
-import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.20-harbor-repairs';
-import {inlandHarborStorage} from './inland.js?v=2026.11.20-harbor-repairs';
-import {INLAND_CITIES,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.20-harbor-repairs';
+import {GOODS,PORT_BY_ID,harborMarket} from './data.js?v=2026.11.20-survey-voyages';
+import {captainTradeQuote,executeTrade,permitted,portMarketItem,taxRate} from './commerce.js?v=2026.11.20-survey-voyages';
+import {inlandHarborStorage} from './inland.js?v=2026.11.20-survey-voyages';
+import {INLAND_CITIES,freightTown,knownTown,townRoute,INLAND_TIERS,WAREHOUSE_MAX,inlandVehicle,inlandAccess,inlandLocation,inlandWarehouse,inlandAvailable,inlandSpace,inlandReserved,inlandHaulQuote,inlandMarketQuote,inlandWalk,inlandUpgrade,inlandTransfer,startInlandHaul,settleInlandHaul,stopInlandHaul,inlandTrade,inlandGuild} from './inland.js?v=2026.11.20-survey-voyages';
 
 const $=s=>document.querySelector(s),fmt=n=>Number(n).toLocaleString('ko-KR');
 const time=ms=>{const seconds=Math.max(0,Math.ceil(ms/1000));return seconds>=60?`${Math.floor(seconds/60)}분 ${seconds%60}초`:`${seconds}초`;};
@@ -22,25 +22,25 @@ export function createInlandUI(api){
   });}finally{busy=false;}
  }
  async function open(id=inlandLocation(api.game()),tab='overview'){
-  const city=INLAND_CITIES[id];
-  if(!city)return;
+  const city=freightTown(api.game(),id);
+  if(!city||!knownTown(api.game(),id))return api.field();
   clearTimeout(timer);
-  const game=api.game(),visit=game.inland?.visit,job=game.inland?.haul,now=api.now(),v=inlandVehicle(game),atCity=inlandAccess(game,city,city.id,now),atPort=inlandAccess(game,city,city.port,now),connected=game.port===city.port&&!game.voyage;
+  const game=api.game(),visit=game.inland?.visit,job=game.inland?.haul,now=api.now(),v=inlandVehicle(game),atCity=inlandAccess(game,city,city.id,now),atPort=inlandAccess(game,city,city.port,now),connected=game.port===city.port&&!game.voyage&&townRoute(game,INLAND_CITIES[id],game.port);
   if(job?.phase==='running'&&job.due<=now&&!busy&&tab!=='overview'){
    if(await reconcile())return open(id,tab);
   }
   const travel=visit?.city===id&&visit.due>now;
   const port=PORT_BY_ID[city.port];
   api.modal(city.name,'내륙 도시 · '+port.name+' 육로',`
-   <nav class="expansion-tabs">${[['overview','육로'],['market','교역소'],['tavern','주점'],['guild','조합'],['storage','창고·운송']].map(([key,label])=>`<button data-inland-tab="${key}" aria-pressed="${key===tab}" ${(key==='market'||key==='tavern')&&!atCity||key==='guild'&&!atPort&&!atCity||key==='storage'&&!connected?'disabled':''}>${label}</button>`).join('')}</nav>
+   <nav class="expansion-tabs">${[['overview','육로'],['market','교역소'],['tavern','주점'],['guild','조합'],['storage','창고·운송']].map(([key,label])=>`<button data-inland-tab="${key}" aria-pressed="${key===tab}" ${(key==='market'||key==='tavern')&&!atCity||key==='guild'&&!atPort&&!atCity||key==='storage'&&!connected&&!atCity?'disabled':''}>${label}</button>`).join('')}</nav>
    <div id="inland-content">
-   ${tab==='overview'?`<p>${atCity?city.name+'에 도착했어요. 선단은 '+port.name+'에 정박해 있어요.':travel?(visit.returning?port.name:city.name)+'으로 이동 중':connected?port.name+'에서 육로로 출발할 수 있어요.':port.name+'에 정박하면 이 도시를 방문할 수 있어요.'}</p>
+   ${tab==='overview'?`<p>${atCity?city.name+'에 도착했어요.':travel?(visit.returning?port.name:city.name)+'으로 이동 중':'육상 탐험 지도에서 직접 걸어 이 도시에 들어오세요.'}</p>
    <p>${v.tier}단계 ${v.name} · 1회 ${v.load}상자 · 편도 ${time(inlandHaulQuote(game,city,1).duration)}${travel?' · <span id="inland-time">남은 '+time(visit.due-now)+'</span>':''}</p>
-   <div class="dialog-actions">${atPort||atCity?`<button id="inland-visit" class="primary-button">${atCity?'배가 있는 항구로 돌아가기':'도시로 출발'}</button>`:!connected?'<button id="inland-port">연결 항구 보기</button>':''}
+   <div class="dialog-actions">${atPort||atCity||game.inland?.field?`<button id="inland-visit" class="primary-button">${visit?'배가 있는 항구로 돌아가기':game.inland?.field?'탐험 지도로 돌아가기':'육상 탐험 시작'}</button>`:!connected?'<button id="inland-port">연결 항구 보기</button>':''}
    <button id="inland-vehicle">육상 운송 수단</button></div>`:tab==='tavern'?`<h3>${city.name} 주점</h3><p>${port.name}의 배와 이곳의 교역품은 창고에서 이어집니다. 조합에서 화물 운반 의뢰를 받을 수 있어요.</p><button data-inland-panel="guild">도시 조합</button>`:tab==='guild'?guildMarkup(game,city,now):tab==='storage'?storageMarkup(game,city,atPort,atCity,now):'<p>시장 시세를 불러오는 중…</p>'}</div>`,'medium');
   const root=$('#inland-content');
   document.querySelectorAll('[data-inland-tab],[data-inland-panel]').forEach(button=>button.onclick=back(city,button.dataset.inlandTab||button.dataset.inlandPanel));
-  $('#inland-visit')?.addEventListener('click',()=>run((g,_c,t)=>inlandWalk(g,city,t,atCity),back(city,'overview')));
+  $('#inland-visit')?.addEventListener('click',()=>visit?run((g,_c,t)=>inlandWalk(g,city,t,true),back(city,'overview')):api.field());
   $('#inland-port')?.addEventListener('click',()=>api.port(city.port));
   $('#inland-vehicle')?.addEventListener('click',()=>vehicle(city));
   $('#inland-guild-action')?.addEventListener('click',()=>run((g,_c,t)=>inlandGuild(g,city,t),back(city,'guild')));
@@ -87,7 +87,7 @@ export function createInlandUI(api){
   return progress+inventories.map(([id,label,here])=>`<section><h3>${label} · ${inlandSpace(game,id)}/${WAREHOUSE_MAX}상자</h3>${inlandReserved(game,id)?'<p>들어올 화물 '+inlandReserved(game,id)+'상자 예약</p>':''}
     ${here&&id===city.port?'<button data-inland-panel="harborMarket">항구 창고로 구매·판매</button>':''}
     ${Object.entries(inlandWarehouse(game,id)).map(([good,item])=>`<p>${GOODS[good].name} · ${item.qty}상자 · 사용 가능 ${inlandAvailable(game,id,good)}상자
-      ${inlandAvailable(game,id,good)>0?`<button data-good="${good}" data-inland-haul="${id}" ${job?.phase==='running'?'disabled':''}>운송 예약</button>
+      ${inlandAvailable(game,id,good)>0&&townRoute(game,INLAND_CITIES[city.id],game.port)?`<button data-good="${good}" data-inland-haul="${id}" ${job?.phase==='running'?'disabled':''}>운송 예약</button>
       ${here&&id===city.port?`<button data-good="${good}" data-warehouse-move="ship">배에 싣기</button>`:''}`:''}</p>`).join('')||'<p>보관한 화물이 없어요.</p>'}</section>`).join('')+
    (atPort?`<section><h3>선단 화물</h3>${Object.entries(game.cargo).filter(([,item])=>item.qty>0).map(([good,item])=>`<p>${GOODS[good].name} · ${item.qty}상자 <button data-good="${good}" data-warehouse-move="warehouse">창고에 보관</button></p>`).join('')||'<p>선단에 실은 화물이 없어요.</p>'}</section>`:'');
  }

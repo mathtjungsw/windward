@@ -68,7 +68,7 @@ test('fame is saved once, and a caravan keeps quoted duration at reservation',()
  g.position=d.point;
  use('fame');assert.equal(inspectDiscovery(g,{clear:()=>true},d.id,now).blessingFame,5);
  use(null);assert.equal(discoveryStats(parseSavedGame(g)).fame,55);
- const city=INLAND_CITIES.cordoba;g.port=city.port;g.inland={tier:0,warehouses:{[city.port]:{leather:{qty:10,cost:90}}}};
+ const city=INLAND_CITIES.cordoba;g.port=city.port;g.inland={tier:0,towns:{[city.id]:{at:now,port:city.port}},warehouses:{[city.port]:{leather:{qty:10,cost:90}}}};
  use('caravan',now-43200000+100);const q=inlandHaulQuote(g,city,10,now);
  assert.equal(q.duration,51000);
  assert.throws(()=>startInlandHaul(g,city,city.port,'leather',10,now+100,q),/새 견적/);

@@ -1,5 +1,5 @@
-import {advanceBasicIncome} from './port-income.js?v=2026.11.20-harbor-repairs';
-import {capitalTotal,currentPortOwner,preserveSupplyRemainders,equityEnabled} from './port-equity.js?v=2026.11.20-harbor-repairs';
+import {advanceBasicIncome} from './port-income.js?v=2026.11.20-survey-voyages';
+import {capitalTotal,currentPortOwner,preserveSupplyRemainders,equityEnabled} from './port-equity.js?v=2026.11.20-survey-voyages';
 // Idempotent. The operator calls this only on a backed-up harbor during maintenance;
 // new harbors enter it in the same atomic action that opens their trading post.
 export function initializePortEquity(content,id,now){
