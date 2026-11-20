@@ -1,12 +1,12 @@
-import {titleEffect} from './title-effects.js?v=2026.11.20-inland-fog';
-import {blessingBonus} from './blessings.js?v=2026.11.20-inland-fog';
-import {shipyardReport} from './historical-ships.js?v=2026.11.20-inland-fog';
-import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-inland-fog';
-import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-inland-fog';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-fog';
-import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-fog';
+import {titleEffect} from './title-effects.js?v=2026.11.20-inland-overview';
+import {blessingBonus} from './blessings.js?v=2026.11.20-inland-overview';
+import {shipyardReport} from './historical-ships.js?v=2026.11.20-inland-overview';
+import {DISCOVERIES,DISCOVERY_BY_ID} from './discoveries-catalog.js?v=2026.11.20-inland-overview';
+import {PIRATE_ZONES} from './pirate-catalog.js?v=2026.11.20-inland-overview';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-overview';
+import {PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-overview';
 
-import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-inland-fog';
+import {activeOfficer,couponAmount,consumeCoupon,addOfficerExperience} from './rumor-progress.js?v=2026.11.20-inland-overview';
 
 const HOUR=3600000;
 export const GUILD_TYPES=[

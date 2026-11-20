@@ -1,21 +1,21 @@
-import {normalizeTitles} from './title-effects.js?v=2026.11.20-inland-fog';
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.20-inland-fog';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.20-inland-fog';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-fog';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.20-inland-fog';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-inland-fog';
+import {normalizeTitles} from './title-effects.js?v=2026.11.20-inland-overview';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.20-inland-overview';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.20-inland-overview';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-overview';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.20-inland-overview';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-inland-overview';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.20-inland-fog';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.20-inland-overview';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.20-inland-fog';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.20-inland-fog';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.20-inland-fog';
-import {normalizeDepotDock} from './projects.js?v=2026.11.20-inland-fog';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.20-inland-fog';
-import {normalizeTavernRound} from './tavern-games.js?v=2026.11.20-inland-fog';
-import {normalizeCoastOrders} from './coast-orders.js?v=2026.11.20-inland-fog';
-import {normalizeStories} from './story-core.js?v=2026.11.20-inland-fog';
-import {validInlandSave} from './inland.js?v=2026.11.20-inland-fog';
+import {normalizeSea} from './sea-activities.js?v=2026.11.20-inland-overview';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.20-inland-overview';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.20-inland-overview';
+import {normalizeDepotDock} from './projects.js?v=2026.11.20-inland-overview';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.20-inland-overview';
+import {normalizeTavernRound} from './tavern-games.js?v=2026.11.20-inland-overview';
+import {normalizeCoastOrders} from './coast-orders.js?v=2026.11.20-inland-overview';
+import {normalizeStories} from './story-core.js?v=2026.11.20-inland-overview';
+import {validInlandSave} from './inland.js?v=2026.11.20-inland-overview';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;

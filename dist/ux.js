@@ -1,13 +1,13 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.20-inland-fog';
-import {shipArtPath} from './art.js?v=2026.11.20-inland-fog';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.20-inland-fog';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-fog';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.20-inland-fog';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.20-inland-fog';
-import {findMenus} from './menu-finder.js?v=2026.11.20-inland-fog';
-import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.20-inland-fog';
-import {isTypingTarget} from './controls.js?v=2026.11.20-inland-fog';
-import {validCard} from './social-core.js?v=2026.11.20-inland-fog';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.20-inland-overview';
+import {shipArtPath} from './art.js?v=2026.11.20-inland-overview';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.20-inland-overview';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-overview';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.20-inland-overview';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.20-inland-overview';
+import {findMenus} from './menu-finder.js?v=2026.11.20-inland-overview';
+import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.20-inland-overview';
+import {isTypingTarget} from './controls.js?v=2026.11.20-inland-overview';
+import {validCard} from './social-core.js?v=2026.11.20-inland-overview';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');

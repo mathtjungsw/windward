@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.20-inland-fog';
-import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.20-inland-fog';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-fog';
+import {ownership} from './commerce.js?v=2026.11.20-inland-overview';
+import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.20-inland-overview';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-overview';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;

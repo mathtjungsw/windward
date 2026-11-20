@@ -1,9 +1,9 @@
-import {FieldTerrain,startField,returnField,walkField,fieldNear,fieldDistance} from './overland.js?v=2026.11.20-inland-fog';
-import {INLAND_CITIES,INLAND_TIERS,inlandVehicle,inlandWarehouse,inlandAvailable,knownTown,settleInlandVisit,fieldPace,fieldCargo,fieldLoad,fieldTransfer,boardFieldCargo,upgradeInlandVehicle} from './inland.js?v=2026.11.20-inland-fog';
-import {landTileSeen,landExplorationArea} from './land-exploration.js?v=2026.11.20-inland-fog';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-fog';
-import {inspectFieldDiscovery} from './discoveries.js?v=2026.11.20-inland-fog';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-fog';
+import {FieldTerrain,startField,returnField,walkField,fieldNear,fieldDistance} from './overland.js?v=2026.11.20-inland-overview';
+import {INLAND_CITIES,INLAND_TIERS,inlandVehicle,inlandWarehouse,inlandAvailable,knownTown,settleInlandVisit,fieldPace,fieldCargo,fieldLoad,fieldTransfer,boardFieldCargo,upgradeInlandVehicle} from './inland.js?v=2026.11.20-inland-overview';
+import {landTileSeen,landExplorationArea} from './land-exploration.js?v=2026.11.20-inland-overview';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-overview';
+import {inspectFieldDiscovery} from './discoveries.js?v=2026.11.20-inland-overview';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-overview';
 
 let terrainPromise;
 function loadTerrain(){
@@ -15,6 +15,7 @@ function loadTerrain(){
 const litTerrain=['#a7ccd8','#e9ecd0','#5a96ae','#a5845d','#81b5c7'];
 const seaScoutedTerrain=['#8aafb9','#c6ccb3','#557d8d','#877358','#7099a3'];
 const unchartedFog='#254c58';
+const TERRAIN_PIXEL_BUDGET=100000;
 const glyphs={
  walk:'<path d="M-5 5v9m10-9v9M-7 0l-5 7m18-7 5 6" stroke="#38473a" stroke-width="3" stroke-linecap="round"/><rect x="-9" y="-6" width="6" height="11" rx="2" fill="#af7744"/><rect x="-6" y="-5" width="12" height="12" rx="4" fill="#276065"/><circle cy="-10" r="5" fill="#c98d55"/><path d="M-8-12H8L5-16h-9Z" fill="#51412e"/>',
  handcart:'<path d="M-17 7h19l5-5m3-1v12" stroke="#67432c" stroke-width="2" fill="none"/><path d="M-19 0h17l-3 9h-10Z" fill="#a87642" stroke="#614a37"/><circle cx="-12" cy="11" r="4" fill="#4b3c2e"/><path d="m6 5 1 8m5-8 1 8" stroke="#38473a" stroke-width="2"/><rect x="6" y="-4" width="8" height="11" rx="3" fill="#276065"/><circle cx="10" cy="-8" r="4" fill="#c98d55"/>',
@@ -141,8 +142,8 @@ export function createFieldUI(api){
  function paintTerrain(f,view){
   const {nw,se,scale}=view;
   const [left,top]=terrain.cell(nw),[right,bottom]=terrain.cell(se);
-  const x0=Math.max(0,left-2),x1=Math.min(terrain.width-1,right+2);
-  const y0=Math.max(0,top-2),y1=Math.min(terrain.height-1,bottom+2);
+  const x0=left-2,x1=right+2;
+  const y0=top-2,y1=bottom+2;
   const sea=api.seaExploration();
   const key=[x0,x1,y0,y1,...f.cell,scale,sea.revision].join('|');
   const chart=api.game().inland.chart;
@@ -150,21 +151,26 @@ export function createFieldUI(api){
   terrainKey=key;terrainChart=chart;seaChart=sea;
   const width=x1-x0+1,height=y1-y0+1;
   if(width<=0||height<=0){raster.removeAttribute('href');return;}
-  // One canvas pixel per ground cell matches the shoreline and movement barrier.
-  canvas.width=width;canvas.height=height;
+  // Keep nearby terrain at ground-cell resolution and bound wide overview redraws.
+  const sampleSize=Math.max(1,Math.ceil(Math.sqrt(width*height/TERRAIN_PIXEL_BUDGET)));
+  canvas.width=Math.ceil(width/sampleSize);
+  canvas.height=Math.ceil(height/sampleSize);
   const context=canvas.getContext('2d');
   const inland=api.game().inland;
-  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
-   const cell=[x,y];
-   const inSight=Math.hypot(x-f.cell[0],y-f.cell[1])<=8;
-   const kind=terrain.kind(x,y);
-   if(inSight||landTileSeen(inland,cell))context.fillStyle=litTerrain[kind];
+  for(let row=0;row<canvas.height;row++)for(let column=0;column<canvas.width;column++){
+   const x=x0+Math.floor((column+.5)*width/canvas.width);
+   const y=y0+Math.floor((row+.5)*height/canvas.height);
+   const wrappedX=((x%terrain.width)+terrain.width)%terrain.width;
+   const cell=[wrappedX,y];
+   const dx=Math.abs(wrappedX-f.cell[0]);
+   const inSight=Math.hypot(Math.min(dx,terrain.width-dx),y-f.cell[1])<=8;
+   if(inSight||landTileSeen(inland,cell))context.fillStyle=litTerrain[terrain.kind(...cell)];
    else{
     const position=terrain.geo(cell);
     const onSeaChart=position[1]>-60&&position[1]<=80;
-    context.fillStyle=onSeaChart&&sea.seen(position)?seaScoutedTerrain[kind]:unchartedFog;
+    context.fillStyle=onSeaChart&&sea.seen(position)?seaScoutedTerrain[terrain.kind(...cell)]:unchartedFog;
    }
-   context.fillRect(x-x0,y-y0,1,1);
+   context.fillRect(column,row,1,1);
   }
   const [leftEdge,topEdge]=terrain.geo([x0-.5,y0-.5]);
   const [rightEdge,bottomEdge]=terrain.geo([x1+.5,y1+.5]);

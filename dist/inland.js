@@ -1,10 +1,10 @@
-import {validFieldRecord,fieldNear} from './overland.js?v=2026.11.20-inland-fog';
-import {FIELD_TOWNS} from './inland-places.js?v=2026.11.20-inland-fog';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-fog';
-import {capacity,usedSpace} from './engine.js?v=2026.11.20-inland-fog';
-import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.20-inland-fog';
-import {recordTrade} from './rank-progress.js?v=2026.11.20-inland-fog';
-import {blessingRate} from './blessings.js?v=2026.11.20-inland-fog';
+import {validFieldRecord,fieldNear} from './overland.js?v=2026.11.20-inland-overview';
+import {FIELD_TOWNS} from './inland-places.js?v=2026.11.20-inland-overview';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-overview';
+import {capacity,usedSpace} from './engine.js?v=2026.11.20-inland-overview';
+import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.20-inland-overview';
+import {recordTrade} from './rank-progress.js?v=2026.11.20-inland-overview';
+import {blessingRate} from './blessings.js?v=2026.11.20-inland-overview';
 
 export const INLAND_CITIES={
  cordoba:{id:'cordoba',name:'코르도바',port:'seville',point:[-4.7794,37.8847],path:[[-5.6,37.53],[-5.16,37.77]],seconds:60,terrain:0,goods:{leather:.83,oliveoil:.87}},

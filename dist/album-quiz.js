@@ -1,5 +1,5 @@
-import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS} from './discoveries-catalog.js?v=2026.11.20-inland-fog';
-import {discoveryStats} from './discoveries.js?v=2026.11.20-inland-fog';
+import {DISCOVERIES,DISCOVERY_BY_ID,DISCOVERY_KINDS} from './discoveries-catalog.js?v=2026.11.20-inland-overview';
+import {discoveryStats} from './discoveries.js?v=2026.11.20-inland-overview';
 
 export const QUIZ_KINDS={all:'전체 도감',...DISCOVERY_KINDS};
 const DAY=86400000, KST=9*3600000;

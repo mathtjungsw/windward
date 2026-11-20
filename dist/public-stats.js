@@ -1,12 +1,12 @@
-import {activeTitle} from './title-effects.js?v=2026.11.20-inland-fog';
-import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.20-inland-fog';
-import {GOODS} from './data.js?v=2026.11.20-inland-fog';
-import {Exploration} from './voyage-core.js?v=2026.11.20-inland-fog';
-import {explorationStats} from './exploration-score.js?v=2026.11.20-inland-fog';
-import {discoveryStats} from './discoveries.js?v=2026.11.20-inland-fog';
-import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.20-inland-fog';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-fog';
-import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.20-inland-fog';
+import {activeTitle} from './title-effects.js?v=2026.11.20-inland-overview';
+import {ISLAND_PORT_IDS} from './island-ports.js?v=2026.11.20-inland-overview';
+import {GOODS} from './data.js?v=2026.11.20-inland-overview';
+import {Exploration} from './voyage-core.js?v=2026.11.20-inland-overview';
+import {explorationStats} from './exploration-score.js?v=2026.11.20-inland-overview';
+import {discoveryStats} from './discoveries.js?v=2026.11.20-inland-overview';
+import {shipTier,fleetCount,fleetShips} from './ship-rules.js?v=2026.11.20-inland-overview';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-overview';
+import {ITEMS,OFFICERS} from './rumor-catalog.js?v=2026.11.20-inland-overview';
 export function collectionRankStats(game){
  const progress=game.rumorProgress,acquired=new Set(progress?.acquiredItems||[]),officers=new Set(progress?.officers||[]);
  return {shoreCompleted:game.shoreProgress?.count||0,rareFinds:DISCOVERIES.filter(d=>d.tier>=3&&game.discoveries?.[d.id]).length,

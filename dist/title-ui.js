@@ -1,6 +1,6 @@
-import {TITLES,activeTitle,normalizeTitles} from './title-effects.js?v=2026.11.20-inland-fog';
-import {titleStats,chooseTitle,reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-inland-fog';
-import {RANK_BY_ID} from './rank-metrics.js?v=2026.11.20-inland-fog';
+import {TITLES,activeTitle,normalizeTitles} from './title-effects.js?v=2026.11.20-inland-overview';
+import {titleStats,chooseTitle,reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-inland-overview';
+import {RANK_BY_ID} from './rank-metrics.js?v=2026.11.20-inland-overview';
 export function createTitleUI(api){
  let busy=false;
  const esc=text=>String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

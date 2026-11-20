@@ -1,9 +1,9 @@
-import {COASTS} from './coast-sketches.js?v=2026.11.20-inland-fog';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-fog';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-fog';
-import {segmentDistance} from './voyage-core.js?v=2026.11.20-inland-fog';
+import {COASTS} from './coast-sketches.js?v=2026.11.20-inland-overview';
+import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-overview';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-overview';
+import {segmentDistance} from './voyage-core.js?v=2026.11.20-inland-overview';
 
-import {inlandBlocksSailing,settleInlandVisit} from './inland.js?v=2026.11.20-inland-fog';
+import {inlandBlocksSailing,settleInlandVisit} from './inland.js?v=2026.11.20-inland-overview';
 
 export {COASTS};
 const coastById=new Map(COASTS.map(site=>[site.id,site]));

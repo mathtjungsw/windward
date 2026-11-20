@@ -1,12 +1,12 @@
-import {fieldNear} from './overland.js?v=2026.11.20-inland-fog';
-import {titleEffect} from './title-effects.js?v=2026.11.20-inland-fog';
-import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-inland-fog';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-fog';
-import {segmentDistance} from './voyage-core.js?v=2026.11.20-inland-fog';
-import {recordGuildObjective} from './guild-contracts.js?v=2026.11.20-inland-fog';
-import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.20-inland-fog';
-import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.20-inland-fog';
-import {eraAvailable} from './era-cycle.js?v=2026.11.20-inland-fog';
+import {fieldNear} from './overland.js?v=2026.11.20-inland-overview';
+import {titleEffect} from './title-effects.js?v=2026.11.20-inland-overview';
+import {DISCOVERIES,DISCOVERY_BY_ID,RUMOR_BY_ID,DISCOVERY_CATALOG_VERSION,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-inland-overview';
+import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-overview';
+import {segmentDistance} from './voyage-core.js?v=2026.11.20-inland-overview';
+import {recordGuildObjective} from './guild-contracts.js?v=2026.11.20-inland-overview';
+import {activeOfficer,explorationGear} from './rumor-progress.js?v=2026.11.20-inland-overview';
+import {blessingBonus,blessingRate} from './blessings.js?v=2026.11.20-inland-overview';
+import {eraAvailable} from './era-cycle.js?v=2026.11.20-inland-overview';
 const shipTrace=s=>(s.fleetShips?.some(p=>p.id===s.flagshipId&&p.kind==='endeavour')?10:0)+(explorationGear(s)?.spotBonus||0)+titleEffect(s,'spotBonus');
 export const explorationAllowed=s=>!s.inland?.field&&!s.shoreTrip&&!s.explorationLockedUntilSailing&&!['rescue','transition'].includes(s.voyage?.kind);
 export const discoveryStats=s=>{
