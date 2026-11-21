@@ -1,3 +1,9 @@
+import {INLAND_RUMORS} from '../dist/inland-rumors.js';
+import {rumorNote,rumorsAtTavern} from '../dist/rumor-progress.js';
+import {FieldTerrain} from '../dist/overland.js';
+import {shortestInlandRoute} from '../dist/inland-route.js';
+import {landFog,landExplorationArea,revealLandTile} from '../dist/land-exploration.js';
+import {Exploration} from '../dist/voyage-core.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -6,7 +12,7 @@ import {ARCHIVE_CREDITS} from '../dist/discovery-credits.js';
 import {DISCOVERIES} from '../dist/discoveries-catalog.js';
 import {LIBRARY_DISCOVERIES} from '../dist/discoveries-library.js';
 import {answerQuiz,openQuiz,quizDay,quizReward,quizResetAt,quizCommit} from '../dist/album-quiz.js';
-import {INLAND_CITIES,inlandWalk,inlandAccess,inlandHaulQuote,startInlandHaul,settleInlandHaul,inlandTrade,inlandMarketQuote,inlandFree,inlandAvailable,stopInlandHaul} from '../dist/inland.js';
+import {INLAND_CITIES,inlandTavernRumors,readInlandRumor,inlandWalk,inlandAccess,inlandHaulQuote,startInlandHaul,settleInlandHaul,inlandTrade,inlandMarketQuote,inlandFree,inlandAvailable,stopInlandHaul} from '../dist/inland.js';
 import {harborPracticeAction,harborPresenceOutcome} from '../dist/harbor-battles.js';
 import {harborOfficerRole,freeRecalledOfficer} from '../dist/harbor-officers.js';
 import {basicIncomeRate} from '../dist/port-income.js';
@@ -258,4 +264,60 @@ test('automatic inland travel finds the shortest legal detour, rejects islands a
  const cut=new FieldTerrain(bytes.slice(0));
  for(let i=cut.rows[4];i<cut.rows[5];i++)cut.ends[i]=(cut.ends[i]&~7)|0;
  assert.equal(await shortestInlandRoute(cut,start,disconnectedStart),null);
+});
+
+test('every inland discovery has a distinct town rumor and a route from its tavern',async()=>{
+ const terrain=new FieldTerrain(Uint8Array.from(await readFile(new URL('../dist/assets/overland-terrain.bin',import.meta.url))).buffer);
+ const sites=DISCOVERIES.filter(entry=>entry.medium==='land');
+ assert.equal(INLAND_RUMORS.length,40);
+ assert.equal(new Set(INLAND_RUMORS.map(row=>row.cityId)).size,23);
+ assert.equal(new Set(INLAND_RUMORS.map(row=>row.text)).size,sites.length);
+ for(const {id,cityId,discoveryId,text} of INLAND_RUMORS){
+  const site=sites.find(entry=>entry.id===discoveryId),city=INLAND_CITIES[cityId];
+  const start=terrain.landing(city.point,6),end=terrain.cell(site.point);
+  assert.equal(city.id,site.fieldCity);
+  assert.match(text,/쪽/);
+  assert.ok(shortestInlandRoute(terrain,start,end),id);
+ }
+});
+test('inland rumor is recorded once at its town and completion follows existing discoveries',()=>{
+ const game=gameAt('lisbon'),city=INLAND_CITIES.sintra,rows=INLAND_RUMORS.filter(row=>row.cityId===city.id);
+ game.inland={tier:0,warehouses:{},field:{cell:[3412,1024],origin:[3417,1025],port:'lisbon',town:'sintra'},towns:{sintra:{port:'lisbon',at:now}}};
+ assert.deepEqual(inlandTavernRumors(game,city,now),rows);
+ assert.throws(()=>readInlandRumor(game,INLAND_RUMORS.find(row=>row.cityId!=='sintra').id,now),/도착/);
+ assert.deepEqual(rumorNote(game),[]);
+ const [first,second]=rows,before=game.money;
+ found(game,[DISCOVERIES.find(entry=>entry.id===second.discoveryId)]);
+ assert.deepEqual(readInlandRumor(game,first.id,now),{quiet:true});
+ assert.equal(readInlandRumor(game,first.id,now).noWrite,true);
+ readInlandRumor(game,second.id,now);
+ const saved=parseSavedGame(game),notes=rumorNote(saved);
+ assert.equal(notes.find(row=>row.id===first.id).complete,false);
+ assert.equal(notes.find(row=>row.id===second.id).complete,true);
+ assert.equal(notes.find(row=>row.id===first.id).sourceName,city.name);
+ assert.equal(saved.money,before);
+ assert.equal(Object.keys(saved.discoveries).length,1);
+ assert.equal(saved.rumors.length,2);
+ delete game.inland.field;
+ assert.throws(()=>readInlandRumor(game,first.id,now),/도착/);
+ assert.ok(!rumorsAtTavern(game).some(row=>row.id===first.id));
+});
+test('land fog follows the saved quarter-degree tile and preserves score and sea bits',()=>{
+ const game=gameAt('lisbon'),sea=new Exploration();
+ const tile=[3500,1000],point=[-4.975,39.975],sibling=[-4.725,39.975];
+ game.inland={};
+ assert.equal(landFog(game.inland),null);
+ assert.ok(revealLandTile(game.inland,tile));
+ const inland=structuredClone(game.inland),fog=landFog(inland),raw=sea.encode();
+ const area=landExplorationArea(inland);
+ assert.equal(fog,landFog(game.inland));
+ assert.deepEqual(fog.chartPixels,[160*1440+700]);
+ assert.equal(fog.coverage(50*360+175),1/16);
+ assert.equal(fog.seen(...point),true);
+ assert.equal(fog.seen(point[0]+360,point[1]),true);
+ assert.equal(fog.seen(...sibling),false);
+ assert.ok(area.walked>0);
+ assert.deepEqual(landExplorationArea(inland,()=>true),{walked:area.walked,additional:0});
+ assert.equal(sea.encode(),raw);
+ assert.deepEqual(landExplorationArea(inland),area);
 });

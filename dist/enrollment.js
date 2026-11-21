@@ -1,5 +1,5 @@
-import {parseSavedGame} from './engine.js?v=2026.11.20-inland-return';
-import {reserveLoss} from './combat-core.js?v=2026.11.20-inland-return';
+import {parseSavedGame} from './engine.js?v=2026.11.21-inland-discovery-hubs';
+import {reserveLoss} from './combat-core.js?v=2026.11.21-inland-discovery-hubs';
 
 // One-time registration conserves total cash and cargo, including existing
 // escrow. It does not award/refund anything or move a captain to a new port.

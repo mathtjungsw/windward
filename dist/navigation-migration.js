@@ -1,6 +1,6 @@
-import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.20-inland-return';
-import {ship,voyageEstimate,positionAlong,makeRoute,canDepart} from './engine.js?v=2026.11.20-inland-return';
-import {currentCanal,refundCanalTolls,RETIRED_CANAL} from './canal-reservations.js?v=2026.11.20-inland-return';
+import {PORT_BY_ID,ACTIVE_PORT_BY_ID} from './data.js?v=2026.11.21-inland-discovery-hubs';
+import {ship,voyageEstimate,positionAlong,makeRoute,canDepart} from './engine.js?v=2026.11.21-inland-discovery-hubs';
+import {currentCanal,refundCanalTolls,RETIRED_CANAL} from './canal-reservations.js?v=2026.11.21-inland-discovery-hubs';
 
 export const NAVIGATION_VERSION=3;
 

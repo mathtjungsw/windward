@@ -1,9 +1,9 @@
-import {COASTS} from './coast-sketches.js?v=2026.11.20-inland-return';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-return';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-return';
-import {segmentDistance} from './voyage-core.js?v=2026.11.20-inland-return';
+import {COASTS} from './coast-sketches.js?v=2026.11.21-inland-discovery-hubs';
+import {PORT_BY_ID} from './data.js?v=2026.11.21-inland-discovery-hubs';
+import {mapDistance} from './world-wrap.js?v=2026.11.21-inland-discovery-hubs';
+import {segmentDistance} from './voyage-core.js?v=2026.11.21-inland-discovery-hubs';
 
-import {inlandBlocksSailing,settleInlandVisit} from './inland.js?v=2026.11.20-inland-return';
+import {inlandBlocksSailing,settleInlandVisit} from './inland.js?v=2026.11.21-inland-discovery-hubs';
 
 export {COASTS};
 const coastById=new Map(COASTS.map(site=>[site.id,site]));

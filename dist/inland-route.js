@@ -1,4 +1,4 @@
-import {Heap} from './navigation-heap.js?v=2026.11.20-inland-return';
+import {Heap} from './navigation-heap.js?v=2026.11.21-inland-discovery-hubs';
 
 const CARDINAL=1000,DIAGONAL=1414;
 const steps=[

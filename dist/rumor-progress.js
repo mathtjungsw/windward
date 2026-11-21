@@ -1,15 +1,17 @@
-import {titleEffect} from './title-effects.js?v=2026.11.20-inland-return';
-import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.20-inland-return';
-import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.20-inland-return';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.20-inland-return';
-import {eraAvailable} from './era-cycle.js?v=2026.11.20-inland-return';
-import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.20-inland-return';
+import {INLAND_RUMOR_BY_ID} from './inland-rumors.js?v=2026.11.21-inland-discovery-hubs';
+import {INLAND_CITIES} from './inland-places.js?v=2026.11.21-inland-discovery-hubs';
+import {titleEffect} from './title-effects.js?v=2026.11.21-inland-discovery-hubs';
+import {TURTLE_RUMOR,turtleShipyard} from './historical-ships.js?v=2026.11.21-inland-discovery-hubs';
+import {PORT_BY_ID, GOODS} from './data.js?v=2026.11.21-inland-discovery-hubs';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.21-inland-discovery-hubs';
+import {eraAvailable} from './era-cycle.js?v=2026.11.21-inland-discovery-hubs';
+import {OFFICERS, ITEMS, OFFICER_BY_ID, ITEM_BY_ID, OFFICER_REQUIREMENTS, MEDITERRANEAN_PORTS} from './rumor-catalog.js?v=2026.11.21-inland-discovery-hubs';
 
 export const isConsumable=entry=>['supply','repair','coupon','extension','shore-consumable','distance','trade-voucher','activity','project','facility'].includes(entry?.type);
 export const itemLimit=entry=>isConsumable(entry)?20:1;
 export const CONTRACTS = [...OFFICERS,...ITEMS];
 const byId = Object.fromEntries(CONTRACTS.map(entry=>[entry.id,entry]));
-const validId = id=>id===TURTLE_RUMOR.id||Object.hasOwn(byId,id)||Object.hasOwn(RUMOR_BY_ID,id);
+const validId = id=>id===TURTLE_RUMOR.id||Object.hasOwn(byId,id)||Object.hasOwn(RUMOR_BY_ID,id)||Object.hasOwn(INLAND_RUMOR_BY_ID,id);
 const ids = (values, check)=>[...new Set(Array.isArray(values)?values.filter(check):[])];
 const object = value=>value&&typeof value==='object'&&!Array.isArray(value)?value:{};
 
@@ -66,6 +68,8 @@ function rumorDetails(id){
   if(id===TURTLE_RUMOR.id)return TURTLE_RUMOR;
   const entry=byId[id];
   if(entry)return {id,text:entry.story,port:entry.tavern,era:entry.era};
+  const land=INLAND_RUMOR_BY_ID[id];
+  if(land)return {id,text:land.text,sourceName:INLAND_CITIES[land.cityId].name};
   const old=RUMOR_BY_ID[id];
   return {id,text:old.text,port:old.portId,era:old.era};
 }
@@ -79,7 +83,7 @@ export function rumorNote(game){
   const save=game.rumorProgress;
   const all=[...(game.rumors||[]),...(save?.read||[]),...(game.shipyard?.turtleRumor?[TURTLE_RUMOR.id]:[])];
   return sortRumors(ids(all,validId).map(id=>{
-    const discovery=RUMOR_BY_ID[id]?.discoveryId;
+    const discovery=(RUMOR_BY_ID[id]||INLAND_RUMOR_BY_ID[id])?.discoveryId;
     const complete=!!(discovery&&game.discoveries?.[discovery]||save?.officers?.includes(id)||
       save?.acquiredItems?.includes(id)||save?.items?.[id]>0||
       id===TURTLE_RUMOR.id&&game.shipyard?.unlocked?.includes('turtle'));
@@ -302,4 +306,4 @@ export function contractDescription(entry){
   if(entry.scenario)return '항해자의 이야기 완료 보상입니다. 획득 후 기존 장비 칸 또는 동행 부선장으로 선택하세요.';
   return entry.challenge.ports.map(id=>PORT_BY_ID[id]?.name).join(' · ')+' 방문, '+GOODS[entry.challenge.cargo].name+' '+entry.challenge.qty+'상자 납품';
 }
-import {CANAL_IDS} from './canal-reservations.js?v=2026.11.20-inland-return';
+import {CANAL_IDS} from './canal-reservations.js?v=2026.11.21-inland-discovery-hubs';

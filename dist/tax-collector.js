@@ -1,6 +1,6 @@
-import {ownership} from './commerce.js?v=2026.11.20-inland-return';
-import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.20-inland-return';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-return';
+import {ownership} from './commerce.js?v=2026.11.21-inland-discovery-hubs';
+import {claimBasicIncome,claimTradeTax,dividendsEnabled,estimateBasicIncome,pendingTradeTax} from './port-income.js?v=2026.11.21-inland-discovery-hubs';
+import {PORT_BY_ID} from './data.js?v=2026.11.21-inland-discovery-hubs';
 
 export const COLLECTOR_PRICE=50000;
 export const COLLECTOR_INTERVAL=30*60*1000;

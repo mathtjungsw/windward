@@ -1,21 +1,22 @@
-import {normalizeTitles} from './title-effects.js?v=2026.11.20-inland-return';
-import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.20-inland-return';
-import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.20-inland-return';
-import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-return';
-import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.20-inland-return';
-import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.20-inland-return';
+import {INLAND_RUMOR_BY_ID} from './inland-rumors.js?v=2026.11.21-inland-discovery-hubs';
+import {normalizeTitles} from './title-effects.js?v=2026.11.21-inland-discovery-hubs';
+import {historicalKind,normalizeShipyard} from './historical-ships.js?v=2026.11.21-inland-discovery-hubs';
+import {PIRATE_IDS} from './pirate-catalog.js?v=2026.11.21-inland-discovery-hubs';
+import {PORT_BY_ID,ALL_PORTS,ACTIVE_PORT_BY_ID,GOODS} from './data.js?v=2026.11.21-inland-discovery-hubs';
+import {LEGACY_TIER,SHIPS,syncFleet,fleetShips} from './ship-rules.js?v=2026.11.21-inland-discovery-hubs';
+import {DISCOVERY_BY_ID,RUMOR_BY_ID,RETIRED_DISCOVERY_FAME} from './discoveries-catalog.js?v=2026.11.21-inland-discovery-hubs';
 
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.20-inland-return';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.21-inland-discovery-hubs';
 
-import {normalizeSea} from './sea-activities.js?v=2026.11.20-inland-return';
-import {normalizeGuild} from './guild-contracts.js?v=2026.11.20-inland-return';
-import {normalizeShore} from './shore-expeditions.js?v=2026.11.20-inland-return';
-import {normalizeDepotDock} from './projects.js?v=2026.11.20-inland-return';
-import {normalizeCollector} from './tax-collector.js?v=2026.11.20-inland-return';
-import {normalizeTavernRound} from './tavern-games.js?v=2026.11.20-inland-return';
-import {normalizeCoastOrders} from './coast-orders.js?v=2026.11.20-inland-return';
-import {normalizeStories} from './story-core.js?v=2026.11.20-inland-return';
-import {validInlandSave} from './inland.js?v=2026.11.20-inland-return';
+import {normalizeSea} from './sea-activities.js?v=2026.11.21-inland-discovery-hubs';
+import {normalizeGuild} from './guild-contracts.js?v=2026.11.21-inland-discovery-hubs';
+import {normalizeShore} from './shore-expeditions.js?v=2026.11.21-inland-discovery-hubs';
+import {normalizeDepotDock} from './projects.js?v=2026.11.21-inland-discovery-hubs';
+import {normalizeCollector} from './tax-collector.js?v=2026.11.21-inland-discovery-hubs';
+import {normalizeTavernRound} from './tavern-games.js?v=2026.11.21-inland-discovery-hubs';
+import {normalizeCoastOrders} from './coast-orders.js?v=2026.11.21-inland-discovery-hubs';
+import {normalizeStories} from './story-core.js?v=2026.11.21-inland-discovery-hubs';
+import {validInlandSave} from './inland.js?v=2026.11.21-inland-discovery-hubs';
 
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(finite)&&Math.abs(p[0])<=180&&p[1]>=-90&&p[1]<=90;
@@ -50,7 +51,7 @@ export function parseState(raw,defaults){
   controlMode:v?'auto':s.controlMode==='manual'?'manual':'auto',explored:typeof s.explored==='string'&&s.explored.length<40000?s.explored:'',
   missions:Array.isArray(s.missions)?s.missions.slice(0,20):[],quiz:ids(s.quiz),log:Array.isArray(s.log)?s.log.slice(0,50):[],favorites:ids(s.favorites,20),recentPorts:ids(s.recentPorts||[s.port],8),useCanals:s.useCanals!==false,
   recentRoutes:(s.recentRoutes||[]).filter(r=>PORT_BY_ID[r.from]&&PORT_BY_ID[r.to]&&finite(r.nm)&&r.nm>0).slice(0,5),
-  discoveries:{},rumors:[...new Set((s.rumors||[]).filter(id=>Object.hasOwn(RUMOR_BY_ID,id)))],
+  discoveries:{},rumors:[...new Set((s.rumors||[]).filter(id=>Object.hasOwn(RUMOR_BY_ID,id)||Object.hasOwn(INLAND_RUMOR_BY_ID,id)))],
   supplyCreditValue:s.version>=3&&finite(s.supplyCreditValue)&&s.supplyCreditValue>=0?s.supplyCreditValue:Math.max(0,Number(s.supplyCreditDays)||0)*[3,6,12][s.level||0],
   worldCatalogVersion:'2026.11.09-world-78',explorationMaskVersion:1};
  if(s.version>=3&&s.supplyCreditValue!==undefined&&(!finite(s.supplyCreditValue)||s.supplyCreditValue<0))bad();

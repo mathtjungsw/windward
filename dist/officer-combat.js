@@ -1,5 +1,5 @@
-import {OFFICER_BY_ID} from './rumor-catalog.js?v=2026.11.20-inland-return';
-import {activeOfficer,officerLevel} from './rumor-progress.js?v=2026.11.20-inland-return';
+import {OFFICER_BY_ID} from './rumor-catalog.js?v=2026.11.21-inland-discovery-hubs';
+import {activeOfficer,officerLevel} from './rumor-progress.js?v=2026.11.21-inland-discovery-hubs';
 
 const snapshotPattern=/^(O0(?:0[1-9]|1[0-9]|2[0-4])):([1-5]):([01]):([01]):([01]):([01])$/;
 export function officerSnapshot(game,nav){

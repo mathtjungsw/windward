@@ -1,17 +1,13 @@
-import {validFieldRecord,fieldNear} from './overland.js?v=2026.11.20-inland-return';
-import {FIELD_TOWNS} from './inland-places.js?v=2026.11.20-inland-return';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-return';
-import {capacity,usedSpace} from './engine.js?v=2026.11.20-inland-return';
-import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.20-inland-return';
-import {recordTrade} from './rank-progress.js?v=2026.11.20-inland-return';
-import {blessingRate} from './blessings.js?v=2026.11.20-inland-return';
+import {validFieldRecord,fieldNear} from './overland.js?v=2026.11.21-inland-discovery-hubs';
+import {INLAND_CITIES} from './inland-places.js?v=2026.11.21-inland-discovery-hubs';
+import {INLAND_RUMORS,INLAND_RUMOR_BY_ID} from './inland-rumors.js?v=2026.11.21-inland-discovery-hubs';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.21-inland-discovery-hubs';
+import {capacity,usedSpace} from './engine.js?v=2026.11.21-inland-discovery-hubs';
+import {basePrice,tradeQuote} from './market-rules.js?v=2026.11.21-inland-discovery-hubs';
+import {recordTrade} from './rank-progress.js?v=2026.11.21-inland-discovery-hubs';
+import {blessingRate} from './blessings.js?v=2026.11.21-inland-discovery-hubs';
 
-export const INLAND_CITIES={
- cordoba:{id:'cordoba',name:'코르도바',port:'seville',point:[-4.7794,37.8847],path:[[-5.6,37.53],[-5.16,37.77]],seconds:60,terrain:0,goods:{leather:.83,oliveoil:.87}},
- avignon:{id:'avignon',name:'아비뇽',port:'marseille',point:[4.8055,43.9493],path:[[5.24,43.51],[4.88,43.71]],seconds:70,terrain:0,goods:{wool:.84,wine:.86}},
- puebla:{id:'puebla',name:'푸에블라',port:'veracruz',point:[-98.2063,19.0414],path:[[-96.94,19.54],[-97.34,19.57],[-97.75,19.25]],seconds:120,terrain:1,goods:{cotton:.86,porcelain:.88}}
-};
-for(const town of FIELD_TOWNS)INLAND_CITIES[town.id]=town;
+export {INLAND_CITIES} from './inland-places.js?v=2026.11.21-inland-discovery-hubs';
 export const INLAND_PORTS=Object.fromEntries(Object.values(INLAND_CITIES).slice().reverse().map(city=>[city.port,city]));
 export const WAREHOUSE_MAX=2000;
 const names=['봇짐','큰 봇짐','지게','손수레','짐나귀','짐노새','짐말','짐말 무리','소형 우차','대형 우차','2륜 짐마차','4륜 짐마차','덮개 마차','대형 짐마차','2대 마차 행렬','3대 마차 행렬','4대 마차 행렬','5대 마차 행렬','6대 마차 행렬','대형 상단 마차 행렬'];
@@ -83,6 +79,20 @@ export function inlandAccess(game,city,place,now){
  if(visit&&visit.due>now)return false;
  return place===city.id?visit?.city===city.id&&!visit.returning:(!visit||visit.returning&&visit.due<=now);
 }
+export function inlandTavernRumors(game,city,now){
+ return city&&knownTown(game,city.id)&&inlandAccess(game,city,city.id,now)
+  ?INLAND_RUMORS.filter(row=>row.cityId===city.id):[];
+}
+export function readInlandRumor(game,id,now){
+ const row=Object.hasOwn(INLAND_RUMOR_BY_ID,id)&&INLAND_RUMOR_BY_ID[id];
+ if(!row||!inlandTavernRumors(game,INLAND_CITIES[row.cityId],now).includes(row))
+  throw Error('이 소문을 들으려면 해당 내륙 도시의 주점에 도착해야 해요.');
+ game.rumors??=[];
+ if(game.rumors.includes(id))return {noWrite:true,quiet:true};
+ game.rumors.push(id);
+ return {quiet:true};
+}
+
 export function settleInlandVisit(game,now){
  const visit=game.inland?.visit;
  if(visit?.returning&&visit.due<=now)delete game.inland.visit;

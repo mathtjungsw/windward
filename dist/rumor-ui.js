@@ -1,16 +1,16 @@
-import {officerPortrait} from './officer-portrait.js?v=2026.11.20-inland-return';
-import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.20-inland-return';
-import {collectionArt} from './art.js?v=2026.11.20-inland-return';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-return';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-return';
-import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.20-inland-return';
-import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.20-inland-return';
-import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.20-inland-return';
-import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.20-inland-return';
+import {officerPortrait} from './officer-portrait.js?v=2026.11.21-inland-discovery-hubs';
+import {RUMOR_BY_ID} from './discoveries-catalog.js?v=2026.11.21-inland-discovery-hubs';
+import {collectionArt} from './art.js?v=2026.11.21-inland-discovery-hubs';
+import {PORT_BY_ID} from './data.js?v=2026.11.21-inland-discovery-hubs';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.21-inland-discovery-hubs';
+import {OFFICERS, ITEMS} from './rumor-catalog.js?v=2026.11.21-inland-discovery-hubs';
+import {OFFICER_HISTORY} from './officer-history.js?v=2026.11.21-inland-discovery-hubs';
+import {officerSnapshot,officerCombatEffect} from './officer-combat.js?v=2026.11.21-inland-discovery-hubs';
+import {rumorNote,rumorsAtTavern,readContractRumor,portEncounters,gearOnShip,equippedGear,isConsumable,itemLimit,activeCoupon,rumorRequirement,contractStatus,contractDescription,appendItemRecord,officerLevel} from './rumor-progress.js?v=2026.11.21-inland-discovery-hubs';
 
-import {readRumor} from './discoveries.js?v=2026.11.20-inland-return';
-import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.20-inland-return';
-import {eraAvailable} from './era-cycle.js?v=2026.11.20-inland-return';
+import {readRumor} from './discoveries.js?v=2026.11.21-inland-discovery-hubs';
+import {fleetDisplayShips,vesselSpec,ship,fleetMaxHP} from './ship-rules.js?v=2026.11.21-inland-discovery-hubs';
+import {eraAvailable} from './era-cycle.js?v=2026.11.21-inland-discovery-hubs';
 
 const labels={all:'전체',pending:'미완료',complete:'완료'};
 const inFilter=(filter,complete)=>filter==='all'||(filter==='complete')===!!complete;
@@ -97,7 +97,7 @@ export function createRumorUI(api){
       const open=new Set([...list.querySelectorAll('details[open]')].map(el=>el.parentElement.dataset.noteEntry));
       const notes=rumorNote(get()).filter(note=>inFilter(filter,note.complete));
       const rows=notes.map(note=>`<article class="rumor-note-row" data-note-entry="${note.id}"><details${open.has(note.id)?' open':''}><summary>${escape(headline(note.text))}
-      <small>${escape(portName(note.port))} ${note.complete?'<strong class="rumor-complete">✓ 완료</strong>':''}</small>
+      <small>${escape(note.sourceName||portName(note.port))} ${note.complete?'<strong class="rumor-complete">✓ 완료</strong>':''}</small>
       </summary><p>${escape(note.text)}</p></details></article>`).join('');
       list.innerHTML=rows||`<p>${filter==='all'?'아직 읽은 소문이 없어요.':emptyMessage[filter]}</p>`;
       list.querySelectorAll('summary').forEach(summary=>{
@@ -183,7 +183,7 @@ export function createRumorUI(api){
     const groups=Object.groupBy(DISCOVERIES,d=>d.region),kinds={ruin:'유적',relic:'유물',animal:'동물',treasure:'보물'};
     const ports=[...new Set(game.visited||[])].map(id=>PORT_BY_ID[id]).filter(Boolean);
     let rows=game.rumorProgress?.records?.[kind]||[],extras='';
-    if(kind==='rumors')rows=rumorNote(game).slice().sort((a,b)=>portName(a.port).localeCompare(portName(b.port),'ko')).map(row=>({text:portName(row.port)+' · '+row.text}));
+    if(kind==='rumors')rows=rumorNote(game).map(row=>({source:row.sourceName||portName(row.port),text:row.text})).sort((a,b)=>a.source.localeCompare(b.source,'ko')).map(row=>({text:row.source+' · '+row.text}));
     if(kind==='coins')rows=Object.entries(Object.groupBy(ports,p=>p.region)).map(([name,visited])=>({text:name+' 기념 주화 · '+visited.length+'곳 ('+visited.map(p=>p.name).join(', ')+')'}));
     if(kind==='coasts'){
       rows=Object.entries(groups).map(([name,list])=>({text:name+' '+list.filter(d=>discovered.includes(d)).length+'/'+list.length+'종'}));

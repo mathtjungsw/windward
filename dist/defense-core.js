@@ -1,10 +1,10 @@
-import {requireCombatAllowed} from './blessings.js?v=2026.11.20-inland-return';
-import {seaSector} from './presence-core.js?v=2026.11.20-inland-return';
-import {cannonStats,currentHP} from './cannons.js?v=2026.11.20-inland-return';
-import {fleetMaxHP} from './ship-rules.js?v=2026.11.20-inland-return';
-import {combatProfile,openBattle,fireCannon,settlementFor,cargoCount,addCargo} from './combat-core.js?v=2026.11.20-inland-return';
-import {mapDistance} from './world-wrap.js?v=2026.11.20-inland-return';
-import {refundCanalTolls} from './canal-reservations.js?v=2026.11.20-inland-return';
+import {requireCombatAllowed} from './blessings.js?v=2026.11.21-inland-discovery-hubs';
+import {seaSector} from './presence-core.js?v=2026.11.21-inland-discovery-hubs';
+import {cannonStats,currentHP} from './cannons.js?v=2026.11.21-inland-discovery-hubs';
+import {fleetMaxHP} from './ship-rules.js?v=2026.11.21-inland-discovery-hubs';
+import {combatProfile,openBattle,fireCannon,settlementFor,cargoCount,addCargo} from './combat-core.js?v=2026.11.21-inland-discovery-hubs';
+import {mapDistance} from './world-wrap.js?v=2026.11.21-inland-discovery-hubs';
+import {refundCanalTolls} from './canal-reservations.js?v=2026.11.21-inland-discovery-hubs';
 const copy=o=>structuredClone(o||{}),cargo=json=>JSON.parse(json||'{}');
 export const emptyDefenseAck=()=>({seq:0,cash:0,kills:0,lootJSON:'{}',lostReserveId:''});
 function cargoDifference(total,claimed){const out={};for(const [id,c]of Object.entries(total)){const old=claimed[id]||{qty:0,cost:0},qty=c.qty-old.qty,cost=c.cost-old.cost;if(qty<0||cost<-.0001)throw Error('전투 정산 순서가 맞지 않아요.');if(qty)out[id]={qty,cost:Math.max(0,cost)};}return out;}

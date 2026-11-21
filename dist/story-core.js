@@ -1,6 +1,6 @@
-import {STORIES,STORY_BY_ID,FIRST_ROUTE_ORDER} from './story-catalog.js?v=2026.11.20-inland-return';
-import {PORT_BY_ID} from './data.js?v=2026.11.20-inland-return';
-import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.20-inland-return';
+import {STORIES,STORY_BY_ID,FIRST_ROUTE_ORDER} from './story-catalog.js?v=2026.11.21-inland-discovery-hubs';
+import {PORT_BY_ID} from './data.js?v=2026.11.21-inland-discovery-hubs';
+import {normalizeRumorProgress} from './rumor-progress.js?v=2026.11.21-inland-discovery-hubs';
 
 const tradeKeys=new Set(STORIES.flatMap(story=>story.steps.filter(step=>step.kind==='buy'||step.kind==='sell').map(step=>[step.kind,step.port,step.good].join(':'))));
 const viewKeys=new Set(STORIES.flatMap(story=>story.steps.flatMap(step=>step.menus||[])));

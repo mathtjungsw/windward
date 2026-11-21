@@ -1,4 +1,4 @@
-import {LAND_COVERAGE_RUNS,LAND_TILE_COUNT} from './land-exploration-data.js?v=2026.11.20-inland-return';
+import {LAND_COVERAGE_RUNS,LAND_TILE_COUNT} from './land-exploration-data.js?v=2026.11.21-inland-discovery-hubs';
 
 const WIDTH=1440;
 const ROWS=720;
@@ -92,22 +92,58 @@ export function revealLandTile(inland,cell){
  return true;
 }
 
+function* walkedTiles(inland){
+ if(!inland?.chart)return;
+ for(const [index,bytes] of chartState(inland).chunks){
+  for(let byte=0;byte<bytes.length;byte++){
+   if(!bytes[byte])continue;
+   for(let bit=0;bit<8;bit++)if(bytes[byte]&(1<<bit))yield index*CHUNK_BITS+byte*8+bit;
+  }
+ }
+}
+
+let previousChart,previousFog;
+export function landFog(inland){
+ const chart=inland?.chart||'';
+ if(chart===previousChart)return previousFog;
+ previousChart=chart;
+ previousFog=null;
+ if(!chart)return null;
+ const {tiles}=chartGeometry();
+ const chartPixels=[],mapPixels=new Set(),atlasCoverage=new Map();
+ for(const ordinal of walkedTiles(inland)){
+  const tile=tiles[ordinal],row=Math.floor(tile/WIDTH),x=tile%WIDTH;
+  if(row<40||row>=600)continue;
+  chartPixels.push(tile-40*WIDTH);
+  mapPixels.add(tile);
+  const atlasPixel=(row>>2)*360+(x>>2);
+  atlasCoverage.set(atlasPixel,(atlasCoverage.get(atlasPixel)||0)+1);
+ }
+ if(chartPixels.length)previousFog={
+  chartPixels,
+  seen(lon,lat){
+   const x=Math.floor((lon+180)*4),y=Math.floor((90-lat)*4);
+   return y>=40&&y<600&&mapPixels.has(y*WIDTH+((x%WIDTH)+WIDTH)%WIDTH);
+  },
+  coverage:pixel=>(atlasCoverage.get(pixel)||0)/16,
+  globeCoverage(lon,lat){
+   if(this.seen(lon,lat))return 1;
+   const x=Math.floor(lon+180),y=Math.floor(90-lat);
+   return this.coverage(y*360+((x%360)+360)%360);
+  }
+ };
+ return previousFog;
+}
+
 export function landExplorationArea(inland,seaHas){
  if(!inland?.chart)return {walked:0,additional:0};
- const state=chartState(inland);
  const {tiles,weights,rowArea}=chartGeometry();
  const uncoveredBySea=(tile,row)=>row<40||row>=600||!seaHas?.(Math.floor((row-40)/2)*720+Math.floor((tile%WIDTH)/2));
  let walked=0,additional=0;
- for(const [index,bytes] of state.chunks){
-  for(let byte=0;byte<bytes.length;byte++){
-   if(!bytes[byte])continue;
-   for(let bit=0;bit<8;bit++)if(bytes[byte]&(1<<bit)){
-    const ordinal=index*CHUNK_BITS+byte*8+bit;
-    const tile=tiles[ordinal],row=Math.floor(tile/WIDTH),area=weights[ordinal]*rowArea[row];
-    walked+=area;
-    if(uncoveredBySea(tile,row))additional+=area;
-   }
-  }
+ for(const ordinal of walkedTiles(inland)){
+  const tile=tiles[ordinal],row=Math.floor(tile/WIDTH),area=weights[ordinal]*rowArea[row];
+  walked+=area;
+  if(uncoveredBySea(tile,row))additional+=area;
  }
  return {walked,additional};
 }

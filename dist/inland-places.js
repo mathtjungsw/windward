@@ -369,3 +369,10 @@ export const FIELD_TOWNS=[
   }
  }
 ];
+
+export const INLAND_CITIES={
+ cordoba:{id:'cordoba',name:'코르도바',port:'seville',point:[-4.7794,37.8847],path:[[-5.6,37.53],[-5.16,37.77]],seconds:60,terrain:0,goods:{leather:.83,oliveoil:.87}},
+ avignon:{id:'avignon',name:'아비뇽',port:'marseille',point:[4.8055,43.9493],path:[[5.24,43.51],[4.88,43.71]],seconds:70,terrain:0,goods:{wool:.84,wine:.86}},
+ puebla:{id:'puebla',name:'푸에블라',port:'veracruz',point:[-98.2063,19.0414],path:[[-96.94,19.54],[-97.34,19.57],[-97.75,19.25]],seconds:120,terrain:1,goods:{cotton:.86,porcelain:.88}}
+};
+for(const town of FIELD_TOWNS)INLAND_CITIES[town.id]=town;

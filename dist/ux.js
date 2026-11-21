@@ -1,13 +1,13 @@
-import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.20-inland-return';
-import {shipArtPath} from './art.js?v=2026.11.20-inland-return';
-import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.20-inland-return';
-import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.20-inland-return';
-import {PORT_HISTORY} from './port-history.js?v=2026.11.20-inland-return';
-import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.20-inland-return';
-import {findMenus} from './menu-finder.js?v=2026.11.20-inland-return';
-import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.20-inland-return';
-import {isTypingTarget} from './controls.js?v=2026.11.20-inland-return';
-import {validCard} from './social-core.js?v=2026.11.20-inland-return';
+import {SHIPS,shipTier,fleetCount,fleetLimit,upgradeCost} from './ship-rules.js?v=2026.11.21-inland-discovery-hubs';
+import {shipArtPath} from './art.js?v=2026.11.21-inland-discovery-hubs';
+import {NEW_PORT_HISTORY} from './world-catalog.js?v=2026.11.21-inland-discovery-hubs';
+import {PORTS,PORT_BY_ID,GOODS} from './data.js?v=2026.11.21-inland-discovery-hubs';
+import {PORT_HISTORY} from './port-history.js?v=2026.11.21-inland-discovery-hubs';
+import {RELEASE,RELEASES} from './release-notes.js?v=2026.11.21-inland-discovery-hubs';
+import {findMenus} from './menu-finder.js?v=2026.11.21-inland-discovery-hubs';
+import {autoSupplyDays,supplyRoom,ship,capacity,usedCargo,usedSpace,supplySpace,supplyCost,maxBuyQuantity,price,sellPrice,tradingPort,buy,sell,resupply,unloadSupply,upgradeShip,voyageEstimate,canDepart,distance,nearestHarbor,settleSupply} from './engine.js?v=2026.11.21-inland-discovery-hubs';
+import {isTypingTarget} from './controls.js?v=2026.11.21-inland-discovery-hubs';
+import {validCard} from './social-core.js?v=2026.11.21-inland-discovery-hubs';
 
 const $=selector=>document.querySelector(selector);
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');

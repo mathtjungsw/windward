@@ -1,4 +1,4 @@
-import {discoveryStats} from './discoveries.js?v=2026.11.20-inland-return';
+import {discoveryStats} from './discoveries.js?v=2026.11.21-inland-discovery-hubs';
 export const HERITAGE_IDS=['ruin-azores','ruin-carthage','ruin-kilwa','ruin-anse','ruin-mahabalipuram','ruin-rapanui','ruin-fortjesus','ruin-sganggwaay'];
 export const ALBUM_MILESTONES=[
  {id:'title',count:10,name:'항해 기록가',effect:'일반 교역품 구매 1% 할인 · 칭호에서 선택'},

@@ -1,4 +1,4 @@
-import {equityEnabled} from './port-equity.js?v=2026.11.20-inland-return';
+import {equityEnabled} from './port-equity.js?v=2026.11.21-inland-discovery-hubs';
 const HOUR=3600000;
 const CAP_HOURS=72;
 const NEUTRAL=new Set(['lisbon','porto']);

@@ -1,6 +1,6 @@
-import {landExplorationArea} from './land-exploration.js?v=2026.11.20-inland-return';
-import {LAND_ADDITIONAL_AREA_M2} from './land-exploration-data.js?v=2026.11.20-inland-return';
-import {EXPLORATION_MASK as mask} from './exploration-mask.js?v=2026.11.20-inland-return';
+import {landExplorationArea} from './land-exploration.js?v=2026.11.21-inland-discovery-hubs';
+import {LAND_ADDITIONAL_AREA_M2} from './land-exploration-data.js?v=2026.11.21-inland-discovery-hubs';
+import {EXPLORATION_MASK as mask} from './exploration-mask.js?v=2026.11.21-inland-discovery-hubs';
 const bits=Uint8Array.from(atob(mask.bits),c=>c.charCodeAt(0));
 export const SCORE_VERSION=mask.version;
 let total=0;

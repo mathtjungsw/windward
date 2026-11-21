@@ -1,82 +1,83 @@
-import {createFieldUI} from './overland-ui.js?v=2026.11.20-inland-return';
-import {reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.20-inland-return';
-import {createTitleUI} from './title-ui.js?v=2026.11.20-inland-return';
+import {landFog} from './land-exploration.js?v=2026.11.21-inland-discovery-hubs';
+import {createFieldUI} from './overland-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {reconcileTitles,refreshTitleContext} from './titles.js?v=2026.11.21-inland-discovery-hubs';
+import {createTitleUI} from './title-ui.js?v=2026.11.21-inland-discovery-hubs';
 let titleUI;
-import {createCaptainsMail} from './captains-mail.js?v=2026.11.20-inland-return';
-import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.20-inland-return';
-import {regionalEvent} from './market-events.js?v=2026.11.20-inland-return';
-import {createUiUsage} from './ui-usage.js?v=2026.11.20-inland-return';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-return';
-import {createChartDetail} from './chart-waterways.js?v=2026.11.20-inland-return';
-import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.20-inland-return';
-import {ChartTerrain} from './chart-terrain.js?v=2026.11.20-inland-return';
-import {SimulationClock} from './simulation-clock.js?v=2026.11.20-inland-return';
-import {createRoutePlanner} from './route-planner.js?v=2026.11.20-inland-return';
-import {createWeeklyChart} from './weekly-chart.js?v=2026.11.20-inland-return';
-import {TAVERN_GAMES} from './tavern-games.js?v=2026.11.20-inland-return';
-import {createSaleFinder} from './sale-finder.js?v=2026.11.20-inland-return';
-import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.20-inland-return';
-import {createBlessings} from './blessings-ui.js?v=2026.11.20-inland-return';
-import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.20-inland-return';
-import {PLACE_NAMES} from './place-names.js?v=2026.11.20-inland-return';
-import {layoutChartLabels} from './chart-labels.js?v=2026.11.20-inland-return';
-import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.20-inland-return';
-import {createCommunity} from './community.js?v=2026.11.20-inland-return';
-import {createTaxCollector} from './tax-collector.js?v=2026.11.20-inland-return';
-import {createStoryUI} from './story-ui.js?v=2026.11.20-inland-return';
-import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.20-inland-return';
-import {PIRATE_ZONES} from './combat-core.js?v=2026.11.20-inland-return';
-import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.20-inland-return';
-import {createCombat} from './combat-ui.js?v=2026.11.20-inland-return';
-import {createBusiness} from './business-ui.js?v=2026.11.20-inland-return';
-import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.20-inland-return';
-import {createInlandUI} from './inland-ui.js?v=2026.11.20-inland-return';
-import {INLAND_CITIES,knownTown,townRoute,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.20-inland-return';
-import {createExpansion} from './expansion-ui.js?v=2026.11.20-inland-return';
-import {gameStats} from './public-stats.js?v=2026.11.20-inland-return';
-import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.20-inland-return';
-import {shipGlyph} from './art.js?v=2026.11.20-inland-return';
-import {inspectDiscovery,explorationAllowed,discoveryStats,hasClues} from './discoveries.js?v=2026.11.20-inland-return';
-import {RELEASE} from './release-notes.js?v=2026.11.20-inland-return';
-import {createUX} from './ux.js?v=2026.11.20-inland-return';
-import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.20-inland-return';
-import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.20-inland-return';
-import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.20-inland-return';
-import {AtlasView} from './atlas-view.js?v=2026.11.20-inland-return';
-import {FleetPresence} from './multiplayer.js?v=2026.11.20-inland-return';
-import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.20-inland-return';
-import {CaptainChat} from './chat.js?v=2026.11.20-inland-return';
-import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.20-inland-return';
-import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.20-inland-return';
-import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.20-inland-return';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-inland-return';
-import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.20-inland-return';
-import {showMenuFinder} from './menu-finder.js?v=2026.11.20-inland-return';
-import {CaptainRankings} from './rankings.js?v=2026.11.20-inland-return';
-import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.20-inland-return';
+import {createCaptainsMail} from './captains-mail.js?v=2026.11.21-inland-discovery-hubs';
+import {pirateContractAction,pirateContractTask,pirateContractIncident} from './pirate-contracts.js?v=2026.11.21-inland-discovery-hubs';
+import {regionalEvent} from './market-events.js?v=2026.11.21-inland-discovery-hubs';
+import {createUiUsage} from './ui-usage.js?v=2026.11.21-inland-discovery-hubs';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.21-inland-discovery-hubs';
+import {createChartDetail} from './chart-waterways.js?v=2026.11.21-inland-discovery-hubs';
+import {reconcileNavigation,retireCorinthRoute} from './navigation-migration.js?v=2026.11.21-inland-discovery-hubs';
+import {ChartTerrain} from './chart-terrain.js?v=2026.11.21-inland-discovery-hubs';
+import {SimulationClock} from './simulation-clock.js?v=2026.11.21-inland-discovery-hubs';
+import {createRoutePlanner} from './route-planner.js?v=2026.11.21-inland-discovery-hubs';
+import {createWeeklyChart} from './weekly-chart.js?v=2026.11.21-inland-discovery-hubs';
+import {TAVERN_GAMES} from './tavern-games.js?v=2026.11.21-inland-discovery-hubs';
+import {createSaleFinder} from './sale-finder.js?v=2026.11.21-inland-discovery-hubs';
+import {createRouteLookup,fillSearchRoutes,summarizeSearchRoute} from './route-search.js?v=2026.11.21-inland-discovery-hubs';
+import {createBlessings} from './blessings-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {noviceActive,markNovice,ownsOrOwnedPort,NOVICE_MAX_STAGE} from './novice.js?v=2026.11.21-inland-discovery-hubs';
+import {PLACE_NAMES} from './place-names.js?v=2026.11.21-inland-discovery-hubs';
+import {layoutChartLabels} from './chart-labels.js?v=2026.11.21-inland-discovery-hubs';
+import {RANK_GROUPS,RANK_DEFINITIONS,RANK_BY_ID,formatRankScore} from './rank-metrics.js?v=2026.11.21-inland-discovery-hubs';
+import {createCommunity} from './community.js?v=2026.11.21-inland-discovery-hubs';
+import {createTaxCollector} from './tax-collector.js?v=2026.11.21-inland-discovery-hubs';
+import {createStoryUI} from './story-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {normalizeStories,refreshStories,recordStorySailing,recordStoryView} from './story-core.js?v=2026.11.21-inland-discovery-hubs';
+import {PIRATE_ZONES} from './combat-core.js?v=2026.11.21-inland-discovery-hubs';
+import {wakeFollowers,orderedFleet} from './fleet-wake.js?v=2026.11.21-inland-discovery-hubs';
+import {createCombat} from './combat-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {createBusiness} from './business-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {createAlbumQuiz} from './album-quiz-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {createInlandUI} from './inland-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {INLAND_CITIES,knownTown,townRoute,inlandBlocksSailing,inlandLocation} from './inland.js?v=2026.11.21-inland-discovery-hubs';
+import {createExpansion} from './expansion-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {gameStats} from './public-stats.js?v=2026.11.21-inland-discovery-hubs';
+import {shipTier,fleetCount,fleetShips,fleetMaxHP} from './ship-rules.js?v=2026.11.21-inland-discovery-hubs';
+import {shipGlyph} from './art.js?v=2026.11.21-inland-discovery-hubs';
+import {inspectDiscovery,explorationAllowed,discoveryStats,hasClues} from './discoveries.js?v=2026.11.21-inland-discovery-hubs';
+import {RELEASE} from './release-notes.js?v=2026.11.21-inland-discovery-hubs';
+import {createUX} from './ux.js?v=2026.11.21-inland-discovery-hubs';
+import {directionForKey,isTypingTarget} from './controls.js?v=2026.11.21-inland-discovery-hubs';
+import {GOODS,PORTS,ALL_PORTS,ACTIVE_PORT_BY_ID,PORT_BY_ID,MISSIONS} from './data.js?v=2026.11.21-inland-discovery-hubs';
+import {ship,supplySpace,usedSpace,resupply,unloadSupply,upgradeShip,maxBuyQuantity,canDepart,advanceVoyage,advanceManualMotion,beginRescue,recordArrival,settleSupply,ACTIVE_SECONDS_PER_DAY,START_DATE,initialState,capacity,usedCargo,dailySpeed,price,sellPrice,buy,sell,Navigator,project,unproject,positionAlong,voyageEstimate,distance,helmStep,helmToward,tradingPort} from './engine.js?v=2026.11.21-inland-discovery-hubs';
+import {AtlasView} from './atlas-view.js?v=2026.11.21-inland-discovery-hubs';
+import {FleetPresence} from './multiplayer.js?v=2026.11.21-inland-discovery-hubs';
+import {PRESENCE_COLORS,shipsInSight} from './presence-core.js?v=2026.11.21-inland-discovery-hubs';
+import {CaptainChat} from './chat.js?v=2026.11.21-inland-discovery-hubs';
+import {rankFleet,chatText,CHAT_MAX_LENGTH} from './social-core.js?v=2026.11.21-inland-discovery-hubs';
+import {Exploration,SIGHT_NM,DISCOVERY_NM,informationCost,informationCandidate,buyInformation,knowsPort,discoverPorts,dockAlong,leftHarbor,dockingRadius} from './voyage-core.js?v=2026.11.21-inland-discovery-hubs';
+import {CaptainAccount,authMessage,clearLegacyStorage,localSaveKey} from './account.js?v=2026.11.21-inland-discovery-hubs';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.21-inland-discovery-hubs';
+import {collectionProfile,createCollectionPublisher} from './collection-profile.js?v=2026.11.21-inland-discovery-hubs';
+import {showMenuFinder} from './menu-finder.js?v=2026.11.21-inland-discovery-hubs';
+import {CaptainRankings} from './rankings.js?v=2026.11.21-inland-discovery-hubs';
+import {wrapCamera,wrapPosition,wrappedMotion,mapToward,mapDistance} from './world-wrap.js?v=2026.11.21-inland-discovery-hubs';
 
-import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.20-inland-return';
-import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.20-inland-return';
-import {marketKind,portMarketItem,portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.20-inland-return';
-import {harborMarket,harborSupply} from './data.js?v=2026.11.20-inland-return';
-import {configurePortDividends} from './port-income.js?v=2026.11.20-inland-return';
-import {configureEra,ERA_PERIOD,eraAt,setEraServerOffset} from './era-cycle.js?v=2026.11.20-inland-return';
-import {createGuildUI} from './guild-ui.js?v=2026.11.20-inland-return';
-import {createCoastOrders} from './coast-orders-ui.js?v=2026.11.20-inland-return';
-import {COASTS,visitCoast} from './coast-orders.js?v=2026.11.20-inland-return';
-import {setIncomeOfficer} from './port-income.js?v=2026.11.20-inland-return';
-import {ownership} from './commerce.js?v=2026.11.20-inland-return';
-import {createProjectsUI} from './projects-ui.js?v=2026.11.20-inland-return';
-import {CANALS,PROJECT_BY_ID,projectAction,projectView,changeDepotPromotion,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.20-inland-return';
-import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.20-inland-return';
-import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.20-inland-return';
-import {createShoreUI} from './shore-ui.js?v=2026.11.20-inland-return';
-import {shoreAction} from './shore-expeditions.js?v=2026.11.20-inland-return';
-import {createRumorUI} from './rumor-ui.js?v=2026.11.20-inland-return';
-import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.20-inland-return';
-import {useRepairKit} from './activities.js?v=2026.11.20-inland-return';
-import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.20-inland-return';
-import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.20-inland-return';
+import {createSeaActivityUI} from './sea-activity-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {seaActivityAction,finishSeaRescue} from './sea-activities.js?v=2026.11.21-inland-discovery-hubs';
+import {marketKind,portMarketItem,portDevelopment,captainTradeQuote,executeTrade,taxRate,permitted} from './commerce.js?v=2026.11.21-inland-discovery-hubs';
+import {harborMarket,harborSupply} from './data.js?v=2026.11.21-inland-discovery-hubs';
+import {configurePortDividends} from './port-income.js?v=2026.11.21-inland-discovery-hubs';
+import {configureEra,ERA_PERIOD,eraAt,setEraServerOffset} from './era-cycle.js?v=2026.11.21-inland-discovery-hubs';
+import {createGuildUI} from './guild-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {createCoastOrders} from './coast-orders-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {COASTS,visitCoast} from './coast-orders.js?v=2026.11.21-inland-discovery-hubs';
+import {setIncomeOfficer} from './port-income.js?v=2026.11.21-inland-discovery-hubs';
+import {ownership} from './commerce.js?v=2026.11.21-inland-discovery-hubs';
+import {createProjectsUI} from './projects-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {CANALS,PROJECT_BY_ID,projectAction,projectView,changeDepotPromotion,normalizeDepotDock,nextFreightParticipation} from './projects.js?v=2026.11.21-inland-discovery-hubs';
+import {currentCanal,designateCanalPass,refundCanalTolls,reserveCanalTolls} from './canal-reservations.js?v=2026.11.21-inland-discovery-hubs';
+import {availableCharters,charterAction,expireCharters} from './guild-contracts.js?v=2026.11.21-inland-discovery-hubs';
+import {createShoreUI} from './shore-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {shoreAction} from './shore-expeditions.js?v=2026.11.21-inland-discovery-hubs';
+import {createRumorUI} from './rumor-ui.js?v=2026.11.21-inland-discovery-hubs';
+import {activeOfficer,performContractAction,activateCoupon,activateDistanceGear,activateTradeVoucher,explorationGear,appendItemRecord} from './rumor-progress.js?v=2026.11.21-inland-discovery-hubs';
+import {useRepairKit} from './activities.js?v=2026.11.21-inland-discovery-hubs';
+import {ITEM_BY_ID} from './rumor-catalog.js?v=2026.11.21-inland-discovery-hubs';
+import {manualHelmSpeed,useEmergencySupplies,autoResupply,autoSupplyShortfall,makeRoute} from './engine.js?v=2026.11.21-inland-discovery-hubs';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -193,12 +194,46 @@ function setupInterface(){
   const mobile=matchMedia('(max-width:850px)');const layout=()=>{if(mobile.matches){for(const item of moving)dock.append(item.node);}else{$('.game-layout').prepend($('.voyage-sidebar'));$('.voyage-sidebar').prepend($('.navigation-mode'));const item=moving.find(i=>i.node.matches('.minimap-card'));item.placeholder.after(item.node);right.append($('#port-panel'),$('#chat-panel'),$('#chat-preview'));}if(mapReady)resizeMap();};mobile.addEventListener('change',layout);layout();
   toggleChat(true);
 }
+let fogBase;
 function renderFog(force=false){
-  if(!mapReady||!force&&performance.now()-lastFogAt<250)return;lastFogAt=performance.now();
-  const canvas=document.createElement('canvas');canvas.width=720;canvas.height=280;const ctx=canvas.getContext('2d'),data=ctx.createImageData(720,280);
-  for(let i=0;i<720*280;i++){const seen=!!(exploration.bits[i>>3]&(1<<(i&7))),j=i*4;data.data[j]=seen?173:35;data.data[j+1]=seen?185:61;data.data[j+2]=seen?190:76;data.data[j+3]=seen?170:250;}ctx.putImageData(data,0,0);
-  ctx.globalCompositeOperation='destination-out';if(explorationAllowed(state))for(const shift of [-720,0,720])for(const vertical of [-280,0,280]){ctx.beginPath();exploration.boundary(state.position).forEach((p,i)=>{let lon=p[0];while(lon-state.position[0]>180)lon-=360;while(lon-state.position[0]<-180)lon+=360;const x=(lon+180)*2+shift,y=(80-p[1])*2+vertical;if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);});ctx.closePath();ctx.fill();}
-  $('#exploration-fog').setAttribute('href',canvas.toDataURL());$('#sight-boundary').setAttribute('d',explorationAllowed(state)?routePath(exploration.boundary(state.position)):'');renderMinimap();
+  if(!mapReady||!force&&performance.now()-lastFogAt<250)return;
+  lastFogAt=performance.now();
+  const land=landFog(state.inland),density=land?4:2;
+  if(!fogBase||fogBase.exploration!==exploration||fogBase.revision!==exploration.revision||fogBase.land!==land){
+    const base=document.createElement('canvas');
+    base.width=360*density;base.height=140*density;
+    const ctx=base.getContext('2d'),data=ctx.createImageData(base.width,base.height);
+    const exploredColor=[173,185,190,170],hiddenColor=[35,61,76,250];
+    const fill=(i,seen)=>data.data.set(seen?exploredColor:hiddenColor,i*4);
+    const factor=density/2;
+    for(let y=0;y<base.height;y++)for(let x=0;x<base.width;x++){
+      const cell=Math.floor(y/factor)*720+Math.floor(x/factor);
+      fill(y*base.width+x,!!(exploration.bits[cell>>3]&(1<<(cell&7))));
+    }
+    for(const pixel of land?.chartPixels||[])fill(pixel,true);
+    ctx.putImageData(data,0,0);
+    fogBase={base,exploration,revision:exploration.revision,land};
+  }
+  const canvas=document.createElement('canvas');
+  canvas.width=fogBase.base.width;canvas.height=fogBase.base.height;
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(fogBase.base,0,0);
+  ctx.globalCompositeOperation='destination-out';
+  const boundary=explorationAllowed(state)?exploration.boundary(state.position):[];
+  if(boundary.length)for(const shift of [-canvas.width,0,canvas.width])for(const vertical of [-canvas.height,0,canvas.height]){
+    ctx.beginPath();
+    boundary.forEach((p,i)=>{
+      let lon=p[0];
+      while(lon-state.position[0]>180)lon-=360;
+      while(lon-state.position[0]<-180)lon+=360;
+      const x=(lon+180)*density+shift,y=(80-p[1])*density+vertical;
+      if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);
+    });
+    ctx.closePath();ctx.fill();
+  }
+  $('#exploration-fog').setAttribute('href',canvas.toDataURL());
+  $('#sight-boundary').setAttribute('d',boundary.length?routePath(boundary):'');
+  renderMinimap();
 }
 function exploreMove(from,to){
   recordStorySailing(state,from,to);
@@ -949,7 +984,7 @@ function renderRoutes(){
 function renderMinimap(){
   if(!mapReady||!globe)return;
   const w=screen.w/screen.k/2,h=screen.h/screen.k/2,viewport=[[-w,-h],[w,-h],[w,h],[-w,h],[-w,-h]].map(([x,y])=>unproject([camera.x+x,camera.y+y]));
-  globe.peers=visibleShips().map(p=>({...p,fill:PRESENCE_COLORS[p.color]}));globe.exploration=exploration;
+  globe.peers=visibleShips().map(p=>({...p,fill:PRESENCE_COLORS[p.color]}));globe.exploration=exploration;globe.landFog=landFog(state.inland);
   globe.update(state,viewport,state.voyage?.path||planned?.route.path||manualChannel?.path||[]);combat?.renderMap();
 }
 function renderShip(){
@@ -1557,10 +1592,10 @@ fieldUI=createFieldUI({
  focus:centerShip,onMode:renderHUD,follow:()=>{followShip=true;},
  repaint:()=>{if(followShip)followPosition();applyCamera();},
  enter:()=>{seaZoom??=mapZoom;mapZoom=6;centerShip();renderHUD();},
- exit:()=>{mapZoom=seaZoom??readMapZoom();seaZoom=null;centerShip();renderHUD();}
+ exit:()=>{mapZoom=seaZoom??readMapZoom();seaZoom=null;centerShip();renderHUD();renderFog(true);}
 });
 $('#chart-landfall').onclick=()=>fieldUI.open();
-inlandUI=createInlandUI({field:()=>{modal.close();fieldUI.open();},fieldCargo:id=>fieldUI.cargoMenu(id),game:()=>state,now:guildTime,uid:()=>account.uid,modal:showModal,run:(...args)=>business.run(...args),read:key=>account.readShared('ports',key),toast,port:id=>{modal.close();selectPort(id);}});
+inlandUI=createInlandUI({note:()=>rumorUI.showNote(),field:()=>{modal.close();fieldUI.open();},fieldCargo:id=>fieldUI.cargoMenu(id),game:()=>state,now:guildTime,uid:()=>account.uid,modal:showModal,run:(...args)=>business.run(...args),read:key=>account.readShared('ports',key),toast,port:id=>{modal.close();selectPort(id);}});
 const mail=createCaptainsMail({account,state:()=>state,modal:showModal,toast,now:guildTime,directory:after=>rankings.page(after),run:(...args)=>business.run(...args),onUnread:count=>{
  for(const [selector,label] of [['#captain-mail','외교 서신'],['#quick-more','더보기'],['[data-menu="mail"]','외교 서신']]){
   const button=$(selector);if(!button)continue;button.textContent=count?label+' · '+Math.min(count,99)+(count>99?'+':''):label;

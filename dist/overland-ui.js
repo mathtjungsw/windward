@@ -1,10 +1,10 @@
-import {shortestInlandRoute} from './inland-route.js?v=2026.11.20-inland-return';
-import {FieldTerrain,startField,returnField,walkField,fieldNear,fieldDistance} from './overland.js?v=2026.11.20-inland-return';
-import {INLAND_CITIES,INLAND_TIERS,inlandVehicle,inlandWarehouse,inlandAvailable,knownTown,settleInlandVisit,fieldPace,fieldCargo,fieldLoad,fieldTransfer,boardFieldCargo,upgradeInlandVehicle} from './inland.js?v=2026.11.20-inland-return';
-import {landTileSeen,landExplorationArea} from './land-exploration.js?v=2026.11.20-inland-return';
-import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.20-inland-return';
-import {inspectFieldDiscovery} from './discoveries.js?v=2026.11.20-inland-return';
-import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.20-inland-return';
+import {shortestInlandRoute} from './inland-route.js?v=2026.11.21-inland-discovery-hubs';
+import {FieldTerrain,startField,returnField,walkField,fieldNear,fieldDistance} from './overland.js?v=2026.11.21-inland-discovery-hubs';
+import {INLAND_CITIES,INLAND_TIERS,inlandVehicle,inlandWarehouse,inlandAvailable,knownTown,settleInlandVisit,fieldPace,fieldCargo,fieldLoad,fieldTransfer,boardFieldCargo,upgradeInlandVehicle} from './inland.js?v=2026.11.21-inland-discovery-hubs';
+import {landTileSeen,landExplorationArea} from './land-exploration.js?v=2026.11.21-inland-discovery-hubs';
+import {DISCOVERIES} from './discoveries-catalog.js?v=2026.11.21-inland-discovery-hubs';
+import {inspectFieldDiscovery} from './discoveries.js?v=2026.11.21-inland-discovery-hubs';
+import {GOODS,PORT_BY_ID} from './data.js?v=2026.11.21-inland-discovery-hubs';
 
 let terrainPromise;
 function loadTerrain(){

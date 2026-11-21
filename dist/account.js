@@ -1,11 +1,11 @@
-import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.20-inland-return';
-import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.20-inland-return';
-import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.20-inland-return';
-import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.20-inland-return';
-import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.20-inland-return';
-import {initialState,parseSavedGame} from './engine.js?v=2026.11.20-inland-return';
-import {applyRaftStart} from './raft-start.js?v=2026.11.20-inland-return';
-import {installAtomicAccount} from './atomic-account.js?v=2026.11.20-inland-return';
+import {markNovice,ownsOrOwnedPort} from './novice.js?v=2026.11.21-inland-discovery-hubs';
+import {recoverEnrollmentCache} from './enrollment.js?v=2026.11.21-inland-discovery-hubs';
+import {mergeDefense,restoreNavigation} from './defense-core.js?v=2026.11.21-inland-discovery-hubs';
+import {refreshDefense,publishDefense} from './defense-account.js?v=2026.11.21-inland-discovery-hubs';
+import {FIREBASE_CONFIG} from './firebase-config.js?v=2026.11.21-inland-discovery-hubs';
+import {initialState,parseSavedGame} from './engine.js?v=2026.11.21-inland-discovery-hubs';
+import {applyRaftStart} from './raft-start.js?v=2026.11.21-inland-discovery-hubs';
+import {installAtomicAccount} from './atomic-account.js?v=2026.11.21-inland-discovery-hubs';
 
 export const GAME_ROOT = 'gameV2';
 export const REAL_WORLD_ROOT = GAME_ROOT + '/real';
